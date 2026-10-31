@@ -1,0 +1,81 @@
+test_every_prefix_equals_batch_and_future_append (test_session3_structure.Structure.test_every_prefix_equals_batch_and_future_append) ... FAIL
+test_exact_right_confirmation_and_ties (test_session3_structure.Structure.test_exact_right_confirmation_and_ties) ... ok
+test_gap_and_invalid_reset_unknown (test_session3_structure.Structure.test_gap_and_invalid_reset_unknown) ... ok
+test_hour_merge_exact_native_availability (test_session3_structure.Structure.test_hour_merge_exact_native_availability) ... ok
+test_unknown_initial_bos_choch_wick_and_level_invalidation (test_session3_structure.Structure.test_unknown_initial_bos_choch_wick_and_level_invalidation) ... FAIL
+test_actual_hold4 (test_session3_workflow.AdvancedCallbacks.test_actual_hold4) ... ok
+test_capacity_symbol_fallback_and_daily_utc (test_session3_workflow.AdvancedCallbacks.test_capacity_symbol_fallback_and_daily_utc) ... ok
+test_closed_fresh_signal_price_and_expiry (test_session3_workflow.AdvancedCallbacks.test_closed_fresh_signal_price_and_expiry) ... ok
+test_geometry_sides_prices_atr_and_fee_sizing (test_session3_workflow.AdvancedCallbacks.test_geometry_sides_prices_atr_and_fee_sizing) ... ok
+test_native_short_stop_precedes_roi_same_bar (test_session3_workflow.AdvancedCallbacks.test_native_short_stop_precedes_roi_same_bar) ... ok
+test_native_stop_precedes_roi_same_bar (test_session3_workflow.AdvancedCallbacks.test_native_stop_precedes_roi_same_bar) ... ok
+test_native_stop_rounding_roi_hold_and_fill (test_session3_workflow.AdvancedCallbacks.test_native_stop_rounding_roi_hold_and_fill) ... ok
+test_paper_pending_quote_invalidation (test_session3_workflow.AdvancedCallbacks.test_paper_pending_quote_invalidation) ... ok
+test_safe_stake_missing_not_exception_fallback (test_session3_workflow.AdvancedCallbacks.test_safe_stake_missing_not_exception_fallback) ... ok
+test_unexpected_provider_and_audit_fail_closed (test_session3_workflow.AdvancedCallbacks.test_unexpected_provider_and_audit_fail_closed) ... ok
+test_historical_future_sentinel_and_schema (test_session3_workflow.Assessment.test_historical_future_sentinel_and_schema) ... ok
+test_input_times (test_session3_workflow.Assessment.test_input_times) ... ok
+test_missing_stale_gap_warmup_current_timestamp (test_session3_workflow.Assessment.test_missing_stale_gap_warmup_current_timestamp) ... ok
+test_capacity_symbol_fallback_and_daily_utc (test_playbooks.Callbacks.test_capacity_symbol_fallback_and_daily_utc) ... ok
+test_closed_fresh_signal_price_and_expiry (test_playbooks.Callbacks.test_closed_fresh_signal_price_and_expiry) ... ok
+test_geometry_sides_prices_atr_and_fee_sizing (test_playbooks.Callbacks.test_geometry_sides_prices_atr_and_fee_sizing) ... ok
+test_native_short_stop_precedes_roi_same_bar (test_playbooks.Callbacks.test_native_short_stop_precedes_roi_same_bar) ... ok
+test_native_stop_precedes_roi_same_bar (test_playbooks.Callbacks.test_native_stop_precedes_roi_same_bar) ... ok
+test_native_stop_rounding_roi_hold_and_fill (test_playbooks.Callbacks.test_native_stop_rounding_roi_hold_and_fill) ... ok
+test_paper_pending_quote_invalidation (test_playbooks.Callbacks.test_paper_pending_quote_invalidation) ... ok
+test_safe_stake_missing_not_exception_fallback (test_playbooks.Callbacks.test_safe_stake_missing_not_exception_fallback) ... ok
+test_unexpected_provider_and_audit_fail_closed (test_playbooks.Callbacks.test_unexpected_provider_and_audit_fail_closed) ... ok
+test_fee_funding_costs_forced_exit_zero_and_blocks (test_session3_workflow.Economics.test_fee_funding_costs_forced_exit_zero_and_blocks) ... ok
+test_configs_env_and_frozen_sources (test_session3_workflow.Safety.test_configs_env_and_frozen_sources) ... ok
+test_no_cli_bypass_and_staging_impersonator (test_session3_workflow.Safety.test_no_cli_bypass_and_staging_impersonator) ... ok
+test_future_known_levels_forbidden_and_risk_inherited (test_session3_workflow.Strategy.test_future_known_levels_forbidden_and_risk_inherited) ... ok
+test_symmetric_signals_and_explainable_rejection (test_session3_workflow.Strategy.test_symmetric_signals_and_explainable_rejection) ... ok
+
+======================================================================
+FAIL: test_every_prefix_equals_batch_and_future_append (test_session3_structure.Structure.test_every_prefix_equals_batch_and_future_append)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_session3_structure.py", line 35, in test_every_prefix_equals_batch_and_future_append
+    prefix=structure(d.iloc[:n]);pd.testing.assert_frame_equal(prefix,batch.iloc[:n])
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/pandas/util/_decorators.py", line 220, in wrapper
+    return func(*args, **kwargs)
+  File "/home/ftuser/.local/lib/python3.14/site-packages/pandas/_testing/asserters.py", line 1347, in assert_frame_equal
+    assert_series_equal(
+    ~~~~~~~~~~~~~~~~~~~^
+        lcol,
+        ^^^^^
+    ...<12 lines>...
+        check_flags=False,
+        ^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/pandas/util/_decorators.py", line 193, in wrapper
+    return func(*args, **kwargs)
+  File "/home/ftuser/.local/lib/python3.14/site-packages/pandas/_testing/asserters.py", line 1029, in assert_series_equal
+    assert_attr_equal("dtype", left, right, obj=f"Attributes of {obj}")
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/pandas/_testing/asserters.py", line 448, in assert_attr_equal
+    raise_assert_detail(obj, msg, left_attr, right_attr)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/pandas/_testing/asserters.py", line 619, in raise_assert_detail
+    raise AssertionError(msg)
+AssertionError: Attributes of DataFrame.iloc[:, 17] (column name="swing_high_pivot_at") are different
+
+Attribute "dtype" are different
+[left]:  datetime64[s, UTC]
+[right]: datetime64[us, UTC]
+
+======================================================================
+FAIL: test_unknown_initial_bos_choch_wick_and_level_invalidation (test_session3_structure.Structure.test_unknown_initial_bos_choch_wick_and_level_invalidation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_session3_structure.py", line 27, in test_unknown_initial_bos_choch_wick_and_level_invalidation
+    self.assertTrue(r.struct_wick_low.iloc[6]);self.assertIsNone(r.struct_event.iloc[6])
+                                               ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: nan is not None
+
+----------------------------------------------------------------------
+Ran 32 tests in 1.490s
+
+FAILED (failures=2)

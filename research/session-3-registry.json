@@ -1,0 +1,13 @@
+{
+ "schema_version":1,"scope":"RESEARCH_ONLY_ADDITIVE","persistent_paper_allowed":false,
+ "approved_entrypoint":"scripts/lab3.sh","engine_wrapper":"scripts/engine3.py",
+ "strategies":{
+  "TrendPullbackBaselineV1":{"source":"user_data/strategies/TrendPullbackBaselineV1.py","role":"frozen background benchmark","paper_via_session3":false},
+  "VWAPTrendContinuationV1":{"source":"user_data/strategies/VWAPTrendContinuationV1.py","role":"frozen background benchmark","paper_via_session3":false},
+  "LiquiditySweepReversalV1":{"source":"user_data/strategies/LiquiditySweepReversalV1.py","role":"frozen parent","paper_via_session3":false},
+  "StructureAwareSweepV1":{"source":"research/session3/StructureAwareSweepV1.py","role":"single structural enhancement","paper_via_session3":false},
+  "SweepThinningControlV1":{"source":"research/session3/SweepThinningControlV1.py","role":"deterministic thinning control, no alpha claim","paper_via_session3":false}
+ },
+ "prior_registry":"research/strategy-registry.json unchanged; baseline selection unchanged",
+ "strategy_freeze":"evidence/session-3/freeze.sha256"
+}

@@ -1,0 +1,49 @@
+{
+  "cohort_id": "s3-development-v1",
+  "counts": {
+    "BTC/USDT:USDT": {
+      "advanced_reason_counts": {
+        "COST_OR_STOP_GEOMETRY": 140,
+        "INVALID_OR_STALE_DATA": 842,
+        "NO_SETUP": 7271,
+        "STRUCTURAL_ELIGIBILITY": 3
+      },
+      "advanced_signal_long": 0,
+      "advanced_signal_short": 0,
+      "parent_signal_long": 2,
+      "parent_signal_short": 1
+    },
+    "ETH/USDT:USDT": {
+      "advanced_reason_counts": {
+        "CANDIDATE": 2,
+        "COST_OR_STOP_GEOMETRY": 133,
+        "INVALID_OR_STALE_DATA": 296,
+        "NO_SETUP": 7816,
+        "STRUCTURAL_ELIGIBILITY": 9
+      },
+      "advanced_signal_long": 2,
+      "advanced_signal_short": 0,
+      "parent_signal_long": 7,
+      "parent_signal_short": 4
+    },
+    "SOL/USDT:USDT": {
+      "advanced_reason_counts": {
+        "CANDIDATE": 5,
+        "COST_OR_STOP_GEOMETRY": 124,
+        "INVALID_OR_STALE_DATA": 23,
+        "NO_SETUP": 8084,
+        "STRUCTURAL_ELIGIBILITY": 20
+      },
+      "advanced_signal_long": 3,
+      "advanced_signal_short": 2,
+      "parent_signal_long": 12,
+      "parent_signal_short": 13
+    }
+  },
+  "definitions": "Completed signal eligible at open+15m; decision times >=start and <end. Candidate ledger includes parent raw setup candidates, geometry failures and structural rejections; all other bars aggregated by reason. Not counts of canceled orders or hypothetical fills. Native slot/callback rejections and fills overlap; do not add them.",
+  "environment": "RESEARCH_ONLY",
+  "ledger_rows": 436,
+  "schema_version": 1,
+  "source_manifest_sha256": "fd6b67280e0afeab62fe943307a0a6f98ad1a5f76fffe9ed1cd7ba0d7557b44d",
+  "strategy_sha256": "46b422bd8565cc75ee6cfbd8e181cbfe282e91cd7e01106e977d7f1883452a11"
+}

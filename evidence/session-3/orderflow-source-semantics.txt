@@ -1,0 +1,137 @@
+url https://raw.githubusercontent.com/gateio/gateapi-python/master/gate_api/models/futures_trade.py status 200
+def size(self):
+        """Gets the size of this FuturesTrade.  # noqa: E501
+
+        Trading size  # noqa: E501
+
+        :return: The size of this FuturesTrade.  # noqa: E501
+        :rtype: int
+        """
+        return self._size
+
+    @size.setter
+    def size(self, size):
+        """Sets the size of this FuturesTrade.
+
+        Trading size  # noqa: E501
+
+        :param size: The size of this FuturesTrade.  # noqa: E501
+        :type: int
+        """
+
+        self._size = size
+
+    @property
+    def price(self):
+        """Gets the price of this FuturesTrade.  # noqa: E501
+
+        Trade price (quote currency)  # noqa: E501
+
+        :return: The price of this FuturesTrade.  # noqa: E501
+        :rtype: str
+        """
+        return self._price
+
+    @price.setter
+    def price(self, price):
+        """Sets the price of this FuturesTrade.
+
+        Trade price (quote currency)  # noqa: E501
+
+        :param price: The price of this FuturesTrade.  # noqa: E501
+        :type: str
+        """
+
+        self._price = price
+
+    @property
+    def is_internal(self):
+        """Gets the is_internal of this FuturesTrade.  # noqa: E501
+
+        Whether it is an internal trade. Internal trade refers to the takeover of liquidation orders by the insurance fund and ADL users. Since it is not a normal matching on the market depth, the trade price may deviate from the market, and it will not be recorded in the K-line. If it is not an internal trade, this field will not be returned  # noqa: 
+def create_time_ms(self):
+        """Gets the create_time_ms of this FuturesTrade.  # noqa: E501
+
+        Trade time, with millisecond precision to 3 decimal places  # noqa: E501
+
+        :return: The create_time_ms of this FuturesTrade.  # noqa: E501
+        :rtype: float
+        """
+        return self._create_time_ms
+
+    @create_time_ms.setter
+    def create_time_ms(self, create_time_ms):
+        """Sets the create_time_ms of this FuturesTrade.
+
+        Trade time, with millisecond precision to 3 decimal places  # noqa: E501
+
+        :param create_time_ms: The create_time_ms of this FuturesTrade.  # noqa: E501
+        :type: float
+        """
+
+        self._create_time_ms = create_time_ms
+
+    @property
+    def contract(self):
+        """Gets the contract of this FuturesTrade.  # noqa: E501
+
+        Futures contract  # noqa: E501
+
+        :return: The contract of this FuturesTrade.  # noqa: E501
+        :rtype: str
+        """
+        return self._contract
+
+    @contract.setter
+    def contract(self, contract):
+        """Sets the contract of this FuturesTrade.
+
+        Futures contract  # noqa: E501
+
+        :param contract: The contract of this FuturesTrade.  # noqa: E501
+        :type: str
+        """
+
+        self._contract = contract
+
+    @property
+    def size(self):
+        """Gets the size of this FuturesTrade.  # noqa: E501
+
+        Trading size  # noqa: E501
+
+        :return: The size of this FuturesTrade.  # noqa: E501
+        :rtype: int
+        """
+        re
+def is_internal(self):
+        """Gets the is_internal of this FuturesTrade.  # noqa: E501
+
+        Whether it is an internal trade. Internal trade refers to the takeover of liquidation orders by the insurance fund and ADL users. Since it is not a normal matching on the market depth, the trade price may deviate from the market, and it will not be recorded in the K-line. If it is not an internal trade, this field will not be returned  # noqa: E501
+
+        :return: The is_internal of this FuturesTrade.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_internal
+
+    @is_internal.setter
+    def is_internal(self, is_internal):
+        """Sets the is_internal of this FuturesTrade.
+
+        Whether it is an internal trade. Internal trade refers to the takeover of liquidation orders by the insurance fund and ADL users. Since it is not a normal matching on the market depth, the trade price may deviate from the market, and it will not be recorded in the K-line. If it is not an internal trade, this field will not be returned  # noqa: E501
+
+        :param is_internal: The is_internal of this FuturesTrade.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_internal = is_internal
+
+    def to_dict(self):
+        """Returns the model properties as a dict"""
+        result = {}
+
+        for attr, _ in six.iteritems(self.openapi_types):
+            value = getattr(self, attr)
+            if isinstance(value, list):
+                result[attr] = list(map(
+   

@@ -1,0 +1,37 @@
+{
+  "cohort_id": "s3-transfer-v1",
+  "counts": {
+    "DOGE/USDT:USDT": {
+      "advanced_reason_counts": {
+        "CANDIDATE": 6,
+        "COST_OR_STOP_GEOMETRY": 114,
+        "INVALID_OR_STALE_DATA": 26,
+        "NO_SETUP": 8087,
+        "STRUCTURAL_ELIGIBILITY": 23
+      },
+      "advanced_signal_long": 5,
+      "advanced_signal_short": 1,
+      "parent_signal_long": 19,
+      "parent_signal_short": 10
+    },
+    "XRP/USDT:USDT": {
+      "advanced_reason_counts": {
+        "CANDIDATE": 8,
+        "COST_OR_STOP_GEOMETRY": 104,
+        "INVALID_OR_STALE_DATA": 63,
+        "NO_SETUP": 8063,
+        "STRUCTURAL_ELIGIBILITY": 18
+      },
+      "advanced_signal_long": 5,
+      "advanced_signal_short": 3,
+      "parent_signal_long": 17,
+      "parent_signal_short": 9
+    }
+  },
+  "definitions": "Completed signal eligible at open+15m; decision times >=start and <end. Candidate ledger includes parent raw setup candidates, geometry failures and structural rejections; all other bars aggregated by reason. Not counts of canceled orders or hypothetical fills. Native slot/callback rejections and fills overlap; do not add them.",
+  "environment": "RESEARCH_ONLY",
+  "ledger_rows": 273,
+  "schema_version": 1,
+  "source_manifest_sha256": "c2c5c17cc0f80259474714ba131aeebe961550ad82805600ec638bb8b979effe",
+  "strategy_sha256": "46b422bd8565cc75ee6cfbd8e181cbfe282e91cd7e01106e977d7f1883452a11"
+}

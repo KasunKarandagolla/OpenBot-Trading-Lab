@@ -1,0 +1,64 @@
+{
+  "actual_evaluated": [
+    "s3-development-v1",
+    "s3-transfer-v1"
+  ],
+  "cohorts": {
+    "s3-development-v1": {
+      "classification": "WARMUP_CORRECTED_DEVELOPMENT",
+      "cohort_id": "s3-development-v1",
+      "download_timerange": "20260726-20261030",
+      "evaluation_timerange": "20260805-20261030",
+      "funding_interval_seconds": 28800,
+      "pairs": [
+        "BTC/USDT:USDT",
+        "ETH/USDT:USDT",
+        "SOL/USDT:USDT"
+      ],
+      "rights": "Bounded personal/noncommercial public API use; raw local only",
+      "schema_version": 1,
+      "selection": "Prior Session2 familiar surviving contracts; already inspected calendar and symbols",
+      "venue": "gate",
+      "warmup_hours": 240
+    },
+    "s3-prospective-v1": {
+      "classification": "PROSPECTIVE_RESERVED",
+      "cohort_id": "s3-prospective-v1",
+      "download_timerange": "20261022-20261108",
+      "evaluation_timerange": "20261101-20261108",
+      "funding_interval_seconds": 28800,
+      "pairs": [
+        "BTC/USDT:USDT",
+        "ETH/USDT:USDT",
+        "SOL/USDT:USDT"
+      ],
+      "rights": "Bounded personal/noncommercial Gate public API, no raw redistribution",
+      "schema_version": 1,
+      "selection": "Explicit operator registration; historical membership not inferred",
+      "venue": "gate",
+      "warmup_hours": 240
+    },
+    "s3-transfer-v1": {
+      "classification": "SHARED_CALENDAR_MARKET_TRANSFER",
+      "cohort_id": "s3-transfer-v1",
+      "download_timerange": "20260726-20261030",
+      "evaluation_timerange": "20260805-20261030",
+      "funding_interval_seconds": 28800,
+      "pairs": [
+        "XRP/USDT:USDT",
+        "DOGE/USDT:USDT"
+      ],
+      "rights": "Bounded personal/noncommercial public API use; raw local only",
+      "schema_version": 1,
+      "selection": "Predeclared familiar liquid additional survivors; not independent calendar; selection contamination acknowledged",
+      "venue": "gate",
+      "warmup_hours": 240
+    }
+  },
+  "prospective_status": "RESERVED_NOT_YET_AVAILABLE; acquisition rejects future end",
+  "schema_version": 1,
+  "source_manifest_hashes": {
+    "s3-development-v1": "fd6b67280e0afeab62fe943307a0a6f98ad1a5f76fffe9ed1cd7ba0d7557b44d",
+    "s3-transfer-v1": "c2c5c17cc0f80259474714ba131aeebe961550ad82805600ec638bb8b979effe"
+  }
+}

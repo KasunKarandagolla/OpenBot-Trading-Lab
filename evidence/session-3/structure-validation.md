@@ -1,0 +1,13 @@
+# Causal structure qualification
+
+Implementation: research/session3/causal_structure.py; strict2-left/2-right on both15m and1h. A pivot at00:00 requiring right candles00:15 and00:30 becomes known at00:45, the latter candle's close. Output includes price, direction, pivot timestamp, known timestamp, first eligible decision timestamp, right confirmation count and timeframe. No pivot backfills.
+
+At each completed candle, inspect previously known unconsumed high/low levels first. Close above/below establishes UNKNOWN direction as INITIAL_BREAK. Thereafter a same-direction close break is BOS; first opposite break is CHOCH and transitions direction. A broken level is consumed until a new pivot of that side is confirmed. A gap/nonfinite bar resets levels/direction/history; no retrospective pruning. Unclosed hourly candles cannot affect15m decisions. Native informative join and explicit backward close-time join agree at01:00 boundary, never00:45 decision before that close.
+
+Public opportunity wick-only fields explicitly require wick crossing with a nonbreaking close, including after an already-consumed level. Internal struct_wick event flags concern absence of a new consumable break; they are not evidence of resting stops or liquidations. Original frozen trading calculations remain unchanged by this reporting distinction.
+
+Executed exact vectors: pivot timing/ties, INITIAL_BREAK/BOS/CHOCH, consumed-level suppression, wick versus close, multiple swings, gap/invalid resets. Every one of110 successive prefixes equals batch output including timestamp dtypes; identical inputs deterministic. Assessor changes future rows to extreme invalid prices and obtains identical historical output. Source date schema/UTC/alignment, missing warmup, gaps and stale data reject. Native hour join vector matches exact native merge. FVG omitted because this hypothesis does not use one.
+
+Actual native lookahead:7 sampled signals, zero biased entries/exits/indicators; exit0. This thin diagnostic is not universal proof. Native recursive-analysis on BTC checked120/240/480 startup bars: largest displayed120-bar hourly ADX deviation0.024%; at240 displayed0.000%; EMA/ATR near-zero as retained table shows. Native indicator-only lookahead found none. This is a sampled endpoint check, not proof all persistent structural states converge under arbitrary rolling-window truncation. Full inputs plus append invariance remain the research calculation contract.
+
+See final-tests.txt, structure-final.txt, lookahead-output.txt, recursive-output.txt and cohorts/s3-development-v1/native-replay-verification.json. All7 native replay trade records matched every field. Original test errors/corrections remain retained.
