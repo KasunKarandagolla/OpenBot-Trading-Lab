@@ -74,6 +74,10 @@ def config(name):
 
 def native_args(action, name):
     check(); stage()
+    replay=action=='native-replay'
+    if replay:
+        if name!='RouterOnlyV1':raise ValueError('unregistered native replay')
+        action='backtesting'
     cfg = ROOT/'work/bonus-configs'/(name+'.json')
     write(cfg, config(name))
     args = [action, '--config', str(cfg), '--datadir', str(DATA)]
@@ -88,7 +92,7 @@ def native_args(action, name):
     verify()
     args += ['--timerange',spec()['timerange'],'--fee','0.0006']
     if action == 'backtesting':
-        dest = ROOT/'user_data/backtest_results/bonus'/name
+        dest = ROOT/'user_data/backtest_results/bonus'/('replay-'+name if replay else name)
         dest.mkdir(parents=True,exist_ok=True)
         return args+['--enable-protections','--cache','none','--export','trades',
                      '--backtest-directory',str(dest)]

@@ -48,6 +48,16 @@ class Causality(unittest.TestCase):
         self.assertLess(p['val'],p['vah'])
         self.assertIsNone(volume_profile([1.],[0.]))
 
+    def test_equal_liquidity_needs_two_distinct_confirmed_pivots(self):
+        f=advanced(session_features(vector(160)))
+        for side in ['high','low']:
+            events=f['swing_'+side].where(f['swing_'+side].ne(f['swing_'+side].shift())).dropna()
+            self.assertGreaterEqual(len(events),2)
+            first,second=events.index[:2]
+            self.assertFalse(f['equal_'+side].iloc[first:second].any())
+            expected=abs(events.iloc[1]-events.iloc[0])<=.1*f.atr14.iloc[second]
+            self.assertEqual(bool(f['equal_'+side].iloc[second]),bool(expected))
+
     def test_cross_section_rank_is_causal_and_both_directions(self):
         from bonus_pipeline import ranking
         d=vector(200);bases={'BTC/USDT:USDT':d,'ETH/USDT:USDT':d.copy(),'SOL/USDT:USDT':d.copy(),'XRP/USDT:USDT':d.copy()}
@@ -112,6 +122,26 @@ class Risk(unittest.TestCase):
         self.assertEqual(evaluate(**a)['reason'],'BUFFERED_LIQUIDATION_CLEARANCE')
 
 
+class FundingBoundary(unittest.TestCase):
+    def test_partial_at_funding_time_is_bounded_without_double_charge(self):
+        from bonus_funding_audit import event_bounds
+        trade={'is_short':False,'open_timestamp':0,'close_timestamp':3000,'orders':[
+            {'amount':.01,'ft_is_entry':True,'order_filled_timestamp':0},
+            {'amount':.005,'ft_is_entry':False,'order_filled_timestamp':2000},
+            {'amount':.005,'ft_is_entry':False,'order_filled_timestamp':3000}]}
+        lo,hi,rows=event_bounds(trade,[{'timestamp_ms':2000,'rate':.00005,'mark_open':2278.794}])
+        self.assertAlmostEqual(lo,-.001139397);self.assertAlmostEqual(hi,-.0005696985)
+        self.assertTrue(rows[0]['clock_priority_ambiguous'])
+        self.assertLess(-.002278794,lo)
+
+    def test_recorded_native_partial_funding_defect_is_exposed(self):
+        p=ROOT/'evidence/bonus/source-funding-audit.json'
+        obj=json.loads(p.read_text())
+        self.assertEqual(obj['variants']['RouterOnlyM1V1']['outside_bounds_trades'],2)
+        self.assertEqual(obj['variants']['RouterOnlyV1']['outside_bounds_trades'],0)
+        self.assertFalse(obj['native_results_modified'])
+
+
 class Management(unittest.TestCase):
     def setup_trade(self,short=False):
         self.now=pd.Timestamp('2026-08-25T01:00Z').to_pydatetime()
@@ -155,6 +185,54 @@ class Management(unittest.TestCase):
         s,t,state=self.setup_trade();s.position_adjustment_enable=False
         self.assertIsNone(self.adjust(s,t,101.5))
         self.assertEqual(s.custom_exit('X',t,self.now+timedelta(hours=4),100.,0.),'max_hold_4h')
+
+    def test_after_fill_cannot_loosen_persisted_stop(self):
+        for short in [False,True]:
+            s,t,state=self.setup_trade(short);state['bonus_partial_done']=True
+            state['bonus_tight_stop']=99.65 if short else 100.35
+            crossed=99.8 if short else 100.2
+            self.assertIsNone(s.custom_stoploss('X',t,self.now,crossed,0.,after_fill=True))
+            self.assertEqual(state['bonus_tight_stop'],99.65 if short else 100.35)
+
+    def test_native_partially_filled_pending_order_blocks_repeat(self):
+        from freqtrade.persistence import Order
+        s,t,state=self.setup_trade()
+        order=Order(ft_order_side=t.exit_side,side=t.exit_side,order_type='limit',
+                    order_id='fixture',status='open',filled=.25,amount=.5,ft_is_open=True,
+                    ft_pair='X')
+        t.orders=[order]
+        self.assertTrue(t.has_open_orders)
+        self.assertIsNone(self.adjust(s,t,101.5))
+        self.assertFalse(state['bonus_partial_done'])
+
+    def test_native_roi_uses_frozen_target_on_both_sides(self):
+        from freqtrade.enums import ExitType
+        for short in [False,True]:
+            s,t,state=self.setup_trade(short)
+            s.minimal_roi={0:100.} # native strategy resolver normally normalizes JSON keys
+            s.dp.runmode=SimpleNamespace(value='backtest')
+            self.assertAlmostEqual(s.custom_roi('X',t,self.now,15,None,'short' if short else 'long'),
+                                   t.calc_profit_ratio(state['bonus_plan']['target']))
+            exits=s.should_exit(t,100.,self.now,enter=False,exit_=False,
+                                low=96. if short else 99.5,high=100.5 if short else 104.)
+            self.assertIn(ExitType.ROI,[e.exit_type for e in exits])
+
+    def test_mark_to_market_admission_veto_and_missing_state(self):
+        s,t,state=self.setup_trade()
+        s.wallets=SimpleNamespace(get_total_stake_amount=lambda:1000.)
+        g={'modeled_loss_per_notional':.02}
+        now=self.now
+        confirm=lambda:s.confirm_trade_entry('NEW','limit',.25,100.,'GTC',now,None,'long')
+        with patch.object(s,'row_plan',return_value=g),patch('OpportunityRouterV1.Trade.get_open_trades',return_value=[]),patch('OpportunityRouterV1.Trade.get_trades_proxy',return_value=[]):
+            self.assertTrue(confirm())
+        row=pd.DataFrame([{'date':pd.Timestamp(now)-pd.Timedelta(minutes=15),'close':90.}])
+        s.dp=SimpleNamespace(get_analyzed_dataframe=lambda *a:(row,None))
+        t.stake_amount=25.;t.calc_profit=lambda rate:-11.
+        with patch.object(s,'row_plan',return_value=g),patch('OpportunityRouterV1.Trade.get_open_trades',return_value=[t]),patch('OpportunityRouterV1.Trade.get_trades_proxy',return_value=[]):
+            self.assertFalse(confirm())
+        s.wallets=SimpleNamespace(get_total_stake_amount=lambda:float('nan'))
+        with patch.object(s,'row_plan',return_value=g),patch('OpportunityRouterV1.Trade.get_open_trades',return_value=[]),patch('OpportunityRouterV1.Trade.get_trades_proxy',return_value=[]):
+            self.assertFalse(confirm())
 
 
 if __name__=='__main__':unittest.main()

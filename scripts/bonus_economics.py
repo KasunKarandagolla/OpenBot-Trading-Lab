@@ -104,8 +104,13 @@ def mtm_accounting(trades,frames):
 
 def analyze():
     check()
+    from bonus_funding_audit import audit
+    funding_audit=audit()
     rawframes={s:frame(s) for s in spec()['pairs']}
     indicators={s:session_features(f).set_index('date') for s,f in rawframes.items()}
+    from PlaybookRiskV1 import PlaybookRiskV1
+    from freqtrade.enums import CandleType
+    hours={s:PlaybookRiskV1({'candle_type_def':CandleType.FUTURES}).populate_indicators_1h(frame(s,'1h'),{}).set_index('date') for s in spec()['pairs']}
     candidates=pd.read_csv(OUT/'opportunity-ledger.csv')
     plans={}
     for _,r in candidates.loc[candidates.decision=='TRADE'].iterrows():
@@ -118,6 +123,8 @@ def analyze():
         for t in trades:
             f=fills(t);at=pd.Timestamp(t['open_date']);end=pd.Timestamp(t['close_date'])
             signal=indicators[t['pair']].loc[indicators[t['pair']].index+pd.Timedelta(minutes=15)<=at].iloc[-1]
+            context=hours[t['pair']].loc[hours[t['pair']].index+pd.Timedelta(hours=1)<=at].iloc[-1]
+            regime=('TREND_UP' if context.ema20>context.ema50 else 'TREND_DOWN') if context.adx>=25 else 'BALANCE'
             sign=-1 if t['is_short'] else 1
             key=(name,t['pair'],at.isoformat());g=plans.get(key)
             buffer=.15 if name in ('LiquiditySweepReversalV1','StructureAwareSweepV1') else .2
@@ -144,13 +151,15 @@ def analyze():
                          'MFE_pct':best*100,'MAE_pct':worst*100,'MFE_price_R':best/price_risk,'MAE_price_R':worst/price_risk,
                          'unresolved_stop_target_candles':ambiguous,'hold_minutes':t['trade_duration'],
                          'exit_reason':t['exit_reason'],'recipe':'sweep' if 'sweep' in str(t.get('enter_tag','')).lower() or 'Sweep' in name else 'vwap',
-                         'regime':'TREND' if str(t.get('enter_tag','')).startswith('vwap:') else 'BALANCE_OR_PARENT_CONTEXT',
+                         'regime':regime,
                          'partial_exits':f['partial_exits'],'entry_amount':f['entry_amount'],'exit_amount':f['exit_amount']})
         if rows:
             pd.DataFrame(rows).to_csv(destination/(name+'.csv'),index=False)
             if max(abs(r['reconciliation_residual_usdt']) for r in rows)>1e-5:raise ValueError('fill accounting does not reconcile')
         else:pd.DataFrame(columns=['pair','net_usdt']).to_csv(destination/(name+'.csv'),index=False)
         stats=summary(rows,result)
+        audited=funding_audit['variants'][name]
+        stats['source_funding_audit']={k:audited[k] for k in ('outside_bounds_trades','source_funding_net_min','source_funding_net_max')}
         stats['recipes']={recipe:summary([r for r in rows if r['recipe']==recipe]) for recipe in ('vwap','sweep')}
         stats['equity_accounting']=mtm_accounting(trades,rawframes)
         if name in set(candidates.variant):
@@ -177,6 +186,23 @@ def analyze():
                 'extra_fees_usdt':sum(r['extra_fee'] for r in matched),'rows':matched,
                 'fill_limit':'Native candle partial fills tested mechanically; no actual exchange queue or partial-fill history. Capacity can make later opportunities unmatched.'}
     write(OUT/'management-comparison.json',management)
+    # Defined rejected populations, with *executed* frozen-parent controls.
+    # Management differs from the router; these are diagnostic matches, not a
+    # causal estimate of how rejected plans would trade under the new policy.
+    controls={}
+    for recipe,parent in [('vwap','VWAPTrendContinuationV1'),('sweep','LiquiditySweepReversalV1')]:
+        for r in all_ledgers[parent]:controls[(r['pair'],pd.Timestamp(r['open_date']).isoformat(),recipe)]=r
+    rejected=[]
+    for _,r in candidates.loc[candidates.decision=='REJECT'].iterrows():
+        control=controls.get((r.symbol,r.decision_at,r.recipe))
+        rejected.append({'variant':r.variant,'symbol':r.symbol,'decision_at':r.decision_at,
+                         'reason':r.reason,'recipe':r.recipe,'parent_native_match':control is not None,
+                         'parent_net_usdt':control['net_usdt'] if control else None,
+                         'parent_side':control['side'] if control else None})
+    write(OUT/'rejected-control-evidence.json',{
+        'population':'All rejected route-ready parent signals in the five-market sample; no selection by future return',
+        'rows':rejected,'matched_native_controls':sum(r['parent_native_match'] for r in rejected),
+        'limitation':'Exact entry-clock matches to native frozen parents, same fees/funding but different management/geometry. No identical-router-management counterfactual for every rejected or unselected market; no fictional PnL for unfilled plans.'})
     report={'protocol_sha256':sha(PROTOCOL),'classification':'INSPECTED_DEVELOPMENT_NOT_INDEPENDENT',
             'variants':variants,'management':{k:v for k,v in management.items() if k!='rows'},
             'orderflow_economics':'INSUFFICIENT OR UNAVAILABLE EVIDENCE; genuine future shadow only',
@@ -185,7 +211,8 @@ def analyze():
                 'OHLCV profile is approximate; no historical aggressor prints or news feed.',
                 'Native requested-price fills; no queue model or observed partial execution.',
                 'MFE/MAE only complete intermediate bars; entry/exit intrabar extrema intentionally excluded.',
-                'Funding sign included exactly once; mark-equity approximation recognizes aggregate at final exit.',
+                'Report adds native exported funding once. Independent source-event audit finds two M1 trades outside funding quantity bounds at exact-clock partial exits; native totals remain unchanged. M1 stays research-only.',
+                'Mark-equity approximation recognizes aggregate funding at final exit, not at each actual event.',
                 'No independent calendar holdout, new prospective cohort starts Nov9 after prior reserved cohort.',
                 'Extra friction stresses native turnover without resimulating fills. No operational promotion.']}
     write(OUT/'economic-results.json',report)
@@ -193,7 +220,7 @@ def analyze():
     text+='|Policy|Trades|Net USDT|PF|Mean net R|Fees|+10bp/side net|Verdict|\n|---|---:|---:|---:|---:|---:|---:|---|\n'
     for name,r in variants.items():
         text+=f"|{name}|{r['trades']}|{r['net_usdt']:.6f}|{r.get('profit_factor')}|{r.get('mean_net_R')}|{r.get('fees_usdt',0):.6f}|{r.get('friction',[{},{},{'net_usdt':0}])[2]['net_usdt']:.6f}|{r['verdict']}|\n"
-    text+='\n'+ '\n'.join('- '+x for x in report['limitations'])+'\n\n**Profitability is not demonstrated.** Full recipe, risk, movement, concentration, drawdown and cost statistics: `economic-results.json`; native-fill accounting: `trade-ledgers/`; management: `management-comparison.json`.\n'
+    text+='\n'+ '\n'.join('- '+x for x in report['limitations'])+'\n\n**Profitability is not demonstrated.** Full recipe, risk, movement, concentration, drawdown and cost statistics: `economic-results.json`; native-fill accounting: `trade-ledgers/`; management: `management-comparison.json`; independent source-event funding bounds: `source-funding-audit.json`.\n'
     (OUT/'economic-report.md').write_text(text)
     print(text)
     return report

@@ -189,8 +189,26 @@ def run():
 
 
 def lookahead():
-    name='IntegratedM0V1'
+    # Integrated policy has no entries; sample an actionable frozen router policy.
+    name='RouterOnlyV1'
     with (OUT/'lookahead-output.txt').open('x') as f:
         r=subprocess.run([sys.executable,str(ROOT/'scripts/bonus_common.py'),'lookahead-analysis',name],
                          stdout=f,stderr=subprocess.STDOUT,env=sanitized_env())
     if r.returncode:raise ValueError('native lookahead failed')
+
+
+def replay_native():
+    name='RouterOnlyV1';result=OUT/'native-router-replay.json'
+    if result.exists():raise ValueError('preserve native replay')
+    with (OUT/'native-replay-output.txt').open('x') as f:
+        r=subprocess.run([sys.executable,str(ROOT/'scripts/bonus_common.py'),'native-replay',name],
+                         stdout=f,stderr=subprocess.STDOUT,env=sanitized_env())
+    if r.returncode:raise ValueError('native replay failed')
+    directory=ROOT/'user_data/backtest_results/bonus'/('replay-'+name)
+    archive=extract(name,directory,result)
+    previous=read(OUT/'native-results'/(name+'.json'))['strategy'][name]['trades']
+    current=read(result)['strategy'][name]['trades']
+    if previous!=current:raise ValueError('native trade-field replay mismatch')
+    write(OUT/'native-replay-verification.json',{'pass':True,'trades':len(current),'comparison':'every field of every native trade',
+                                              'result_sha256':sha(result),'archive_sha256':sha(archive),
+                                              'freeze_sha256':sha(OUT/'freeze.sha256')})

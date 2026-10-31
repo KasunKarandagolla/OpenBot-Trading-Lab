@@ -67,6 +67,24 @@ def frame(symbol,tf='15m',kind='futures'):
     return pd.read_feather(DATA/'futures'/(symbol.replace('/','_').replace(':','_')+'-'+tf+'-'+kind+'.feather'))
 
 
+def restore_prior_raw():
+    """Only restore absent raw files whose bytes match recorded prior manifests."""
+    import shutil
+    m=verify();lookup={(r['symbol'],r['timeframe'],r['candle_type']):r for r in m['files']};rows=[]
+    for path in ['evidence/session-1/market-data-manifest.json','evidence/session-2/source-data-manifest.json',
+                 'evidence/session-3/cohorts/s3-development-v1/source-data-manifest.json',
+                 'evidence/session-3/cohorts/s3-transfer-v1/source-data-manifest.json']:
+        for old in read(ROOT/path).get('files',[]):
+            r=lookup.get((old.get('symbol'),old.get('timeframe'),old.get('candle_type')))
+            if r and old.get('sha256')==r['sha256']:
+                p=ROOT/old['path']
+                if p.exists() and sha(p)!=old['sha256']:raise ValueError('refuse to overwrite prior raw file')
+                if not p.exists():p.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(ROOT/r['path'],p)
+                rows.append({'path':old['path'],'matches':True})
+    write(OUT/'prior-raw-restoration.json',rows)
+    return rows
+
+
 def detail():
     """Public 5m candles on predeclared October window, no new simulator."""
     from public_exchange import public_exchange
@@ -89,3 +107,32 @@ def detail():
         if report['errors']:raise ValueError('detail invalid')
         d.to_feather(p);rows.append(report|{'symbol':s,'path':str(p.relative_to(ROOT)),'sha256':sha(p)})
     write(OUT/'detail-manifest.json',{'files':rows,'valid':True})
+
+
+def risk_examples():
+    """Current public margin tiers on a historical plan; illustrative, not backdated."""
+    from public_exchange import public_exchange
+    sys.path.insert(0,str(ROOT/'research/bonus'))
+    from futures_risk import evaluate
+    plans=read(OUT/'trade-plans.json')
+    p=next(p for p in plans if p['variant']=='RouterOnlyV1');symbol=p['symbol'];g=p['plan']
+    e=public_exchange();m=e.load_markets()[symbol]
+    native=e.fetch_market_leverage_tiers(symbol)
+    tiers=[{'min_notional':t['minNotional'],'max_notional':t['maxNotional'],
+            'max_leverage':t['maxLeverage'],'maintenance_rate':t['maintenanceMarginRate'],
+            'maintenance_deduction':float(t.get('info',{}).get('deduction',0))} for t in native]
+    base=dict(price=g['reference'],equity=1000.,day_start_equity=1000.,available_margin=100.,
+              unrealized_pnl=0.,contract_size=m['contractSize'],min_contracts=1.,step_contracts=1.,tiers=tiers)
+    cases=[]
+    for side in ('long','short'):
+        stop=g['reference']*(1-g['risk_fraction'] if side=='long' else 1+g['risk_fraction'])
+        for lev in (1,10,20):cases.append(evaluate(**base,side=side,stop=stop,leverage=lev))
+    for label,update in [('unrealized_daily_halt',{'unrealized_pnl':-11.}),('pending_exposure',{'pending_risk':6.}),
+                         ('correlated_exposure',{'correlated_notional':500.}),('tier_unknown',{'tiers':None})]:
+        r=evaluate(**(base|update),side='long',stop=g['stop'],leverage=20)
+        cases.append({'case':label,**r})
+    write(OUT/'risk-scenarios.json',{'symbol':symbol,'historical_plan_id':p['decision_id'],
+                                   'tier_observed_at':pd.Timestamp.now(tz='UTC').isoformat(),
+                                   'current_public_tiers':native,'cases':cases,'owner_approved':False,
+                                   'limitation':'Current tier snapshot, not historical-tier reconstruction; no credentials, orders or leveraged activation'})
+    print(json.dumps(cases,indent=2))

@@ -36,7 +36,10 @@ def advanced(d):
     for side in ('high','low'):
         s=d['swing_'+side]
         changes=s.where(s.ne(s.shift()))
-        prev=changes.ffill().where(changes.notna()).shift().ffill()
+        # Shift *pivot events*, not rows. Otherwise a pivot self-matches one row
+        # after confirmation. Gaps reset the comparison's causal history.
+        groups=(~d.struct_valid).cumsum()
+        prev=changes.groupby(groups).transform(lambda e:e.dropna().shift().reindex(e.index).ffill())
         d['equal_'+side]=(s-prev).abs()<=.1*d.atr14
     at=d.date
     day=at.dt.floor('D'); session=at.dt.floor('8h')
