@@ -69,3 +69,31 @@ Docker VFS on the approximately 8 GB Cloud filesystem duplicates large image lay
 If reproducing in another managed Cloud session, follow its current network skill and CA settings; do not reuse old proxy addresses. No TLS disabling, host-network workaround or unrestricted exchange credential forwarding is needed. Owner-host installation, browser rendering, jurisdiction and persistent operation require separate verification.
 
 Rollback: stop both services, preserve DB/data/private config, check out the previous approved commit or base SHA `2343053ce68f6fff4525c5b67771ea445deb3779`. Remove only this project's disposable containers with `docker compose -f deploy/freqtrade/compose.yaml down`. Never prune unrelated Docker state or delete the only research/DB copy.
+
+## Session 2 deterministic batch and inspection
+
+The Session 2 interfaces use `research/session-2-protocol.json` and `research/strategy-registry.json`. Public research configs have independent frozen hashes. `trade` rejects both challenger strategies. Only the previously selected baseline can use `paper-up`; changing the selected paper strategy needs a separate owner decision and reviewed frozen configuration.
+
+```bash
+./scripts/lab.sh strategy-info VWAPTrendContinuationV1
+./scripts/lab.sh strategy-info LiquiditySweepReversalV1
+./scripts/lab.sh research-download  # only an empty user_data/data/session-2 directory
+./scripts/lab.sh research-all
+./scripts/lab.sh compare
+./scripts/lab.sh research-lookahead
+./scripts/lab.sh test
+```
+
+Cloud used the existing single-runner option with `LAB_EXEC_CONTAINER=openbot-s2-runner`. It is disposable and has no exchange credential bindings. Normal owner commands use Compose. Keep proxy/CA overrides local in ignored `work/` and runtime paths. Do not copy Cloud network values to your host.
+
+Native command per challenger is `backtesting --config /lab/configs/research-vwap.json` (or `research-sweep.json`) `--datadir /lab/user_data/data/session-2/gate --timerange 20260730-20261030 --fee 0.0006 --enable-protections --cache none --export trades --backtest-directory /lab/user_data/backtest_results/session-2/<strategy>`. Baseline uses unchanged research.json. The wrapper verifies hashes before native execution and exports native JSON/CSV, callback decisions and provenance. It never starts persistent paper.
+
+Feature-level opportunities in `signal-counts.json` and `signal-candidates.csv` are distinct from callback admissions, native canceled/timedout orders and filled trades. Do not sum these as disjoint populations. Callback events record known signal time, reference, stop, target, side, decision, quantity and assumed cost/risk. Historical15m fills cannot demonstrate a five minute paper expiry, queue position or exchange partial fills. Native lookahead diagnostics change order/stake behavior internally; read their actual sampled counts and limitations.
+
+`compare` recreates bounded derived JSON and Markdown from recorded outputs. No source candles, exchange calls or admin tokens are required. Future OpenBot receives only copies of these sanitized files in an isolated workspace; it does not receive the Freqtrade API, source write access or paper SQLite.
+
+Paper safeguards remain conservative:<=25 USDT, max 2,1x, no adjustment. Challenger callbacks enforce signal expiry/no-chase, structure stops and actual-order-opening holding clocks; that clock can precede fill, making the timeout earlier. Intended risk includes0.12% fees+0.20% assumed roundtrip friction+0.03% funding allowance. Admission reserves3% emergency stop. Costs beyond allowances and gap fills can exceed intended risk. UTC realized closed-trade losses<=-10 halt entries; a full daily mark-to-market account-loss halt is NOT ENFORCED. Host outage stops position management; restart/partial-fill drills remain owner-host work, and challengers remain research only.
+
+Preserve Session 1 evidence unchanged. Its legacy `backtest`/`report` commands target Session 1 paths; use Session 2 batch for this milestone and do not regenerate Session 1 committed evidence over it. Data downloads refuse existing files. If exact reacquisition fails, preserve the failure and declare a separate cohort before any future all-strategy rerun; never silently substitute dates.
+
+Stop: `./scripts/lab.sh paper-down` and `./scripts/lab.sh ui-down`. Inspect open simulated positions first. Preserve the DB and both datasets before rollback to Session 1 head `d76b6093796f78ce628943e8252033b34e9958ef`. This change does not alter main or merge PR1.

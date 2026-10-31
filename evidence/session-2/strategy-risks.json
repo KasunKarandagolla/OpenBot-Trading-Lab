@@ -1,0 +1,53 @@
+{
+  "active_paper_strategy": "TrendPullbackBaselineV1",
+  "challengers_paper_approved": false,
+  "controls_scope": "Session 2 challenger callbacks only; baseline retains original Session 1 risk limitations",
+  "enforced": [
+    "dry_run",
+    "1x frozen code",
+    "25 USDT maximum",
+    "max2 native positions",
+    "no DCA",
+    "signal geometry and entry deviation rejection",
+    "five-minute native paper order timeout",
+    "fixed initial custom stop and 2R ROI request",
+    "holding-time exit request",
+    "cooldown"
+  ],
+  "limited": [
+    "intended monetary-risk ceilings within bounded cost assumptions",
+    "UTC realized closed-trade loss halt only",
+    "restart pending-order path not exercised on owner host"
+  ],
+  "mode": "RESEARCH ONLY",
+  "not_enforced": [
+    "exact 1% mark-to-market daily account halt",
+    "fills/stop protection during process outage",
+    "guaranteed five-minute historical fills",
+    "OpenBot host isolation"
+  ],
+  "run_completed_utc": {
+    "LiquiditySweepReversalV1": "2026-10-31T11:30:23.565306+00:00",
+    "TrendPullbackBaselineV1": "2026-10-31T11:28:51.413684+00:00",
+    "VWAPTrendContinuationV1": "2026-10-31T11:29:36.215362+00:00"
+  },
+  "schema_version": 1,
+  "source": "frozen code and recorded native outputs",
+  "strategy_hashes": {
+    "LiquiditySweepReversalV1": {
+      "configs/research-sweep.json": "c113aa3b84877ae9083d36349f88b7e4be07a66e6381543d30e5f470471f4897",
+      "user_data/strategies/LiquiditySweepReversalV1.py": "6d4af2c01717bd7c95533134e63e7c256e5068d0ffce834c60694ac291f12a21",
+      "user_data/strategies/PlaybookRiskV1.py": "56b857d3fca788dfd64a92cb664597db8c128237112c1d24d4b7006d2e8798be"
+    },
+    "TrendPullbackBaselineV1": {
+      "configs/research.json": "dfcbebb920a4958854c3370096be15e35c2124335394454dd72b041272ecfe9a",
+      "user_data/strategies/TrendPullbackBaselineV1.py": "848069de46653edff802323e31ebc413cf6df632a72ce8ad7f4043230f409d06"
+    },
+    "VWAPTrendContinuationV1": {
+      "configs/research-vwap.json": "feb6913e504c35fa5a1f77a923e6d765c8a8a4e36e7a3d6780595869edb79bf7",
+      "user_data/strategies/PlaybookRiskV1.py": "56b857d3fca788dfd64a92cb664597db8c128237112c1d24d4b7006d2e8798be",
+      "user_data/strategies/VWAPTrendContinuationV1.py": "6cdab5bce2ff9e77f8ad436fd81750370986c442bdb12a4fa40677d8ee14d1c3"
+    }
+  },
+  "window": "20260730-20261030"
+}

@@ -1,0 +1,58 @@
+{
+  "version": "session-2-v1",
+  "status": "INSPECTED DEVELOPMENT DATA / UNQUALIFIED",
+  "exchange": "gate",
+  "pairs": [
+    "BTC/USDT:USDT",
+    "ETH/USDT:USDT",
+    "SOL/USDT:USDT"
+  ],
+  "download_timerange": "20260726-20261030",
+  "evaluation_timerange": "20260730-20261030",
+  "timeframes": [
+    "15m",
+    "1h"
+  ],
+  "candle_types": [
+    "futures",
+    "mark",
+    "funding_rate"
+  ],
+  "fee_per_side": 0.0006,
+  "fee_status": "conservative research assumption, not verified account tier",
+  "universe_selection": "BTC, ETH, SOL selected by name as large familiar currently listed contracts before observing results; survivorship/point-in-time eligibility not reconstructed",
+  "optimization": "NONE; no alternative window planned",
+  "funding": "native actual observations required; missing funding blocks complete-economics claim",
+  "warmup_bars": {
+    "baseline": 200,
+    "challengers": 240
+  },
+  "wallet": 1000,
+  "stake": 25,
+  "leverage": 1,
+  "max_positions": 2,
+  "friction_bps_per_side": [
+    0,
+    5,
+    10,
+    20
+  ],
+  "strategies": [
+    "TrendPullbackBaselineV1",
+    "VWAPTrendContinuationV1",
+    "LiquiditySweepReversalV1"
+  ],
+  "data_directory": "user_data/data/session-2/gate",
+  "sample_identity": "All 12 reacquired files byte-identical to Session1: 1201184 bytes",
+  "freeze_rule": "No outcome-dependent threshold changes. Software bug fixes logged and rerun all affected outputs.",
+  "sizing_cost_allowance": {
+    "fee_round_trip": 0.0012,
+    "extra_friction_round_trip": 0.002,
+    "adverse_funding": 0.0003
+  },
+  "entry_model": "Signal-close limit price; 5minute paper timeout; candle backtest fill timing model-limited",
+  "exits": "Frozen structure stop plus native custom ROI2x initial price-risk,8h/4h hold request,2bar cooldown",
+  "outcome_status_rule": "Under30 trades INSUFFICIENT EVIDENCE; nonpositive larger samples REJECTED under evaluated assumptions; positive larger samples UNQUALIFIED DEVELOPMENT RESULT",
+  "regime_labels": "Only strategy hourly EMA/ADX filters; no hindsight calendar regimes or optimization",
+  "future_reservation": "Observations after2026-10-31 not acquired/evaluated in this session; Session3 separately authorized"
+}

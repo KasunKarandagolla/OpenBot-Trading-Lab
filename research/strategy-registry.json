@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "active_paper_strategy": "TrendPullbackBaselineV1",
+  "strategies": {
+    "TrendPullbackBaselineV1": {
+      "config": "configs/research.json",
+      "sources": [
+        "user_data/strategies/TrendPullbackBaselineV1.py",
+        "configs/research.json"
+      ],
+      "card": "research/strategy-cards/TrendPullbackBaselineV1.md",
+      "paper_approved": true
+    },
+    "VWAPTrendContinuationV1": {
+      "config": "configs/research-vwap.json",
+      "sources": [
+        "user_data/strategies/VWAPTrendContinuationV1.py",
+        "configs/research-vwap.json",
+        "user_data/strategies/PlaybookRiskV1.py"
+      ],
+      "card": "research/strategy-cards/VWAPTrendContinuationV1.md",
+      "paper_approved": false
+    },
+    "LiquiditySweepReversalV1": {
+      "config": "configs/research-sweep.json",
+      "sources": [
+        "user_data/strategies/LiquiditySweepReversalV1.py",
+        "configs/research-sweep.json",
+        "user_data/strategies/PlaybookRiskV1.py"
+      ],
+      "card": "research/strategy-cards/LiquiditySweepReversalV1.md",
+      "paper_approved": false
+    }
+  }
+}

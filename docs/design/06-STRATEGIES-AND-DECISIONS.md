@@ -1,5 +1,7 @@
 # 06 — Strategies, Decision Rules and Research-to-Paper Promotion
 
+> **Session2 owner scope correction (2026-10-31):** The current authorized session adds two independently testable research challengers (VWAP continuation and causal prior-range sweep reversal) alongside the preserved baseline, with actual native backtests and after-cost comparison. This supersedes earlier one-challenger and synthetic-only restrictions below. Only one explicitly owner-selected paper strategy remains allowed; neither new strategy is promoted. See [Session2 protocol](../../research/session-2-protocol.json), [cards](../../research/strategy-cards/) and [actual evidence](../../evidence/session-2/manifest.md). Four sessions remained at the start of Session2 by owner accounting; no subsequent session or merge is authorized.
+
 ## Why one strategy first?
 
 We need to identify **which mechanism**, if any, adds value. Running VWAP, ICT, profiles, trends and order-flow as an opaque ensemble would make failures impossible to diagnose. Start with a reproducible benchmark and **at most one challenger**.
