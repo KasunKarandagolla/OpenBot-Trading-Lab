@@ -1,0 +1,4045 @@
+{
+  "classification": "INSPECTED_DEVELOPMENT",
+  "policies": [
+    {
+      "strategy": "AuditNearestObjectiveM0V1",
+      "trades": 4,
+      "net": 0.34576844000000007,
+      "side": {
+        "long": {
+          "trades": 1,
+          "net": -0.2978626
+        },
+        "short": {
+          "trades": 3,
+          "net": 0.64363104
+        }
+      },
+      "extra_bps_per_side": {
+        "0": 0.34576844000000007,
+        "1.5": 0.31950951950000006,
+        "5": 0.25823870500000007,
+        "10": 0.17070897000000004,
+        "20": -0.004350499999999979
+      },
+      "net_without_top3": -0.2978626,
+      "descriptive_iid_bootstrap_net_95": [
+        -0.6618445999999999,
+        1.2577568000000001
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 4,
+        "gross": "0.45253",
+        "fees": "0.105035682",
+        "native_funding": "-0.0017258831999999997",
+        "native_net": "0.34576844",
+        "max_residual": "3.1999999997E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "native": "-0.0017258831999999997",
+          "minimum": "-0.00172588320",
+          "maximum": "-0.00172588320",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-15T16:00:00+00:00",
+              "minimum": "-0.00172588320",
+              "maximum": "-0.00172588320",
+              "ambiguous": false
+            }
+          ]
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 0.2978626,
+      "native_closed_equity_drawdown_fraction": 0.00029767100969836673,
+      "average_initial_notional": 22.005599999999998,
+      "time_weighted_initial_notional": 0.06997638081395349,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    },
+    {
+      "strategy": "AuditRankingSweepV1",
+      "trades": 39,
+      "net": 1.23875564,
+      "side": {
+        "long": {
+          "trades": 20,
+          "net": 0.55886989
+        },
+        "short": {
+          "trades": 19,
+          "net": 0.6798857500000001
+        }
+      },
+      "extra_bps_per_side": {
+        "0": 1.23875564,
+        "1.5": 0.9729314029999999,
+        "5": 0.35267485,
+        "10": -0.53340594,
+        "20": -2.30556752
+      },
+      "net_without_top3": -0.3484399999999997,
+      "descriptive_iid_bootstrap_net_95": [
+        -1.947104256,
+        4.413999856249999
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 39,
+        "gross": "2.306240",
+        "fees": "1.0632969480",
+        "native_funding": "-0.00418742235799999945",
+        "native_net": "1.23875564",
+        "max_residual": "5E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-07 12:45:00+00:00",
+          "native": "0.00039120672",
+          "minimum": "0.00039120672",
+          "maximum": "0.00039120672",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-07T16:00:00+00:00",
+              "minimum": "0.00039120672",
+              "maximum": "0.00039120672",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-08 04:15:00+00:00",
+          "native": "0.001907145",
+          "minimum": "0.001907145",
+          "maximum": "0.001907145",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-08T08:00:00+00:00",
+              "minimum": "0.001907145",
+              "maximum": "0.001907145",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 17:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 18:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-08-25 02:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-25 14:00:00+00:00",
+          "native": "-0.0003515022",
+          "minimum": "-0.00035150220",
+          "maximum": "-0.00035150220",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-25T16:00:00+00:00",
+              "minimum": "-0.00035150220",
+              "maximum": "-0.00035150220",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-26 15:15:00+00:00",
+          "native": "0.0007862160000000001",
+          "minimum": "0.000786216",
+          "maximum": "0.000786216",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-26T16:00:00+00:00",
+              "minimum": "0.000786216",
+              "maximum": "0.000786216",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-28 16:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-04 09:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-05 17:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-09 15:30:00+00:00",
+          "native": "-0.0009064880000000001",
+          "minimum": "-0.000906488",
+          "maximum": "-0.000906488",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-09T16:00:00+00:00",
+              "minimum": "-0.000906488",
+              "maximum": "-0.000906488",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "native": "0.0007830784799999999",
+          "minimum": "0.00078307848",
+          "maximum": "0.00078307848",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-11T16:00:00+00:00",
+              "minimum": "0.00078307848",
+              "maximum": "0.00078307848",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-11 22:15:00+00:00",
+          "native": "-0.00061123005",
+          "minimum": "-0.00061123005",
+          "maximum": "-0.00061123005",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-12T00:00:00+00:00",
+              "minimum": "-0.00061123005",
+              "maximum": "-0.00061123005",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "native": "-0.0017258831999999997",
+          "minimum": "-0.00172588320",
+          "maximum": "-0.00172588320",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-15T16:00:00+00:00",
+              "minimum": "-0.00172588320",
+              "maximum": "-0.00172588320",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-16 18:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-18 03:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-21 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-23 16:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-25 14:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-26 21:00:00+00:00",
+          "native": "-0.0019296224",
+          "minimum": "-0.00192962240",
+          "maximum": "-0.00192962240",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-27T00:00:00+00:00",
+              "minimum": "-0.00192962240",
+              "maximum": "-0.00192962240",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-28 05:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-28 09:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-28 15:00:00+00:00",
+          "native": "-0.001275229908",
+          "minimum": "-0.001275229908",
+          "maximum": "-0.001275229908",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-28T16:00:00+00:00",
+              "minimum": "-0.001275229908",
+              "maximum": "-0.001275229908",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-28 15:00:00+00:00",
+          "native": "0.00031079359999999995",
+          "minimum": "0.00031079360",
+          "maximum": "0.00031079360",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-28T16:00:00+00:00",
+              "minimum": "0.00031079360",
+              "maximum": "0.00031079360",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-29 01:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-29 01:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-29 14:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "native": "0.00241008",
+          "minimum": "0.002410080",
+          "maximum": "0.002410080",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-02T16:00:00+00:00",
+              "minimum": "0.002410080",
+              "maximum": "0.002410080",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-09 14:15:00+00:00",
+          "native": "-0.0011939616",
+          "minimum": "-0.00119396160",
+          "maximum": "-0.00119396160",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-09T16:00:00+00:00",
+              "minimum": "-0.00119396160",
+              "maximum": "-0.00119396160",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-15 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-16 15:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-20 14:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-23 14:30:00+00:00",
+          "native": "-0.0015709499999999998",
+          "minimum": "-0.001570950",
+          "maximum": "-0.001570950",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-23T16:00:00+00:00",
+              "minimum": "-0.001570950",
+              "maximum": "-0.001570950",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-25 23:45:00+00:00",
+          "native": "-0.0012110747999999998",
+          "minimum": "-0.0012110748",
+          "maximum": "-0.0012110748",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-26T00:00:00+00:00",
+              "minimum": "-0.0012110748",
+              "maximum": "-0.0012110748",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-27 13:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 1.3014718699999999,
+      "native_closed_equity_drawdown_fraction": 0.0013002887967510576,
+      "average_initial_notional": 22.721103846153845,
+      "time_weighted_initial_notional": 1.0038546390503875,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    },
+    {
+      "strategy": "AuditRankingVWAPV1",
+      "trades": 21,
+      "net": 1.2762685000000005,
+      "side": {
+        "long": {
+          "trades": 10,
+          "net": 2.0686817
+        },
+        "short": {
+          "trades": 11,
+          "net": -0.7924131999999999
+        }
+      },
+      "extra_bps_per_side": {
+        "0": 1.2762685000000005,
+        "1.5": 1.1308779955000006,
+        "5": 0.7916334850000004,
+        "10": 0.30699847000000047,
+        "20": -0.6622715599999995
+      },
+      "net_without_top3": -0.3008812499999998,
+      "descriptive_iid_bootstrap_net_95": [
+        -1.4469266099999996,
+        4.09536293925
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 21,
+        "gross": "1.860310",
+        "fees": "0.5815620180",
+        "native_funding": "-0.00247948727400000033",
+        "native_net": "1.27626850",
+        "max_residual": "4.42999999995E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-20 06:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-20 06:30:00+00:00",
+          "native": "-0.0017232000000000003",
+          "minimum": "-0.0017232",
+          "maximum": "0.000000",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-20T08:00:00+00:00",
+              "minimum": "-0.0017232",
+              "maximum": "-0.000000",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "native": "-0.0011393970000000001",
+          "minimum": "-0.001139397",
+          "maximum": "-0.001139397",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-20T16:00:00+00:00",
+              "minimum": "-0.001139397",
+              "maximum": "-0.001139397",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-08-27 14:30:00+00:00",
+          "native": "-0.000312996099",
+          "minimum": "-0.000312996099",
+          "maximum": "-0.000312996099",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-27T16:00:00+00:00",
+              "minimum": "-0.000312996099",
+              "maximum": "-0.000312996099",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-02 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-08 11:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-10 07:30:00+00:00",
+          "native": "0.00024302400000000002",
+          "minimum": "0.000243024",
+          "maximum": "0.000243024",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-10T08:00:00+00:00",
+              "minimum": "0.000243024",
+              "maximum": "0.000243024",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-16 19:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-17 12:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-19 02:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-21 08:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-25 08:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-08 04:45:00+00:00",
+          "native": "-0.00030031442999999995",
+          "minimum": "-0.00030031443",
+          "maximum": "-0.00030031443",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-08T08:00:00+00:00",
+              "minimum": "-0.00030031443",
+              "maximum": "-0.00030031443",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-10-08 15:15:00+00:00",
+          "native": "0.000753396255",
+          "minimum": "0E-8",
+          "maximum": "0.000753396255",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-08T16:00:00+00:00",
+              "minimum": "0E-8",
+              "maximum": "0.000753396255",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-13 11:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-15 03:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-15 03:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-15 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-26 08:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 1.0165602000000002,
+      "native_closed_equity_drawdown_fraction": 0.0010142347334944652,
+      "average_initial_notional": 23.01025285714286,
+      "time_weighted_initial_notional": 0.6899871875000001,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    },
+    {
+      "strategy": "AuditRegimeOnlyM0V1",
+      "trades": 17,
+      "net": 0.6652537700000002,
+      "side": {
+        "long": {
+          "trades": 12,
+          "net": 0.21455096000000004
+        },
+        "short": {
+          "trades": 5,
+          "net": 0.45070281
+        }
+      },
+      "extra_bps_per_side": {
+        "0": 0.6652537700000002,
+        "1.5": 0.5437903265000001,
+        "5": 0.26037562500000017,
+        "10": -0.14450251999999986,
+        "20": -0.9542588099999999
+      },
+      "net_without_top3": -0.7891800700000001,
+      "descriptive_iid_bootstrap_net_95": [
+        -1.79965487125,
+        3.18396199125
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 17,
+        "gross": "1.152610",
+        "fees": "0.4858537740",
+        "native_funding": "-0.0015024679499999998",
+        "native_net": "0.66525377",
+        "max_residual": "3.95E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "native": "-0.0011393970000000001",
+          "minimum": "-0.001139397",
+          "maximum": "-0.001139397",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-20T16:00:00+00:00",
+              "minimum": "-0.001139397",
+              "maximum": "-0.001139397",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-25 14:00:00+00:00",
+          "native": "-0.0003515022",
+          "minimum": "-0.00035150220",
+          "maximum": "-0.00035150220",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-25T16:00:00+00:00",
+              "minimum": "-0.00035150220",
+              "maximum": "-0.00035150220",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-28 16:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-31 00:00:00+00:00",
+          "native": "0.000344568",
+          "minimum": "0E-11",
+          "maximum": "0.000344568000",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-31T00:00:00+00:00",
+              "minimum": "0E-11",
+              "maximum": "0.000344568000",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-31 00:00:00+00:00",
+          "native": "0.0004397004",
+          "minimum": "0E-10",
+          "maximum": "0.00043970040",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-31T00:00:00+00:00",
+              "minimum": "0E-10",
+              "maximum": "0.00043970040",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "native": "-0.0017258831999999997",
+          "minimum": "-0.00172588320",
+          "maximum": "-0.00172588320",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-15T16:00:00+00:00",
+              "minimum": "-0.00172588320",
+              "maximum": "-0.00172588320",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-15 18:45:00+00:00",
+          "native": "0.00093004605",
+          "minimum": "0.00093004605",
+          "maximum": "0.00093004605",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-16T00:00:00+00:00",
+              "minimum": "0.00093004605",
+              "maximum": "0.00093004605",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-28 02:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-02 19:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-29 21:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-29 21:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 0.72673544,
+      "native_closed_equity_drawdown_fraction": 0.000726193937456144,
+      "average_initial_notional": 23.816692352941175,
+      "time_weighted_initial_notional": 0.5566611276647286,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    },
+    {
+      "strategy": "AuditRegimeSweepV1",
+      "trades": 64,
+      "net": -1.1582486200000002,
+      "side": {
+        "long": {
+          "trades": 40,
+          "net": -2.50133917
+        },
+        "short": {
+          "trades": 24,
+          "net": 1.3430905499999999
+        }
+      },
+      "extra_bps_per_side": {
+        "0": -1.1582486200000002,
+        "1.5": -1.6118290510000002,
+        "5": -2.67018339,
+        "10": -4.18211816,
+        "20": -7.2059877000000006
+      },
+      "net_without_top3": -2.707066750000001,
+      "descriptive_iid_bootstrap_net_95": [
+        -4.79020273025,
+        2.581293729999997
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 64,
+        "gross": "0.661300",
+        "fees": "1.8143217240",
+        "native_funding": "-0.00522691377999999921",
+        "native_net": "-1.15824862",
+        "max_residual": "5E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-07 12:45:00+00:00",
+          "native": "0.00039120672",
+          "minimum": "0.00039120672",
+          "maximum": "0.00039120672",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-07T16:00:00+00:00",
+              "minimum": "0.00039120672",
+              "maximum": "0.00039120672",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-08 04:15:00+00:00",
+          "native": "0.001907145",
+          "minimum": "0.001907145",
+          "maximum": "0.001907145",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-08T08:00:00+00:00",
+              "minimum": "0.001907145",
+              "maximum": "0.001907145",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 18:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-08-25 02:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-25 12:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-25 14:00:00+00:00",
+          "native": "-0.0003515022",
+          "minimum": "-0.00035150220",
+          "maximum": "-0.00035150220",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-25T16:00:00+00:00",
+              "minimum": "-0.00035150220",
+              "maximum": "-0.00035150220",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-25 20:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-28 02:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-28 03:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-28 04:15:00+00:00",
+          "native": "0.00026943839999999996",
+          "minimum": "0.000269438400",
+          "maximum": "0.000269438400",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-28T08:00:00+00:00",
+              "minimum": "0.000269438400",
+              "maximum": "0.000269438400",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-28 16:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-30 18:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-30 22:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-30 21:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-31 00:00:00+00:00",
+          "native": "0.0004397004",
+          "minimum": "0E-10",
+          "maximum": "0.00043970040",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-31T00:00:00+00:00",
+              "minimum": "0E-10",
+              "maximum": "0.00043970040",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-31 00:00:00+00:00",
+          "native": "0.000344568",
+          "minimum": "0E-11",
+          "maximum": "0.000344568000",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-31T00:00:00+00:00",
+              "minimum": "0E-11",
+              "maximum": "0.000344568000",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-01 13:15:00+00:00",
+          "native": "-0.0024813",
+          "minimum": "-0.0024813000",
+          "maximum": "-0.0024813000",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-01T16:00:00+00:00",
+              "minimum": "-0.0024813000",
+              "maximum": "-0.0024813000",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-03 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-03 16:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-05 13:45:00+00:00",
+          "native": "0.00245196",
+          "minimum": "0.0024519600",
+          "maximum": "0.0024519600",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-05T16:00:00+00:00",
+              "minimum": "0.0024519600",
+              "maximum": "0.0024519600",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-05 17:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-07 13:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-09 15:30:00+00:00",
+          "native": "-0.0009064880000000001",
+          "minimum": "-0.000906488",
+          "maximum": "-0.000906488",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-09T16:00:00+00:00",
+              "minimum": "-0.000906488",
+              "maximum": "-0.000906488",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "native": "0.0007830784799999999",
+          "minimum": "0.00078307848",
+          "maximum": "0.00078307848",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-11T16:00:00+00:00",
+              "minimum": "0.00078307848",
+              "maximum": "0.00078307848",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "native": "-0.0017258831999999997",
+          "minimum": "-0.00172588320",
+          "maximum": "-0.00172588320",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-15T16:00:00+00:00",
+              "minimum": "-0.00172588320",
+              "maximum": "-0.00172588320",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "native": "0.0012511800000000002",
+          "minimum": "0.00125118",
+          "maximum": "0.00125118",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-15T16:00:00+00:00",
+              "minimum": "0.00125118",
+              "maximum": "0.00125118",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-24 16:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-25 14:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-26 21:00:00+00:00",
+          "native": "-0.0019296224",
+          "minimum": "-0.00192962240",
+          "maximum": "-0.00192962240",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-27T00:00:00+00:00",
+              "minimum": "-0.00192962240",
+              "maximum": "-0.00192962240",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-26 21:00:00+00:00",
+          "native": "-0.0017349773999999999",
+          "minimum": "-0.001734977400",
+          "maximum": "-0.001734977400",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-27T00:00:00+00:00",
+              "minimum": "-0.001734977400",
+              "maximum": "-0.001734977400",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-28 02:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-28 02:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-28 03:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-28 05:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-28 05:45:00+00:00",
+          "native": "0.00007135722",
+          "minimum": "0.00007135722",
+          "maximum": "0.00007135722",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-28T08:00:00+00:00",
+              "minimum": "0.00007135722",
+              "maximum": "0.00007135722",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-28 09:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-28 15:00:00+00:00",
+          "native": "0.00009492",
+          "minimum": "0.000094920",
+          "maximum": "0.000094920",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-28T16:00:00+00:00",
+              "minimum": "0.000094920",
+              "maximum": "0.000094920",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-29 01:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-29 01:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-29 14:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-30 13:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-30 15:30:00+00:00",
+          "native": "-0.0009300720000000001",
+          "minimum": "-0.000930072",
+          "maximum": "-0.000930072",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-30T16:00:00+00:00",
+              "minimum": "-0.000930072",
+              "maximum": "-0.000930072",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "native": "0.00241008",
+          "minimum": "0.002410080",
+          "maximum": "0.002410080",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-02T16:00:00+00:00",
+              "minimum": "0.002410080",
+              "maximum": "0.002410080",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-02 19:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-09 14:15:00+00:00",
+          "native": "-0.0011939616",
+          "minimum": "-0.00119396160",
+          "maximum": "-0.00119396160",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-09T16:00:00+00:00",
+              "minimum": "-0.00119396160",
+              "maximum": "-0.00119396160",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-12 02:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-12 12:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-14 13:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-16 15:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-16 15:30:00+00:00",
+          "native": "-0.00044868779999999997",
+          "minimum": "-0.000448687800",
+          "maximum": "-0.000448687800",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-16T16:00:00+00:00",
+              "minimum": "-0.000448687800",
+              "maximum": "-0.000448687800",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-19 14:15:00+00:00",
+          "native": "-0.0008630369999999999",
+          "minimum": "-0.00086303700",
+          "maximum": "-0.00086303700",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-19T16:00:00+00:00",
+              "minimum": "-0.00086303700",
+              "maximum": "-0.00086303700",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-19 14:15:00+00:00",
+          "native": "-0.0002939916",
+          "minimum": "-0.000293991600",
+          "maximum": "-0.000293991600",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-19T16:00:00+00:00",
+              "minimum": "-0.000293991600",
+              "maximum": "-0.000293991600",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-20 14:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-21 09:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-23 14:30:00+00:00",
+          "native": "-0.0015709499999999998",
+          "minimum": "-0.001570950",
+          "maximum": "-0.001570950",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-23T16:00:00+00:00",
+              "minimum": "-0.001570950",
+              "maximum": "-0.001570950",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-25 23:45:00+00:00",
+          "native": "-0.0012110747999999998",
+          "minimum": "-0.0012110748",
+          "maximum": "-0.0012110748",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-26T00:00:00+00:00",
+              "minimum": "-0.0012110748",
+              "maximum": "-0.0012110748",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-27 13:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-29 16:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-29 16:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-29 21:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-29 21:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 2.9829201399999996,
+      "native_closed_equity_drawdown_fraction": 0.002982515917708782,
+      "average_initial_notional": 23.6501515625,
+      "time_weighted_initial_notional": 1.7188211300872094,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    },
+    {
+      "strategy": "AuditRegimeVWAPV1",
+      "trades": 25,
+      "net": 0.14723870000000008,
+      "side": {
+        "long": {
+          "trades": 9,
+          "net": 1.35951818
+        },
+        "short": {
+          "trades": 16,
+          "net": -1.21227948
+        }
+      },
+      "extra_bps_per_side": {
+        "0": 0.14723870000000008,
+        "1.5": -0.02912959749999991,
+        "5": -0.440655625,
+        "10": -1.02854995,
+        "20": -2.2043386000000003
+      },
+      "net_without_top3": -1.2959194499999998,
+      "descriptive_iid_bootstrap_net_95": [
+        -2.5808495107500002,
+        3.1400179112499997
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 25,
+        "gross": "0.852870",
+        "fees": "0.7054731900",
+        "native_funding": "-0.00015811262500000013",
+        "native_net": "0.14723870",
+        "max_residual": "4.42999999995E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-11 15:45:00+00:00",
+          "native": "0.0010783325000000002",
+          "minimum": "0.00107833250",
+          "maximum": "0.00107833250",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-11T16:00:00+00:00",
+              "minimum": "0.00107833250",
+              "maximum": "0.00107833250",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-20 06:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-20 06:30:00+00:00",
+          "native": "-0.0017232000000000003",
+          "minimum": "-0.0017232",
+          "maximum": "0.000000",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-20T08:00:00+00:00",
+              "minimum": "-0.0017232",
+              "maximum": "-0.000000",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "native": "-0.0011393970000000001",
+          "minimum": "-0.001139397",
+          "maximum": "-0.001139397",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-20T16:00:00+00:00",
+              "minimum": "-0.001139397",
+              "maximum": "-0.001139397",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-26 05:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-02 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-02 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-04 09:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-06 09:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-10 07:30:00+00:00",
+          "native": "0.00024302400000000002",
+          "minimum": "0.000243024",
+          "maximum": "0.000243024",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-10T08:00:00+00:00",
+              "minimum": "0.000243024",
+              "maximum": "0.000243024",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-15 18:45:00+00:00",
+          "native": "0.00093004605",
+          "minimum": "0.00093004605",
+          "maximum": "0.00093004605",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-16T00:00:00+00:00",
+              "minimum": "0.00093004605",
+              "maximum": "0.00093004605",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-16 19:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-19 02:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-21 08:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-07 09:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-08 04:45:00+00:00",
+          "native": "-0.00030031442999999995",
+          "minimum": "-0.00030031443",
+          "maximum": "-0.00030031443",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-08T08:00:00+00:00",
+              "minimum": "-0.00030031443",
+              "maximum": "-0.00030031443",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-10-08 15:15:00+00:00",
+          "native": "0.000753396255",
+          "minimum": "0E-8",
+          "maximum": "0.000753396255",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-08T16:00:00+00:00",
+              "minimum": "0E-8",
+              "maximum": "0.000753396255",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-09 13:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-13 11:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-15 03:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-15 03:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-15 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-26 08:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 1.2971788599999998,
+      "native_closed_equity_drawdown_fraction": 0.0012969012942021729,
+      "average_initial_notional": 23.468337599999998,
+      "time_weighted_initial_notional": 0.768758367248062,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    },
+    {
+      "strategy": "AuditStructuralCloseM0V1",
+      "trades": 9,
+      "net": 2.15583721,
+      "side": {
+        "long": {
+          "trades": 5,
+          "net": 0.55538388
+        },
+        "short": {
+          "trades": 4,
+          "net": 1.60045333
+        }
+      },
+      "extra_bps_per_side": {
+        "0": 2.15583721,
+        "1.5": 2.0932574170000002,
+        "5": 1.9472379,
+        "10": 1.73863859,
+        "20": 1.3214399700000001
+      },
+      "net_without_top3": 0.2757062800000001,
+      "descriptive_iid_bootstrap_net_95": [
+        -0.2510723587499999,
+        4.346127688
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 9,
+        "gross": "2.406180",
+        "fees": "0.2503191720",
+        "native_funding": "-0.0000236239199999999",
+        "native_net": "2.15583721",
+        "max_residual": "3.5200000001E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "native": "-0.0011393970000000001",
+          "minimum": "-0.001139397",
+          "maximum": "-0.001139397",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-20T16:00:00+00:00",
+              "minimum": "-0.001139397",
+              "maximum": "-0.001139397",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-25 14:00:00+00:00",
+          "native": "-0.0003515022",
+          "minimum": "-0.00035150220",
+          "maximum": "-0.00035150220",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-25T16:00:00+00:00",
+              "minimum": "-0.00035150220",
+              "maximum": "-0.00035150220",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "native": "0.0007830784799999999",
+          "minimum": "0.00078307848",
+          "maximum": "0.00078307848",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-11T16:00:00+00:00",
+              "minimum": "0.00078307848",
+              "maximum": "0.00078307848",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "native": "-0.0017258831999999997",
+          "minimum": "-0.00172588320",
+          "maximum": "-0.00172588320",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-15T16:00:00+00:00",
+              "minimum": "-0.00172588320",
+              "maximum": "-0.00172588320",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "native": "0.00241008",
+          "minimum": "0.002410080",
+          "maximum": "0.002410080",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-02T16:00:00+00:00",
+              "minimum": "0.002410080",
+              "maximum": "0.002410080",
+              "ambiguous": false
+            }
+          ]
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 0.4916912,
+      "native_closed_equity_drawdown_fraction": 0.0004915334935233735,
+      "average_initial_notional": 23.233077777777776,
+      "time_weighted_initial_notional": 0.4273569282945736,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    },
+    {
+      "strategy": "LiquiditySweepReversalV1",
+      "trades": 86,
+      "net": -2.2593670800000005,
+      "side": {
+        "long": {
+          "trades": 51,
+          "net": -2.63933361
+        },
+        "short": {
+          "trades": 35,
+          "net": 0.37996653
+        }
+      },
+      "extra_bps_per_side": {
+        "0": -2.2593670800000005,
+        "1.5": -2.8644144765000004,
+        "5": -4.276191735000001,
+        "10": -6.293016390000001,
+        "20": -10.326665700000001
+      },
+      "net_without_top3": -3.8081852099999995,
+      "descriptive_iid_bootstrap_net_95": [
+        -6.386219495500001,
+        1.8688413757499973
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 86,
+        "gross": "0.166210",
+        "fees": "2.4201895860",
+        "native_funding": "-0.00538751273799999911",
+        "native_net": "-2.25936708",
+        "max_residual": "5E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-07 12:45:00+00:00",
+          "native": "0.00039120672",
+          "minimum": "0.00039120672",
+          "maximum": "0.00039120672",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-07T16:00:00+00:00",
+              "minimum": "0.00039120672",
+              "maximum": "0.00039120672",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-08 04:15:00+00:00",
+          "native": "0.001907145",
+          "minimum": "0.001907145",
+          "maximum": "0.001907145",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-08T08:00:00+00:00",
+              "minimum": "0.001907145",
+              "maximum": "0.001907145",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 17:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 18:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-08-25 02:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-25 12:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-25 14:00:00+00:00",
+          "native": "-0.0003515022",
+          "minimum": "-0.00035150220",
+          "maximum": "-0.00035150220",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-25T16:00:00+00:00",
+              "minimum": "-0.00035150220",
+              "maximum": "-0.00035150220",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-25 20:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-26 15:15:00+00:00",
+          "native": "0.0007862160000000001",
+          "minimum": "0.000786216",
+          "maximum": "0.000786216",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-26T16:00:00+00:00",
+              "minimum": "0.000786216",
+              "maximum": "0.000786216",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-28 02:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-28 03:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-28 04:15:00+00:00",
+          "native": "0.00026943839999999996",
+          "minimum": "0.000269438400",
+          "maximum": "0.000269438400",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-28T08:00:00+00:00",
+              "minimum": "0.000269438400",
+              "maximum": "0.000269438400",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-28 16:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-28 16:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-30 18:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-30 22:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-30 21:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-31 00:00:00+00:00",
+          "native": "0.0004397004",
+          "minimum": "0E-10",
+          "maximum": "0.00043970040",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-31T00:00:00+00:00",
+              "minimum": "0E-10",
+              "maximum": "0.00043970040",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-31 00:00:00+00:00",
+          "native": "0.000344568",
+          "minimum": "0E-11",
+          "maximum": "0.000344568000",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-31T00:00:00+00:00",
+              "minimum": "0E-11",
+              "maximum": "0.000344568000",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-01 13:15:00+00:00",
+          "native": "-0.0024813",
+          "minimum": "-0.0024813000",
+          "maximum": "-0.0024813000",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-01T16:00:00+00:00",
+              "minimum": "-0.0024813000",
+              "maximum": "-0.0024813000",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-02 02:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-02 09:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-03 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-03 16:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-04 09:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-05 13:45:00+00:00",
+          "native": "0.00245196",
+          "minimum": "0.0024519600",
+          "maximum": "0.0024519600",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-05T16:00:00+00:00",
+              "minimum": "0.0024519600",
+              "maximum": "0.0024519600",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-05 17:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-07 13:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-09 15:30:00+00:00",
+          "native": "-0.0009064880000000001",
+          "minimum": "-0.000906488",
+          "maximum": "-0.000906488",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-09T16:00:00+00:00",
+              "minimum": "-0.000906488",
+              "maximum": "-0.000906488",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "native": "0.0007830784799999999",
+          "minimum": "0.00078307848",
+          "maximum": "0.00078307848",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-11T16:00:00+00:00",
+              "minimum": "0.00078307848",
+              "maximum": "0.00078307848",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-11 22:15:00+00:00",
+          "native": "-0.00061123005",
+          "minimum": "-0.00061123005",
+          "maximum": "-0.00061123005",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-12T00:00:00+00:00",
+              "minimum": "-0.00061123005",
+              "maximum": "-0.00061123005",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "native": "-0.0017258831999999997",
+          "minimum": "-0.00172588320",
+          "maximum": "-0.00172588320",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-15T16:00:00+00:00",
+              "minimum": "-0.00172588320",
+              "maximum": "-0.00172588320",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "native": "0.0012511800000000002",
+          "minimum": "0.00125118",
+          "maximum": "0.00125118",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-15T16:00:00+00:00",
+              "minimum": "0.00125118",
+              "maximum": "0.00125118",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-15 19:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-16 18:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-18 03:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-18 14:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-21 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-21 01:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-23 16:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-23 16:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-24 09:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-24 16:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-25 14:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-25 20:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-25 23:00:00+00:00",
+          "native": "0.000939645",
+          "minimum": "0.000939645000",
+          "maximum": "0.000939645000",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-26T00:00:00+00:00",
+              "minimum": "0.000939645000",
+              "maximum": "0.000939645000",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-26 21:00:00+00:00",
+          "native": "-0.0019296224",
+          "minimum": "-0.00192962240",
+          "maximum": "-0.00192962240",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-27T00:00:00+00:00",
+              "minimum": "-0.00192962240",
+              "maximum": "-0.00192962240",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-26 21:00:00+00:00",
+          "native": "-0.0017349773999999999",
+          "minimum": "-0.001734977400",
+          "maximum": "-0.001734977400",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-27T00:00:00+00:00",
+              "minimum": "-0.001734977400",
+              "maximum": "-0.001734977400",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-28 02:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-28 02:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-28 03:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-28 05:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-28 05:45:00+00:00",
+          "native": "0.00007135722",
+          "minimum": "0.00007135722",
+          "maximum": "0.00007135722",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-28T08:00:00+00:00",
+              "minimum": "0.00007135722",
+              "maximum": "0.00007135722",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-28 09:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-28 15:00:00+00:00",
+          "native": "-0.001275229908",
+          "minimum": "-0.001275229908",
+          "maximum": "-0.001275229908",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-28T16:00:00+00:00",
+              "minimum": "-0.001275229908",
+              "maximum": "-0.001275229908",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-28 15:00:00+00:00",
+          "native": "0.00009492",
+          "minimum": "0.000094920",
+          "maximum": "0.000094920",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-28T16:00:00+00:00",
+              "minimum": "0.000094920",
+              "maximum": "0.000094920",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-29 01:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-29 01:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-29 14:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-30 13:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-30 15:30:00+00:00",
+          "native": "-0.0009300720000000001",
+          "minimum": "-0.000930072",
+          "maximum": "-0.000930072",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-30T16:00:00+00:00",
+              "minimum": "-0.000930072",
+              "maximum": "-0.000930072",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "native": "0.00241008",
+          "minimum": "0.002410080",
+          "maximum": "0.002410080",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-02T16:00:00+00:00",
+              "minimum": "0.002410080",
+              "maximum": "0.002410080",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-02 19:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-09 14:15:00+00:00",
+          "native": "-0.0011939616",
+          "minimum": "-0.00119396160",
+          "maximum": "-0.00119396160",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-09T16:00:00+00:00",
+              "minimum": "-0.00119396160",
+              "maximum": "-0.00119396160",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-12 02:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-12 12:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-14 13:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-15 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-16 15:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-16 15:30:00+00:00",
+          "native": "-0.00044868779999999997",
+          "minimum": "-0.000448687800",
+          "maximum": "-0.000448687800",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-16T16:00:00+00:00",
+              "minimum": "-0.000448687800",
+              "maximum": "-0.000448687800",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-19 14:15:00+00:00",
+          "native": "-0.0008630369999999999",
+          "minimum": "-0.00086303700",
+          "maximum": "-0.00086303700",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-19T16:00:00+00:00",
+              "minimum": "-0.00086303700",
+              "maximum": "-0.00086303700",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-19 14:15:00+00:00",
+          "native": "-0.0002939916",
+          "minimum": "-0.000293991600",
+          "maximum": "-0.000293991600",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-19T16:00:00+00:00",
+              "minimum": "-0.000293991600",
+              "maximum": "-0.000293991600",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-20 14:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-21 09:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-23 14:30:00+00:00",
+          "native": "-0.0015709499999999998",
+          "minimum": "-0.001570950",
+          "maximum": "-0.001570950",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-23T16:00:00+00:00",
+              "minimum": "-0.001570950",
+              "maximum": "-0.001570950",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-25 23:45:00+00:00",
+          "native": "-0.0012110747999999998",
+          "minimum": "-0.0012110748",
+          "maximum": "-0.0012110748",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-26T00:00:00+00:00",
+              "minimum": "-0.0012110748",
+              "maximum": "-0.0012110748",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-27 13:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-28 02:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-29 16:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-29 16:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-29 21:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-29 21:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 3.917488759999999,
+      "native_closed_equity_drawdown_fraction": 0.003916972792293556,
+      "average_initial_notional": 23.466218953488365,
+      "time_weighted_initial_notional": 2.190828019622093,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    },
+    {
+      "strategy": "RouterOnlyV1",
+      "trades": 9,
+      "net": 1.0894565200000002,
+      "side": {
+        "long": {
+          "trades": 5,
+          "net": 0.55538388
+        },
+        "short": {
+          "trades": 4,
+          "net": 0.53407264
+        }
+      },
+      "extra_bps_per_side": {
+        "0": 1.0894565200000002,
+        "1.5": 1.0267173445000002,
+        "5": 0.8803259350000001,
+        "10": 0.6711953500000002,
+        "20": 0.25293418000000023
+      },
+      "net_without_top3": -0.36497732,
+      "descriptive_iid_bootstrap_net_95": [
+        -1.0607707199999998,
+        3.196462201999999
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 9,
+        "gross": "1.343630",
+        "fees": "0.2509567020",
+        "native_funding": "-0.0032167823999999998",
+        "native_net": "1.08945652",
+        "max_residual": "3.1999999997E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "native": "-0.0011393970000000001",
+          "minimum": "-0.001139397",
+          "maximum": "-0.001139397",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-20T16:00:00+00:00",
+              "minimum": "-0.001139397",
+              "maximum": "-0.001139397",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-25 14:00:00+00:00",
+          "native": "-0.0003515022",
+          "minimum": "-0.00035150220",
+          "maximum": "-0.00035150220",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-25T16:00:00+00:00",
+              "minimum": "-0.00035150220",
+              "maximum": "-0.00035150220",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "native": "-0.0017258831999999997",
+          "minimum": "-0.00172588320",
+          "maximum": "-0.00172588320",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-15T16:00:00+00:00",
+              "minimum": "-0.00172588320",
+              "maximum": "-0.00172588320",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 0.4916912,
+      "native_closed_equity_drawdown_fraction": 0.0004915334935233735,
+      "average_initial_notional": 23.233077777777776,
+      "time_weighted_initial_notional": 0.31610234980620155,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    },
+    {
+      "strategy": "VWAPTrendContinuationV1",
+      "trades": 30,
+      "net": 0.95970847,
+      "side": {
+        "long": {
+          "trades": 12,
+          "net": 2.13338962
+        },
+        "short": {
+          "trades": 18,
+          "net": -1.17368115
+        }
+      },
+      "extra_bps_per_side": {
+        "0": 0.95970847,
+        "1.5": 0.7505664805000001,
+        "5": 0.26256850500000006,
+        "10": -0.4345714599999999,
+        "20": -1.8288513899999999
+      },
+      "net_without_top3": -0.6174412799999995,
+      "descriptive_iid_bootstrap_net_95": [
+        -2.0253055625,
+        4.043184141249999
+      ],
+      "bootstrap_warning": "Descriptive IID trade resampling ignores serial/cross-market dependence and selection; not a qualification test",
+      "friction_warning": "Turnover overlay keeps modeled fills; 1.5bp/side is current public taker fee sensitivity, not historical fee verification",
+      "internal_accounting": {
+        "count": 30,
+        "gross": "1.796010",
+        "fees": "0.8365679580",
+        "native_funding": "0.00026641847599999987",
+        "native_net": "0.95970847",
+        "max_residual": "4.42999999995E-9",
+        "internal_accounting": "PASS"
+      },
+      "source_funding_outside_bounds": 0,
+      "source_funding": [
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-06 16:15:00+00:00",
+          "native": "0.0007375272",
+          "minimum": "0.00073752720",
+          "maximum": "0.00073752720",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-07T00:00:00+00:00",
+              "minimum": "0.00073752720",
+              "maximum": "0.00073752720",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-11 15:45:00+00:00",
+          "native": "0.0010783325000000002",
+          "minimum": "0.00107833250",
+          "maximum": "0.00107833250",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-11T16:00:00+00:00",
+              "minimum": "0.00107833250",
+              "maximum": "0.00107833250",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-20 06:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-08-20 06:30:00+00:00",
+          "native": "-0.0017232000000000003",
+          "minimum": "-0.0017232",
+          "maximum": "0.000000",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-20T08:00:00+00:00",
+              "minimum": "-0.0017232",
+              "maximum": "-0.000000",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "native": "-0.0011393970000000001",
+          "minimum": "-0.001139397",
+          "maximum": "-0.001139397",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-20T16:00:00+00:00",
+              "minimum": "-0.001139397",
+              "maximum": "-0.001139397",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-08-26 05:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-08-27 14:30:00+00:00",
+          "native": "-0.000312996099",
+          "minimum": "-0.000312996099",
+          "maximum": "-0.000312996099",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-08-27T16:00:00+00:00",
+              "minimum": "-0.000312996099",
+              "maximum": "-0.000312996099",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-02 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-02 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-09-04 09:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-06 09:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-08 11:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-10 07:30:00+00:00",
+          "native": "0.00024302400000000002",
+          "minimum": "0.000243024",
+          "maximum": "0.000243024",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-10T08:00:00+00:00",
+              "minimum": "0.000243024",
+              "maximum": "0.000243024",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-15 18:45:00+00:00",
+          "native": "0.00093004605",
+          "minimum": "0.00093004605",
+          "maximum": "0.00093004605",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-09-16T00:00:00+00:00",
+              "minimum": "0.00093004605",
+              "maximum": "0.00093004605",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-09-16 19:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-09-17 12:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-19 02:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-09-21 08:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-09-25 08:30:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-07 09:00:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-08 04:45:00+00:00",
+          "native": "-0.00030031442999999995",
+          "minimum": "-0.00030031443",
+          "maximum": "-0.00030031443",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-08T08:00:00+00:00",
+              "minimum": "-0.00030031443",
+              "maximum": "-0.00030031443",
+              "ambiguous": false
+            }
+          ]
+        },
+        {
+          "pair": "BTC/USDT:USDT",
+          "open_date": "2026-10-08 15:15:00+00:00",
+          "native": "0.000753396255",
+          "minimum": "0E-8",
+          "maximum": "0.000753396255",
+          "outside": false,
+          "events": [
+            {
+              "at": "2026-10-08T16:00:00+00:00",
+              "minimum": "0E-8",
+              "maximum": "0.000753396255",
+              "ambiguous": true
+            }
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-09 13:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-13 11:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "open_date": "2026-10-15 03:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "open_date": "2026-10-15 03:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "open_date": "2026-10-15 12:45:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        },
+        {
+          "pair": "DOGE/USDT:USDT",
+          "open_date": "2026-10-26 08:15:00+00:00",
+          "native": "0",
+          "minimum": "0",
+          "maximum": "0",
+          "outside": false,
+          "events": []
+        }
+      ],
+      "native_closed_equity_drawdown_usdt": 1.2569350000000001,
+      "native_closed_equity_drawdown_fraction": 0.0012541549855409314,
+      "average_initial_notional": 23.185617,
+      "time_weighted_initial_notional": 1.0361859035852714,
+      "capital_limit": "<=25 USDT initial notional/position, 1x, <=2 positions; no leveraged fill claim",
+      "drawdown_limit": "Native closed-trade equity drawdown, not a full intraday account MTM audit",
+      "economic_qualification": "BLOCKED_NO_INDEPENDENT_HOLDOUT"
+    }
+  ],
+  "matched_exit_comparison": [
+    {
+      "pair": "ETH/USDT:USDT",
+      "open_timestamp": 1787213700000,
+      "short": false,
+      "old_net": 0.32084584,
+      "new_net": 0.32084584,
+      "delta": 0.0,
+      "old_exit": "max_hold_8h",
+      "new_exit": "max_hold_8h"
+    },
+    {
+      "pair": "DOGE/USDT:USDT",
+      "open_timestamp": 1787420700000,
+      "short": false,
+      "old_net": -0.4916912,
+      "new_net": -0.4916912,
+      "delta": 0.0,
+      "old_exit": "stop_loss",
+      "new_exit": "stop_loss"
+    },
+    {
+      "pair": "SOL/USDT:USDT",
+      "open_timestamp": 1787446800000,
+      "short": true,
+      "old_net": 0.3971352,
+      "new_net": 0.3971352,
+      "delta": 0.0,
+      "old_exit": "roi",
+      "new_exit": "roi"
+    },
+    {
+      "pair": "SOL/USDT:USDT",
+      "open_timestamp": 1787619600000,
+      "short": true,
+      "old_net": 0.2317432,
+      "new_net": 0.05964,
+      "delta": -0.1721032,
+      "old_exit": "closed_hour_thesis_invalidated",
+      "new_exit": "max_hold_4h"
+    },
+    {
+      "pair": "XRP/USDT:USDT",
+      "open_timestamp": 1787666400000,
+      "short": false,
+      "old_net": 0.28763904,
+      "new_net": 0.28763904,
+      "delta": 0.0,
+      "old_exit": "max_hold_4h",
+      "new_exit": "max_hold_4h"
+    },
+    {
+      "pair": "ETH/USDT:USDT",
+      "open_timestamp": 1789136100000,
+      "short": true,
+      "old_net": 0.01475264,
+      "new_net": 0.63285589,
+      "delta": 0.61810325,
+      "old_exit": "closed_hour_thesis_invalidated",
+      "new_exit": "max_hold_4h"
+    },
+    {
+      "pair": "XRP/USDT:USDT",
+      "open_timestamp": 1789484400000,
+      "short": false,
+      "old_net": -0.2978626,
+      "new_net": -0.2978626,
+      "delta": 0.0,
+      "old_exit": "stop_loss",
+      "new_exit": "stop_loss"
+    },
+    {
+      "pair": "XRP/USDT:USDT",
+      "open_timestamp": 1790066700000,
+      "short": false,
+      "old_net": 0.7364528,
+      "new_net": 0.7364528,
+      "delta": 0.0,
+      "old_exit": "roi",
+      "new_exit": "roi"
+    },
+    {
+      "pair": "XRP/USDT:USDT",
+      "open_timestamp": 1790945100000,
+      "short": true,
+      "old_net": -0.1095584,
+      "new_net": 0.51082224,
+      "delta": 0.62038064,
+      "old_exit": "closed_hour_thesis_invalidated",
+      "new_exit": "max_hold_4h"
+    }
+  ],
+  "exit_delta": 1.06638069,
+  "generalization": "UNPROVEN; policies are related tests on already inspected source history",
+  "holdout": "2026-11-17/2026-12-01 reserved, not observed; no automatic collection",
+  "no_combined_portfolio_pnl": true
+}

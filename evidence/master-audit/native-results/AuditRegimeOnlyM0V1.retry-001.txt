@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/lab/scripts/master_native.py", line 99, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/lab/scripts/master_native.py", line 88, in main
+    destination.mkdir(parents=True)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/pathlib/__init__.py", line 1011, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '/lab/work/master-backtests/AuditRegimeOnlyM0V1'

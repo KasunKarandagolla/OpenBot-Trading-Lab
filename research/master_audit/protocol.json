@@ -1,0 +1,104 @@
+{
+  "version": "master-audit-v1",
+  "base_sha": "91ced4b32315793ddd08e52c80f572b39d76d700",
+  "registered_at_utc": "2026-10-31T19:12:29.246405+00:00",
+  "scope": "RESEARCH_ONLY_READ_ONLY_PUBLIC_DATA",
+  "panel": [
+    "BTC",
+    "ETH",
+    "SOL",
+    "XRP",
+    "DOGE",
+    "BNB",
+    "ADA",
+    "AVAX",
+    "LINK",
+    "DOT",
+    "LTC",
+    "BCH",
+    "TRX",
+    "TON",
+    "SUI",
+    "APT",
+    "ARB",
+    "OP",
+    "NEAR",
+    "ATOM",
+    "FIL",
+    "ETC",
+    "WIF",
+    "PEPE"
+  ],
+  "panel_claim": "Predeclared source-availability panel across familiar large, platform, infrastructure and meme contracts; NOT point-in-time exchange membership or unbiased market-cap strata. Never replace unavailable symbols.",
+  "historical_samples": [
+    "2026-07-26",
+    "2026-10-29"
+  ],
+  "required_sources": [
+    "15m",
+    "1h",
+    "5m",
+    "mark",
+    "funding"
+  ],
+  "gate_execution_reference": true,
+  "binance_offline_only": true,
+  "limits": {
+    "workers": 4,
+    "timeout_seconds": 15,
+    "request_max_bytes": 2000000,
+    "total_max_bytes": 100000000,
+    "websocket_seconds": 20,
+    "max_requests": 300,
+    "no_retry_flood": true
+  },
+  "hypotheses": {
+    "selection": "Signed suitability vs absolute deviation is unproven; inspect rejected controls without claiming causal portfolio improvement.",
+    "exit": "Opposite structural direction plus ADX may predate a sweep entry and exit without a new invalidation. Compare unchanged original with frozen-level close invalidation only.",
+    "target": "Prior known objectives may offer less net room than fixed 2R; compare annotation first, conservative objective admission separately. No posthoc best level.",
+    "partial": "M1 funding appears inconsistent; test actual pinned native update lifecycle before any repair or economics."
+  },
+  "ablations": [
+    "original_vwap",
+    "original_sweep",
+    "router_only_M0",
+    "ranking_only",
+    "regime_only",
+    "old_exit_vs_frozen_structural_close",
+    "fixed_2R_vs_nearest_known_objective",
+    "M0_vs_M1_disabled_until_funding_reconciles"
+  ],
+  "known_development": "2026-08-05/2026-10-30; nine trades already inspected, NEVER a holdout",
+  "new_holdout": {
+    "start_utc": "2026-11-17T00:00:00Z",
+    "end_utc": "2026-12-01T00:00:00Z",
+    "status": "FUTURE_RESERVED_NOT_OBSERVED",
+    "no_automatic_collection": true,
+    "does_not_reuse_existing_reservations": true
+  },
+  "statistics": {
+    "unit": "trade; dependence and small N disclosed",
+    "bootstrap_seed": 4101,
+    "bootstrap_draws": 10000,
+    "no_threshold_search": true,
+    "report_top3_removal": true
+  },
+  "economics_requires": [
+    "complete_venue_specific_candles_mark_funding",
+    "verified_asof_eligibility",
+    "independent_period",
+    "native_execution",
+    "reconciled_lifecycle",
+    "cost_stress"
+  ],
+  "operational_promotion": false,
+  "prohibitions": [
+    "orders",
+    "private_api",
+    "credentials",
+    "paid_resources",
+    "persistent_paper",
+    "merge",
+    "venue_switch"
+  ]
+}
