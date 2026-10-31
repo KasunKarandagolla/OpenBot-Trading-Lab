@@ -1,5 +1,7 @@
 # 12 — Five-Session Maximum: Deliverables, Stop Gates and Budget Discipline
 
+> **Session 1 scope correction (2026-10-31):** The owner's authorized functional-foundation request supersedes the former synthetic-only qualification milestone and extra approval wording below. Session 1 now builds official Freqtrade/FreqUI, permissible real public futures data, native-first scanning, a versioned baseline and an executed historical backtest. No live/testnet orders, trading keys, spend, autonomous policy edits or agent admin bridge. Actual results and gaps: [Session 1 evidence](../../evidence/session-1/manifest.md). Session 2 adds trading intelligence; Session 3 economic validation; Session 4 restricted OpenBot research; Session 5 integrated persistent paper workflow. Each later session still requires its own authorization.
+
 ## Non-negotiable planning rule
 
 We have **at most five Codex sessions left by conversation accounting**, not five sessions that must be consumed. OpenBot/model usage may have separate limits. Sessions are authorized *one at a time*. No Codex or OpenBot sessions were spent writing this document pack.
@@ -8,11 +10,11 @@ We have **at most five Codex sessions left by conversation accounting**, not fiv
 
 | Session | Objective | Deliverable you can open/run | Pass criterion | Stop/hold condition |
 |---|---|---|---|---|
-| **1: Tool qualification** | Install/pin Freqtrade/FreqUI; run synthetic strategy/indicator and isolated OpenBot report read | Runnable local lab, short demo recording/log, compatibility report, zero-key sandbox test | Start/stop, UI, synthetic backtest, read-only analysis and isolation demonstrated | Paid dependency, agent reaches admin/config, tool incompatibility → BLOCK, don't spend session 2 |
-| **2: Mechanism & lawful data** | Freeze one simple baseline and economic test contract; source/license clearance | One strategy card, cost model, permitted-source manifest, backtest or explicit DATA_BLOCKED report | Exact rule/code hash, testable dataset and complete signal ledger; no lookahead | No lawful data or implausible geometry → HOLD, no further engine build |
-| **3: Independent economics** | Chronological evaluation, stress and baseline controls | One transparent GO/NO-GO/INSUFFICIENT report, full reproduction commands | Evidence supports *continued paper evaluation*, not profit guarantee | Uneconomic/underpowered → stop sessions 4–5 |
-| **4: Agent workflow** | Director + Researcher + Reviewer over read-only exports, no privileged actions | Scheduled explainable report and incident alerts from actual paper/synthetic ledger | Agents produce cited reports; cannot mutate trader | Agent sandbox/host permission failure → manual reporting only, pause automation |
-| **5: Paper MVP** | Deploy approved fixed strategy in Freqtrade dry-run, FreqUI and owner manual | Startup/stop/backup/restore demo, incident drills, no-key dry-run monitoring | End-to-end reproducible simulated lifecycle, modest local resource use | No valid economics/data/rights or broken state recovery → defer; do not claim success |
+| **1: Functional foundation** | Pin official Freqtrade/FreqUI; lawful public data, native scanner, frozen baseline | Runnable real-data lab, actual trade/report exports and focused PR | S1-01–S1-10 evidence; no fabricated results | Exact component blockers recorded; complete remaining useful work |
+| **2: Trading intelligence** | Add substantial causal context/analysis and controlled candidate research | Versioned tested features and hypothesis cards | Mechanically specified, timestamp-safe inputs and rules | No strategy zoo or tuning of inspected holdout |
+| **3: Economic validation** | Genuine independent chronological evaluation, controls and friction stress | GO/NO-GO/INSUFFICIENT report | Adequate after-cost independent evidence | Uneconomic/underpowered: stop promotion |
+| **4: Restricted OpenBot research** | Read-only exports, cited explanations and tested isolation | Agent workflow without trading-admin reachability | Cannot mutate engine/strategies/risk | Isolation failure: manual reports only |
+| **5: Integrated persistent paper workflow** | Approved fixed simulation, UI, backups and incident drills | Beginner-operable persistent paper application | Host startup/recovery/stop and downtime behavior verified | No 24/7 or real-fill promise without evidence |
 
 Sessions 2/3 may remain blocked for data/legal reasons. In that case **do not consume sessions 4/5 pretending the strategy is validated**. A synthetic-only lab may be demonstrated, but must be advertised as such.
 

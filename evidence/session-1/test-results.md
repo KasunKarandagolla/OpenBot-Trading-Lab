@@ -1,0 +1,11 @@
+# Actual test results — 2026-10-31 UTC
+
+**25 tests PASS, 0 failures/errors, 0 skips** in the pinned official image. Command: `LAB_EXEC_CONTAINER=openbot-s1-runner ./scripts/lab.sh test`; final run took approximately 1.06 seconds. Full named output: `unit-test-output.txt`.
+
+Coverage: installed version/config; pre-engine live/key/environment/CLI alias/unsafe sizing refusal; loopback publication/digest; perpetual versus spot/inverse eligibility; deterministic bounded/empty scan and unknown quote/spread/age behavior; TradFi/delisting exclusion; ordered/gapped/duplicated/nonfinite/nonpositive/bad OHLCV; incomplete candles, warm-up/alignment/UTC and native funding schema including negative rates; long/short/no-setup, frozen risk/exits, append-future prefix invariance and deterministic replay; actual data provenance, parsed native ledger, both directions, actual <=25 stake/1x and zero-trade report handling.
+
+`./scripts/lab.sh lookahead`: **PASS diagnostic — 40 signals, 0 biased entries, 0 biased exits, no biased indicators detected**, exit 0, native runtime 53 seconds. `lookahead-analysis.csv` and command log retain evidence. This samples early signals and is not a proof of all possible leakage or economic validity. Native diagnostic intentionally increases simulated wallet/stake, disables protections and changes fill checks; it remains offline and is separate from the 1,000-wallet performance result. Slice funding-end warnings are expected for sparse 8h events; full-sample coverage is checked independently.
+
+Actual acquisition/validation, native scan/backtest, report export, supported UI authentication/history/results, paper safe startup and explicit stop are separately recorded. Data acquired twice produced byte-identical sealed files. Synthetic fixtures test mechanics only; all reported performance comes from actual Gate history.
+
+**NOT EXECUTED / NOT CLAIMED PASS:** independent holdout/economic controls; owner graphical UI/Windows/WSL2 installation; agent sandbox/OpenBot bridge; daily-loss halt; exact aggregate monetary-risk invariants; live/testnet execution; realistic liquidation/order-book fills; multi-day forward paper; SQLite restart/restore with open positions. These remain known gaps or later-session work.

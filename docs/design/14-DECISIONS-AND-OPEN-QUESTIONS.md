@@ -1,6 +1,8 @@
 # 14 — Architectural Decision Register and Owner Decisions
 
-## Status: draft, not implementation approval
+> **Session 1 scope correction (2026-10-31):** The owner's authorized functional-foundation request supersedes the former synthetic-only qualification milestone and extra approval wording below. Session 1 now builds official Freqtrade/FreqUI, permissible real public futures data, native-first scanning, a versioned baseline and an executed historical backtest. No live/testnet orders, trading keys, spend, autonomous policy edits or agent admin bridge. Actual results and gaps: [Session 1 evidence](../../evidence/session-1/manifest.md). Session 2 adds trading intelligence; Session 3 economic validation; Session 4 restricted OpenBot research; Session 5 integrated persistent paper workflow. Each later session still requires its own authorization.
+
+## Status: provisional register; Session 1 specifically authorized
 
 | ID | Proposal | Why | Status | Trigger to revisit |
 |---|---|---|---|---|
@@ -50,6 +52,6 @@ The earlier AstraBot charter expected all ten analysis families, an independent 
 - **Unseen test insufficient?** Declare INSUFFICIENT and preserve budget; do not invent confidence.
 - **All gates pass?** Owner may authorize *next* paper-only session; never automatic live trading.
 
-## Required owner signoffs before Session 1
+## Current authorization and remaining owner decisions
 
-A one-line decision can approve only: **“Approve isolated, synthetic, credential-free OpenBot+Freqtrade Session 1 on my specified host; no paid services, archive download, key creation, live or testnet trading.”** This does not approve the rest of the roadmap.
+The owner explicitly authorized one functional Session 1 implementation/PR, including permissible real public data and a baseline backtest. The previous synthetic-only signoff text is superseded. Personal/noncommercial Gate public REST was selected after a practical source review; no commercial or jurisdiction-wide permission is asserted. Cloud host is known; owner-host OS, eligibility, persistent operation and browser rendering still need verification. Paper controls actually enforced and unsupported monetary-risk/daily-halt ceilings are stated in the strategy card. OpenBot integration is Session 4. No further session, merge or live access is authorized.
