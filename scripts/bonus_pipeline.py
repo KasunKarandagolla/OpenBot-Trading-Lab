@@ -10,11 +10,11 @@ import numpy as np
 from bonus_common import *
 from bonus_data import verify,frame
 sys.path[:0]=[str(ROOT/'research/bonus'),str(ROOT/'research/session3'),str(ROOT/'user_data/strategies')]
-from OpportunityRouterV1 import RouterOnlyV1,RouterSMCV1,RouterICTV1,RouterProfileV1,IntegratedM0V1,IntegratedM1V1
+from OpportunityRouterV1 import RouterOnlyV1,RouterSMCV1,RouterICTV1,RouterProfileV1,IntegratedM0V1,IntegratedM1V1,RouterOnlyM1V1
 from freqtrade.strategy import merge_informative_pair
 from freqtrade.enums import CandleType
 
-CLASSES=[RouterOnlyV1,RouterSMCV1,RouterICTV1,RouterProfileV1,IntegratedM0V1,IntegratedM1V1]
+CLASSES=[RouterOnlyV1,RouterSMCV1,RouterICTV1,RouterProfileV1,IntegratedM0V1,IntegratedM1V1,RouterOnlyM1V1]
 
 
 def ranking(bases):
@@ -89,9 +89,9 @@ def candidates():
                         'regime':'TREND' if r.adx_1h>=25 else 'BALANCE',
                         'reference':r.close,'plan':r.bonus_plan}
                 records.append(record)
-                if cls is IntegratedM0V1 and r.bonus_reason=='TRADE' and len(examples)<12:
+                if r.bonus_reason=='TRADE' and len(examples)<24:
                     g=json.loads(r.bonus_plan);at=r.date+pd.Timedelta(minutes=15)
-                    examples.append({'decision_id':symbol+'|'+at.isoformat(),'symbol':symbol,'decision':'TRADE',
+                    examples.append({'decision_id':cls.__name__+'|'+symbol+'|'+at.isoformat(),'variant':cls.__name__,'symbol':symbol,'decision':'TRADE',
                                      'decision_at':at.isoformat(),'asof':at.isoformat(),'expires':(at+pd.Timedelta(minutes=5)).isoformat(),
                                      'recipe_version':'bonus-recipes-v1','plan':g,
                                      'opposing_evidence':[k.upper()+'_NOT_CONFIRMED' for k in ('smc','ict','profile') if not r[k+'_ok']],

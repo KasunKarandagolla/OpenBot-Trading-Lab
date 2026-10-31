@@ -159,8 +159,8 @@ def analyze():
                                           'rejected':int((c.decision=='REJECT').sum()),'native_filled_trades':len(trades),
                                           'plan_fill_difference_interpretation':'capacity, ongoing position, callbacks, expiry and native fills; not all differences are unfilled orders'}
         variants[name]=stats;all_ledgers[name]=rows
-    m0={(r['pair'],r['side'],r['open_date']):r for r in all_ledgers['IntegratedM0V1']}
-    m1={(r['pair'],r['side'],r['open_date']):r for r in all_ledgers['IntegratedM1V1']}
+    m0={(r['pair'],r['side'],r['open_date']):r for r in all_ledgers['RouterOnlyV1']}
+    m1={(r['pair'],r['side'],r['open_date']):r for r in all_ledgers['RouterOnlyM1V1']}
     matched=[]
     for key in sorted(m0.keys()&m1.keys()):
         a=m0[key];b=m1[key];delta=b['net_usdt']-a['net_usdt']
@@ -169,7 +169,8 @@ def analyze():
                         'reduced_loss':a['net_usdt']<0 and delta>1e-8,'saved_profit':a['net_usdt']>0 and delta>1e-8,
                         'reduced_winner':a['net_usdt']>0 and delta< -1e-8,
                         'earlier_harmful_exit':b['hold_minutes']<a['hold_minutes'] and delta< -1e-8})
-    management={'matched':len(matched),'M0_unmatched':len(m0.keys()-m1.keys()),'M1_unmatched':len(m1.keys()-m0.keys()),
+    management={'parent':'RouterOnlyV1','challenger':'RouterOnlyM1V1','reason':'Frozen integrated policy abstained; separately registered available-opportunity management experiment',
+                'matched':len(matched),'M0_unmatched':len(m0.keys()-m1.keys()),'M1_unmatched':len(m1.keys()-m0.keys()),
                 'matched_delta_usdt':sum(r['delta'] for r in matched),
                 'reduced_losses':sum(r['reduced_loss'] for r in matched),'saved_profit':sum(r['saved_profit'] for r in matched),
                 'reduced_winners':sum(r['reduced_winner'] for r in matched),'earlier_harmful_exits':sum(r['earlier_harmful_exit'] for r in matched),

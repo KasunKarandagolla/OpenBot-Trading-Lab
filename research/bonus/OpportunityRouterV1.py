@@ -198,3 +198,4 @@ class RouterICTV1(OpportunityRouterV1):variant='ict'
 class RouterProfileV1(OpportunityRouterV1):variant='profile'
 class IntegratedM0V1(OpportunityRouterV1):variant='integrated'
 class IntegratedM1V1(IntegratedM0V1):position_adjustment_enable=True
+class RouterOnlyM1V1(RouterOnlyV1):position_adjustment_enable=True

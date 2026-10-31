@@ -12,11 +12,14 @@ PROTOCOL = ROOT / 'research/bonus/protocol.json'
 
 
 def spec():
-    return read(PROTOCOL)
+    obj=read(PROTOCOL)
+    supplement=ROOT/'research/bonus/management-supplement.json'
+    if supplement.exists():obj['variants']+=read(supplement)['additional_variants']
+    return obj
 
 
 def source_paths():
-    return (list((ROOT/'research/bonus').glob('*.py')) + [PROTOCOL]
+    return (list((ROOT/'research/bonus').glob('*.py')) + list((ROOT/'research/bonus').glob('*.json'))
             + list((ROOT/'scripts').glob('bonus*.py')))
 
 
@@ -39,6 +42,9 @@ def stage():
     paths += list((ROOT/'research/session3').glob('*.py'))
     paths += list((ROOT/'research/bonus').glob('*.py'))
     STAGE.mkdir(parents=True, exist_ok=True)
+    # Clear native-generated executable caches outside the source-hash registry.
+    cache=STAGE/'__pycache__'
+    if cache.exists():shutil.rmtree(cache)
     expected = {p.name: p for p in paths}
     if len(expected) != len(paths):
         raise ValueError('duplicate strategy module')
@@ -60,7 +66,7 @@ def config(name):
     cfg = prior_config('s3-development-v1', 'VWAPTrendContinuationV1')
     cfg.update(strategy=name, strategy_path=str(STAGE), lab_audit=False)
     cfg['exchange']['pair_whitelist'] = spec()['pairs']
-    cfg['position_adjustment_enable'] = name == 'IntegratedM1V1'
+    cfg['position_adjustment_enable'] = name in ('IntegratedM1V1','RouterOnlyM1V1')
     cfg['bonus_schedule'] = str(OUT/'schedule.json')
     cfg['bonus_protocol'] = str(PROTOCOL)
     return cfg
