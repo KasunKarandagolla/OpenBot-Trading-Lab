@@ -28,3 +28,7 @@ bash -n scripts/lab.sh => exit 0
 python3 -m py_compile scripts/*.py user_data/strategies/*.py tests/*.py => exit 0
 original Session1 tree/config/strategy/protocol diff => empty
 current freeze SHA256 and design manifest checks => exit 0
+
+Git push dedicated Session2 branch => exit 0
+GitHub create pull request => OPEN PR2, stacked base Session1; no merge
+docker stop openbot-s2-runner; docker rm openbot-s2-runner => exit 0; source bind mounts retained

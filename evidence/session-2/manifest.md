@@ -31,7 +31,7 @@ Wallet 1,000, configured stake cap 25, 1x, max 2, native protections, fee 0.06% 
 | S2-09 | EXECUTED / TESTED | Common fees/funding plus separate 5/10/20bp extra friction |
 | S2-10 | EXECUTED / TESTED with sample limits | Append-future tests and native no-bias17/20 signals; thin VWAP sample |
 | S2-11 | EXECUTED / TESTED | research-all/compare/strategy-info; doctor/test/lookahead and retained-data refusal |
-| S2-12 | CODE IMPLEMENTED | Focused stacked PR submission; final link/receipt recorded after creation |
+| S2-12 | EXECUTED | [Stacked PR #2](https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/pull/2) OPEN, no merge |
 
 The core trading-intelligence milestone is demonstrated. Extended paper risk qualification, independent economic validation, owner-host pending-order/partial-fill/restart/browser/uptime and OpenBot isolation remain unqualified or OWNER-HOST VERIFICATION REQUIRED. Challengers are research-only; original baseline paper selection unchanged. The daily halt is realized closed-trade UTC P&L <=-10 only, not full account mark-to-market loss. Stops/limits are simulated and unavailable while the process is offline.
 
@@ -47,3 +47,5 @@ The core trading-intelligence milestone is demonstrated. Extended paper risk qua
 Faults preserved: initial Cloud conflicting-proxy options; fixture constructor errors before outcomes; callback fallback fault hardening without parameter changes; native Pandas CSV-append export failure resolved with fresh derived files. No threshold search. First outcome/source snapshot remains commit `d7a609bdb564f5e1d7b69f10b5241d5ab571c2b1`.
 
 Reproduce: initialize runtime, pull pinned image, inspect strategy-info, acquire exact cohort only if absent/available, research-all, compare, research-lookahead, test. Preserve raw files and original manifests. If the rolling source window ages out, stop and declare a separately versioned cohort before any future rerun. Stop UI/paper before backups; rollback to Session 1 head while retaining DB/data/private config. No automatic merge or subsequent session.
+
+PR: https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/pull/2. Tested implementation commit29cfd9d0268c65bd4dba1005ba4179a087940edb; final metadata commit records this receipt. Runner stopped and removed after verification; bind-mounted source data and all evidence retained.
