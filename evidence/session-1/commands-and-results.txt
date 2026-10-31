@@ -1,0 +1,633 @@
+Session 1 actual execution, 2026-10-31 UTC
+Base SHA: 2343053ce68f6fff4525c5b67771ea445deb3779
+Branch: codex/session-1-functional-foundation
+Commands run from repository root. LAB_EXEC_CONTAINER reuses one official-image container on the disk-limited Cloud VFS; normal wrapper uses Compose run. Cloud-only CA/proxy overlay described in docs/operations/runbook.md. Exit codes below are observed command completions, not invented test statuses. Runtime/UI secrets and raw candles are excluded.
+
+## Pinned official image
+COMMAND: docker pull freqtradeorg/freqtrade:2026.10
+EXIT: 0
+Digest sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7; actual engine/Python/library versions in version-manifest.json.
+
+## Version / config / frozen policy
+COMMAND: LAB_EXEC_CONTAINER=openbot-s1-runner ./scripts/lab.sh doctor
+EXIT: 0
+Operating System:	Linux-6.18.57-x86_64-with-glibc2.41
+Python Version:		Python 3.14.10
+CCXT Version:		4.5.90
+
+Freqtrade Version:	freqtrade 2026.10
+PASS: four configurations safe; no exchange keys; frozen strategy/protocol hashes match.
+
+## Real public acquisition, complete operator wrapper
+COMMAND: LAB_EXEC_CONTAINER=openbot-s1-runner ./scripts/lab.sh download
+EXIT: 0
+Public contract identity verified for BTC/USDT:USDT, ETH/USDT:USDT, SOL/USDT:USDT
+2026-10-31 10:25:43,652 - freqtrade - INFO - freqtrade 2026.10
+2026-10-31 10:25:43,903 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-10-31 10:25:44,671 - freqtrade.configuration.load_config - INFO - Using config: /lab/configs/research.json ...
+2026-10-31 10:25:44,671 - freqtrade.configuration.load_config - INFO - Using config: /lab/user_data/runtime/cloud.json ...
+2026-10-31 10:25:44,672 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-10-31 10:25:44,673 - freqtrade.loggers - INFO - Logfile configured
+2026-10-31 10:25:44,673 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-10-31 10:25:44,673 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20260726-20261030 ...
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-10-31 10:25:44,676 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-10-31 10:25:44,676 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-10-31 10:25:44,677 - freqtrade.configuration.directory_operations - INFO - Created data directory: /lab/user_data/data/research/gate
+2026-10-31 10:25:44,677 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/research/gate ...
+2026-10-31 10:25:44,677 - freqtrade.configuration.configuration - INFO - timeframes --timeframes: ['15m', '1h']
+2026-10-31 10:25:44,677 - freqtrade.configuration.configuration - INFO - Detected --trading-mode: futures
+2026-10-31 10:25:44,677 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20260726-20261030
+2026-10-31 10:25:44,678 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-10-31 10:25:44,682 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-10-31 10:25:44,682 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-10-31 10:25:44,682 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-10-31 10:25:45,110 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-10-31 10:25:45,110 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-10-31 10:25:45,111 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'enableRateLimit': True, 'timeout': 30000, 'httpsProxy': 
+'http://proxy:8080', 'cafile': '/run/cloud-ca.pem', 'requests_trust_env': True, 'aiohttp_trust_env': True}
+2026-10-31 10:25:45,113 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'enableRateLimit': True, 'timeout': 30000, 'httpsProxy': 
+'http://proxy:8080', 'cafile': '/run/cloud-ca.pem', 'requests_trust_env': True, 'aiohttp_trust_env': True}
+2026-10-31 10:25:45,115 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-10-31 10:25:45,115 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-10-31 10:25:45,116 - freqtrade.exchange.exchange - INFO - Markets were not loaded. Loading them now..
+2026-10-31 10:26:29,643 - freqtrade.data.history.history_utils - INFO - About to download pairs: ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'SOL/USDT:USDT'], intervals: ['15m', '1h'] to 
+/lab/user_data/data/research/gate
+2026-10-31 10:26:29,659 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 15m, futures and store in /lab/user_data/data/research/gate. From 2026-07-26T00:00:00
+to 2026-10-30T00:00:00
+2026-10-31 10:26:31,601 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 15m, futures with length 9353.
+2026-10-31 10:26:31,630 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, futures and store in /lab/user_data/data/research/gate. From 2026-07-26T00:00:00 
+to 2026-10-30T00:00:00
+2026-10-31 10:26:33,411 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, futures with length 2338.
+2026-10-31 10:26:33,423 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, mark and store in /lab/user_data/data/research/gate. From 2026-07-26T00:00:00 to 
+2026-10-30T00:00:00
+2026-10-31 10:26:35,150 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, mark with length 2338.
+2026-10-31 10:26:35,153 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/research/gate. From 
+2026-07-26T00:00:00 to 2026-10-30T00:00:00
+2026-10-31 10:26:37,866 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, funding_rate with length 293.
+2026-10-31 10:26:37,869 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 15m, futures and store in /lab/user_data/data/research/gate. From 2026-07-26T00:00:00
+to 2026-10-30T00:00:00
+2026-10-31 10:26:39,771 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 15m, futures with length 9353.
+2026-10-31 10:26:39,780 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, futures and store in /lab/user_data/data/research/gate. From 2026-07-26T00:00:00 
+to 2026-10-30T00:00:00
+2026-10-31 10:26:41,183 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, futures with length 2338.
+2026-10-31 10:26:41,187 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, mark and store in /lab/user_data/data/research/gate. From 2026-07-26T00:00:00 to 
+2026-10-30T00:00:00
+2026-10-31 10:26:42,911 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, mark with length 2338.
+2026-10-31 10:26:42,915 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/research/gate. From 
+2026-07-26T00:00:00 to 2026-10-30T00:00:00
+2026-10-31 10:26:45,525 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, funding_rate with length 293.
+2026-10-31 10:26:45,528 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 15m, futures and store in /lab/user_data/data/research/gate. From 2026-07-26T00:00:00
+to 2026-10-30T00:00:00
+2026-10-31 10:26:47,440 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 15m, futures with length 9353.
+2026-10-31 10:26:47,449 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, futures and store in /lab/user_data/data/research/gate. From 2026-07-26T00:00:00 
+to 2026-10-30T00:00:00
+2026-10-31 10:26:49,141 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, futures with length 2338.
+2026-10-31 10:26:49,145 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, mark and store in /lab/user_data/data/research/gate. From 2026-07-26T00:00:00 to 
+2026-10-30T00:00:00
+2026-10-31 10:26:50,797 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, mark with length 2338.
+2026-10-31 10:26:50,800 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/research/gate. From 
+2026-07-26T00:00:00 to 2026-10-30T00:00:00
+2026-10-31 10:26:53,499 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, funding_rate with length 293.
+Timeframe                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4/4 100% • 0:00:08 • 0:00:00
+Downloading SOL/USDT:USDT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3/3 100% • 0:00:23 • 0:00:00
+Sealed native observations to predeclared range. No missing bars repaired.
+12 real data files, 1201184 bytes, valid_for_backtest=True
+user_data/data/research/gate/futures/BTC_USDT_USDT-15m-futures.feather 9216 2026-07-26T00:00:00+00:00 2026-10-29T23:45:00+00:00 []
+user_data/data/research/gate/futures/BTC_USDT_USDT-1h-funding_rate.feather 288 2026-07-26T00:00:00+00:00 2026-10-29T16:00:00+00:00 []
+user_data/data/research/gate/futures/BTC_USDT_USDT-1h-futures.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/BTC_USDT_USDT-1h-mark.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/ETH_USDT_USDT-15m-futures.feather 9216 2026-07-26T00:00:00+00:00 2026-10-29T23:45:00+00:00 []
+user_data/data/research/gate/futures/ETH_USDT_USDT-1h-funding_rate.feather 288 2026-07-26T00:00:00+00:00 2026-10-29T16:00:00+00:00 []
+user_data/data/research/gate/futures/ETH_USDT_USDT-1h-futures.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/ETH_USDT_USDT-1h-mark.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/SOL_USDT_USDT-15m-futures.feather 9216 2026-07-26T00:00:00+00:00 2026-10-29T23:45:00+00:00 []
+user_data/data/research/gate/futures/SOL_USDT_USDT-1h-funding_rate.feather 288 2026-07-26T00:00:00+00:00 2026-10-29T16:00:00+00:00 []
+user_data/data/research/gate/futures/SOL_USDT_USDT-1h-futures.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/SOL_USDT_USDT-1h-mark.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+
+## Independent repeat-acquisition comparison
+COMMAND: python: compare original and repeated sealed file SHA256 maps
+EXIT: 0
+All 12 sealed files byte-identical: true; see download-reproduction-comparison.json. Original sample restored before subsequent checks.
+
+## Sample validator
+COMMAND: LAB_EXEC_CONTAINER=openbot-s1-runner ./scripts/lab.sh validate
+EXIT: 0
+12 real data files, 1201184 bytes, valid_for_backtest=True
+user_data/data/research/gate/futures/BTC_USDT_USDT-15m-futures.feather 9216 2026-07-26T00:00:00+00:00 2026-10-29T23:45:00+00:00 []
+user_data/data/research/gate/futures/BTC_USDT_USDT-1h-funding_rate.feather 288 2026-07-26T00:00:00+00:00 2026-10-29T16:00:00+00:00 []
+user_data/data/research/gate/futures/BTC_USDT_USDT-1h-futures.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/BTC_USDT_USDT-1h-mark.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/ETH_USDT_USDT-15m-futures.feather 9216 2026-07-26T00:00:00+00:00 2026-10-29T23:45:00+00:00 []
+user_data/data/research/gate/futures/ETH_USDT_USDT-1h-funding_rate.feather 288 2026-07-26T00:00:00+00:00 2026-10-29T16:00:00+00:00 []
+user_data/data/research/gate/futures/ETH_USDT_USDT-1h-futures.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/ETH_USDT_USDT-1h-mark.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/SOL_USDT_USDT-15m-futures.feather 9216 2026-07-26T00:00:00+00:00 2026-10-29T23:45:00+00:00 []
+user_data/data/research/gate/futures/SOL_USDT_USDT-1h-funding_rate.feather 288 2026-07-26T00:00:00+00:00 2026-10-29T16:00:00+00:00 []
+user_data/data/research/gate/futures/SOL_USDT_USDT-1h-futures.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+user_data/data/research/gate/futures/SOL_USDT_USDT-1h-mark.feather 2304 2026-07-26T00:00:00+00:00 2026-10-29T23:00:00+00:00 []
+
+## Current native scanner plus bounded exporter
+COMMAND: LAB_EXEC_CONTAINER=openbot-s1-runner ./scripts/lab.sh scan
+EXIT: 0
+2026-10-31 10:23:18,312 - freqtrade - INFO - freqtrade 2026.10
+2026-10-31 10:23:18,543 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-10-31 10:23:19,669 - freqtrade.configuration.load_config - INFO - Using config: /lab/configs/scanner.json ...
+2026-10-31 10:23:19,670 - freqtrade.configuration.load_config - INFO - Using config: /lab/user_data/runtime/cloud.json ...
+2026-10-31 10:23:19,671 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-10-31 10:23:19,671 - freqtrade.loggers - INFO - Logfile configured
+2026-10-31 10:23:19,671 - freqtrade.loggers - INFO - Verbosity set to 0
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-10-31 10:23:19,674 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-10-31 10:23:19,674 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-10-31 10:23:19,674 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/gate ...
+2026-10-31 10:23:19,675 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-10-31 10:23:19,679 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-10-31 10:23:19,679 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-10-31 10:23:19,679 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-10-31 10:23:19,681 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-10-31 10:23:19,681 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-10-31 10:23:19,681 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'enableRateLimit': True, 'timeout': 30000, 'httpsProxy': 
+'http://proxy:8080', 'cafile': '/run/cloud-ca.pem', 'requests_trust_env': True, 'aiohttp_trust_env': True}
+2026-10-31 10:23:19,683 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'enableRateLimit': True, 'timeout': 30000, 'httpsProxy': 
+'http://proxy:8080', 'cafile': '/run/cloud-ca.pem', 'requests_trust_env': True, 'aiohttp_trust_env': True}
+2026-10-31 10:23:19,685 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-10-31 10:23:19,685 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-10-31 10:23:19,687 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist VolumePairList from '/freqtrade/freqtrade/plugins/pairlist/VolumePairList.py'...
+2026-10-31 10:23:19,698 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist SpreadFilter from '/freqtrade/freqtrade/plugins/pairlist/SpreadFilter.py'...
+2026-10-31 10:23:52,595 - freqtrade.exchange.exchange - INFO - Markets were not loaded. Loading them now..
+2026-10-31 10:24:36,922 - freqtrade.plugins.pairlistmanager - INFO - Whitelist with 43 pairs: ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'XAU/USDT:USDT', 'SOL/USDT:USDT', 'XAG/USDT:USDT', 'SOXL/USDT:USDT', 
+'SNDK/USDT:USDT', 'ZEC/USDT:USDT', 'DOGE/USDT:USDT', 'HYPE/USDT:USDT', 'INTC/USDT:USDT', 'PEPE/USDT:USDT', 'CL/USDT:USDT', 'XRP/USDT:USDT', 'QQQ/USDT:USDT', 'BNB/USDT:USDT', 'SKHYNIX/USDT:USDT', 
+'INTW/USDT:USDT', 'IDOL/USDT:USDT', 'BZ/USDT:USDT', 'LTC/USDT:USDT', 'SOXS/USDT:USDT', 'SPCX/USDT:USDT', 'MU/USDT:USDT', 'OPENAI/USDT:USDT', 'AKE/USDT:USDT', 'GOOGL/USDT:USDT', 'Q/USDT:USDT', 
+'NEAR/USDT:USDT', 'UNI/USDT:USDT', 'ENA/USDT:USDT', 'XAUT/USDT:USDT', 'AIN/USDT:USDT', 'MUU/USDT:USDT', 'ADA/USDT:USDT', 'BTW/USDT:USDT', 'XLM/USDT:USDT', 'MSTR/USDT:USDT', 'CRCL/USDT:USDT', 
+'SKHY/USDT:USDT', 'FIL/USDT:USDT', 'TRX/USDT:USDT', 'WLD/USDT:USDT']
+["BTC/USDT:USDT","ETH/USDT:USDT","XAU/USDT:USDT","SOL/USDT:USDT","XAG/USDT:USDT","SOXL/USDT:USDT","SNDK/USDT:USDT","ZEC/USDT:USDT","DOGE/USDT:USDT","HYPE/USDT:USDT","INTC/USDT:USDT","PEPE/USDT:USDT","CL/USDT:USDT","XRP/USDT:USDT","QQQ/USDT:USDT","BNB/USDT:USDT","SKHYNIX/USDT:USDT","INTW/USDT:USDT","IDOL/USDT:USDT","BZ/USDT:USDT","LTC/USDT:USDT","SOXS/USDT:USDT","SPCX/USDT:USDT","MU/USDT:USDT","OPENAI/USDT:USDT","AKE/USDT:USDT","GOOGL/USDT:USDT","Q/USDT:USDT","NEAR/USDT:USDT","UNI/USDT:USDT","ENA/USDT:USDT","XAUT/USDT:USDT","AIN/USDT:USDT","MUU/USDT:USDT","ADA/USDT:USDT","BTW/USDT:USDT","XLM/USDT:USDT","MSTR/USDT:USDT","CRCL/USDT:USDT","SKHY/USDT:USDT","FIL/USDT:USDT","TRX/USDT:USDT","WLD/USDT:USDT"]
+Public scan: 583 eligible contracts, 20 shortlisted; no trading engine started.
+BTC/USDT:USDT, ETH/USDT:USDT, SOL/USDT:USDT, ZEC/USDT:USDT, DOGE/USDT:USDT, HYPE/USDT:USDT, PEPE/USDT:USDT, XRP/USDT:USDT, BNB/USDT:USDT, IDOL/USDT:USDT, LTC/USDT:USDT, AKE/USDT:USDT, Q/USDT:USDT, NEAR/USDT:USDT, UNI/USDT:USDT, ENA/USDT:USDT, AIN/USDT:USDT, ADA/USDT:USDT, BTW/USDT:USDT, XLM/USDT:USDT
+
+## Actual futures performance run
+COMMAND: LAB_EXEC_CONTAINER=openbot-s1-runner ./scripts/lab.sh backtest
+EXIT: 0
+Research sample hashes verified.
+2026-10-31 10:20:32,650 - freqtrade - INFO - freqtrade 2026.10
+2026-10-31 10:20:32,832 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-10-31 10:20:34,023 - freqtrade.configuration.load_config - INFO - Using config: /lab/configs/research.json ...
+2026-10-31 10:20:34,024 - freqtrade.configuration.load_config - INFO - Using config: /lab/user_data/runtime/cloud.json ...
+2026-10-31 10:20:34,025 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-10-31 10:20:34,026 - freqtrade.loggers - INFO - Logfile configured
+2026-10-31 10:20:34,026 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-10-31 10:20:34,026 - freqtrade.configuration.configuration - INFO - Parameter --enable-protections detected, enabling Protections ...
+2026-10-31 10:20:34,026 - freqtrade.configuration.configuration - INFO - Using max_open_trades: 2 ...
+2026-10-31 10:20:34,027 - freqtrade.configuration.configuration - INFO - Parameter --fee detected, setting fee to: 0.0006 ...
+2026-10-31 10:20:34,027 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20260730-20261030 ...
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-10-31 10:20:34,029 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-10-31 10:20:34,030 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-10-31 10:20:34,030 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/research/gate ...
+2026-10-31 10:20:34,030 - freqtrade.configuration.configuration - INFO - Using /lab/user_data/backtest_results as backtest directory ...
+2026-10-31 10:20:34,030 - freqtrade.configuration.configuration - INFO - Parameter --export detected: trades ...
+2026-10-31 10:20:34,031 - freqtrade.configuration.configuration - INFO - Parameter --cache=none detected ...
+2026-10-31 10:20:34,031 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20260730-20261030
+2026-10-31 10:20:34,031 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-10-31 10:20:34,035 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-10-31 10:20:34,036 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-10-31 10:20:34,036 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-10-31 10:20:34,037 - freqtrade.commands.optimize_commands - INFO - Starting freqtrade in Backtesting mode
+2026-10-31 10:20:34,038 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-10-31 10:20:34,038 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-10-31 10:20:34,038 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'enableRateLimit': True, 'timeout': 30000, 'httpsProxy': 
+'http://proxy:8080', 'cafile': '/run/cloud-ca.pem', 'requests_trust_env': True, 'aiohttp_trust_env': True}
+2026-10-31 10:20:34,040 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'enableRateLimit': True, 'timeout': 30000, 'httpsProxy': 
+'http://proxy:8080', 'cafile': '/run/cloud-ca.pem', 'requests_trust_env': True, 'aiohttp_trust_env': True}
+2026-10-31 10:20:34,042 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-10-31 10:21:22,913 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-10-31 10:21:22,928 - freqtrade.resolvers.iresolver - INFO - Using resolved strategy TrendPullbackBaselineV1 from '/lab/user_data/strategies/TrendPullbackBaselineV1.py'...
+2026-10-31 10:21:22,928 - freqtrade.strategy.hyper - INFO - Found no parameter file.
+2026-10-31 10:21:22,929 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'timeframe' with value from the configuration: 15m.
+2026-10-31 10:21:22,929 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'order_types' with value from the configuration: {'entry': 'limit', 'exit': 'limit', 'stoploss': 'market', 
+'stoploss_on_exchange': False, 'emergency_exit': 'market'}.
+2026-10-31 10:21:22,929 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_currency' with value from the configuration: USDT.
+2026-10-31 10:21:22,929 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_amount' with value from the configuration: 25.
+2026-10-31 10:21:22,930 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'unfilledtimeout' with value from the configuration: {'entry': 5, 'exit': 5, 'exit_timeout_count': 0, 'unit':
+'minutes'}.
+2026-10-31 10:21:22,930 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'position_adjustment_enable' with value from the configuration: False.
+2026-10-31 10:21:22,930 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'max_open_trades' with value from the configuration: 2.
+2026-10-31 10:21:22,930 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using minimal_roi: {'0': 0.03}
+2026-10-31 10:21:22,930 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using timeframe: 15m
+2026-10-31 10:21:22,931 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stoploss: -0.02
+2026-10-31 10:21:22,931 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_stop: False
+2026-10-31 10:21:22,931 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_stop_positive_offset: 0.0
+2026-10-31 10:21:22,931 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_only_offset_is_reached: False
+2026-10-31 10:21:22,931 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using use_custom_stoploss: False
+2026-10-31 10:21:22,931 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using process_only_new_candles: True
+2026-10-31 10:21:22,931 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using order_types: {'entry': 'limit', 'exit': 'limit', 'stoploss': 'market', 'stoploss_on_exchange': False, 
+'emergency_exit': 'market'}
+2026-10-31 10:21:22,932 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using order_time_in_force: {'entry': 'GTC', 'exit': 'GTC'}
+2026-10-31 10:21:22,932 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stake_currency: USDT
+2026-10-31 10:21:22,932 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stake_amount: 25
+2026-10-31 10:21:22,932 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using startup_candle_count: 200
+2026-10-31 10:21:22,932 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using unfilledtimeout: {'entry': 5, 'exit': 5, 'exit_timeout_count': 0, 'unit': 'minutes'}
+2026-10-31 10:21:22,932 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using use_exit_signal: True
+2026-10-31 10:21:22,933 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using exit_profit_only: False
+2026-10-31 10:21:22,933 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using ignore_roi_if_entry_signal: False
+2026-10-31 10:21:22,933 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using exit_profit_offset: 0.0
+2026-10-31 10:21:22,933 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using disable_dataframe_checks: False
+2026-10-31 10:21:22,933 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using ignore_buying_expired_candle_after: 0
+2026-10-31 10:21:22,933 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using position_adjustment_enable: False
+2026-10-31 10:21:22,933 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using max_entry_position_adjustment: -1
+2026-10-31 10:21:22,934 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using max_open_trades: 2
+2026-10-31 10:21:22,934 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-10-31 10:21:22,937 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist StaticPairList from '/freqtrade/freqtrade/plugins/pairlist/StaticPairList.py'...
+2026-10-31 10:21:22,944 - freqtrade.optimize.backtesting - INFO - Using fee 0.0600% from config.
+2026-10-31 10:21:22,983 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT:USDT, futures, 15m, data ends at 2026-10-29 23:45:00
+2026-10-31 10:21:22,996 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, futures, 15m, data ends at 2026-10-29 23:45:00
+2026-10-31 10:21:23,006 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, futures, 15m, data ends at 2026-10-29 23:45:00
+2026-10-31 10:21:23,012 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-07-27 22:00:00 up to 2026-10-29 23:45:00 (94 days).
+2026-10-31 10:21:23,015 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT:USDT, funding_rate, 1h, data ends at 2026-10-29 16:00:00
+2026-10-31 10:21:23,019 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, funding_rate, 1h, data ends at 2026-10-29 16:00:00
+2026-10-31 10:21:23,024 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-29 16:00:00
+2026-10-31 10:21:23,028 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT:USDT, mark, 1h, data ends at 2026-10-29 23:00:00
+2026-10-31 10:21:23,035 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, mark, 1h, data ends at 2026-10-29 23:00:00
+2026-10-31 10:21:23,042 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, mark, 1h, data ends at 2026-10-29 23:00:00
+2026-10-31 10:21:23,182 - freqtrade.optimize.backtesting - INFO - Dataload complete. Calculating indicators
+2026-10-31 10:21:23,183 - freqtrade.optimize.backtesting - INFO - Running backtesting for Strategy TrendPullbackBaselineV1
+2026-10-31 10:21:23,191 - freqtrade.optimize.backtesting - INFO - Backtesting with data from 2026-07-30 00:00:00 up to 2026-10-29 23:45:00 (91 days).
+2026-10-31 10:21:23,192 - freqtrade.resolvers.iresolver - INFO - Using resolved protection CooldownPeriod from '/freqtrade/freqtrade/plugins/protections/cooldown_period.py'...
+backtest ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4/4       100% • 0:00:00 • 0:00:00
+backtest ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8831/8831 100% • 0:00:02 • 0:00:00
+2026-10-31 10:21:25,435 - freqtrade.misc - INFO - dumping json to "/lab/user_data/backtest_results/backtest-result-2026-10-31_10-21-25.meta.json"
+Result for strategy TrendPullbackBaselineV1
+                                                BACKTESTING REPORT                                                
+┏━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃          Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ SOL/USDT:USDT │    120 │         -0.0 │          -0.431 │        -0.04 │      6:41:00 │   46     0    74  38.3 │
+│ ETH/USDT:USDT │    141 │        -0.01 │          -0.533 │        -0.05 │      6:56:00 │   40     0   101  28.4 │
+│ BTC/USDT:USDT │    125 │        -0.21 │          -5.553 │        -0.56 │      7:43:00 │   29     0    96  23.2 │
+│         TOTAL │    386 │        -0.07 │          -6.517 │        -0.65 │      7:07:00 │  115     0   271  29.8 │
+└───────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                         LEFT OPEN TRADES REPORT                                          
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ TOTAL │      0 │          0.0 │           0.000 │          0.0 │         0:00 │    0     0     0     0 │
+└───────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                                    ENTER TAG STATS                                                     
+┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃          Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│   ema20_reclaim_v1 │     198 │        -0.04 │          -1.998 │         -0.2 │      7:10:00 │   64     0   134  32.3 │
+│ ema20_rejection_v1 │     188 │         -0.1 │          -4.519 │        -0.45 │      7:04:00 │   51     0   137  27.1 │
+│              TOTAL │     386 │        -0.07 │          -6.517 │        -0.65 │      7:07:00 │  115     0   271  29.8 │
+└────────────────────┴─────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                               EXIT REASON STATS                                                
+┏━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  Exit Reason ┃ Exits ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│          roi │    31 │          3.0 │          20.931 │         2.09 │      6:11:00 │   31     0     0   100 │
+│ max_hold_12h │   112 │         0.59 │          14.502 │         1.45 │     12:00:00 │   82     0    30  73.2 │
+│    stop_loss │    14 │        -2.11 │          -6.430 │        -0.64 │      3:30:00 │    0     0    14     0 │
+│  exit_signal │   229 │        -0.69 │         -35.520 │        -3.55 │      5:04:00 │    2     0   227   0.9 │
+│        TOTAL │   386 │        -0.07 │          -6.517 │        -0.65 │      7:07:00 │  115     0   271  29.8 │
+└──────────────┴───────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                                           MIXED TAG STATS                                                            
+┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃          Enter Tag ┃  Exit Reason ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│   ema20_reclaim_v1 │          roi │     16 │          3.0 │          10.912 │         1.09 │      6:54:00 │   16     0     0   100 │
+│ ema20_rejection_v1 │          roi │     15 │          3.0 │          10.019 │          1.0 │      5:25:00 │   15     0     0   100 │
+│   ema20_reclaim_v1 │ max_hold_12h │     57 │         0.62 │           7.749 │         0.77 │     12:00:00 │   47     0    10  82.5 │
+│ ema20_rejection_v1 │ max_hold_12h │     55 │         0.55 │           6.753 │         0.68 │     12:00:00 │   35     0    20  63.6 │
+│   ema20_reclaim_v1 │    stop_loss │      6 │        -2.11 │          -2.765 │        -0.28 │      3:10:00 │    0     0     6     0 │
+│ ema20_rejection_v1 │    stop_loss │      8 │        -2.12 │          -3.665 │        -0.37 │      3:45:00 │    0     0     8     0 │
+│ ema20_rejection_v1 │  exit_signal │    110 │        -0.71 │         -17.626 │        -1.76 │      5:04:00 │    1     0   109   0.9 │
+│   ema20_reclaim_v1 │  exit_signal │    119 │        -0.67 │         -17.894 │        -1.79 │      5:05:00 │    1     0   118   0.8 │
+│              TOTAL │              │    386 │        -0.07 │          -6.517 │        -0.65 │      7:07:00 │  115     0   271  29.8 │
+└────────────────────┴──────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┘
+                                   SUMMARY METRICS                                    
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Metric                                 ┃ Value                                     ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backtesting from                       │ 2026-07-30 00:00:00                       │
+│ Backtesting to                         │ 2026-10-29 23:45:00                       │
+│ Trading Mode                           │ Isolated Futures                          │
+│ Max open trades                        │ 2                                         │
+│                                        │                                           │
+│ Total/Daily Avg Trades                 │ 386 / 4.24                                │
+│ Starting balance                       │ 1000 USDT                                 │
+│ Final balance                          │ 993.483 USDT                              │
+│ Absolute profit                        │ -6.517 USDT                               │
+│ Total profit %                         │ -0.65%                                    │
+│ CAGR %                                 │ -2.59%                                    │
+│ Sharpe (closed trades)                 │ -4.99                                     │
+│ Sortino (closed trades)                │ -12.91                                    │
+│ Calmar (closed trades)                 │ -15.90                                    │
+│ SQN                                    │ -1.21                                     │
+│ Mean profit p-value                    │ 0.2281                                    │
+│ Profit factor                          │ 0.85                                      │
+│ Expectancy (Ratio)                     │ -0.02 (-0.10)                             │
+│ Avg. daily profit                      │ -0.072 USDT                               │
+│ Avg. stake amount                      │ 22.46 USDT                                │
+│ Market change                          │ 23.11%                                    │
+│ Total trade volume                     │ 17352.391 USDT                            │
+│                                        │                                           │
+│ Long / Short trades                    │ 198 / 188                                 │
+│ Long / Short profit %                  │ -0.20% / -0.45%                           │
+│ Long / Short profit USDT               │ -1.998 / -4.519                           │
+│                                        │                                           │
+│ Best Pair                              │ SOL/USDT:USDT -0.04%                      │
+│ Worst Pair                             │ BTC/USDT:USDT -0.56%                      │
+│ Best trade                             │ SOL/USDT:USDT 3.01%                       │
+│ Worst trade                            │ ETH/USDT:USDT -2.12%                      │
+│ Best day                               │ 2.102 USDT                                │
+│ Worst day                              │ -1.421 USDT                               │
+│ Days win/draw/lose                     │ 31 / 0 / 61                               │
+│ Min/Max/Avg. Duration Winners          │ 0d 01:00 / 0d 12:00 / 0d 10:25            │
+│ Min/Max/Avg. Duration Losers           │ 0d 00:00 / 0d 12:00 / 0d 05:43            │
+│ Max Consecutive Wins / Loss            │ 7 / 16                                    │
+│ Rejected Entry signals                 │ 312                                       │
+│ Entry/Exit Timeouts                    │ 0 / 0                                     │
+│                                        │                                           │
+│ Min/Max balance (closed trades)        │ 993.483 USDT / 1002.106 USDT              │
+│ Max % of account underwater            │ 0.86%                                     │
+│ Absolute drawdown                      │ 8.622 USDT (0.86%)                        │
+│ Drawdown duration                      │ 38 days 11:15:00                          │
+│ Profit at drawdown start               │ 2.106 USDT                                │
+│ Profit at drawdown end                 │ -6.517 USDT                               │
+│ Drawdown start                         │ 2026-09-21 09:15:00                       │
+│ Drawdown end                           │ 2026-10-29 20:30:00                       │
+│                                        │                                           │
+│ Wallet based Metrics                   │                                           │
+│ Min/Max balance (wallet balance)       │ 993.483 USDT / 1002.106 USDT              │
+│ Min/Max balance dates (wallet balance) │ 2026-10-29 20:45:00 / 2026-09-21 09:30:00 │
+│ Max % of account underwater (balance)  │ 0.86%                                     │
+│ Absolute drawdown (wallet balance)     │ 8.622 USDT (0.86%)                        │
+│ Drawdown duration                      │ 38 days 11:15:00                          │
+│ Profit at drawdown start               │ 2.106 USDT                                │
+│ Profit at drawdown end                 │ -6.517 USDT                               │
+│ Drawdown start                         │ 2026-09-21 09:30:00                       │
+│ Drawdown end                           │ 2026-10-29 20:45:00                       │
+│ Sharpe (daily wallet balance)          │ -2.02                                     │
+│ Sortino (daily wallet balance)         │ -3.89                                     │
+│ Calmar (daily wallet balance)          │ -15.90                                    │
+└────────────────────────────────────────┴───────────────────────────────────────────┘
+
+Backtested 2026-07-30 00:00:00 -> 2026-10-29 23:45:00 | Max open trades : 2
+                                                                STRATEGY SUMMARY                                                                
+┏━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃                Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃ Avg Duration ┃  Win  Draw  Loss  Win% ┃          Drawdown ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ TrendPullbackBaselineV1 │    386 │        -0.07 │          -6.517 │        -0.65 │      7:07:00 │  115     0   271  29.8 │ 8.622 USDT  0.86% │
+└─────────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────┴────────────────────────┴───────────────────┘
+
+## Native ledger and cost report
+COMMAND: LAB_EXEC_CONTAINER=openbot-s1-runner ./scripts/lab.sh report
+EXIT: 0
+{
+  "status": "EXPLORATORY / UNQUALIFIED",
+  "summary": {
+    "trades": 386,
+    "wins": 115,
+    "losses": 271,
+    "draws": 0,
+    "win_rate": 0.2979274611398964,
+    "profit_factor": 0.8516852028347884,
+    "expectancy_usdt": -0.016882250518134717,
+    "average_trade_ratio": -0.0007352690832190319,
+    "trading_days": 92,
+    "hold_minutes": {
+      "0": 0.0,
+      "0.25": 180.0,
+      "0.5": 427.5,
+      "0.75": 720.0,
+      "0.95": 720.0,
+      "1": 720.0
+    },
+    "exit_reasons": {
+      "exit_signal": 229,
+      "max_hold_12h": 112,
+      "roi": 31,
+      "stop_loss": 14
+    },
+    "per_pair_usdt": {
+      "BTC/USDT:USDT": -5.55257935,
+      "ETH/USDT:USDT": -0.5329479000000004,
+      "SOL/USDT:USDT": -0.4310214499999998
+    }
+  },
+  "net_profit_usdt": -6.5165487,
+  "native_max_drawdown_account": 0.008603972968347171,
+  "native_max_drawdown_usdt": 8.622088980000001,
+  "reconciliation_residual_usdt": 4.39359864046196e-08
+}
+
+## Native leakage diagnostic
+COMMAND: LAB_EXEC_CONTAINER=openbot-s1-runner ./scripts/lab.sh lookahead
+EXIT: 0
+Research sample hashes verified.
+2026-10-31 10:22:01,772 - freqtrade - INFO - freqtrade 2026.10
+2026-10-31 10:22:02,030 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-10-31 10:22:03,244 - freqtrade.configuration.load_config - INFO - Using config: /lab/configs/research.json ...
+2026-10-31 10:22:03,245 - freqtrade.configuration.load_config - INFO - Using config: /lab/user_data/runtime/cloud.json ...
+2026-10-31 10:22:03,246 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-10-31 10:22:03,246 - freqtrade.loggers - INFO - Logfile configured
+2026-10-31 10:22:03,247 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-10-31 10:22:03,247 - freqtrade.configuration.configuration - INFO - Parameter --fee detected, setting fee to: 0.0006 ...
+2026-10-31 10:22:03,247 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20260730-20261030 ...
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-10-31 10:22:03,250 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-10-31 10:22:03,251 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-10-31 10:22:03,251 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/research/gate ...
+2026-10-31 10:22:03,251 - freqtrade.configuration.configuration - INFO - Saving lookahead analysis results into /lab/user_data/lookahead.csv ...
+2026-10-31 10:22:03,251 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20260730-20261030
+2026-10-31 10:22:03,251 - freqtrade.configuration.configuration - INFO - Targeted Trade amount: 40
+2026-10-31 10:22:03,252 - freqtrade.configuration.configuration - INFO - Minimum Trade amount: 20
+2026-10-31 10:22:03,252 - freqtrade.configuration.configuration - INFO - Path to store lookahead-analysis-results: /lab/user_data/lookahead.csv
+2026-10-31 10:22:03,252 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-10-31 10:22:03,256 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-10-31 10:22:03,266 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-10-31 10:22:03,266 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-10-31 10:22:03,267 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Forced order_types to market orders.
+2026-10-31 10:22:03,267 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Forced max_open_trades to -1 (same amount as there are pairs)
+2026-10-31 10:22:03,267 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Dry run wallet was not set to 1 billion, pushing it up there just to avoid false positives
+2026-10-31 10:22:03,268 - freqtrade.optimize.analysis.lookahead_helpers - INFO - fixing stake_amount to 10k
+2026-10-31 10:22:03,277 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Bias test of TrendPullbackBaselineV1.py started.
+2026-10-31 10:22:03,278 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-10-31 10:22:03,278 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-10-31 10:22:03,279 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'enableRateLimit': True, 'timeout': 30000, 'httpsProxy': 
+'http://proxy:8080', 'cafile': '/run/cloud-ca.pem', 'requests_trust_env': True, 'aiohttp_trust_env': True}
+2026-10-31 10:22:03,281 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'enableRateLimit': True, 'timeout': 30000, 'httpsProxy': 
+'http://proxy:8080', 'cafile': '/run/cloud-ca.pem', 'requests_trust_env': True, 'aiohttp_trust_env': True}
+2026-10-31 10:22:03,283 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-10-31 10:22:47,904 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-10-31 10:22:47,907 - freqtrade.resolvers.iresolver - INFO - Using resolved strategy TrendPullbackBaselineV1 from '/lab/user_data/strategies/TrendPullbackBaselineV1.py'...
+2026-10-31 10:22:47,907 - freqtrade.strategy.hyper - INFO - Found no parameter file.
+2026-10-31 10:22:47,908 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'timeframe' with value from the configuration: 15m.
+2026-10-31 10:22:47,908 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'order_types' with value from the configuration: {'entry': 'market', 'exit': 'market', 'stoploss': 'market', 
+'stoploss_on_exchange': False}.
+2026-10-31 10:22:47,908 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_currency' with value from the configuration: USDT.
+2026-10-31 10:22:47,908 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_amount' with value from the configuration: 10000.
+2026-10-31 10:22:47,909 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'unfilledtimeout' with value from the configuration: {'entry': 5, 'exit': 5, 'exit_timeout_count': 0, 'unit':
+[repeated slice-loading lines omitted; final native output follows]
+2026-10-31 10:22:55,769 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-07-27 22:00:00 up to 2026-08-05 12:00:00 (8 days).
+2026-10-31 10:22:55,775 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-08-05 08:00:00
+2026-10-31 10:22:55,878 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-07-27 22:00:00 up to 2026-08-05 11:15:00 (8 days).
+2026-10-31 10:22:55,881 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT:USDT, funding_rate, 1h, data ends at 2026-08-05 08:00:00
+2026-10-31 10:22:55,968 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-07-27 22:00:00 up to 2026-08-05 12:45:00 (8 days).
+2026-10-31 10:22:55,971 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT:USDT, funding_rate, 1h, data ends at 2026-08-05 08:00:00
+2026-10-31 10:22:56,091 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-07-27 22:00:00 up to 2026-08-05 12:45:00 (8 days).
+2026-10-31 10:22:56,094 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-08-05 08:00:00
+2026-10-31 10:22:56,186 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-07-27 22:00:00 up to 2026-08-05 13:45:00 (8 days).
+2026-10-31 10:22:56,189 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-08-05 08:00:00
+2026-10-31 10:22:56,270 - freqtrade.optimize.analysis.lookahead - INFO - Found targeted trade amount = 40 signals.
+2026-10-31 10:22:56,271 - freqtrade.loggers.set_log_levels - INFO - Restoring log verbosity.
+2026-10-31 10:22:56,271 - freqtrade.optimize.analysis.lookahead - INFO - TrendPullbackBaselineV1: no bias detected
+2026-10-31 10:22:56,272 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Checking look ahead bias via backtests of TrendPullbackBaselineV1.py took 53 seconds.
+Analyzing trades ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40/40 100% • 0:00:06 • 0:00:00
+                                                                 Lookahead Analysis                                                                 
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃                   filename ┃                strategy ┃ has_bias ┃ total_signals ┃ biased_entry_signals ┃ biased_exit_signals ┃ biased_indicators ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ TrendPullbackBaselineV1.py │ TrendPullbackBaselineV1 │       No │            40 │                    0 │                   0 │                   │
+└────────────────────────────┴─────────────────────────┴──────────┴───────────────┴──────────────────────┴─────────────────────┴───────────────────┘
+2026-10-31 10:22:56,277 - freqtrade.optimize.analysis.lookahead_helpers - INFO - saving /lab/user_data/lookahead.csv
+
+## Mechanics/safety suite
+COMMAND: LAB_EXEC_CONTAINER=openbot-s1-runner ./scripts/lab.sh test
+EXIT: 0
+test_actual_export_and_provenance_when_present (test_foundation.Backtest.test_actual_export_and_provenance_when_present) ... ok
+test_protocol_is_real_futures_explicit_costs (test_foundation.Backtest.test_protocol_is_real_futures_explicit_costs) ... ok
+test_zero_trade_report (test_foundation.Backtest.test_zero_trade_report) ... ok
+test_finite_ohlc_range_volume (test_foundation.DataChecks.test_finite_ohlc_range_volume) ... ok
+test_gap_duplicate_bad_price_detected (test_foundation.DataChecks.test_gap_duplicate_bad_price_detected) ... ok
+test_incomplete_warmup_and_alignment (test_foundation.DataChecks.test_incomplete_warmup_and_alignment) ... ok
+test_timezone_and_funding_schema (test_foundation.DataChecks.test_timezone_and_funding_schema) ... ok
+test_valid (test_foundation.DataChecks.test_valid) ... ok
+test_all_environment_overrides_refused (test_foundation.Safety.test_all_environment_overrides_refused) ... ok
+test_attached_config_and_strategy_alias_cannot_bypass_guard (test_foundation.Safety.test_attached_config_and_strategy_alias_cannot_bypass_guard) ... ok
+test_keys_and_nested_overrides_refused (test_foundation.Safety.test_keys_and_nested_overrides_refused) ... ok
+test_live_input_refused_before_engine_import (test_foundation.Safety.test_live_input_refused_before_engine_import) ... ok
+test_loopback_publication_and_digest (test_foundation.Safety.test_loopback_publication_and_digest) ... ok
+test_pinned_installed_version (test_foundation.Safety.test_pinned_installed_version) ... ok
+test_safe_public_config (test_foundation.Safety.test_safe_public_config) ... ok
+test_unsafe_cli_override_refused (test_foundation.Safety.test_unsafe_cli_override_refused) ... ok
+test_deterministic_deduplicated_bounded (test_foundation.Scanner.test_deterministic_deduplicated_bounded) ... ok
+test_empty_safe (test_foundation.Scanner.test_empty_safe) ... ok
+test_missing_spread_volume_stale_never_pass (test_foundation.Scanner.test_missing_spread_volume_stale_never_pass) ... ok
+test_spot_inverse_inactive_excluded (test_foundation.Scanner.test_spot_inverse_inactive_excluded) ... ok
+test_tradfi_delisting_and_age_unknown_excluded (test_foundation.Scanner.test_tradfi_delisting_and_age_unknown_excluded) ... ok
+test_append_future_and_determinism (test_foundation.Strategy.test_append_future_and_determinism) ... ok
+test_exact_symmetric_signal_fixture (test_foundation.Strategy.test_exact_symmetric_signal_fixture) ... ok
+test_no_volume_or_atr_no_setup (test_foundation.Strategy.test_no_volume_or_atr_no_setup) ... ok
+test_risk_and_timeout (test_foundation.Strategy.test_risk_and_timeout) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 1.056s
+
+OK
+
+## Supported research UI startup
+COMMAND: ./scripts/lab.sh ui-up
+EXIT: 0
+Local API credentials ready: user_data/runtime/api.json (excluded from Git).
+ Container openbot-trading-lab-ui-1  Creating
+ Container openbot-trading-lab-ui-1  Created
+ Container openbot-trading-lab-ui-1  Starting
+ Container openbot-trading-lab-ui-1  Started
+
+## Authenticated UI smoke
+COMMAND: python scripts/ui_smoke.py
+EXIT: 0
+All HTTP assertions passed, static assets 200, protected unauthenticated version 401, login/version/history/result 200, native result 386 trades. Redacted details: ui-http-smoke.json.
+
+## UI stop / Cloud disk cleanup
+COMMAND: ./scripts/lab.sh ui-down; docker compose -f deploy/freqtrade/compose.yaml rm -f ui
+EXIT: 0
+ Container openbot-trading-lab-ui-1  Stopping
+ Container openbot-trading-lab-ui-1  Stopped
+Going to remove openbot-trading-lab-ui-1
+ Container openbot-trading-lab-ui-1  Removing
+ Container openbot-trading-lab-ui-1  Removed
+
+## Explicit temporary paper startup
+COMMAND: ./scripts/lab.sh paper-up
+EXIT: 0
+Local API credentials ready: user_data/runtime/api.json (excluded from Git).
+PASS: four configurations safe; no exchange keys; frozen strategy/protocol hashes match.
+ Container openbot-trading-lab-paper-1  Creating
+ Container openbot-trading-lab-paper-1  Created
+ Container openbot-trading-lab-paper-1  Starting
+ Container openbot-trading-lab-paper-1  Started
+
+## Read-only authenticated paper inspection
+COMMAND: Python urllib: POST token/login, GET show_config and GET status
+EXIT: 0
+200 responses; dry_run=true, futures, forced entry disabled, max_open_trades=2, stake=25, zero open paper positions. Tokens/password not retained. See paper-http-smoke.json.
+
+## Log interface / final shutdown
+COMMAND: ./scripts/lab.sh logs; ./scripts/lab.sh paper-down
+EXIT: 0
+ Container openbot-trading-lab-paper-1  Stopping
+ Container openbot-trading-lab-paper-1  Stopped
+
+## Native application clean shutdown
+COMMAND: docker compose -f deploy/freqtrade/compose.yaml logs --tail 100 ui paper
+EXIT: 0
+paper-1  | 2026-10-31 10:30:08,000 - freqtrade.freqtradebot - INFO - Starting initial pairlist refresh
+paper-1  | 2026-10-31 10:30:08,007 - freqtrade.plugins.pairlistmanager - INFO - Whitelist with 3 pairs: ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'SOL/USDT:USDT']
+paper-1  | 2026-10-31 10:30:08,007 - freqtrade.freqtradebot - INFO - Initial Pairlist refresh took 0.01s
+paper-1  | 2026-10-31 10:30:08,009 - freqtrade.resolvers.iresolver - INFO - Using resolved protection CooldownPeriod from '/freqtrade/freqtrade/plugins/protections/cooldown_period.py'...
+paper-1  | 2026-10-31 10:30:08,009 - freqtrade.rpc.rpc_manager - INFO - Sending rpc message: {'type': status, 'status': 'running'}
+paper-1  | 2026-10-31 10:30:08,009 - freqtrade.worker - INFO - Changing state to: RUNNING
+paper-1  | 2026-10-31 10:30:08,012 - freqtrade.util.migrations.migrate_wallet_history - INFO - Starting wallet history migration...
+paper-1  | 2026-10-31 10:30:08,016 - freqtrade.util.migrations.migrate_wallet_history - INFO - Wallet history migration completed.
+paper-1  | 2026-10-31 10:30:08,023 - freqtrade.rpc.rpc_manager - INFO - Sending rpc message: {'type': warning, 'status': 'Dry run is enabled. All trades are simulated.'}
+paper-1  | 2026-10-31 10:30:08,023 - freqtrade.rpc.rpc_manager - INFO - Sending rpc message: {'type': startup, 'status': "*Exchange:* `gate`\n*Stake per trade:* `25 USDT`\n*Minimum ROI:* `{'0': 
+paper-1  | 0.03}`\n*Stoploss:* `-0.02`\n*Position adjustment:* `Off`\n*Timeframe:* `15m`\n*Strategy:* `TrendPullbackBaselineV1`"}
+paper-1  | 2026-10-31 10:30:08,024 - freqtrade.rpc.rpc_manager - INFO - Sending rpc message: {'type': startup, 'status': "Searching for USDT pairs to buy and sell based on [{'StaticPairList': 
+paper-1  | 'StaticPairList'}]"}
+paper-1  | 2026-10-31 10:30:08,024 - freqtrade.rpc.rpc_manager - INFO - Sending rpc message: {'type': startup, 'status': 'Using Protections: \nCooldownPeriod - Cooldown period for 2 candles.'}
+paper-1  | 2026-10-31 10:30:13,026 - freqtrade.worker - INFO - Bot heartbeat. PID=1, version='2026.10, strategy_version: 1.0.0', state='RUNNING'
+paper-1  | 2026-10-31 10:31:03,043 - freqtrade.wallets - INFO - Wallets synced.
+paper-1  | 2026-10-31 10:31:13,028 - freqtrade.worker - INFO - Bot heartbeat. PID=1, version='2026.10, strategy_version: 1.0.0', state='RUNNING'
+paper-1  | 2026-10-31 10:32:13,032 - freqtrade.worker - INFO - Bot heartbeat. PID=1, version='2026.10, strategy_version: 1.0.0', state='RUNNING'
+paper-1  | 2026-10-31 10:33:13,036 - freqtrade.worker - INFO - Bot heartbeat. PID=1, version='2026.10, strategy_version: 1.0.0', state='RUNNING'
+paper-1  | 2026-10-31 10:34:09,142 - freqtrade.commands.trade_commands - INFO - worker found ... calling exit
+paper-1  | 2026-10-31 10:34:09,143 - freqtrade.rpc.rpc_manager - INFO - Sending rpc message: {'type': status, 'status': 'process died'}
+paper-1  | 2026-10-31 10:34:09,143 - freqtrade.freqtradebot - INFO - Cleaning up modules ...
+paper-1  | 2026-10-31 10:34:09,144 - freqtrade.rpc.rpc_manager - INFO - Cleaning up rpc modules ...
+paper-1  | 2026-10-31 10:34:09,144 - freqtrade.rpc.rpc_manager - INFO - Cleaning up rpc.apiserver ...
+paper-1  | 2026-10-31 10:34:09,145 - freqtrade.rpc.api_server.webserver - INFO - Stopping API Server
+paper-1  | 2026-10-31 10:34:09,164 - uvicorn.error - INFO - Shutting down
+paper-1  | 2026-10-31 10:34:09,264 - uvicorn.error - INFO - Waiting for application shutdown.
+paper-1  | 2026-10-31 10:34:09,265 - uvicorn.error - INFO - Application shutdown complete.
+paper-1  | 2026-10-31 10:34:09,265 - uvicorn.error - INFO - Finished server process [1]
+paper-1  | 2026-10-31 10:34:09,520 - freqtrade - INFO - SIGINT received, aborting ...
+
+## Failures preserved / ordinary corrections
+Initial schema attempts failed before any data acquisition with required disabled Telegram token/chat_id and API listen/JWT properties missing. Disabled API was omitted from research/scanner; UI/paper use complete schema plus private generated credentials. Representative native messages: "Configuration error: token is a required property", "listen_ip_address is a required property", "jwt_secret_key: empty string is too short".
+
+Initial container requests lacked Cloud proxy/CA propagation and returned connection-refused, timeout and certificate-verification errors. Corrected using inherited proxy + read-only combined CA + CCXT requests/aiohttp trust settings, with TLS verification enabled. No geographic-denial workaround. Public metadata probes: Binance fapi exchangeInfo HTTP 451; Bybit instruments HTTP 403; OKX metadata/docs/terms HTTP 403. No historical data taken from these venues.
+
+Initial concurrent Docker VFS containers exhausted the 7.9 GB filesystem (no space left on device). Stopped/removed only this session's containers, then reused one runner. Compose image itself remained pinned. No global prune or storage-driver change.
+
+Before any performance run: requested Gate July 1 15m start returned INVALID_PARAM_VALUE: "Candlestick too long ago. Maximum 10000 points recently are allowed". Download window corrected to July 26–October 30, evaluation July 30–October 30. Original partial 1h download quarantined locally and never evaluated. Strategy code unchanged. See window-correction.md.
+
+Initial validator adaptation exposed Pandas datetime units and the native date,funding_rate schema; tests and actual files were corrected/validated. No prices, missing observations or outcomes were manufactured. Early shell-wrapper edits during execution produced an EOF at shell end; final complete scan/download wrappers were rerun to observed exit 0. Native commands/data/results remained real.
+
+A transient exec-server transport disconnection interrupted observation of the deliberate paper smoke. Environment was marked unavailable; same workspace restored by owner. Actual paper state was then inspected, with zero open simulated positions, and stopped explicitly. No forward-paper performance is claimed during this interval.
+
+Final native container exit 130 resulted from operator SIGINT stop; logs show API/application shutdown complete. stop-command exit 0; stopped state independently inspected. See shutdown-verification.json.
+
+## GitHub delivery
+COMMAND: git fetch origin main; git push --set-upstream origin codex/session-1-functional-foundation
+EXIT: 0
+main remained 2343053ce68f6fff4525c5b67771ea445deb3779. Implementation commit 4815f1593df17d279f8d3104a53e995088280c47 pushed to dedicated branch.
+ACTION: GitHub plugin create_pull_request, base main, dedicated branch, draft=false
+RESULT: open PR #1, https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/pull/1, created 2026-10-31T10:39:41Z, merged=false.
+No merge or auto-merge action invoked. Follow-up evidence-only commit links the actual PR; final head is recorded in the PR description.

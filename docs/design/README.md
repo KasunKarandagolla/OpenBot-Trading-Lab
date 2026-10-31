@@ -1,6 +1,8 @@
 # OpenBot Trading Lab — Design Pack v1.0
 
-**Status:** DRAFT FOR OWNER REVIEW — design only; no implementation, installation, dataset acquisition or real-money authorization.  
+> **Session 1 scope correction (2026-10-31):** The owner's authorized functional-foundation request supersedes the former synthetic-only qualification milestone and extra approval wording below. Session 1 now builds official Freqtrade/FreqUI, permissible real public futures data, native-first scanning, a versioned baseline and an executed historical backtest. No live/testnet orders, trading keys, spend, autonomous policy edits or agent admin bridge. Actual results and gaps: [Session 1 evidence](../../evidence/session-1/manifest.md). Session 2 adds trading intelligence; Session 3 economic validation; Session 4 restricted OpenBot research; Session 5 integrated persistent paper workflow. Each later session still requires its own authorization.
+
+**Status:** Provisional design with Session 1 functional scope superseding the original qualification-only plan. See actual evidence; live trading remains prohibited.
 **Prepared:** 2026-10-31  
 **Purpose:** a beginner-operable, agent-directed, reuse-first crypto trading **research and paper-trading** application within a *maximum* of five remaining Codex sessions, conditional on economic and tool gates.
 
@@ -50,4 +52,8 @@ The owner opens FreqUI/OpenBot, sees **market data fresh/stale**, shortlisted co
 
 ## Immediate next action
 
-Review [14-DECISIONS-AND-OPEN-QUESTIONS.md](14-DECISIONS-AND-OPEN-QUESTIONS.md) and approve only the **bounded Session 1 isolated tool probe**. Do **not** authorize five sessions at once, start historical archive downloads, or enable live exchange credentials.
+Review the functioning Session 1 PR and [evidence](../../evidence/session-1/manifest.md). The previous synthetic-only Session 1 permission wording is superseded by the owner request. No subsequent session or merge is automatic. Chapters not edited remain original design history, not current implementation claims.
+
+## Integrity versioning
+
+`MANIFEST.json` version 1.1 hashes the current design documents only (paths relative to this folder). The original v1.0 hashes remain in Git at base commit `2343053ce68f6fff4525c5b67771ea445deb3779`. Session 1 updates only this index and chapters 12–14; all other chapters are preserved verbatim. Runtime/evidence hashes are recorded separately.

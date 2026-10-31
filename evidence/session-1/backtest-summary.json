@@ -1,0 +1,78 @@
+{
+  "status": "EXPLORATORY / UNQUALIFIED",
+  "native_file": "backtest-result-2026-10-31_10-21-25.zip",
+  "native_sha256": "fef65c8a25a178e8aee02ae72a266044aed329e42e968026df01241c659aa608",
+  "summary": {
+    "trades": 386,
+    "wins": 115,
+    "losses": 271,
+    "draws": 0,
+    "win_rate": 0.2979274611398964,
+    "profit_factor": 0.8516852028347884,
+    "expectancy_usdt": -0.016882250518134717,
+    "average_trade_ratio": -0.0007352690832190319,
+    "trading_days": 92,
+    "hold_minutes": {
+      "0": 0.0,
+      "0.25": 180.0,
+      "0.5": 427.5,
+      "0.75": 720.0,
+      "0.95": 720.0,
+      "1": 720.0
+    },
+    "exit_reasons": {
+      "exit_signal": 229,
+      "max_hold_12h": 112,
+      "roi": 31,
+      "stop_loss": 14
+    },
+    "per_pair_usdt": {
+      "BTC/USDT:USDT": -5.55257935,
+      "ETH/USDT:USDT": -0.5329479000000004,
+      "SOL/USDT:USDT": -0.4310214499999998
+    }
+  },
+  "net_profit_usdt": -6.5165487,
+  "native_profit_total_ratio": -0.0065165487,
+  "native_max_drawdown_account": 0.008603972968347171,
+  "native_max_drawdown_usdt": 8.622088980000001,
+  "geometric_price_pnl_before_fees_and_funding_usdt": 3.9111200000000133,
+  "reconstructed_fees_usdt": 10.405191444,
+  "native_funding_sum_usdt": -0.022477299936000002,
+  "reconciliation_residual_usdt": 4.39359864046196e-08,
+  "sensitivity": [
+    {
+      "extra_bps_per_side": 0,
+      "extra_cost_usdt": 0.0,
+      "net_usdt_after_extra_cost": -6.5165487,
+      "return_on_initial_1000_pct": -0.65165487
+    },
+    {
+      "extra_bps_per_side": 5,
+      "extra_cost_usdt": 8.67099287,
+      "net_usdt_after_extra_cost": -15.18754157,
+      "return_on_initial_1000_pct": -1.518754157
+    },
+    {
+      "extra_bps_per_side": 10,
+      "extra_cost_usdt": 17.34198574,
+      "net_usdt_after_extra_cost": -23.85853444,
+      "return_on_initial_1000_pct": -2.385853444
+    },
+    {
+      "extra_bps_per_side": 20,
+      "extra_cost_usdt": 34.68397148,
+      "net_usdt_after_extra_cost": -41.20052018,
+      "return_on_initial_1000_pct": -4.120052018
+    }
+  ],
+  "fees": "0.0006 per side, applied entry and exit; conservative assumption, not verified account tier",
+  "funding": "Native funding_fees from actual downloaded events; inspect dataset manifest for completeness; no zero-funding fallback configured.",
+  "limitations": [
+    "Candle backtest assumes requested-price fills; no measured historical spread/slippage, order-book depth, latency or outage model.",
+    "Extra friction is a postprocessing sensitivity only; it does not change fills, sequencing or drawdown.",
+    "Current surviving static BTC/ETH/SOL contracts; historical universe membership not reconstructed.",
+    "1x leverage fixed; liquidation accuracy not validated. No independent holdout or economic qualification.",
+    "No exact 0.25%/0.50% monetary-risk or 1% daily-loss halt guarantee. Paper stops require running process."
+  ]
+}

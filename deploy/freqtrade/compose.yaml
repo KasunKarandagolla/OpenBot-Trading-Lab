@@ -1,0 +1,34 @@
+name: openbot-trading-lab
+x-lab: &lab
+  image: freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7
+  working_dir: /lab
+  entrypoint: ["python", "/lab/scripts/guard.py"]
+  volumes:
+    - ../../configs:/lab/configs:ro
+    - ../../scripts:/lab/scripts:ro
+    - ../../tests:/lab/tests:ro
+    - ../../deploy:/lab/deploy:ro
+    - ../../research:/lab/research:ro
+    - ../../evidence:/lab/evidence
+    - ../../user_data:/lab/user_data
+    - ../../user_data/strategies:/lab/user_data/strategies:ro
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  logging:
+    driver: json-file
+    options: {max-size: "5m", max-file: "2"}
+services:
+  freqtrade:
+    <<: *lab
+    command: ["--version"]
+    profiles: [tools]
+  ui:
+    <<: *lab
+    command: ["webserver", "--datadir", "/lab/user_data/data/research/gate", "--config", "/lab/configs/ui.json", "--config", "/lab/user_data/runtime/api.json"]
+    ports: ["127.0.0.1:8080:8080"]
+    profiles: [ui]
+  paper:
+    <<: *lab
+    command: ["trade", "--datadir", "/lab/user_data/data/cache/gate", "--config", "/lab/configs/paper.json", "--config", "/lab/user_data/runtime/api.json", "--logfile", "/lab/user_data/logs/paper.log"]
+    ports: ["127.0.0.1:8080:8080"]
+    profiles: [paper]

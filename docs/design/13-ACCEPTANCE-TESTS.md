@@ -1,6 +1,8 @@
 # 13 — Executable Acceptance Catalogue (Test-First Delivery Contract)
 
-These tests are **specifications for future execution**. None should be marked PASS in this design pack merely because upstream documentation promises a capability. Record exact commands/results in the Session 1–5 evidence folders.
+> **Session 1 scope correction (2026-10-31):** The owner's authorized functional-foundation request supersedes the former synthetic-only qualification milestone and extra approval wording below. Session 1 now builds official Freqtrade/FreqUI, permissible real public futures data, native-first scanning, a versioned baseline and an executed historical backtest. No live/testnet orders, trading keys, spend, autonomous policy edits or agent admin bridge. Actual results and gaps: [Session 1 evidence](../../evidence/session-1/manifest.md). Session 2 adds trading intelligence; Session 3 economic validation; Session 4 restricted OpenBot research; Session 5 integrated persistent paper workflow. Each later session still requires its own authorization.
+
+The original catalogue below remains a **specification for future execution**, except where actual Session 1 evidence explicitly records a result. None should be marked PASS in this design pack merely because upstream documentation promises a capability. Record exact commands/results in the Session 1–5 evidence folders.
 
 ## A: Tool/runtime and owner usability
 
@@ -81,3 +83,9 @@ evidence/session-N/
 ```
 
 There is no blanket green light because 95% of tests pass. All critical B security tests and D fail-closed conditions must pass for automatic paper operation.
+
+## Current Session 1 acceptance
+
+S1-01 pinned official engine; S1-02 supported FreqUI; S1-03 permissible actual perpetual OHLCV; S1-04 actual cheap shortlist; S1-05 frozen baseline; S1-06 native historical futures backtest; S1-07 ledger/cost report; S1-08 no-key paper safeguards; S1-09 executable reproduce/start/stop commands; S1-10 one reviewable PR. Exact PASS/FAIL/BLOCKED status and proof links live in `evidence/session-1/manifest.md`.
+
+Synthetic unit fixtures support mechanics only. Real data/backtests are mandatory for foundation completion. Source rights, causal timestamps, fees/funding limitations, loopback API and economic honesty remain mandatory. OpenBot isolation and persistent owner-host lifecycle are future gates, not invented Session 1 passes.

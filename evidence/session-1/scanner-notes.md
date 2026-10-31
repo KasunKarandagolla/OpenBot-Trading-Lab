@@ -1,0 +1,9 @@
+# Scanner compatibility and cost
+
+Native **VolumePairList** uses exchange 24h `quoteVolume`, minimum 10,000,000 USDT, refresh 1,800 seconds, up to 60 candidates. No candle lookback mode is enabled. Native **SpreadFilter** is supported on Gate futures and requires observed bid/ask, maximum ratio `1 - bid/ask <= 0.002`. Actual `test-pairlist` output is recorded in commands/evidence.
+
+Gate lists TradFi stock/metal/energy perpetuals alongside crypto contracts. The small CCXT exporter further requires `active`, `swap`, `linear`, USDT quote+settlement, canonical perpetual symbol, `info.contract_type == ''`, no delisting/premarket flags, and public launch age >=30 days. Missing contract classification/age excludes. Final rank is descending observed volume with symbol tie break; duplicate symbols are naturally removed by canonical metadata keys. At most 20 remain from the native candidate pool. Zero is valid.
+
+`AgeFilter` was considered but its candle downloads add unnecessary traffic when launch metadata suffices. `DelistFilter` is not claimed as supported/used here; current flags are checked. `VolatilityFilter` was deferred to avoid broad deep-candle acquisition; the baseline checks ATR only on its three fixed research/paper pairs. No unsupported native handler is included. This is discovery, not a trade signal or historical eligibility reconstruction.
+
+Calls: public metadata plus one bulk current USDT swap ticker request per exporter invocation; official native pairlists separately fetch their public metadata/ticker observations. No key, private route, `trade`, order placement or custom data service. Native and exporter requests have separate observation times, so a threshold-crossing market can legitimately differ; export rechecks volume/spread. Missing spread/volume excludes; absent venue timestamp stays UNKNOWN and is never labeled fresh.
