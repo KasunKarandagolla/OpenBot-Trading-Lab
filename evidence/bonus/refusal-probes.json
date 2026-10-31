@@ -1,0 +1,36 @@
+[
+  {
+    "command": [
+      "python",
+      "scripts/bonus.py",
+      "trade"
+    ],
+    "exit_code": 2,
+    "output": "usage: bonus.py [-h] [--observation-id OBSERVATION_ID]\n                {acquire,detail,schedule,run,economics,reconcile,scan,capture,replay,test,lookahead,risk,detail-run,restore-prior-raw,native-replay,funding-audit}\nbonus.py: error: argument action: invalid choice: 'trade' (choose from 'acquire', 'detail', 'schedule', 'run', 'economics', 'reconcile', 'scan', 'capture', 'replay', 'test', 'lookahead', 'risk', 'detail-run', 'restore-prior-raw', 'native-replay', 'funding-audit')\n",
+    "pass": true
+  },
+  {
+    "command": [
+      "python",
+      "scripts/bonus.py",
+      "capture",
+      "--observation-id",
+      "../../bad"
+    ],
+    "exit_code": 2,
+    "output": "BONUS RESEARCH REFUSAL: invalid observation ID\n",
+    "pass": true
+  },
+  {
+    "command": [
+      "python",
+      "scripts/guard.py",
+      "trade",
+      "--config",
+      "/lab/work/bonus-configs/RouterOnlyM1V1.json"
+    ],
+    "exit_code": 2,
+    "output": "SAFETY REFUSAL: DCA forbidden\n",
+    "pass": true
+  }
+]

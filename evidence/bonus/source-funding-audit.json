@@ -1,0 +1,2615 @@
+{
+  "finding": "Pinned native partial-exit funding at exact funding boundary can exceed source-event quantity bounds. Keep M1 research-only; no persistent paper qualification.",
+  "limitations": [
+    "Mark open is the pinned native funding price proxy, not an exchange account statement.",
+    "Funding-vs-fill priority at the same exported timestamp is unobserved; report bounds, not a manufactured precise correction."
+  ],
+  "method": "Independently multiply recorded funding rates * native-source mark open * quantity held from native fills. Exact-clock funding/fill priority bounded both ways.",
+  "native_results_modified": false,
+  "variants": {
+    "IntegratedM0V1": {
+      "native_net": 0,
+      "outside_bounds_trades": 0,
+      "rows": [],
+      "source_funding_net_max": 0,
+      "source_funding_net_min": 0,
+      "trades": 0
+    },
+    "IntegratedM1V1": {
+      "native_net": 0,
+      "outside_bounds_trades": 0,
+      "rows": [],
+      "source_funding_net_max": 0,
+      "source_funding_net_min": 0,
+      "trades": 0
+    },
+    "LiquiditySweepReversalV1": {
+      "native_net": -2.25936708,
+      "outside_bounds_trades": 0,
+      "rows": [
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.00039120672,
+              "funding_min": 0.00039120672,
+              "mark_open": 1917.68,
+              "quantity_after": 0.012,
+              "quantity_before": 0.012,
+              "rate": 1.7e-05,
+              "timestamp_ms": 1786118400000.0
+            }
+          ],
+          "native_funding": 0.00039120672,
+          "native_net": 0.13172614,
+          "open_date": "2026-08-07 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.13172614,
+          "source_funding_net_min": 0.13172614,
+          "source_quantity_funding_max": 0.00039120672,
+          "source_quantity_funding_min": 0.00039120672
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.001907145,
+              "funding_min": 0.001907145,
+              "mark_open": 74.79,
+              "quantity_after": 0.3,
+              "quantity_before": 0.3,
+              "rate": 8.5e-05,
+              "timestamp_ms": 1786176000000.0
+            }
+          ],
+          "native_funding": 0.001907145,
+          "native_net": -0.05498846,
+          "open_date": "2026-08-08 04:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.05498846,
+          "source_funding_net_min": -0.05498846,
+          "source_quantity_funding_max": 0.001907145,
+          "source_quantity_funding_min": 0.001907145
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.224208,
+          "open_date": "2026-08-22 17:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.224208,
+          "source_funding_net_min": -0.224208,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.34634704,
+          "open_date": "2026-08-22 18:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.34634704,
+          "source_funding_net_min": -0.34634704,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.40514,
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.40514,
+          "source_funding_net_min": 0.40514,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.19863424,
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.19863424,
+          "source_funding_net_min": -0.19863424,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.05964,
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.05964,
+          "source_funding_net_min": 0.05964,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.05557036,
+          "open_date": "2026-08-25 02:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "BTC/USDT:USDT",
+          "source_funding_net_max": 0.05557036,
+          "source_funding_net_min": 0.05557036,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.21264984,
+          "open_date": "2026-08-25 12:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.21264984,
+          "source_funding_net_min": -0.21264984,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0003515022,
+              "funding_min": -0.0003515022,
+              "mark_open": 1.4769,
+              "quantity_after": 17.0,
+              "quantity_before": 17.0,
+              "rate": 1.4e-05,
+              "timestamp_ms": 1787673600000.0
+            }
+          ],
+          "native_funding": -0.0003515022,
+          "native_net": 0.28763904,
+          "open_date": "2026-08-25 14:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.28763904,
+          "source_funding_net_min": 0.28763904,
+          "source_quantity_funding_max": -0.0003515022,
+          "source_quantity_funding_min": -0.0003515022
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1833496,
+          "open_date": "2026-08-25 20:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.1833496,
+          "source_funding_net_min": -0.1833496,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.0007862160000000001,
+              "funding_min": 0.0007862160000000001,
+              "mark_open": 95.88,
+              "quantity_after": 0.2,
+              "quantity_before": 0.2,
+              "rate": -4.1e-05,
+              "timestamp_ms": 1787760000000.0
+            }
+          ],
+          "native_funding": 0.0007862160000000001,
+          "native_net": 0.30566462,
+          "open_date": "2026-08-26 15:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.30566462,
+          "source_funding_net_min": 0.30566462,
+          "source_quantity_funding_max": 0.0007862160000000001,
+          "source_quantity_funding_min": 0.0007862160000000001
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.17228568,
+          "open_date": "2026-08-28 02:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.17228568,
+          "source_funding_net_min": -0.17228568,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.19570876,
+          "open_date": "2026-08-28 03:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.19570876,
+          "source_funding_net_min": -0.19570876,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.00026943839999999996,
+              "funding_min": 0.00026943839999999996,
+              "mark_open": 0.08748,
+              "quantity_after": 280.0,
+              "quantity_before": 280.0,
+              "rate": -1.1e-05,
+              "timestamp_ms": 1787904000000.0
+            }
+          ],
+          "native_funding": 0.00026943839999999996,
+          "native_net": -0.1131944,
+          "open_date": "2026-08-28 04:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1131944,
+          "source_funding_net_min": -0.1131944,
+          "source_quantity_funding_max": 0.00026943839999999996,
+          "source_quantity_funding_min": 0.00026943839999999996
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.34659072,
+          "open_date": "2026-08-28 16:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.34659072,
+          "source_funding_net_min": -0.34659072,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.3588628,
+          "open_date": "2026-08-28 16:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.3588628,
+          "source_funding_net_min": -0.3588628,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.29582074,
+          "open_date": "2026-08-30 18:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.29582074,
+          "source_funding_net_min": 0.29582074,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1740232,
+          "open_date": "2026-08-30 22:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1740232,
+          "source_funding_net_min": -0.1740232,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.18806624,
+          "open_date": "2026-08-30 21:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.18806624,
+          "source_funding_net_min": -0.18806624,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": true,
+              "funding_max": 0.0004397004,
+              "funding_min": 0.0,
+              "mark_open": 1.3571,
+              "quantity_after": 18.0,
+              "quantity_before": 0,
+              "rate": -1.8e-05,
+              "timestamp_ms": 1788134400000.0
+            }
+          ],
+          "native_funding": 0.0004397004,
+          "native_net": -0.07383586,
+          "open_date": "2026-08-31 00:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.07383586,
+          "source_funding_net_min": -0.07427556040000001,
+          "source_quantity_funding_max": 0.0004397004,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": true,
+              "funding_max": 0.000344568,
+              "funding_min": 0.0,
+              "mark_open": 0.08204,
+              "quantity_after": 300.0,
+              "quantity_before": 0,
+              "rate": -1.4e-05,
+              "timestamp_ms": 1788134400000.0
+            }
+          ],
+          "native_funding": 0.000344568,
+          "native_net": 0.04577957,
+          "open_date": "2026-08-31 00:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": 0.04577957,
+          "source_funding_net_min": 0.045435001999999995,
+          "source_quantity_funding_max": 0.000344568,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0024813,
+              "funding_min": -0.0024813,
+              "mark_open": 0.08271,
+              "quantity_after": 300.0,
+              "quantity_before": 300.0,
+              "rate": 0.0001,
+              "timestamp_ms": 1788278400000.0
+            }
+          ],
+          "native_funding": -0.0024813,
+          "native_net": -0.1160985,
+          "open_date": "2026-09-01 13:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1160985,
+          "source_funding_net_min": -0.1160985,
+          "source_quantity_funding_max": -0.0024813,
+          "source_quantity_funding_min": -0.0024813
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.32017176,
+          "open_date": "2026-09-02 02:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.32017176,
+          "source_funding_net_min": 0.32017176,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.19245348,
+          "open_date": "2026-09-02 09:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.19245348,
+          "source_funding_net_min": -0.19245348,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.18459072,
+          "open_date": "2026-09-03 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.18459072,
+          "source_funding_net_min": -0.18459072,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.12130944,
+          "open_date": "2026-09-03 16:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": 0.12130944,
+          "source_funding_net_min": 0.12130944,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.289214,
+          "open_date": "2026-09-04 09:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.289214,
+          "source_funding_net_min": 0.289214,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.00245196,
+              "funding_min": 0.00245196,
+              "mark_open": 0.08757,
+              "quantity_after": 280.0,
+              "quantity_before": 280.0,
+              "rate": 0.0001,
+              "timestamp_ms": 1788624000000.0
+            }
+          ],
+          "native_funding": 0.00245196,
+          "native_net": -0.24824044,
+          "open_date": "2026-09-05 13:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.24824043999999998,
+          "source_funding_net_min": -0.24824043999999998,
+          "source_quantity_funding_max": 0.00245196,
+          "source_quantity_funding_min": 0.00245196
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1509612,
+          "open_date": "2026-09-05 17:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.1509612,
+          "source_funding_net_min": -0.1509612,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.18894438,
+          "open_date": "2026-09-07 13:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.18894438,
+          "source_funding_net_min": -0.18894438,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0009064880000000001,
+              "funding_min": -0.0009064880000000001,
+              "mark_open": 103.01,
+              "quantity_after": 0.2,
+              "quantity_before": 0.2,
+              "rate": 4.4e-05,
+              "timestamp_ms": 1788969600000.0
+            }
+          ],
+          "native_funding": -0.0009064880000000001,
+          "native_net": 0.07640591,
+          "open_date": "2026-09-09 15:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.07640591,
+          "source_funding_net_min": 0.07640591,
+          "source_quantity_funding_max": -0.0009064880000000001,
+          "source_quantity_funding_min": -0.0009064880000000001
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.0007830784799999999,
+              "funding_min": 0.0007830784799999999,
+              "mark_open": 2559.08,
+              "quantity_after": 0.009,
+              "quantity_before": 0.009,
+              "rate": 3.4e-05,
+              "timestamp_ms": 1789142400000.0
+            }
+          ],
+          "native_funding": 0.0007830784799999999,
+          "native_net": 0.63285589,
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.63285589,
+          "source_funding_net_min": 0.63285589,
+          "source_quantity_funding_max": 0.0007830784799999999,
+          "source_quantity_funding_min": 0.0007830784799999999
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.00061123005,
+              "funding_min": -0.00061123005,
+              "mark_open": 2515.35,
+              "quantity_after": 0.009,
+              "quantity_before": 0.009,
+              "rate": 2.7e-05,
+              "timestamp_ms": 1789171200000.0
+            }
+          ],
+          "native_funding": -0.00061123005,
+          "native_net": -0.08663917,
+          "open_date": "2026-09-11 22:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.08663917,
+          "source_funding_net_min": -0.08663917,
+          "source_quantity_funding_max": -0.00061123005,
+          "source_quantity_funding_min": -0.00061123005
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0017258831999999997,
+              "funding_min": -0.0017258831999999997,
+              "mark_open": 1.3896,
+              "quantity_after": 18.0,
+              "quantity_before": 18.0,
+              "rate": 6.9e-05,
+              "timestamp_ms": 1789488000000.0
+            }
+          ],
+          "native_funding": -0.0017258831999999997,
+          "native_net": -0.28527016,
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.28527016,
+          "source_funding_net_min": -0.28527016,
+          "source_quantity_funding_max": -0.0017258831999999997,
+          "source_quantity_funding_min": -0.0017258831999999997
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.0012511800000000002,
+              "funding_min": 0.0012511800000000002,
+              "mark_open": 99.3,
+              "quantity_after": 0.2,
+              "quantity_before": 0.2,
+              "rate": -6.3e-05,
+              "timestamp_ms": 1789488000000.0
+            }
+          ],
+          "native_funding": 0.0012511800000000002,
+          "native_net": -0.20434922,
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.20434922,
+          "source_funding_net_min": -0.20434922,
+          "source_quantity_funding_max": 0.0012511800000000002,
+          "source_quantity_funding_min": 0.0012511800000000002
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.08838164,
+          "open_date": "2026-09-15 19:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.08838164,
+          "source_funding_net_min": -0.08838164,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.20240434,
+          "open_date": "2026-09-16 18:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.20240434,
+          "source_funding_net_min": -0.20240434,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1470332,
+          "open_date": "2026-09-18 03:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.1470332,
+          "source_funding_net_min": -0.1470332,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.22593996,
+          "open_date": "2026-09-18 14:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.22593996,
+          "source_funding_net_min": -0.22593996,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1710312,
+          "open_date": "2026-09-21 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.1710312,
+          "source_funding_net_min": -0.1710312,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.03384122,
+          "open_date": "2026-09-21 01:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.03384122,
+          "source_funding_net_min": 0.03384122,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.02071229,
+          "open_date": "2026-09-23 16:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "BTC/USDT:USDT",
+          "source_funding_net_max": -0.02071229,
+          "source_funding_net_min": -0.02071229,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.05309878,
+          "open_date": "2026-09-23 16:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.05309878,
+          "source_funding_net_min": 0.05309878,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.23697856,
+          "open_date": "2026-09-24 09:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.23697856,
+          "source_funding_net_min": -0.23697856,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.011025,
+          "open_date": "2026-09-24 16:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.011025,
+          "source_funding_net_min": -0.011025,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.19144773,
+          "open_date": "2026-09-25 14:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.19144773,
+          "source_funding_net_min": -0.19144773,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1720095,
+          "open_date": "2026-09-25 20:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1720095,
+          "source_funding_net_min": -0.1720095,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.000939645,
+              "funding_min": 0.000939645,
+              "mark_open": 0.09891,
+              "quantity_after": 250.0,
+              "quantity_before": 250.0,
+              "rate": 3.8e-05,
+              "timestamp_ms": 1790380800000.0
+            }
+          ],
+          "native_funding": 0.000939645,
+          "native_net": 0.18629064,
+          "open_date": "2026-09-25 23:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": 0.18629064,
+          "source_funding_net_min": 0.18629064,
+          "source_quantity_funding_max": 0.000939645,
+          "source_quantity_funding_min": 0.000939645
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0019296224,
+              "funding_min": -0.0019296224,
+              "mark_open": 1.5266,
+              "quantity_after": 16.0,
+              "quantity_before": 16.0,
+              "rate": 7.9e-05,
+              "timestamp_ms": 1790467200000.0
+            }
+          ],
+          "native_funding": -0.0019296224,
+          "native_net": 0.0650035,
+          "open_date": "2026-09-26 21:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.0650035,
+          "source_funding_net_min": 0.0650035,
+          "source_quantity_funding_max": -0.0019296224,
+          "source_quantity_funding_min": -0.0019296224
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0017349773999999999,
+              "funding_min": -0.0017349773999999999,
+              "mark_open": 0.09671,
+              "quantity_after": 260.0,
+              "quantity_before": 260.0,
+              "rate": 6.9e-05,
+              "timestamp_ms": 1790467200000.0
+            }
+          ],
+          "native_funding": -0.0017349773999999999,
+          "native_net": 0.07750678,
+          "open_date": "2026-09-26 21:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": 0.07750678,
+          "source_funding_net_min": 0.07750678,
+          "source_quantity_funding_max": -0.0017349773999999999,
+          "source_quantity_funding_min": -0.0017349773999999999
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.3469024,
+          "open_date": "2026-09-28 02:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.3469024,
+          "source_funding_net_min": -0.3469024,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.23355776,
+          "open_date": "2026-09-28 02:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.23355776,
+          "source_funding_net_min": -0.23355776,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.28149836,
+          "open_date": "2026-09-28 03:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.28149836,
+          "source_funding_net_min": -0.28149836,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.26193728,
+          "open_date": "2026-09-28 05:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.26193728,
+          "source_funding_net_min": -0.26193728,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 7.135722e-05,
+              "funding_min": 7.135722e-05,
+              "mark_open": 2642.86,
+              "quantity_after": 0.009,
+              "quantity_before": 0.009,
+              "rate": -3e-06,
+              "timestamp_ms": 1790582400000.0
+            }
+          ],
+          "native_funding": 7.135722e-05,
+          "native_net": -0.13728968,
+          "open_date": "2026-09-28 05:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.13728968,
+          "source_funding_net_min": -0.13728968,
+          "source_quantity_funding_max": 7.135722e-05,
+          "source_quantity_funding_min": 7.135722e-05
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.3333812,
+          "open_date": "2026-09-28 09:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.3333812,
+          "source_funding_net_min": 0.3333812,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.001275229908,
+              "funding_min": -0.001275229908,
+              "mark_open": 83348.36,
+              "quantity_after": 0.0003,
+              "quantity_before": 0.0003,
+              "rate": 5.1e-05,
+              "timestamp_ms": 1790611200000.0
+            }
+          ],
+          "native_funding": -0.001275229908,
+          "native_net": 0.31948714,
+          "open_date": "2026-09-28 15:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "BTC/USDT:USDT",
+          "source_funding_net_max": 0.31948714,
+          "source_funding_net_min": 0.31948714,
+          "source_quantity_funding_max": -0.001275229908,
+          "source_quantity_funding_min": -0.001275229908
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 9.492e-05,
+              "funding_min": 9.492e-05,
+              "mark_open": 118.65,
+              "quantity_after": 0.2,
+              "quantity_before": 0.2,
+              "rate": -4e-06,
+              "timestamp_ms": 1790611200000.0
+            }
+          ],
+          "native_funding": 9.492e-05,
+          "native_net": 0.33954692,
+          "open_date": "2026-09-28 15:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.33954692,
+          "source_funding_net_min": 0.33954692,
+          "source_quantity_funding_max": 9.492e-05,
+          "source_quantity_funding_min": 9.492e-05
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.1658324,
+          "open_date": "2026-09-29 01:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.1658324,
+          "source_funding_net_min": 0.1658324,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.19078496,
+          "open_date": "2026-09-29 01:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.19078496,
+          "source_funding_net_min": 0.19078496,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.29717,
+          "open_date": "2026-09-29 14:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.29717,
+          "source_funding_net_min": 0.29717,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.179265,
+          "open_date": "2026-09-30 13:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.179265,
+          "source_funding_net_min": -0.179265,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0009300720000000001,
+              "funding_min": -0.0009300720000000001,
+              "mark_open": 119.24,
+              "quantity_after": 0.2,
+              "quantity_before": 0.2,
+              "rate": 3.9e-05,
+              "timestamp_ms": 1790784000000.0
+            }
+          ],
+          "native_funding": -0.0009300720000000001,
+          "native_net": 0.30441513,
+          "open_date": "2026-09-30 15:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.30441513,
+          "source_funding_net_min": 0.30441513,
+          "source_quantity_funding_max": -0.0009300720000000001,
+          "source_quantity_funding_min": -0.0009300720000000001
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.3353964,
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.3353964,
+          "source_funding_net_min": -0.3353964,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.00241008,
+              "funding_min": 0.00241008,
+              "mark_open": 1.5063,
+              "quantity_after": 16.0,
+              "quantity_before": 16.0,
+              "rate": 0.0001,
+              "timestamp_ms": 1790956800000.0
+            }
+          ],
+          "native_funding": 0.00241008,
+          "native_net": 0.51082224,
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.51082224,
+          "source_funding_net_min": 0.51082224,
+          "source_quantity_funding_max": 0.00241008,
+          "source_quantity_funding_min": 0.00241008
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.33748596,
+          "open_date": "2026-10-02 19:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": 0.33748596,
+          "source_funding_net_min": 0.33748596,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0011939616,
+              "funding_min": -0.0011939616,
+              "mark_open": 1.3819,
+              "quantity_after": 18.0,
+              "quantity_before": 18.0,
+              "rate": 4.8e-05,
+              "timestamp_ms": 1791561600000.0
+            }
+          ],
+          "native_funding": -0.0011939616,
+          "native_net": 0.1128814,
+          "open_date": "2026-10-09 14:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.1128814,
+          "source_funding_net_min": 0.1128814,
+          "source_quantity_funding_max": -0.0011939616,
+          "source_quantity_funding_min": -0.0011939616
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1972656,
+          "open_date": "2026-10-12 02:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1972656,
+          "source_funding_net_min": -0.1972656,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1915648,
+          "open_date": "2026-10-12 12:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1915648,
+          "source_funding_net_min": -0.1915648,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.2667882,
+          "open_date": "2026-10-14 13:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.2667882,
+          "source_funding_net_min": -0.2667882,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1523888,
+          "open_date": "2026-10-15 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.1523888,
+          "source_funding_net_min": -0.1523888,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1569768,
+          "open_date": "2026-10-16 15:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.1569768,
+          "source_funding_net_min": -0.1569768,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.00044868779999999997,
+              "funding_min": -0.00044868779999999997,
+              "mark_open": 0.08041,
+              "quantity_after": 310.0,
+              "quantity_before": 310.0,
+              "rate": 1.8e-05,
+              "timestamp_ms": 1792166400000.0
+            }
+          ],
+          "native_funding": -0.00044868779999999997,
+          "native_net": -0.17913517,
+          "open_date": "2026-10-16 15:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.17913517,
+          "source_funding_net_min": -0.17913517,
+          "source_quantity_funding_max": -0.00044868779999999997,
+          "source_quantity_funding_min": -0.00044868779999999997
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0008630369999999999,
+              "funding_min": -0.0008630369999999999,
+              "mark_open": 1.2978,
+              "quantity_after": 19.0,
+              "quantity_before": 19.0,
+              "rate": 3.5e-05,
+              "timestamp_ms": 1792425600000.0
+            }
+          ],
+          "native_funding": -0.0008630369999999999,
+          "native_net": -0.02862014,
+          "open_date": "2026-10-19 14:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.02862014,
+          "source_funding_net_min": -0.02862014,
+          "source_quantity_funding_max": -0.0008630369999999999,
+          "source_quantity_funding_min": -0.0008630369999999999
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0002939916,
+              "funding_min": -0.0002939916,
+              "mark_open": 0.07903,
+              "quantity_after": 310.0,
+              "quantity_before": 310.0,
+              "rate": 1.2e-05,
+              "timestamp_ms": 1792425600000.0
+            }
+          ],
+          "native_funding": -0.0002939916,
+          "native_net": -0.09171175,
+          "open_date": "2026-10-19 14:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.09171175,
+          "source_funding_net_min": -0.09171175,
+          "source_quantity_funding_max": -0.0002939916,
+          "source_quantity_funding_min": -0.0002939916
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.3184016,
+          "open_date": "2026-10-20 14:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.3184016,
+          "source_funding_net_min": 0.3184016,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.0996212,
+          "open_date": "2026-10-21 09:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.0996212,
+          "source_funding_net_min": -0.0996212,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0015709499999999998,
+              "funding_min": -0.0015709499999999998,
+              "mark_open": 104.73,
+              "quantity_after": 0.2,
+              "quantity_before": 0.2,
+              "rate": 7.5e-05,
+              "timestamp_ms": 1792771200000.0
+            }
+          ],
+          "native_funding": -0.0015709499999999998,
+          "native_net": -0.01258015,
+          "open_date": "2026-10-23 14:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.01258015,
+          "source_funding_net_min": -0.01258015,
+          "source_quantity_funding_max": -0.0015709499999999998,
+          "source_quantity_funding_min": -0.0015709499999999998
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0012110747999999998,
+              "funding_min": -0.0012110747999999998,
+              "mark_open": 2328.99,
+              "quantity_after": 0.01,
+              "quantity_before": 0.01,
+              "rate": 5.2e-05,
+              "timestamp_ms": 1792972800000.0
+            }
+          ],
+          "native_funding": -0.0012110747999999998,
+          "native_net": -0.21491261,
+          "open_date": "2026-10-25 23:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.21491261,
+          "source_funding_net_min": -0.21491261,
+          "source_quantity_funding_max": -0.0012110747999999998,
+          "source_quantity_funding_min": -0.0012110747999999998
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1896504,
+          "open_date": "2026-10-27 13:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.1896504,
+          "source_funding_net_min": -0.1896504,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.00555272,
+          "open_date": "2026-10-28 02:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.00555272,
+          "source_funding_net_min": 0.00555272,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.25755,
+          "open_date": "2026-10-29 16:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.25755,
+          "source_funding_net_min": 0.25755,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.30661782,
+          "open_date": "2026-10-29 16:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.30661782,
+          "source_funding_net_min": 0.30661782,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.00407427,
+          "open_date": "2026-10-29 21:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.00407427,
+          "source_funding_net_min": 0.00407427,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.0182688,
+          "open_date": "2026-10-29 21:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.0182688,
+          "source_funding_net_min": 0.0182688,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        }
+      ],
+      "source_funding_net_max": -2.25936708,
+      "source_funding_net_min": -2.2601513484,
+      "trades": 86
+    },
+    "RouterICTV1": {
+      "native_net": 0,
+      "outside_bounds_trades": 0,
+      "rows": [],
+      "source_funding_net_max": 0,
+      "source_funding_net_min": 0,
+      "trades": 0
+    },
+    "RouterOnlyM1V1": {
+      "native_net": 1.49208851,
+      "outside_bounds_trades": 2,
+      "rows": [
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": true,
+              "funding_max": -0.0005696985000000001,
+              "funding_min": -0.0011393970000000001,
+              "mark_open": 2325.3,
+              "quantity_after": 0.005,
+              "quantity_before": 0.01,
+              "rate": 4.9e-05,
+              "timestamp_ms": 1787241600000.0
+            }
+          ],
+          "native_funding": -0.0022787940000000002,
+          "native_net": 0.34998826,
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "outside_bounds_usdt": 0.0011393970000000001,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.3516973555,
+          "source_funding_net_min": 0.351127657,
+          "source_quantity_funding_max": -0.0005696985000000001,
+          "source_quantity_funding_min": -0.0011393970000000001
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.4916912,
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.4916912,
+          "source_funding_net_min": -0.4916912,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.3971352,
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.3971352,
+          "source_funding_net_min": 0.3971352,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.2317432,
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.2317432,
+          "source_funding_net_min": 0.2317432,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": true,
+              "funding_max": -0.00018608940000000001,
+              "funding_min": -0.0003515022,
+              "mark_open": 1.4769,
+              "quantity_after": 9.0,
+              "quantity_before": 17.0,
+              "rate": 1.4e-05,
+              "timestamp_ms": 1787673600000.0
+            }
+          ],
+          "native_funding": -0.0005375916,
+          "native_net": 0.19970563,
+          "open_date": "2026-08-25 14:00:00+00:00",
+          "outside_bounds_usdt": 0.0001860894,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.2000571322,
+          "source_funding_net_min": 0.1998917194,
+          "source_quantity_funding_max": -0.00018608940000000001,
+          "source_quantity_funding_min": -0.0003515022
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.01475264,
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.01475264,
+          "source_funding_net_min": 0.01475264,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0017258831999999997,
+              "funding_min": -0.0017258831999999997,
+              "mark_open": 1.3896,
+              "quantity_after": 18.0,
+              "quantity_before": 18.0,
+              "rate": 6.9e-05,
+              "timestamp_ms": 1789488000000.0
+            }
+          ],
+          "native_funding": -0.0017258831999999997,
+          "native_net": 0.16356038,
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.16356038,
+          "source_funding_net_min": 0.16356038,
+          "source_quantity_funding_max": -0.0017258831999999997,
+          "source_quantity_funding_min": -0.0017258831999999997
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.7364528,
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.7364528,
+          "source_funding_net_min": 0.7364528,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1095584,
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.1095584,
+          "source_funding_net_min": -0.1095584,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        }
+      ],
+      "source_funding_net_max": 1.4941491077,
+      "source_funding_net_min": 1.4934139964,
+      "trades": 9
+    },
+    "RouterOnlyV1": {
+      "native_net": 1.0894565200000002,
+      "outside_bounds_trades": 0,
+      "rows": [
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0011393970000000001,
+              "funding_min": -0.0011393970000000001,
+              "mark_open": 2325.3,
+              "quantity_after": 0.01,
+              "quantity_before": 0.01,
+              "rate": 4.9e-05,
+              "timestamp_ms": 1787241600000.0
+            }
+          ],
+          "native_funding": -0.0011393970000000001,
+          "native_net": 0.32084584,
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.32084584,
+          "source_funding_net_min": 0.32084584,
+          "source_quantity_funding_max": -0.0011393970000000001,
+          "source_quantity_funding_min": -0.0011393970000000001
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.4916912,
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.4916912,
+          "source_funding_net_min": -0.4916912,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.3971352,
+          "open_date": "2026-08-23 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.3971352,
+          "source_funding_net_min": 0.3971352,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.2317432,
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.2317432,
+          "source_funding_net_min": 0.2317432,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0003515022,
+              "funding_min": -0.0003515022,
+              "mark_open": 1.4769,
+              "quantity_after": 17.0,
+              "quantity_before": 17.0,
+              "rate": 1.4e-05,
+              "timestamp_ms": 1787673600000.0
+            }
+          ],
+          "native_funding": -0.0003515022,
+          "native_net": 0.28763904,
+          "open_date": "2026-08-25 14:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.28763904,
+          "source_funding_net_min": 0.28763904,
+          "source_quantity_funding_max": -0.0003515022,
+          "source_quantity_funding_min": -0.0003515022
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.01475264,
+          "open_date": "2026-09-11 14:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.01475264,
+          "source_funding_net_min": 0.01475264,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0017258831999999997,
+              "funding_min": -0.0017258831999999997,
+              "mark_open": 1.3896,
+              "quantity_after": 18.0,
+              "quantity_before": 18.0,
+              "rate": 6.9e-05,
+              "timestamp_ms": 1789488000000.0
+            }
+          ],
+          "native_funding": -0.0017258831999999997,
+          "native_net": -0.2978626,
+          "open_date": "2026-09-15 15:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.2978626,
+          "source_funding_net_min": -0.2978626,
+          "source_quantity_funding_max": -0.0017258831999999997,
+          "source_quantity_funding_min": -0.0017258831999999997
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.7364528,
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.7364528,
+          "source_funding_net_min": 0.7364528,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1095584,
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.1095584,
+          "source_funding_net_min": -0.1095584,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        }
+      ],
+      "source_funding_net_max": 1.0894565200000002,
+      "source_funding_net_min": 1.0894565200000002,
+      "trades": 9
+    },
+    "RouterProfileV1": {
+      "native_net": 0.56560744,
+      "outside_bounds_trades": 0,
+      "rows": [
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0011393970000000001,
+              "funding_min": -0.0011393970000000001,
+              "mark_open": 2325.3,
+              "quantity_after": 0.01,
+              "quantity_before": 0.01,
+              "rate": 4.9e-05,
+              "timestamp_ms": 1787241600000.0
+            }
+          ],
+          "native_funding": -0.0011393970000000001,
+          "native_net": 0.32084584,
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.32084584,
+          "source_funding_net_min": 0.32084584,
+          "source_quantity_funding_max": -0.0011393970000000001,
+          "source_quantity_funding_min": -0.0011393970000000001
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.4916912,
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.4916912,
+          "source_funding_net_min": -0.4916912,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.7364528,
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.7364528,
+          "source_funding_net_min": 0.7364528,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        }
+      ],
+      "source_funding_net_max": 0.56560744,
+      "source_funding_net_min": 0.56560744,
+      "trades": 3
+    },
+    "RouterSMCV1": {
+      "native_net": 0.68779224,
+      "outside_bounds_trades": 0,
+      "rows": [
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0011393970000000001,
+              "funding_min": -0.0011393970000000001,
+              "mark_open": 2325.3,
+              "quantity_after": 0.01,
+              "quantity_before": 0.01,
+              "rate": 4.9e-05,
+              "timestamp_ms": 1787241600000.0
+            }
+          ],
+          "native_funding": -0.0011393970000000001,
+          "native_net": 0.32084584,
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.32084584,
+          "source_funding_net_min": 0.32084584,
+          "source_quantity_funding_max": -0.0011393970000000001,
+          "source_quantity_funding_min": -0.0011393970000000001
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.4916912,
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.4916912,
+          "source_funding_net_min": -0.4916912,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.2317432,
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.2317432,
+          "source_funding_net_min": 0.2317432,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.7364528,
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.7364528,
+          "source_funding_net_min": 0.7364528,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1095584,
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.1095584,
+          "source_funding_net_min": -0.1095584,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        }
+      ],
+      "source_funding_net_max": 0.68779224,
+      "source_funding_net_min": 0.68779224,
+      "trades": 5
+    },
+    "StructureAwareSweepV1": {
+      "native_net": -1.01896455,
+      "outside_bounds_trades": 0,
+      "rows": [
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.05964,
+          "open_date": "2026-08-25 01:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.05964,
+          "source_funding_net_min": 0.05964,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.21264984,
+          "open_date": "2026-08-25 12:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.21264984,
+          "source_funding_net_min": -0.21264984,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1833496,
+          "open_date": "2026-08-25 20:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.1833496,
+          "source_funding_net_min": -0.1833496,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.19395878,
+          "open_date": "2026-08-28 04:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.19395878,
+          "source_funding_net_min": -0.19395878,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.00026943839999999996,
+              "funding_min": 0.00026943839999999996,
+              "mark_open": 0.08748,
+              "quantity_after": 280.0,
+              "quantity_before": 280.0,
+              "rate": -1.1e-05,
+              "timestamp_ms": 1787904000000.0
+            }
+          ],
+          "native_funding": 0.00026943839999999996,
+          "native_net": -0.1131944,
+          "open_date": "2026-08-28 04:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1131944,
+          "source_funding_net_min": -0.1131944,
+          "source_quantity_funding_max": 0.00026943839999999996,
+          "source_quantity_funding_min": 0.00026943839999999996
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.34659072,
+          "open_date": "2026-08-28 16:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.34659072,
+          "source_funding_net_min": -0.34659072,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.29582074,
+          "open_date": "2026-08-30 18:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.29582074,
+          "source_funding_net_min": 0.29582074,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.19144773,
+          "open_date": "2026-09-25 14:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.19144773,
+          "source_funding_net_min": -0.19144773,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.3469024,
+          "open_date": "2026-09-28 02:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.3469024,
+          "source_funding_net_min": -0.3469024,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.23355776,
+          "open_date": "2026-09-28 02:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.23355776,
+          "source_funding_net_min": -0.23355776,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.26193728,
+          "open_date": "2026-09-28 05:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.26193728,
+          "source_funding_net_min": -0.26193728,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 7.135722e-05,
+              "funding_min": 7.135722e-05,
+              "mark_open": 2642.86,
+              "quantity_after": 0.009,
+              "quantity_before": 0.009,
+              "rate": -3e-06,
+              "timestamp_ms": 1790582400000.0
+            }
+          ],
+          "native_funding": 7.135722e-05,
+          "native_net": -0.13728968,
+          "open_date": "2026-09-28 05:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.13728968,
+          "source_funding_net_min": -0.13728968,
+          "source_quantity_funding_max": 7.135722e-05,
+          "source_quantity_funding_min": 7.135722e-05
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.3333812,
+          "open_date": "2026-09-28 09:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.3333812,
+          "source_funding_net_min": 0.3333812,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0009300720000000001,
+              "funding_min": -0.0009300720000000001,
+              "mark_open": 119.24,
+              "quantity_after": 0.2,
+              "quantity_before": 0.2,
+              "rate": 3.9e-05,
+              "timestamp_ms": 1790784000000.0
+            }
+          ],
+          "native_funding": -0.0009300720000000001,
+          "native_net": 0.30441513,
+          "open_date": "2026-09-30 15:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.30441513,
+          "source_funding_net_min": 0.30441513,
+          "source_quantity_funding_max": -0.0009300720000000001,
+          "source_quantity_funding_min": -0.0009300720000000001
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.00241008,
+              "funding_min": 0.00241008,
+              "mark_open": 1.5063,
+              "quantity_after": 16.0,
+              "quantity_before": 16.0,
+              "rate": 0.0001,
+              "timestamp_ms": 1790956800000.0
+            }
+          ],
+          "native_funding": 0.00241008,
+          "native_net": 0.51082224,
+          "open_date": "2026-10-02 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.51082224,
+          "source_funding_net_min": 0.51082224,
+          "source_quantity_funding_max": 0.00241008,
+          "source_quantity_funding_min": 0.00241008
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1972656,
+          "open_date": "2026-10-12 02:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1972656,
+          "source_funding_net_min": -0.1972656,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1915648,
+          "open_date": "2026-10-12 12:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1915648,
+          "source_funding_net_min": -0.1915648,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0008630369999999999,
+              "funding_min": -0.0008630369999999999,
+              "mark_open": 1.2978,
+              "quantity_after": 19.0,
+              "quantity_before": 19.0,
+              "rate": 3.5e-05,
+              "timestamp_ms": 1792425600000.0
+            }
+          ],
+          "native_funding": -0.0008630369999999999,
+          "native_net": -0.02862014,
+          "open_date": "2026-10-19 14:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.02862014,
+          "source_funding_net_min": -0.02862014,
+          "source_quantity_funding_max": -0.0008630369999999999,
+          "source_quantity_funding_min": -0.0008630369999999999
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0002939916,
+              "funding_min": -0.0002939916,
+              "mark_open": 0.07903,
+              "quantity_after": 310.0,
+              "quantity_before": 310.0,
+              "rate": 1.2e-05,
+              "timestamp_ms": 1792425600000.0
+            }
+          ],
+          "native_funding": -0.0002939916,
+          "native_net": -0.09171175,
+          "open_date": "2026-10-19 14:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.09171175,
+          "source_funding_net_min": -0.09171175,
+          "source_quantity_funding_max": -0.0002939916,
+          "source_quantity_funding_min": -0.0002939916
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.0996212,
+          "open_date": "2026-10-21 09:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.0996212,
+          "source_funding_net_min": -0.0996212,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.30661782,
+          "open_date": "2026-10-29 16:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.30661782,
+          "source_funding_net_min": 0.30661782,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        }
+      ],
+      "source_funding_net_max": -1.01896455,
+      "source_funding_net_min": -1.01896455,
+      "trades": 21
+    },
+    "VWAPTrendContinuationV1": {
+      "native_net": 0.95970847,
+      "outside_bounds_trades": 0,
+      "rows": [
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.0007375272,
+              "funding_min": 0.0007375272,
+              "mark_open": 1.0344,
+              "quantity_after": 23.0,
+              "quantity_before": 23.0,
+              "rate": 3.1e-05,
+              "timestamp_ms": 1786060800000.0
+            }
+          ],
+          "native_funding": 0.0007375272,
+          "native_net": 0.23199839,
+          "open_date": "2026-08-06 16:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.23199839,
+          "source_funding_net_min": 0.23199839,
+          "source_quantity_funding_max": 0.0007375272,
+          "source_quantity_funding_min": 0.0007375272
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.0010783325000000002,
+              "funding_min": 0.0010783325000000002,
+              "mark_open": 1.0031,
+              "quantity_after": 25.0,
+              "quantity_before": 25.0,
+              "rate": 4.3e-05,
+              "timestamp_ms": 1786464000000.0
+            }
+          ],
+          "native_funding": 0.0010783325000000002,
+          "native_net": -0.22402367,
+          "open_date": "2026-08-11 15:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.22402367,
+          "source_funding_net_min": -0.22402367,
+          "source_quantity_funding_max": 0.0010783325000000002,
+          "source_quantity_funding_min": 0.0010783325000000002
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.17638867,
+          "open_date": "2026-08-20 06:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.17638867,
+          "source_funding_net_min": -0.17638867,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": true,
+              "funding_max": -0.0,
+              "funding_min": -0.0017232000000000003,
+              "mark_open": 86.16,
+              "quantity_after": 0.0,
+              "quantity_before": 0.2,
+              "rate": 0.0001,
+              "timestamp_ms": 1787212800000.0
+            }
+          ],
+          "native_funding": -0.0017232000000000003,
+          "native_net": 0.2935888,
+          "open_date": "2026-08-20 06:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.29531199999999996,
+          "source_funding_net_min": 0.2935888,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": -0.0017232000000000003
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.0011393970000000001,
+              "funding_min": -0.0011393970000000001,
+              "mark_open": 2325.3,
+              "quantity_after": 0.01,
+              "quantity_before": 0.01,
+              "rate": 4.9e-05,
+              "timestamp_ms": 1787241600000.0
+            }
+          ],
+          "native_funding": -0.0011393970000000001,
+          "native_net": 0.32084584,
+          "open_date": "2026-08-20 08:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.32084584,
+          "source_funding_net_min": 0.32084584,
+          "source_quantity_funding_max": -0.0011393970000000001,
+          "source_quantity_funding_min": -0.0011393970000000001
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.4916912,
+          "open_date": "2026-08-22 17:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.4916912,
+          "source_funding_net_min": -0.4916912,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.17214744,
+          "open_date": "2026-08-26 05:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.17214744,
+          "source_funding_net_min": -0.17214744,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.000312996099,
+              "funding_min": -0.000312996099,
+              "mark_open": 80255.41,
+              "quantity_after": 0.0003,
+              "quantity_before": 0.0003,
+              "rate": 1.3e-05,
+              "timestamp_ms": 1787846400000.0
+            }
+          ],
+          "native_funding": -0.000312996099,
+          "native_net": 0.0692152,
+          "open_date": "2026-08-27 14:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "BTC/USDT:USDT",
+          "source_funding_net_max": 0.0692152,
+          "source_funding_net_min": 0.0692152,
+          "source_quantity_funding_max": -0.000312996099,
+          "source_quantity_funding_min": -0.000312996099
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.22535874,
+          "open_date": "2026-09-02 08:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.22535874,
+          "source_funding_net_min": -0.22535874,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1882554,
+          "open_date": "2026-09-02 08:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.1882554,
+          "source_funding_net_min": -0.1882554,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.21972608,
+          "open_date": "2026-09-04 09:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.21972608,
+          "source_funding_net_min": -0.21972608,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.284434,
+          "open_date": "2026-09-06 09:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.284434,
+          "source_funding_net_min": 0.284434,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.1647512,
+          "open_date": "2026-09-08 11:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.1647512,
+          "source_funding_net_min": -0.1647512,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.00024302400000000002,
+              "funding_min": 0.00024302400000000002,
+              "mark_open": 101.26,
+              "quantity_after": 0.2,
+              "quantity_before": 0.2,
+              "rate": 1.2e-05,
+              "timestamp_ms": 1789027200000.0
+            }
+          ],
+          "native_funding": 0.00024302400000000002,
+          "native_net": 0.25015542,
+          "open_date": "2026-09-10 07:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.25015542,
+          "source_funding_net_min": 0.25015542,
+          "source_quantity_funding_max": 0.00024302400000000002,
+          "source_quantity_funding_min": 0.00024302400000000002
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": 0.00093004605,
+              "funding_min": 0.00093004605,
+              "mark_open": 75613.5,
+              "quantity_after": 0.0003,
+              "quantity_before": 0.0003,
+              "rate": 4.1e-05,
+              "timestamp_ms": 1789516800000.0
+            }
+          ],
+          "native_funding": 0.00093004605,
+          "native_net": -0.08336983,
+          "open_date": "2026-09-15 18:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "BTC/USDT:USDT",
+          "source_funding_net_max": -0.08336983,
+          "source_funding_net_min": -0.08336983,
+          "source_quantity_funding_max": 0.00093004605,
+          "source_quantity_funding_min": 0.00093004605
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.19660451,
+          "open_date": "2026-09-16 19:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "BTC/USDT:USDT",
+          "source_funding_net_max": -0.19660451,
+          "source_funding_net_min": -0.19660451,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.2498188,
+          "open_date": "2026-09-17 12:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": 0.2498188,
+          "source_funding_net_min": 0.2498188,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.28720344,
+          "open_date": "2026-09-19 02:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.28720344,
+          "source_funding_net_min": 0.28720344,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.29441749,
+          "open_date": "2026-09-21 08:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.29441749,
+          "source_funding_net_min": 0.29441749,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.76683456,
+          "open_date": "2026-09-22 08:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.76683456,
+          "source_funding_net_min": 0.76683456,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.45483744,
+          "open_date": "2026-09-25 08:30:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": 0.45483744,
+          "source_funding_net_min": 0.45483744,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": 0.2949048,
+          "open_date": "2026-10-07 09:00:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": 0.2949048,
+          "source_funding_net_min": 0.2949048,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": false,
+              "funding_max": -0.00030031442999999995,
+              "funding_min": -0.00030031442999999995,
+              "mark_open": 2566.79,
+              "quantity_after": 0.009,
+              "quantity_before": 0.009,
+              "rate": -1.3e-05,
+              "timestamp_ms": 1791446400000.0
+            }
+          ],
+          "native_funding": -0.00030031442999999995,
+          "native_net": 0.20522828,
+          "open_date": "2026-10-08 04:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": 0.20522828,
+          "source_funding_net_min": 0.20522828,
+          "source_quantity_funding_max": -0.00030031442999999995,
+          "source_quantity_funding_min": -0.00030031442999999995
+        },
+        {
+          "events": [
+            {
+              "clock_priority_ambiguous": true,
+              "funding_max": 0.000753396255,
+              "funding_min": 0.0,
+              "mark_open": 81010.35,
+              "quantity_after": 0.0,
+              "quantity_before": 0.0003,
+              "rate": 3.1e-05,
+              "timestamp_ms": 1791475200000.0
+            }
+          ],
+          "native_funding": 0.000753396255,
+          "native_net": 0.35547775,
+          "open_date": "2026-10-08 15:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "BTC/USDT:USDT",
+          "source_funding_net_max": 0.35547775,
+          "source_funding_net_min": 0.354724353745,
+          "source_quantity_funding_max": 0.000753396255,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.2403748,
+          "open_date": "2026-10-09 13:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.2403748,
+          "source_funding_net_min": -0.2403748,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.19309716,
+          "open_date": "2026-10-13 11:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.19309716,
+          "source_funding_net_min": -0.19309716,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.2467092,
+          "open_date": "2026-10-15 03:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "SOL/USDT:USDT",
+          "source_funding_net_max": -0.2467092,
+          "source_funding_net_min": -0.2467092,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.17321674,
+          "open_date": "2026-10-15 03:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "ETH/USDT:USDT",
+          "source_funding_net_max": -0.17321674,
+          "source_funding_net_min": -0.17321674,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.21413038,
+          "open_date": "2026-10-15 12:45:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "XRP/USDT:USDT",
+          "source_funding_net_max": -0.21413038,
+          "source_funding_net_min": -0.21413038,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        },
+        {
+          "events": [],
+          "native_funding": 0,
+          "native_net": -0.18940672,
+          "open_date": "2026-10-26 08:15:00+00:00",
+          "outside_bounds_usdt": 0.0,
+          "pair": "DOGE/USDT:USDT",
+          "source_funding_net_max": -0.18940672,
+          "source_funding_net_min": -0.18940672,
+          "source_quantity_funding_max": 0.0,
+          "source_quantity_funding_min": 0.0
+        }
+      ],
+      "source_funding_net_max": 0.9614316700000001,
+      "source_funding_net_min": 0.9589550737450001,
+      "trades": 30
+    }
+  }
+}

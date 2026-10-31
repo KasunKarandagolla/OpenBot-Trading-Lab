@@ -1,0 +1,41 @@
+{
+  "mode": "STATIC_CONTRACT_CASES_NOT_OPENBOT_MODEL_INVOCATION",
+  "cases": [
+    {
+      "name": "expired_setup",
+      "pass": true,
+      "expected": {
+        "researcher": "REJECT",
+        "director": "NO_TRADE",
+        "execution_authority": "NONE"
+      }
+    },
+    {
+      "name": "tier_unavailable",
+      "pass": true,
+      "expected": {
+        "risk_reviewer": "UNKNOWN",
+        "director": "NO_TRADE",
+        "execution_authority": "NONE"
+      }
+    },
+    {
+      "name": "unconfirmed_flow",
+      "pass": true,
+      "expected": {
+        "orderflow_confirmation": "UNKNOWN",
+        "director": "WATCH",
+        "execution_authority": "NONE"
+      }
+    },
+    {
+      "name": "valid_research_recommendation",
+      "pass": true,
+      "expected": {
+        "director": "RESEARCH_TRADE",
+        "execution_authority": "NONE"
+      }
+    }
+  ],
+  "runtime_isolation_verified": false
+}

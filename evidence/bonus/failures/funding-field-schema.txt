@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/lab/scripts/bonus.py", line 54, in <module>
+    try:raise SystemExit(main())
+                         ~~~~^^
+  File "/lab/scripts/bonus.py", line 37, in main
+    audit()
+    ~~~~~^^
+  File "/lab/scripts/bonus_funding_audit.py", line 30, in audit
+    events[symbol]=[{'timestamp_ms':r.date.timestamp()*1000,'rate':float(r.open),
+                                                                         ^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/pandas/core/generic.py", line 6194, in __getattr__
+    return object.__getattribute__(self, name)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AttributeError: 'Series' object has no attribute 'open'

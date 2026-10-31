@@ -1,0 +1,1435 @@
+{
+  "classification": "INSPECTED_DEVELOPMENT_NOT_INDEPENDENT",
+  "limitations": [
+    "Five surviving markets, no historic full-universe eligibility or quote spreads.",
+    "OHLCV profile is approximate; no historical aggressor prints or news feed.",
+    "Native requested-price fills; no queue model or observed partial execution.",
+    "MFE/MAE only complete intermediate bars; entry/exit intrabar extrema intentionally excluded.",
+    "Report adds native exported funding once. Independent source-event audit finds two M1 trades outside funding quantity bounds at exact-clock partial exits; native totals remain unchanged. M1 stays research-only.",
+    "Mark-equity approximation recognizes aggregate funding at final exit, not at each actual event.",
+    "No independent calendar holdout, new prospective cohort starts Nov9 after prior reserved cohort.",
+    "Extra friction stresses native turnover without resimulating fills. No operational promotion."
+  ],
+  "management": {
+    "M0_unmatched": 0,
+    "M1_unmatched": 0,
+    "challenger": "RouterOnlyM1V1",
+    "earlier_harmful_exits": 1,
+    "extra_fees_usdt": 0.000242520000000003,
+    "fill_limit": "Native candle partial fills tested mechanically; no actual exchange queue or partial-fill history. Capacity can make later opportunities unmatched.",
+    "matched": 9,
+    "matched_delta_usdt": 0.40263198999999994,
+    "parent": "RouterOnlyV1",
+    "reason": "Frozen integrated policy abstained; separately registered available-opportunity management experiment",
+    "reduced_losses": 1,
+    "reduced_winners": 1,
+    "saved_profit": 1
+  },
+  "orderflow_economics": "INSUFFICIENT OR UNAVAILABLE EVIDENCE; genuine future shadow only",
+  "profitability_demonstrated": false,
+  "protocol_sha256": "1023596d146e5cc7a21fb1b4b8a77a67b77a7526f4a5745388510605d96416b0",
+  "variants": {
+    "IntegratedM0V1": {
+      "decision_population": {
+        "native_filled_trades": 0,
+        "parent_candidates": 92,
+        "plan_fill_difference_interpretation": "capacity, ongoing position, callbacks, expiry and native fills; not all differences are unfilled orders",
+        "rejected": 92,
+        "trade_plans": 0
+      },
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 0.0,
+        "min_completed_mark_equity": 1000.0,
+        "no_fills_simulated": true
+      },
+      "net_usdt": 0.0,
+      "recipes": {
+        "sweep": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        },
+        "vwap": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        }
+      },
+      "source_funding_audit": {
+        "outside_bounds_trades": 0,
+        "source_funding_net_max": 0,
+        "source_funding_net_min": 0
+      },
+      "trades": 0,
+      "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+    },
+    "IntegratedM1V1": {
+      "decision_population": {
+        "native_filled_trades": 0,
+        "parent_candidates": 92,
+        "plan_fill_difference_interpretation": "capacity, ongoing position, callbacks, expiry and native fills; not all differences are unfilled orders",
+        "rejected": 92,
+        "trade_plans": 0
+      },
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 0.0,
+        "min_completed_mark_equity": 1000.0,
+        "no_fills_simulated": true
+      },
+      "net_usdt": 0.0,
+      "recipes": {
+        "sweep": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        },
+        "vwap": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        }
+      },
+      "source_funding_audit": {
+        "outside_bounds_trades": 0,
+        "source_funding_net_max": 0,
+        "source_funding_net_min": 0
+      },
+      "trades": 0,
+      "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+    },
+    "LiquiditySweepReversalV1": {
+      "ambiguous_stop_target_candles": 1,
+      "break_even_extra_bps_per_side": -5.601297748911146,
+      "closed_trade_drawdown_usdt": 3.9174887599999995,
+      "development_week_block_interval_usdt": [
+        -6.6787422855,
+        2.159896966249999
+      ],
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 4.111163200029978,
+        "min_completed_mark_equity": 996.06803656797,
+        "no_fills_simulated": true
+      },
+      "expectancy_usdt": -0.02627171023255814,
+      "fees_usdt": 2.420189586,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": -2.25936708
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": -4.276191735
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": -6.29301639
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -10.326665700000001
+        }
+      ],
+      "funding_signed_usdt": -0.0053875127379999985,
+      "gross_price_pnl_usdt": 0.16620999999997946,
+      "hold_minutes_mean": 134.47674418604652,
+      "mean_MAE_pct_completed_intermediate_bars": -0.38707156770693274,
+      "mean_MFE_pct_completed_intermediate_bars": 0.7429414160065129,
+      "mean_directional_price_move_pct": 0.01752826405905084,
+      "mean_loss_usdt": -0.1831599621153846,
+      "mean_net_R": -0.08479614951123024,
+      "mean_win_usdt": 0.2136750279411765,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 3,
+      "native_timedout_entry_orders": 0,
+      "net_usdt": -2.25936708,
+      "net_without_best3_usdt": -3.80818521,
+      "partial_exits": 0,
+      "per_pair": {
+        "BTC/USDT:USDT": 0.35434521,
+        "DOGE/USDT:USDT": -3.17073843,
+        "ETH/USDT:USDT": 0.09761196999999995,
+        "SOL/USDT:USDT": 1.12482275,
+        "XRP/USDT:USDT": -0.6654085799999999
+      },
+      "per_regime": {
+        "BALANCE": {
+          "net_usdt": -1.1582486200000002,
+          "trades": 64
+        },
+        "TREND_DOWN": {
+          "net_usdt": 0.07271670000000004,
+          "trades": 8
+        },
+        "TREND_UP": {
+          "net_usdt": -1.1738351599999999,
+          "trades": 14
+        }
+      },
+      "per_side": {
+        "long": -2.63933361,
+        "short": 0.37996653
+      },
+      "profit_factor": 0.7627791225698918,
+      "recipes": {
+        "sweep": {
+          "ambiguous_stop_target_candles": 1,
+          "break_even_extra_bps_per_side": -5.601297748911146,
+          "closed_trade_drawdown_usdt": 3.9174887599999995,
+          "development_week_block_interval_usdt": [
+            -6.6787422855,
+            2.159896966249999
+          ],
+          "expectancy_usdt": -0.02627171023255814,
+          "fees_usdt": 2.420189586,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": -2.25936708
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": -4.276191735
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": -6.29301639
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": -10.326665700000001
+            }
+          ],
+          "funding_signed_usdt": -0.0053875127379999985,
+          "gross_price_pnl_usdt": 0.16620999999997946,
+          "hold_minutes_mean": 134.47674418604652,
+          "mean_MAE_pct_completed_intermediate_bars": -0.38707156770693274,
+          "mean_MFE_pct_completed_intermediate_bars": 0.7429414160065129,
+          "mean_directional_price_move_pct": 0.01752826405905084,
+          "mean_loss_usdt": -0.1831599621153846,
+          "mean_net_R": -0.08479614951123024,
+          "mean_win_usdt": 0.2136750279411765,
+          "net_usdt": -2.25936708,
+          "net_without_best3_usdt": -3.80818521,
+          "partial_exits": 0,
+          "per_pair": {
+            "BTC/USDT:USDT": 0.35434521,
+            "DOGE/USDT:USDT": -3.17073843,
+            "ETH/USDT:USDT": 0.09761196999999995,
+            "SOL/USDT:USDT": 1.12482275,
+            "XRP/USDT:USDT": -0.6654085799999999
+          },
+          "per_regime": {
+            "BALANCE": {
+              "net_usdt": -1.1582486200000002,
+              "trades": 64
+            },
+            "TREND_DOWN": {
+              "net_usdt": 0.07271670000000004,
+              "trades": 8
+            },
+            "TREND_UP": {
+              "net_usdt": -1.1738351599999999,
+              "trades": 14
+            }
+          },
+          "per_side": {
+            "long": -2.63933361,
+            "short": 0.37996653
+          },
+          "profit_factor": 0.7627791225698918,
+          "return_on_1000_equity_pct": -0.225936708,
+          "sum_net_R": -7.292468857965799,
+          "trades": 86,
+          "turnover_usdt": 4033.6493100000002,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "REJECTED UNDER TESTED ASSUMPTIONS"
+        },
+        "vwap": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        }
+      },
+      "return_on_1000_equity_pct": -0.225936708,
+      "source_funding_audit": {
+        "outside_bounds_trades": 0,
+        "source_funding_net_max": -2.25936708,
+        "source_funding_net_min": -2.2601513484
+      },
+      "sum_net_R": -7.292468857965799,
+      "trades": 86,
+      "turnover_usdt": 4033.6493100000002,
+      "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+      "verdict": "REJECTED UNDER TESTED ASSUMPTIONS"
+    },
+    "RouterICTV1": {
+      "decision_population": {
+        "native_filled_trades": 0,
+        "parent_candidates": 92,
+        "plan_fill_difference_interpretation": "capacity, ongoing position, callbacks, expiry and native fills; not all differences are unfilled orders",
+        "rejected": 92,
+        "trade_plans": 0
+      },
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 0.0,
+        "min_completed_mark_equity": 1000.0,
+        "no_fills_simulated": true
+      },
+      "net_usdt": 0.0,
+      "recipes": {
+        "sweep": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        },
+        "vwap": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        }
+      },
+      "source_funding_audit": {
+        "outside_bounds_trades": 0,
+        "source_funding_net_max": 0,
+        "source_funding_net_min": 0
+      },
+      "trades": 0,
+      "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+    },
+    "RouterOnlyM1V1": {
+      "ambiguous_stop_target_candles": 0,
+      "break_even_extra_bps_per_side": 35.6391671467836,
+      "closed_trade_drawdown_usdt": 0.4916912,
+      "decision_population": {
+        "native_filled_trades": 9,
+        "parent_candidates": 92,
+        "plan_fill_difference_interpretation": "capacity, ongoing position, callbacks, expiry and native fills; not all differences are unfilled orders",
+        "rejected": 82,
+        "trade_plans": 10
+      },
+      "development_week_block_interval_usdt": [
+        0.06552527100000004,
+        3.1862882919999995
+      ],
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 0.8630651600000192,
+        "min_completed_mark_equity": 999.846738666,
+        "no_fills_simulated": true
+      },
+      "expectancy_usdt": 0.16578761222222224,
+      "fees_usdt": 0.251199222,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": 1.49208851
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 1.2827558250000002
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 1.07342314
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": 0.6547577700000001
+        }
+      ],
+      "funding_signed_usdt": -0.0045422688,
+      "gross_price_pnl_usdt": 1.7478299999999911,
+      "hold_minutes_mean": 175.0,
+      "mean_MAE_pct_completed_intermediate_bars": -0.6214033948716752,
+      "mean_MFE_pct_completed_intermediate_bars": 1.443431846113028,
+      "mean_directional_price_move_pct": 0.8763910222788651,
+      "mean_loss_usdt": -0.3006248,
+      "mean_net_R": 0.4847824765994223,
+      "mean_win_usdt": 0.2990483014285715,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_usdt": 1.49208851,
+      "net_without_best3_usdt": 0.00851225000000011,
+      "partial_exits": 3,
+      "per_pair": {
+        "DOGE/USDT:USDT": -0.4916912,
+        "ETH/USDT:USDT": 0.3647409,
+        "SOL/USDT:USDT": 0.6288784000000001,
+        "XRP/USDT:USDT": 0.99016041
+      },
+      "per_regime": {
+        "BALANCE": {
+          "net_usdt": 0.89733865,
+          "trades": 6
+        },
+        "TREND_UP": {
+          "net_usdt": 0.5947498600000001,
+          "trades": 3
+        }
+      },
+      "per_side": {
+        "long": 0.95801587,
+        "short": 0.53407264
+      },
+      "profit_factor": 3.4816457424670215,
+      "recipes": {
+        "sweep": {
+          "ambiguous_stop_target_candles": 0,
+          "break_even_extra_bps_per_side": 32.68439947525095,
+          "closed_trade_drawdown_usdt": 0.10955840000000006,
+          "development_week_block_interval_usdt": [
+            -0.08193751499999997,
+            2.0530749355
+          ],
+          "expectancy_usdt": 0.14955644166666668,
+          "fees_usdt": 0.164727882,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": 0.89733865
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": 0.760065415
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": 0.62279218
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": 0.34824571000000004
+            }
+          ],
+          "funding_signed_usdt": -0.0022634748,
+          "gross_price_pnl_usdt": 1.0643299999999911,
+          "hold_minutes_mean": 92.5,
+          "mean_MAE_pct_completed_intermediate_bars": -0.2839756222802427,
+          "mean_MFE_pct_completed_intermediate_bars": 1.168816077160427,
+          "mean_directional_price_move_pct": 0.834846398945375,
+          "mean_loss_usdt": -0.1095584,
+          "mean_net_R": 0.486476095540389,
+          "mean_win_usdt": 0.20137941,
+          "net_usdt": 0.89733865,
+          "net_without_best3_usdt": 0.06875461999999999,
+          "partial_exits": 2,
+          "per_pair": {
+            "ETH/USDT:USDT": 0.01475264,
+            "SOL/USDT:USDT": 0.6288784000000001,
+            "XRP/USDT:USDT": 0.25370761
+          },
+          "per_regime": {
+            "BALANCE": {
+              "net_usdt": 0.89733865,
+              "trades": 6
+            }
+          },
+          "per_side": {
+            "long": 0.36326601000000003,
+            "short": 0.53407264
+          },
+          "profit_factor": 9.190505246516926,
+          "return_on_1000_equity_pct": 0.089733865,
+          "sum_net_R": 2.918856573242333,
+          "trades": 6,
+          "turnover_usdt": 274.54647,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "PROMISING BUT UNQUALIFIED"
+        },
+        "vwap": {
+          "ambiguous_stop_target_candles": 0,
+          "break_even_extra_bps_per_side": 41.26799885372426,
+          "closed_trade_drawdown_usdt": 0.4916912,
+          "development_week_block_interval_usdt": [
+            -0.42510882,
+            2.2093584
+          ],
+          "expectancy_usdt": 0.19824995333333337,
+          "fees_usdt": 0.08647134,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": 0.5947498600000001
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": 0.52269041
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": 0.4506309600000001
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": 0.3065120600000001
+            }
+          ],
+          "funding_signed_usdt": -0.0022787940000000002,
+          "gross_price_pnl_usdt": 0.6835,
+          "hold_minutes_mean": 340.0,
+          "mean_MAE_pct_completed_intermediate_bars": -1.29625894005454,
+          "mean_MFE_pct_completed_intermediate_bars": 1.9926633840182297,
+          "mean_directional_price_move_pct": 0.9594802689458448,
+          "mean_loss_usdt": -0.4916912,
+          "mean_net_R": 0.48139523871748896,
+          "mean_win_usdt": 0.54322053,
+          "net_usdt": 0.5947498600000001,
+          "net_without_best3_usdt": 0.0,
+          "partial_exits": 1,
+          "per_pair": {
+            "DOGE/USDT:USDT": -0.4916912,
+            "ETH/USDT:USDT": 0.34998826,
+            "XRP/USDT:USDT": 0.7364528
+          },
+          "per_regime": {
+            "TREND_UP": {
+              "net_usdt": 0.5947498600000001,
+              "trades": 3
+            }
+          },
+          "per_side": {
+            "long": 0.5947498600000001,
+            "short": 0
+          },
+          "profit_factor": 2.209600375194838,
+          "return_on_1000_equity_pct": 0.05947498600000001,
+          "sum_net_R": 1.444185716152467,
+          "trades": 3,
+          "turnover_usdt": 144.1189,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "PROMISING BUT UNQUALIFIED"
+        }
+      },
+      "return_on_1000_equity_pct": 0.149208851,
+      "source_funding_audit": {
+        "outside_bounds_trades": 2,
+        "source_funding_net_max": 1.4941491077,
+        "source_funding_net_min": 1.4934139964
+      },
+      "sum_net_R": 4.3630422893948,
+      "trades": 9,
+      "turnover_usdt": 418.66537,
+      "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+      "verdict": "PROMISING BUT UNQUALIFIED"
+    },
+    "RouterOnlyV1": {
+      "ambiguous_stop_target_candles": 0,
+      "break_even_extra_bps_per_side": 26.047278546081632,
+      "closed_trade_drawdown_usdt": 0.4916912,
+      "decision_population": {
+        "native_filled_trades": 9,
+        "parent_candidates": 92,
+        "plan_fill_difference_interpretation": "capacity, ongoing position, callbacks, expiry and native fills; not all differences are unfilled orders",
+        "rejected": 82,
+        "trade_plans": 10
+      },
+      "development_week_block_interval_usdt": [
+        -0.56640941,
+        2.96501292
+      ],
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 0.8630651600000192,
+        "min_completed_mark_equity": 999.817596243,
+        "no_fills_simulated": true
+      },
+      "expectancy_usdt": 0.12105072444444447,
+      "fees_usdt": 0.250956702,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": 1.0894565200000002
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.8803259350000001
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 0.6711953500000002
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": 0.25293418000000023
+        }
+      ],
+      "funding_signed_usdt": -0.0032167823999999998,
+      "gross_price_pnl_usdt": 1.3436299999999908,
+      "hold_minutes_mean": 183.33333333333334,
+      "mean_MAE_pct_completed_intermediate_bars": -0.6214033948716752,
+      "mean_MFE_pct_completed_intermediate_bars": 1.443431846113028,
+      "mean_directional_price_move_pct": 0.6951307667096149,
+      "mean_loss_usdt": -0.29970406666666666,
+      "mean_net_R": 0.35956483728460553,
+      "mean_win_usdt": 0.33142812,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_usdt": 1.0894565200000002,
+      "net_without_best3_usdt": -0.36497731999999994,
+      "partial_exits": 0,
+      "per_pair": {
+        "DOGE/USDT:USDT": -0.4916912,
+        "ETH/USDT:USDT": 0.33559848,
+        "SOL/USDT:USDT": 0.6288784000000001,
+        "XRP/USDT:USDT": 0.61667084
+      },
+      "per_regime": {
+        "BALANCE": {
+          "net_usdt": 0.5238490800000001,
+          "trades": 6
+        },
+        "TREND_UP": {
+          "net_usdt": 0.56560744,
+          "trades": 3
+        }
+      },
+      "per_side": {
+        "long": 0.55538388,
+        "short": 0.53407264
+      },
+      "profit_factor": 2.21170252166526,
+      "recipes": {
+        "sweep": {
+          "ambiguous_stop_target_candles": 0,
+          "break_even_extra_bps_per_side": 19.106545924707206,
+          "closed_trade_drawdown_usdt": 0.40742100000000003,
+          "development_week_block_interval_usdt": [
+            -0.7155693999999999,
+            1.86254016
+          ],
+          "expectancy_usdt": 0.08730818000000001,
+          "fees_usdt": 0.16450354199999997,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": 0.5238490800000001
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": 0.3867627950000001
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": 0.24967651000000007
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": -0.02449605999999993
+            }
+          ],
+          "funding_signed_usdt": -0.0020773854,
+          "gross_price_pnl_usdt": 0.6904299999999906,
+          "hold_minutes_mean": 105.0,
+          "mean_MAE_pct_completed_intermediate_bars": -0.2839756222802427,
+          "mean_MFE_pct_completed_intermediate_bars": 1.168816077160427,
+          "mean_directional_price_move_pct": 0.5850687687387373,
+          "mean_loss_usdt": -0.2037105,
+          "mean_net_R": 0.3093062178387652,
+          "mean_win_usdt": 0.23281752,
+          "net_usdt": 0.5238490800000001,
+          "net_without_best3_usdt": -0.39266835999999994,
+          "partial_exits": 0,
+          "per_pair": {
+            "ETH/USDT:USDT": 0.01475264,
+            "SOL/USDT:USDT": 0.6288784000000001,
+            "XRP/USDT:USDT": -0.11978195999999997
+          },
+          "per_regime": {
+            "BALANCE": {
+              "net_usdt": 0.5238490800000001,
+              "trades": 6
+            }
+          },
+          "per_side": {
+            "long": -0.010223559999999965,
+            "short": 0.53407264
+          },
+          "profit_factor": 2.2857684802697946,
+          "return_on_1000_equity_pct": 0.05238490800000001,
+          "sum_net_R": 1.8558373070325913,
+          "trades": 6,
+          "turnover_usdt": 274.17257,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "PROMISING BUT UNQUALIFIED"
+        },
+        "vwap": {
+          "ambiguous_stop_target_candles": 0,
+          "break_even_extra_bps_per_side": 39.25414224303657,
+          "closed_trade_drawdown_usdt": 0.4916912,
+          "development_week_block_interval_usdt": [
+            -0.5125360800000001,
+            2.2093584
+          ],
+          "expectancy_usdt": 0.18853581333333333,
+          "fees_usdt": 0.08645316,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": 0.56560744
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": 0.49356313999999996
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": 0.42151883999999995
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": 0.27743023999999994
+            }
+          ],
+          "funding_signed_usdt": -0.0011393970000000001,
+          "gross_price_pnl_usdt": 0.6532000000000002,
+          "hold_minutes_mean": 340.0,
+          "mean_MAE_pct_completed_intermediate_bars": -1.29625894005454,
+          "mean_MFE_pct_completed_intermediate_bars": 1.9926633840182297,
+          "mean_directional_price_move_pct": 0.9152547626513704,
+          "mean_loss_usdt": -0.4916912,
+          "mean_net_R": 0.46008207617628605,
+          "mean_win_usdt": 0.52864932,
+          "net_usdt": 0.56560744,
+          "net_without_best3_usdt": 0.0,
+          "partial_exits": 0,
+          "per_pair": {
+            "DOGE/USDT:USDT": -0.4916912,
+            "ETH/USDT:USDT": 0.32084584,
+            "XRP/USDT:USDT": 0.7364528
+          },
+          "per_regime": {
+            "TREND_UP": {
+              "net_usdt": 0.56560744,
+              "trades": 3
+            }
+          },
+          "per_side": {
+            "long": 0.56560744,
+            "short": 0
+          },
+          "profit_factor": 2.150330614011396,
+          "return_on_1000_equity_pct": 0.056560743999999996,
+          "sum_net_R": 1.3802462285288581,
+          "trades": 3,
+          "turnover_usdt": 144.0886,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "PROMISING BUT UNQUALIFIED"
+        }
+      },
+      "return_on_1000_equity_pct": 0.10894565200000002,
+      "source_funding_audit": {
+        "outside_bounds_trades": 0,
+        "source_funding_net_max": 1.0894565200000002,
+        "source_funding_net_min": 1.0894565200000002
+      },
+      "sum_net_R": 3.2360835355614492,
+      "trades": 9,
+      "turnover_usdt": 418.26117,
+      "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+      "verdict": "PROMISING BUT UNQUALIFIED"
+    },
+    "RouterProfileV1": {
+      "ambiguous_stop_target_candles": 0,
+      "break_even_extra_bps_per_side": 39.25414224303657,
+      "closed_trade_drawdown_usdt": 0.4916912,
+      "decision_population": {
+        "native_filled_trades": 3,
+        "parent_candidates": 92,
+        "plan_fill_difference_interpretation": "capacity, ongoing position, callbacks, expiry and native fills; not all differences are unfilled orders",
+        "rejected": 89,
+        "trade_plans": 3
+      },
+      "development_week_block_interval_usdt": [
+        -0.5125360800000001,
+        2.2093584
+      ],
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 1.0262504400000125,
+        "min_completed_mark_equity": 999.654410963,
+        "no_fills_simulated": true
+      },
+      "expectancy_usdt": 0.18853581333333333,
+      "fees_usdt": 0.08645316,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": 0.56560744
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.49356313999999996
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 0.42151883999999995
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": 0.27743023999999994
+        }
+      ],
+      "funding_signed_usdt": -0.0011393970000000001,
+      "gross_price_pnl_usdt": 0.6532000000000002,
+      "hold_minutes_mean": 340.0,
+      "mean_MAE_pct_completed_intermediate_bars": -1.29625894005454,
+      "mean_MFE_pct_completed_intermediate_bars": 1.9926633840182297,
+      "mean_directional_price_move_pct": 0.9152547626513704,
+      "mean_loss_usdt": -0.4916912,
+      "mean_net_R": 0.46008207617628605,
+      "mean_win_usdt": 0.52864932,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_usdt": 0.56560744,
+      "net_without_best3_usdt": 0.0,
+      "partial_exits": 0,
+      "per_pair": {
+        "DOGE/USDT:USDT": -0.4916912,
+        "ETH/USDT:USDT": 0.32084584,
+        "XRP/USDT:USDT": 0.7364528
+      },
+      "per_regime": {
+        "TREND_UP": {
+          "net_usdt": 0.56560744,
+          "trades": 3
+        }
+      },
+      "per_side": {
+        "long": 0.56560744,
+        "short": 0
+      },
+      "profit_factor": 2.150330614011396,
+      "recipes": {
+        "sweep": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        },
+        "vwap": {
+          "ambiguous_stop_target_candles": 0,
+          "break_even_extra_bps_per_side": 39.25414224303657,
+          "closed_trade_drawdown_usdt": 0.4916912,
+          "development_week_block_interval_usdt": [
+            -0.5125360800000001,
+            2.2093584
+          ],
+          "expectancy_usdt": 0.18853581333333333,
+          "fees_usdt": 0.08645316,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": 0.56560744
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": 0.49356313999999996
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": 0.42151883999999995
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": 0.27743023999999994
+            }
+          ],
+          "funding_signed_usdt": -0.0011393970000000001,
+          "gross_price_pnl_usdt": 0.6532000000000002,
+          "hold_minutes_mean": 340.0,
+          "mean_MAE_pct_completed_intermediate_bars": -1.29625894005454,
+          "mean_MFE_pct_completed_intermediate_bars": 1.9926633840182297,
+          "mean_directional_price_move_pct": 0.9152547626513704,
+          "mean_loss_usdt": -0.4916912,
+          "mean_net_R": 0.46008207617628605,
+          "mean_win_usdt": 0.52864932,
+          "net_usdt": 0.56560744,
+          "net_without_best3_usdt": 0.0,
+          "partial_exits": 0,
+          "per_pair": {
+            "DOGE/USDT:USDT": -0.4916912,
+            "ETH/USDT:USDT": 0.32084584,
+            "XRP/USDT:USDT": 0.7364528
+          },
+          "per_regime": {
+            "TREND_UP": {
+              "net_usdt": 0.56560744,
+              "trades": 3
+            }
+          },
+          "per_side": {
+            "long": 0.56560744,
+            "short": 0
+          },
+          "profit_factor": 2.150330614011396,
+          "return_on_1000_equity_pct": 0.056560743999999996,
+          "sum_net_R": 1.3802462285288581,
+          "trades": 3,
+          "turnover_usdt": 144.0886,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "PROMISING BUT UNQUALIFIED"
+        }
+      },
+      "return_on_1000_equity_pct": 0.056560743999999996,
+      "source_funding_audit": {
+        "outside_bounds_trades": 0,
+        "source_funding_net_max": 0.56560744,
+        "source_funding_net_min": 0.56560744
+      },
+      "sum_net_R": 1.3802462285288581,
+      "trades": 3,
+      "turnover_usdt": 144.0886,
+      "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+      "verdict": "PROMISING BUT UNQUALIFIED"
+    },
+    "RouterSMCV1": {
+      "ambiguous_stop_target_candles": 0,
+      "break_even_extra_bps_per_side": 29.420415552017577,
+      "closed_trade_drawdown_usdt": 0.4916912,
+      "decision_population": {
+        "native_filled_trades": 5,
+        "parent_candidates": 92,
+        "plan_fill_difference_interpretation": "capacity, ongoing position, callbacks, expiry and native fills; not all differences are unfilled orders",
+        "rejected": 87,
+        "trade_plans": 5
+      },
+      "development_week_block_interval_usdt": [
+        -0.49952056,
+        2.4411016
+      ],
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 0.9297119600000769,
+        "min_completed_mark_equity": 999.750949443,
+        "no_fills_simulated": true
+      },
+      "expectancy_usdt": 0.137558448,
+      "fees_usdt": 0.14026835999999998,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": 0.68779224
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.57090194
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 0.45401164000000005
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": 0.22023104000000004
+        }
+      ],
+      "funding_signed_usdt": -0.0011393970000000001,
+      "gross_price_pnl_usdt": 0.8291999999999957,
+      "hold_minutes_mean": 219.0,
+      "mean_MAE_pct_completed_intermediate_bars": -0.9370317380372469,
+      "mean_MFE_pct_completed_intermediate_bars": 1.5279154033339537,
+      "mean_directional_price_move_pct": 0.7357870472994342,
+      "mean_loss_usdt": -0.3006248,
+      "mean_net_R": 0.3665405740646783,
+      "mean_win_usdt": 0.4296806133333333,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_usdt": 0.68779224,
+      "net_without_best3_usdt": -0.6012496,
+      "partial_exits": 0,
+      "per_pair": {
+        "DOGE/USDT:USDT": -0.4916912,
+        "ETH/USDT:USDT": 0.32084584,
+        "SOL/USDT:USDT": 0.2317432,
+        "XRP/USDT:USDT": 0.6268944000000001
+      },
+      "per_regime": {
+        "BALANCE": {
+          "net_usdt": 0.12218480000000001,
+          "trades": 2
+        },
+        "TREND_UP": {
+          "net_usdt": 0.56560744,
+          "trades": 3
+        }
+      },
+      "per_side": {
+        "long": 0.56560744,
+        "short": 0.12218480000000001
+      },
+      "profit_factor": 2.1439379585450036,
+      "recipes": {
+        "sweep": {
+          "ambiguous_stop_target_candles": 0,
+          "break_even_extra_bps_per_side": 13.622708825759267,
+          "closed_trade_drawdown_usdt": 0.1095584,
+          "development_week_block_interval_usdt": [
+            -0.3286752,
+            0.6952296
+          ],
+          "expectancy_usdt": 0.061092400000000005,
+          "fees_usdt": 0.053815199999999994,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": 0.12218480000000001
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": 0.07733880000000001
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": 0.032492800000000016
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": -0.05719919999999998
+            }
+          ],
+          "funding_signed_usdt": 0,
+          "gross_price_pnl_usdt": 0.17599999999999555,
+          "hold_minutes_mean": 37.5,
+          "mean_MAE_pct_completed_intermediate_bars": -0.3981909350113078,
+          "mean_MFE_pct_completed_intermediate_bars": 0.8307934323075399,
+          "mean_directional_price_move_pct": 0.4665854742715303,
+          "mean_loss_usdt": -0.1095584,
+          "mean_net_R": 0.22622832089726677,
+          "mean_win_usdt": 0.2317432,
+          "net_usdt": 0.12218480000000001,
+          "net_without_best3_usdt": 0.0,
+          "partial_exits": 0,
+          "per_pair": {
+            "SOL/USDT:USDT": 0.2317432,
+            "XRP/USDT:USDT": -0.1095584
+          },
+          "per_regime": {
+            "BALANCE": {
+              "net_usdt": 0.12218480000000001,
+              "trades": 2
+            }
+          },
+          "per_side": {
+            "long": 0,
+            "short": 0.12218480000000001
+          },
+          "profit_factor": 2.115248123375296,
+          "return_on_1000_equity_pct": 0.01221848,
+          "sum_net_R": 0.45245664179453354,
+          "trades": 2,
+          "turnover_usdt": 89.692,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "PROMISING BUT UNQUALIFIED"
+        },
+        "vwap": {
+          "ambiguous_stop_target_candles": 0,
+          "break_even_extra_bps_per_side": 39.25414224303657,
+          "closed_trade_drawdown_usdt": 0.4916912,
+          "development_week_block_interval_usdt": [
+            -0.5125360800000001,
+            2.2093584
+          ],
+          "expectancy_usdt": 0.18853581333333333,
+          "fees_usdt": 0.08645316,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": 0.56560744
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": 0.49356313999999996
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": 0.42151883999999995
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": 0.27743023999999994
+            }
+          ],
+          "funding_signed_usdt": -0.0011393970000000001,
+          "gross_price_pnl_usdt": 0.6532000000000002,
+          "hold_minutes_mean": 340.0,
+          "mean_MAE_pct_completed_intermediate_bars": -1.29625894005454,
+          "mean_MFE_pct_completed_intermediate_bars": 1.9926633840182297,
+          "mean_directional_price_move_pct": 0.9152547626513704,
+          "mean_loss_usdt": -0.4916912,
+          "mean_net_R": 0.46008207617628605,
+          "mean_win_usdt": 0.52864932,
+          "net_usdt": 0.56560744,
+          "net_without_best3_usdt": 0.0,
+          "partial_exits": 0,
+          "per_pair": {
+            "DOGE/USDT:USDT": -0.4916912,
+            "ETH/USDT:USDT": 0.32084584,
+            "XRP/USDT:USDT": 0.7364528
+          },
+          "per_regime": {
+            "TREND_UP": {
+              "net_usdt": 0.56560744,
+              "trades": 3
+            }
+          },
+          "per_side": {
+            "long": 0.56560744,
+            "short": 0
+          },
+          "profit_factor": 2.150330614011396,
+          "return_on_1000_equity_pct": 0.056560743999999996,
+          "sum_net_R": 1.3802462285288581,
+          "trades": 3,
+          "turnover_usdt": 144.0886,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "PROMISING BUT UNQUALIFIED"
+        }
+      },
+      "return_on_1000_equity_pct": 0.068779224,
+      "source_funding_audit": {
+        "outside_bounds_trades": 0,
+        "source_funding_net_max": 0.68779224,
+        "source_funding_net_min": 0.68779224
+      },
+      "sum_net_R": 1.8327028703233916,
+      "trades": 5,
+      "turnover_usdt": 233.7806,
+      "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+      "verdict": "PROMISING BUT UNQUALIFIED"
+    },
+    "StructureAwareSweepV1": {
+      "ambiguous_stop_target_candles": 0,
+      "break_even_extra_bps_per_side": -10.231109937733446,
+      "closed_trade_drawdown_usdt": 1.9250574500000002,
+      "development_week_block_interval_usdt": [
+        -2.7453676505,
+        0.5622153535
+      ],
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 2.281413056379961,
+        "min_completed_mark_equity": 997.98838174362,
+        "no_fills_simulated": true
+      },
+      "expectancy_usdt": -0.04852212142857143,
+      "fees_usdt": 0.5975683319999999,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": -1.01896455
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": -1.51693816
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": -2.01491177
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -3.01085899
+        }
+      ],
+      "funding_signed_usdt": 0.0006637750200000002,
+      "gross_price_pnl_usdt": -0.4220600000000063,
+      "hold_minutes_mean": 126.42857142857143,
+      "mean_MAE_pct_completed_intermediate_bars": -0.47137194009215977,
+      "mean_MFE_pct_completed_intermediate_bars": 0.7131062181966905,
+      "mean_directional_price_move_pct": -0.08663203098158154,
+      "mean_loss_usdt": -0.18864411200000003,
+      "mean_net_R": -0.15239021731508698,
+      "mean_win_usdt": 0.301782855,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_usdt": -1.01896455,
+      "net_without_best3_usdt": -2.1697858099999996,
+      "partial_exits": 0,
+      "per_pair": {
+        "DOGE/USDT:USDT": -1.15328879,
+        "ETH/USDT:USDT": -0.32873741,
+        "SOL/USDT:USDT": 0.41446552999999997,
+        "XRP/USDT:USDT": 0.04859611999999998
+      },
+      "per_regime": {
+        "BALANCE": {
+          "net_usdt": -1.01896455,
+          "trades": 21
+        }
+      },
+      "per_side": {
+        "long": -1.89497855,
+        "short": 0.876014
+      },
+      "profit_factor": 0.6398988058530021,
+      "recipes": {
+        "sweep": {
+          "ambiguous_stop_target_candles": 0,
+          "break_even_extra_bps_per_side": -10.231109937733446,
+          "closed_trade_drawdown_usdt": 1.9250574500000002,
+          "development_week_block_interval_usdt": [
+            -2.7453676505,
+            0.5622153535
+          ],
+          "expectancy_usdt": -0.04852212142857143,
+          "fees_usdt": 0.5975683319999999,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": -1.01896455
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": -1.51693816
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": -2.01491177
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": -3.01085899
+            }
+          ],
+          "funding_signed_usdt": 0.0006637750200000002,
+          "gross_price_pnl_usdt": -0.4220600000000063,
+          "hold_minutes_mean": 126.42857142857143,
+          "mean_MAE_pct_completed_intermediate_bars": -0.47137194009215977,
+          "mean_MFE_pct_completed_intermediate_bars": 0.7131062181966905,
+          "mean_directional_price_move_pct": -0.08663203098158154,
+          "mean_loss_usdt": -0.18864411200000003,
+          "mean_net_R": -0.15239021731508698,
+          "mean_win_usdt": 0.301782855,
+          "net_usdt": -1.01896455,
+          "net_without_best3_usdt": -2.1697858099999996,
+          "partial_exits": 0,
+          "per_pair": {
+            "DOGE/USDT:USDT": -1.15328879,
+            "ETH/USDT:USDT": -0.32873741,
+            "SOL/USDT:USDT": 0.41446552999999997,
+            "XRP/USDT:USDT": 0.04859611999999998
+          },
+          "per_regime": {
+            "BALANCE": {
+              "net_usdt": -1.01896455,
+              "trades": 21
+            }
+          },
+          "per_side": {
+            "long": -1.89497855,
+            "short": 0.876014
+          },
+          "profit_factor": 0.6398988058530021,
+          "return_on_1000_equity_pct": -0.101896455,
+          "sum_net_R": -3.2001945636168267,
+          "trades": 21,
+          "turnover_usdt": 995.94722,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "REJECTED UNDER TESTED ASSUMPTIONS"
+        },
+        "vwap": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        }
+      },
+      "return_on_1000_equity_pct": -0.101896455,
+      "source_funding_audit": {
+        "outside_bounds_trades": 0,
+        "source_funding_net_max": -1.01896455,
+        "source_funding_net_min": -1.01896455
+      },
+      "sum_net_R": -3.2001945636168267,
+      "trades": 21,
+      "turnover_usdt": 995.94722,
+      "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+      "verdict": "REJECTED UNDER TESTED ASSUMPTIONS"
+    },
+    "VWAPTrendContinuationV1": {
+      "ambiguous_stop_target_candles": 0,
+      "break_even_extra_bps_per_side": 6.88318356558428,
+      "closed_trade_drawdown_usdt": 1.2569350000000001,
+      "development_week_block_interval_usdt": [
+        -2.442308927999999,
+        4.905499226499994
+      ],
+      "equity_accounting": {
+        "funding_timing": "aggregate at final exit; intermediate equity approximation",
+        "mark_fidelity": "15m futures-close mark proxy; not actual exchange account equity",
+        "max_completed_mark_drawdown_usdt": 1.600469224099129,
+        "min_completed_mark_equity": 999.205367024601,
+        "no_fills_simulated": true
+      },
+      "expectancy_usdt": 0.031990282333333335,
+      "fees_usdt": 0.836567958,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": 0.95970847
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.26256850500000006
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": -0.4345714599999999
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -1.8288513899999999
+        }
+      ],
+      "funding_signed_usdt": 0.000266418476,
+      "gross_price_pnl_usdt": 1.796009999999991,
+      "hold_minutes_mean": 185.0,
+      "mean_MAE_pct_completed_intermediate_bars": -0.45625987698967513,
+      "mean_MFE_pct_completed_intermediate_bars": 0.9636519833869566,
+      "mean_directional_price_move_pct": 0.27633884631537076,
+      "mean_loss_usdt": -0.21245323375000003,
+      "mean_net_R": 0.1416375444780565,
+      "mean_win_usdt": 0.3113543007142857,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 1,
+      "native_timedout_entry_orders": 0,
+      "net_usdt": 0.95970847,
+      "net_without_best3_usdt": -0.61744128,
+      "partial_exits": 0,
+      "per_pair": {
+        "BTC/USDT:USDT": 0.14471860999999997,
+        "DOGE/USDT:USDT": -0.7941746,
+        "ETH/USDT:USDT": 0.24552746,
+        "SOL/USDT:USDT": 0.42616182,
+        "XRP/USDT:USDT": 0.93747518
+      },
+      "per_regime": {
+        "BALANCE": {
+          "net_usdt": 0.59440943,
+          "trades": 6
+        },
+        "TREND_DOWN": {
+          "net_usdt": -0.99421914,
+          "trades": 15
+        },
+        "TREND_UP": {
+          "net_usdt": 1.35951818,
+          "trades": 9
+        }
+      },
+      "per_side": {
+        "long": 2.13338962,
+        "short": -1.17368115
+      },
+      "profit_factor": 1.282329331101556,
+      "recipes": {
+        "sweep": {
+          "net_usdt": 0.0,
+          "trades": 0,
+          "verdict": "INSUFFICIENT OR UNAVAILABLE EVIDENCE"
+        },
+        "vwap": {
+          "ambiguous_stop_target_candles": 0,
+          "break_even_extra_bps_per_side": 6.88318356558428,
+          "closed_trade_drawdown_usdt": 1.2569350000000001,
+          "development_week_block_interval_usdt": [
+            -2.442308927999999,
+            4.905499226499994
+          ],
+          "expectancy_usdt": 0.031990282333333335,
+          "fees_usdt": 0.836567958,
+          "friction": [
+            {
+              "extra_bps_per_side": 0,
+              "net_usdt": 0.95970847
+            },
+            {
+              "extra_bps_per_side": 5,
+              "net_usdt": 0.26256850500000006
+            },
+            {
+              "extra_bps_per_side": 10,
+              "net_usdt": -0.4345714599999999
+            },
+            {
+              "extra_bps_per_side": 20,
+              "net_usdt": -1.8288513899999999
+            }
+          ],
+          "funding_signed_usdt": 0.000266418476,
+          "gross_price_pnl_usdt": 1.796009999999991,
+          "hold_minutes_mean": 185.0,
+          "mean_MAE_pct_completed_intermediate_bars": -0.45625987698967513,
+          "mean_MFE_pct_completed_intermediate_bars": 0.9636519833869566,
+          "mean_directional_price_move_pct": 0.27633884631537076,
+          "mean_loss_usdt": -0.21245323375000003,
+          "mean_net_R": 0.1416375444780565,
+          "mean_win_usdt": 0.3113543007142857,
+          "net_usdt": 0.95970847,
+          "net_without_best3_usdt": -0.61744128,
+          "partial_exits": 0,
+          "per_pair": {
+            "BTC/USDT:USDT": 0.14471860999999997,
+            "DOGE/USDT:USDT": -0.7941746,
+            "ETH/USDT:USDT": 0.24552746,
+            "SOL/USDT:USDT": 0.42616182,
+            "XRP/USDT:USDT": 0.93747518
+          },
+          "per_regime": {
+            "BALANCE": {
+              "net_usdt": 0.59440943,
+              "trades": 6
+            },
+            "TREND_DOWN": {
+              "net_usdt": -0.99421914,
+              "trades": 15
+            },
+            "TREND_UP": {
+              "net_usdt": 1.35951818,
+              "trades": 9
+            }
+          },
+          "per_side": {
+            "long": 2.13338962,
+            "short": -1.17368115
+          },
+          "profit_factor": 1.282329331101556,
+          "return_on_1000_equity_pct": 0.095970847,
+          "sum_net_R": 4.249126334341694,
+          "trades": 30,
+          "turnover_usdt": 1394.27993,
+          "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+          "verdict": "PROMISING BUT UNQUALIFIED"
+        }
+      },
+      "return_on_1000_equity_pct": 0.095970847,
+      "source_funding_audit": {
+        "outside_bounds_trades": 0,
+        "source_funding_net_max": 0.9614316700000001,
+        "source_funding_net_min": 0.9589550737450001
+      },
+      "sum_net_R": 4.249126334341694,
+      "trades": 30,
+      "turnover_usdt": 1394.27993,
+      "uncertainty": "13 joint-market weekly development blocks, seed4104, 2000 draws; stationarity assumption, not independent qualification",
+      "verdict": "PROMISING BUT UNQUALIFIED"
+    }
+  }
+}

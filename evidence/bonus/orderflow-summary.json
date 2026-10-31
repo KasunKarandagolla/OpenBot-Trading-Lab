@@ -1,0 +1,129 @@
+{
+  "captures": [
+    {
+      "path": "forward/observed-shadow-v1/orderflow-observation.json",
+      "contract": "BTC_USDT",
+      "trades": 226,
+      "invalid_events": 0,
+      "windows": [
+        {
+          "trade_count": 138,
+          "coverage_status": "COMPLETE_OBSERVED_CONNECTION",
+          "buy_base": 3.4574000000000003,
+          "sell_base": 1.7000000000000002,
+          "delta_base": 1.7574,
+          "imbalance": 0.34075309264358006
+        },
+        {
+          "trade_count": 79,
+          "coverage_status": "COMPLETE_OBSERVED_CONNECTION",
+          "buy_base": 3.0947,
+          "sell_base": 0.1486,
+          "delta_base": 2.9461,
+          "imbalance": 0.9083649369469368
+        },
+        {
+          "trade_count": 7,
+          "coverage_status": "COMPLETE_OBSERVED_CONNECTION",
+          "buy_base": 0.0212,
+          "sell_base": 0.049600000000000005,
+          "delta_base": -0.028400000000000005,
+          "imbalance": -0.40112994350282494
+        }
+      ],
+      "decimal_size_header": false,
+      "actual_setup": "NO_TRADE",
+      "raw_sha256": "2fdf7942e83e1e4f6ea00172b74fa89dd3fcedc170905314086b59eecd4fa500"
+    },
+    {
+      "path": "forward/sol-decimal-shadow-v1/orderflow-observation.json",
+      "contract": "SOL_USDT",
+      "trades": 47,
+      "invalid_events": 0,
+      "windows": [
+        {
+          "trade_count": 18,
+          "coverage_status": "COMPLETE_OBSERVED_CONNECTION",
+          "buy_base": 21.9,
+          "sell_base": 8.0,
+          "delta_base": 13.899999999999999,
+          "imbalance": 0.4648829431438127
+        },
+        {
+          "trade_count": 15,
+          "coverage_status": "COMPLETE_OBSERVED_CONNECTION",
+          "buy_base": 9.3,
+          "sell_base": 6.2,
+          "delta_base": 3.1000000000000005,
+          "imbalance": 0.20000000000000004
+        },
+        {
+          "trade_count": 11,
+          "coverage_status": "COMPLETE_OBSERVED_CONNECTION",
+          "buy_base": 94.7,
+          "sell_base": 56.1,
+          "delta_base": 38.6,
+          "imbalance": 0.2559681697612732
+        }
+      ],
+      "decimal_size_header": true,
+      "actual_setup": "NO_TRADE",
+      "raw_sha256": "6a24a9490322815d0bb08110e87fdeecbed12448c76404c1f9513a6e8e3fd41c"
+    },
+    {
+      "path": "forward/sol-shadow-v1/orderflow-observation.json",
+      "contract": "SOL_USDT",
+      "trades": 40,
+      "invalid_events": 6,
+      "windows": [
+        {
+          "trade_count": 10,
+          "coverage_status": "PARTIAL",
+          "buy_base": 68.0,
+          "sell_base": 83.0,
+          "delta_base": -15.0,
+          "imbalance": -0.09933774834437085
+        },
+        {
+          "trade_count": 13,
+          "coverage_status": "PARTIAL",
+          "buy_base": 125.0,
+          "sell_base": 79.0,
+          "delta_base": 46.0,
+          "imbalance": 0.22549019607843138
+        }
+      ],
+      "decimal_size_header": false,
+      "actual_setup": "NO_TRADE",
+      "raw_sha256": "7fe1f96948857e5f0e7d26513af5dc63f3fd1542acf68642aa6286c90470c52b"
+    },
+    {
+      "path": "orderflow-observation.json",
+      "contract": "BTC_USDT",
+      "trades": 131,
+      "invalid_events": 0,
+      "windows": [
+        {
+          "trade_count": 38,
+          "coverage_status": "COMPLETE_OBSERVED_CONNECTION",
+          "buy_base": 0.1784,
+          "sell_base": 5.7228,
+          "delta_base": -5.5444,
+          "imbalance": -0.9395377211414628
+        },
+        {
+          "trade_count": 36,
+          "coverage_status": "COMPLETE_OBSERVED_CONNECTION",
+          "buy_base": 0,
+          "sell_base": 1.6871,
+          "delta_base": -1.6871,
+          "imbalance": -1.0
+        }
+      ],
+      "decimal_size_header": false,
+      "actual_setup": "NOT_IN_FIRST_CAPTURE",
+      "raw_sha256": "9b7d32763dc852f3dbc169d5ab9b36d5047a9ef446031e9c90808fe46a6ad887"
+    }
+  ],
+  "interpretation": "Initial SOL default size format produced six zero-size invalid events and PARTIAL coverage. The next explicitly decimal-enabled sample had zero invalid events; different observation times do not prove a complete causal correction. All captures and valid-normalization replays are preserved; no observed actionable setup or economic qualification."
+}
