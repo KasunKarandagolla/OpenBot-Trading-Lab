@@ -44,7 +44,7 @@ def structure(frame, timeframe='15m', left=2, right=2):
             history = history[-(left+right+1):]
             if len(history) == left+right+1:
                 _, pivot = history[left]
-                others = [r for j, r in enumerate(history) if j != left]
+                others = [r for j, (_, r) in enumerate(history) if j != left]
                 for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
                                         ('low', all(pivot.low < r.low for r in others))]:
                     if qualifies:
@@ -69,7 +69,11 @@ def structure(frame, timeframe='15m', left=2, right=2):
     features = pd.DataFrame(records, index=d.index)
     for col in features:
         if col.endswith('_at'):
-            features[col] = pd.to_datetime(features[col], utc=True)
+            features[col] = pd.to_datetime(features[col], utc=True).dt.as_unit('ns')
+        elif col in ('swing_high','swing_low','prior_swing_high','prior_swing_low'):
+            features[col] = pd.to_numeric(features[col]).astype(float)
+        elif col == 'struct_event':
+            features[col] = features[col].astype(object)
     return pd.concat([d, features], axis=1)
 
 
