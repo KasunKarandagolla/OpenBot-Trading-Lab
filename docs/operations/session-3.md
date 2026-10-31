@@ -15,20 +15,23 @@ docker compose -f deploy/freqtrade/compose.session3.yaml pull
 
 The new Compose file does not publish ports, mount Docker socket, inherit trading keys or start persistent services. It makes code/strategies read-only. Staging copies verified strategy sources into ignored work/session3-strategies; unknown/tampered modules/parameter files reject. The original scripts/lab.sh and guard.py, strategy registry, configs and all prior evidence remain unchanged.
 
-For fresh acquisition only, within lawful Gate public-source eligibility and personal/noncommercial scope:
+Committed primary results are immutable: `research-run s3-development-v1` intentionally refuses to replace them, even in a fresh clone. For a complete owner rerun, register a separate DEVELOPMENT cohort first. This needs no code editing and does not relabel inspected data as unseen. Within lawful Gate public-source eligibility and personal/noncommercial scope:
 
 ```bash
-./scripts/lab3.sh research-download s3-development-v1
-./scripts/lab3.sh research-download s3-transfer-v1
-./scripts/lab3.sh research-run s3-development-v1
-./scripts/lab3.sh research-run s3-transfer-v1
-./scripts/lab3.sh candidate-census s3-development-v1
-./scripts/lab3.sh native-replay s3-development-v1
-./scripts/lab3.sh opportunity-asof SOL/USDT:USDT 2026-08-25T01:00:00Z
-./scripts/lab3.sh opportunity-scan --cohort s3-development-v1 --as-of 2026-08-25T01:00:00Z
+./scripts/lab3.sh cohort-register owner-development-v1 20260726 20260805 20261030 \
+  BTC/USDT:USDT ETH/USDT:USDT SOL/USDT:USDT --classification WARMUP_CORRECTED_DEVELOPMENT
+./scripts/lab3.sh research-download owner-development-v1
+./scripts/lab3.sh research-run owner-development-v1
+./scripts/lab3.sh economic-compare owner-development-v1
+./scripts/lab3.sh candidate-census owner-development-v1
+./scripts/lab3.sh native-replay owner-development-v1
+./scripts/lab3.sh opportunity-asof SOL/USDT:USDT 2026-08-25T01:00:00Z --cohort owner-development-v1
+./scripts/lab3.sh opportunity-scan --cohort owner-development-v1 --as-of 2026-08-25T01:00:00Z
 ./scripts/lab3.sh lookahead s3-development-v1
 ./scripts/lab3.sh recursive-check s3-development-v1
 ```
+
+To rerun XRP/DOGE, register another ID with those two symbols and classification SHARED_CALENDAR_MARKET_TRANSFER, then use the same download/run/compare commands. If the original cohort raw candles are retained, `native-replay s3-development-v1` can reproduce its challenger directly; historical opportunity commands can use that original ID.
 
 Raw files go to user_data/data/session-3/<id>/gate, never prior paths. Downloads and primary runs refuse existing source/results. With retained raw data, native-replay reruns the challenger without replacing committed primary artifacts. To retry a partial acquisition or run, preserve it and register a new cohort ID; do not remove your only sample. Native lookahead refuses an existing CSV to avoid known Pandas append issues: preserve/move the prior diagnostic before an intentional repeat. Today's surviving shortlist is never historical membership.
 
