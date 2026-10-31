@@ -15,6 +15,6 @@
 | S3-11 | PASS WITH SAMPLE LIMIT | Native7signal lookahead no bias; recursive BTC120/240/480; streaming/hour/sentinel tests;7native replay trades identical |
 | S3-12 | PASS | Bounded schema-validated timestamped JSON/CSV, unknowns/reasons/provenance; no admin bridge |
 | S3-13 | ATTEMPT COMPLETED, AGGRESSOR PROOF UNAVAILABLE |62real public BTC prints; partial coverage/side unknown; delta null, no strategy incorporation |
-| S3-14 | PR DELIVERY | One stacked Session3 PR targeting Session2, unmerged; see PR body for final head and link |
+| S3-14 | PASS | [PR #3](https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/pull/3) OPEN, targeting Session2, unmerged; final head in PR body |
 
 The core engineering milestone runs with real historical trades and economic comparisons. This is not a profitable strategy acceptance, current actionable signal guarantee, untouched unseen result, paper authorization or owner-host reliability claim. All limitations and negative results remain part of acceptance.

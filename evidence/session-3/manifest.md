@@ -1,5 +1,7 @@
 # Session3 — integrated research capability, no economic qualification
 
+[Review PR #3](https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/pull/3), open and unmerged.
+
 Correct stacked base: PR2 OPEN/unmerged at f09cb39b6116d103b9efc0f8c37bf6a1d607e7d6; PR1 OPEN at d76b6093796f78ce628943e8252033b34e9958ef; main2343053ce68f6fff4525c5b67771ea445deb3779. Session3 branch codex/session-3-market-intelligence-economics. The PR records final pushed head; neither prior branch nor main is modified/merged.
 
 The working chain is existing native scanner → bounded candidate/cohort data validation → causal15m/closed1h structure → timestamped asof/current report → executable separate sweep enhancement → native Freqtrade trades → offline costs/regimes/controls/uncertainty → NO_PROMOTION evidence decision. No custom dashboard, agent bridge, private trading API or persistent paper process.
