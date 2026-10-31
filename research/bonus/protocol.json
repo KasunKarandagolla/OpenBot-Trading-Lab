@@ -1,0 +1,27 @@
+{
+  "version": "bonus-recipes-v1",
+  "base_sha": "48f34bcd51d080204c3e4bf90ec4b014a3319dd5",
+  "mode": "RESEARCH_ONLY",
+  "timerange": "20260805-20261030",
+  "download_timerange": "20260726-20261030",
+  "detail_timerange": "20261001-20261030",
+  "pairs": ["BTC/USDT:USDT", "ETH/USDT:USDT", "SOL/USDT:USDT", "XRP/USDT:USDT", "DOGE/USDT:USDT"],
+  "membership": "Five predeclared familiar surviving contracts, already inspected development calendar. Cross-sectional reranking within this sample is NOT a reconstructed historical exchange universe.",
+  "variants": ["VWAPTrendContinuationV1", "LiquiditySweepReversalV1", "StructureAwareSweepV1", "RouterOnlyV1", "RouterSMCV1", "RouterICTV1", "RouterProfileV1", "IntegratedM0V1", "IntegratedM1V1"],
+  "hypotheses": {
+    "RouterOnlyV1": "Rank all five markets every completed 15m candle by absolute 4h return relative to BTC plus trailing quote-volume activity; retain top three. VWAP parent when hourly ADX>=25; sweep parent when ADX<25. No forced signals.",
+    "RouterSMCV1": "Continuation vetoes confirmed opposite hourly structure; reversals require previously confirmed swing within 0.5 ATR of prior range boundary. Prior Session3 losing structure filter is a separate control.",
+    "RouterICTV1": "Continuation requires recent causal directional displacement FVG, correct half of prior-day range. Reversal requires raid and reclaim of prior UTC day or prior completed 8h-session boundary plus directional displacement or market structure shift. No equity kill zones.",
+    "RouterProfileV1": "Continuation closes on favorable side of prior rolling POC and has >=1.25 net RR to nearest opposing value boundary if present. Reversal returns inside prior value with POC as first objective and >=1.25 net RR.",
+    "IntegratedM0V1": "SMC veto for continuations, ICT prior-boundary qualification for reversals, nearest known opposing structure/profile target with >=1.25 net RR; missing orderflow is UNKNOWN, not a veto.",
+    "IntegratedM1V1": "Identical admitted setup policy, one half exit at 1 price-risk R only if before final target and minimum size allows; cost-breakeven plus confirmed favorable swing after realized partial; tighten only. Native engine determines fills."
+  },
+  "management": {"M0": "initial low/high +/-0.2 ATR stop, frozen nearest known objective or 2 price-risk R fallback, completed-hour opposite thesis exit, VWAP<=8h sweep<=4h, immutable entry limit, 5m expiry", "M1": "M0 plus one 50% partial at 1R, tighten after native confirmed partial; no new positions or DCA"},
+  "risk": {"version":"illustrative-risk-v1","owner_approved":false,"equity":1000,"position_risk_fraction":0.0025,"portfolio_risk_fraction":0.005,"daily_equity_loss_fraction":0.01,"native_notional_cap":25,"native_leverage":1,"max_positions":2,"cost_allowance":0.0035,"leverage_scenarios":[1,10,20],"liquidation_buffer":0.01},
+  "costs": {"fee_per_side":0.0006,"funding":"actual native signed observations once","extra_bps_per_side":[0,5,10,20],"extra_friction":"turnover stress, does not refill trades"},
+  "profile": {"historical_fidelity":"OHLCV_TYPICAL_PRICE_PROXY_NOT_TRADED_VOLUME_AT_PRICE","window_bars":96,"log_bin_width":0.001,"value_area_fraction":0.7,"availability":"previous 96 completed candles; excludes signal candle","trade_fidelity":"genuine observed base volume at execution price; native Freqtrade footprint aggregation"},
+  "orderflow": {"source":"Gate futures.trades WebSocket / usdt","semantics":"positive signed contracts = buyer taker; negative = seller taker per Gate futures WebSocket docs","window_seconds":30,"complete_requires":"continuous subscribed connection covering whole interval, no reconnect, monotonic observation cutoff; late/duplicate/invalid events flagged","confirmation":"imbalance>=0.2 long or <=-0.2 short; positive directional price response for continuation, opposed prior aggression with directional rejection response for reversal","missing_policy":"UNKNOWN; strict OF variant abstains, integrated optional evidence does not fabricate confirmation","historical_economic_impact":"UNMEASURED until genuine complete data overlap actionable setups","shadow_only":true},
+  "prospective": {"id":"bonus-forward-v1","start_utc":"2026-11-09T00:00:00Z","end_utc":"2026-11-16T00:00:00Z","reserved_s3_cohort_reused":false,"policy":"Freeze before observations; bounded owner-invoked capture+shadow only. Future economics needs native replay with aligned genuine observations. No daemon or paper activation."},
+  "no_parameter_search": true,
+  "no_profitability_promotion": true
+}

@@ -1,0 +1,17 @@
+name: openbot-bonus-research
+services:
+  bonus:
+    image: freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7
+    working_dir: /lab
+    entrypoint: [python, /lab/scripts/bonus.py]
+    volumes:
+      - ../../:/lab
+      - /etc/ssl/certs/ca-certificates.crt:/run/proxy-ca.pem:ro
+    environment:
+      REQUESTS_CA_BUNDLE: /run/proxy-ca.pem
+      SSL_CERT_FILE: /run/proxy-ca.pem
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: '2'}

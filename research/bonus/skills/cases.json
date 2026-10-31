@@ -1,0 +1,6 @@
+[
+  {"name":"expired_setup","input":{"decision_id":"example-1","asof_ms":2000,"expires_ms":2000,"risk_review":"PASS","researcher":"TRADE"},"expected":{"researcher":"REJECT","director":"NO_TRADE","execution_authority":"NONE"}},
+  {"name":"tier_unavailable","input":{"decision_id":"example-2","asof_ms":1000,"expires_ms":2000,"risk_review":"UNKNOWN","researcher":"TRADE","margin_tier":null},"expected":{"risk_reviewer":"UNKNOWN","director":"NO_TRADE","execution_authority":"NONE"}},
+  {"name":"unconfirmed_flow","input":{"decision_id":"example-3","asof_ms":1000,"expires_ms":2000,"risk_review":"PASS","researcher":"WATCH","orderflow":"PARTIAL","profile":"OHLCV_PROXY"},"expected":{"orderflow_confirmation":"UNKNOWN","director":"WATCH","execution_authority":"NONE"}},
+  {"name":"valid_research_recommendation","input":{"decision_id":"example-4","asof_ms":1000,"expires_ms":2000,"risk_review":"PASS","researcher":"TRADE"},"expected":{"director":"RESEARCH_TRADE","execution_authority":"NONE"}}
+]
