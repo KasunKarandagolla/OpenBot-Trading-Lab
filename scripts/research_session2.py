@@ -64,7 +64,7 @@ def run():
         fields=['pair','is_short','open_date','close_date','open_rate','close_rate','amount','stake_amount','leverage',
                 'fee_open','fee_close','funding_fees','trade_duration','exit_reason','profit_ratio','profit_abs','is_open','initial_stop_loss_abs','stop_loss_abs']
         with (dest/'trade-ledger.csv').open('w') as f:
-            w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(trades)
+            w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore',lineterminator='\n');w.writeheader();w.writerows(trades)
         if audit.exists():
             (dest/'callback-events.jsonl').write_bytes(audit.read_bytes())
         write(dest/'execution-diagnostics.json', overlaps(trades, audit))
@@ -168,7 +168,7 @@ def compare():
     write(OUT/'strategy-comparison.json',obj)
     write(OUT/'research-summary.json',{k:v for k,v in obj.items() if k!='strategies'}|{'strategies':{n:{k:m[k] for k in ['status','trades','net_usdt','expectancy_usdt','profit_factor','max_drawdown_usdt','fees_usdt','funding_usdt','friction']} for n,m in strategies.items()}})
     write(OUT/'strategy-risks.json',{'schema_version':1,'mode':'RESEARCH ONLY','window':p['evaluation_timerange'],'source':'frozen code and recorded native outputs','strategy_hashes':obj['strategy_hashes'],'run_completed_utc':obj['run_completed_utc'],'active_paper_strategy':'TrendPullbackBaselineV1',
-      'challengers_paper_approved':False,'enforced':['dry_run','1x frozen code','25 USDT maximum','max2 native positions','no DCA',
+      'challengers_paper_approved':False,'controls_scope':'Session 2 challenger callbacks only; baseline retains original Session 1 risk limitations','enforced':['dry_run','1x frozen code','25 USDT maximum','max2 native positions','no DCA',
         'signal geometry and entry deviation rejection','five-minute native paper order timeout','fixed initial custom stop and 2R ROI request','holding-time exit request','cooldown'],
       'limited':['intended monetary-risk ceilings within bounded cost assumptions','UTC realized closed-trade loss halt only','restart pending-order path not exercised on owner host'],
       'not_enforced':['exact 1% mark-to-market daily account halt','fills/stop protection during process outage','guaranteed five-minute historical fills','OpenBot host isolation']})

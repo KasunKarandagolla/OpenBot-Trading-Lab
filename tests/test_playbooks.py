@@ -105,7 +105,7 @@ class Signals(unittest.TestCase):
 
 class Callbacks(unittest.TestCase):
     def setUp(self):
-        self.s=VWAPTrendContinuationV1(CFG)
+        self.s=VWAPTrendContinuationV1(CFG.copy())
         d=features();d['close']=100.;d['low']=99.;d['high']=101.;d['enter_long']=1;d['enter_short']=1
         self.row=d.iloc[-1];self.now=self.row.date.to_pydatetime()+timedelta(minutes=15)
         self.s.dp=SimpleNamespace(get_analyzed_dataframe=lambda *args:(d,None))
@@ -149,6 +149,27 @@ class Callbacks(unittest.TestCase):
     def test_safe_stake_missing_not_exception_fallback(self):
         self.s.dp=SimpleNamespace(get_analyzed_dataframe=lambda *args:(pd.DataFrame(),None))
         self.assertEqual(self.s.custom_stake_amount('X',self.now,100.,25.,1.,100.,1.,None,'long'),0.)
+    def test_unexpected_provider_and_audit_fail_closed(self):
+        with patch.object(self.s.dp,'get_analyzed_dataframe',side_effect=RuntimeError('unavailable')):
+            self.assertEqual(self.s.custom_stake_amount('X',self.now,100.,25.,1.,100.,1.,None,'long'),0.)
+            with patch('PlaybookRiskV1.Trade.get_open_trades',return_value=[]):
+                self.assertFalse(self.confirm())
+        self.s.config['lab_audit']=True
+        with patch('PlaybookRiskV1.Path.open',side_effect=OSError('disk full')):
+            with patch('PlaybookRiskV1.Trade.get_open_trades',return_value=[]),patch('PlaybookRiskV1.Trade.get_trades_proxy',return_value=[]):
+                self.assertFalse(self.confirm(101.))
+                self.assertTrue(self.confirm())
+        with patch('PlaybookRiskV1.stake_for',side_effect=RuntimeError('sizing unavailable')):
+            self.assertEqual(self.s.custom_stake_amount('X',self.now,100.,25.,1.,100.,1.,None,'long'),0.)
+    def test_paper_pending_quote_invalidation(self):
+        self.s.config['runmode']='dry_run'
+        self.s.dp.ticker=lambda pair:{'ask':101.}
+        trade=SimpleNamespace(is_short=False);order=SimpleNamespace(order_date_utc=self.now)
+        self.assertTrue(self.s.check_entry_timeout('X',trade,order,self.now))
+        self.s.dp.ticker=lambda pair:{'ask':100.}
+        self.assertFalse(self.s.check_entry_timeout('X',trade,order,self.now))
+        self.s.dp.ticker=lambda pair:{}
+        self.assertTrue(self.s.check_entry_timeout('X',trade,order,self.now))
     def test_native_stop_rounding_roi_hold_and_fill(self):
         for short in [False,True]:
             t=LocalTrade(pair='X',open_rate=100.,amount=.25,stake_amount=25.,is_short=short,leverage=1.,
@@ -177,6 +198,16 @@ class Callbacks(unittest.TestCase):
         self.assertIn(ExitType.STOP_LOSS,types);self.assertIn(ExitType.ROI,types)
         self.assertLess(types.index(ExitType.STOP_LOSS),types.index(ExitType.ROI))
 
+    def test_native_short_stop_precedes_roi_same_bar(self):
+        from freqtrade.enums import ExitType
+        s=VWAPTrendContinuationV1(CFG.copy());s.minimal_roi={0:.01};s.use_custom_roi=False;s.use_custom_stoploss=False
+        t=LocalTrade(pair='X',open_rate=100.,amount=1.,stake_amount=100.,is_short=True,leverage=1.,
+          open_date=(self.now-timedelta(minutes=15)).replace(tzinfo=None),fee_open=.0006,fee_close=.0006,price_precision=.01,precision_mode_price=4)
+        t.get_custom_data=lambda k:{'stop':101.,'target_roi':.01}
+        s.dp=SimpleNamespace(runmode=SimpleNamespace(value='backtest'))
+        types=[x.exit_type for x in s.should_exit(t,100.,self.now,enter=False,exit_=False,low=96.,high=104.)]
+        self.assertLess(types.index(ExitType.STOP_LOSS),types.index(ExitType.ROI))
+
 
 class Registration(unittest.TestCase):
     def test_new_configs_and_forbidden_parameters(self):
@@ -186,12 +217,76 @@ class Registration(unittest.TestCase):
                 bad=copy.deepcopy(c);bad[key]=val
                 with self.assertRaises(ValueError):validate(bad)
     def test_challenger_cannot_start_paper_or_override_config(self):
-        for extra in [[],['-s','LiquiditySweepReversalV1'],['--strategy-path','/tmp']]:
+        for extra in [[],['-s','LiquiditySweepReversalV1'],['--strategy-path','/tmp'],['--userdir','/tmp']]:
             r=subprocess.run([sys.executable,'/lab/scripts/guard.py','trade','-c','/lab/configs/research-vwap.json']+extra,capture_output=True,text=True)
             self.assertEqual(r.returncode,2)
+    def test_baseline_userdir_bypass_refused(self):
+        r=subprocess.run([sys.executable,'/lab/scripts/guard.py','list-strategies','-c','/lab/configs/research.json','--userdir','/tmp'],capture_output=True,text=True)
+        self.assertEqual(r.returncode,2)
+        self.assertIn('user_data_dir',r.stderr)
+    def test_duplicate_name_module_bypass_refused(self):
+        import tempfile
+        import guard
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'configs').mkdir();(root/'user_data/strategies').mkdir(parents=True)
+            (root/'configs/research.json').write_bytes((ROOT/'configs/research.json').read_bytes())
+            (root/'user_data/strategies/Impersonator.py').write_text('class TrendPullbackBaselineV1: pass')
+            with patch.object(guard,'ROOT',root),patch.object(sys,'argv',['guard.py','list-strategies','-c',str(root/'configs/research.json')]):
+                with self.assertRaisesRegex(ValueError,'duplicate-name bypass'):
+                    guard.main()
+    def test_tampered_frozen_source_refused_before_engine(self):
+        import tempfile
+        import guard
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'configs').mkdir();(root/'evidence/session-1').mkdir(parents=True)
+            (root/'configs/research.json').write_bytes((ROOT/'configs/research.json').read_bytes())
+            (root/'user_data/strategies').mkdir(parents=True)
+            (root/'user_data/strategies/TrendPullbackBaselineV1.py').write_text('tampered fixture')
+            (root/'evidence/session-1/freeze.sha256').write_text((ROOT/'evidence/session-1/freeze.sha256').read_text().splitlines()[0]+'\n')
+            with patch.object(guard,'ROOT',root),patch.object(sys,'argv',['guard.py','backtesting','-c',str(root/'configs/research.json')]):
+                with self.assertRaisesRegex(ValueError,'frozen strategy/protocol changed'):
+                    guard.main()
     def test_original_freeze_unchanged(self):
         import hashlib
         for line in (ROOT/'evidence/session-1/freeze.sha256').read_text().splitlines():
             sha,path=line.split(maxsplit=1);self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha)
+
+
+class RecordedResearch(unittest.TestCase):
+    def test_actual_native_trades_stops_risk_and_ledger(self):
+        import csv
+        for name in ['VWAPTrendContinuationV1','LiquiditySweepReversalV1']:
+            folder=ROOT/'evidence/session-2/runs'/name
+            result=json.loads((folder/'native-result.json').read_text())['strategy'][name]
+            with (folder/'trade-ledger.csv').open() as f:ledger=list(csv.DictReader(f))
+            self.assertGreater(len(ledger),0)
+            self.assertEqual(len(ledger),len(result['trades']))
+            self.assertAlmostEqual(sum(float(r['profit_abs']) for r in ledger),sum(t['profit_abs'] for t in result['trades']))
+            for t in result['trades']:
+                self.assertEqual(t['leverage'],1.)
+                self.assertTrue(0<t['stake_amount']<=25.)
+                self.assertTrue(t['stop_loss_abs']>t['open_rate'] if t['is_short'] else t['stop_loss_abs']<t['open_rate'])
+                intended=t['stake_amount']*(abs(t['open_rate']-t['stop_loss_abs'])/t['open_rate']+COST_ALLOWANCE)
+                self.assertLessEqual(intended,2.5)
+                self.assertLessEqual(t['trade_duration'],480 if 'VWAP' in name else 240)
+            intervals=[t for t in result['trades'] if t['trade_duration']>0]
+            for t in intervals:
+                at=pd.Timestamp(t['open_date'])
+                concurrent=[x for x in intervals if pd.Timestamp(x['open_date'])<=at<pd.Timestamp(x['close_date'])]
+                self.assertLessEqual(len(concurrent),2)
+                self.assertEqual(len(concurrent),len({x['pair'] for x in concurrent}))
+    def test_public_report_schema_is_bounded_and_sanitized(self):
+        for name in ['strategy-comparison.json','research-summary.json','strategy-risks.json']:
+            path=ROOT/'evidence/session-2'/name;data=path.read_text();obj=json.loads(data)
+            self.assertEqual(obj['schema_version'],1)
+            self.assertLess(len(data.encode()),256000)
+            self.assertNotIn('/lab/user_data/runtime/',data)
+            self.assertIn('strategy_hashes',obj)
+            self.assertIn('run_completed_utc',obj)
+        m=json.loads((ROOT/'evidence/session-2/strategy-comparison.json').read_text())
+        for s in m['strategies'].values():
+            self.assertLess(abs(s['reconciliation_residual_usdt']),.00001)
+            self.assertGreater(s['fees_usdt'],0.)
+            self.assertLess(s['friction'][-1]['net_usdt'],s['net_usdt'])
 
 if __name__=='__main__':unittest.main()

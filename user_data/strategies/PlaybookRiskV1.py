@@ -52,7 +52,7 @@ def geometry(row, side, rate, buffer):
         return {'reference':ref, 'stop':stop, 'risk_fraction':fraction,
                 'deviation_fraction':deviation, 'target_roi':2*fraction,
                 'modeled_loss_per_notional':fraction+COST_ALLOWANCE}
-    except (KeyError, ValueError, TypeError, ZeroDivisionError):
+    except Exception:
         return None
 
 
@@ -85,7 +85,7 @@ class PlaybookRiskV1(IStrategy):
     order_time_in_force = {'entry':'GTC', 'exit':'GTC'}
 
     def version(self):
-        return '1.0.0'
+        return '1.0.1'
 
     @property
     def protections(self):
@@ -144,24 +144,27 @@ class PlaybookRiskV1(IStrategy):
             if side and int(row.get('enter_'+side,0)) != 1:
                 return None
             return row
-        except (AttributeError, KeyError, ValueError, TypeError):
+        except Exception:
             return None
 
     def event(self, pair, now, side, reason, g=None, amount=None, rate=None):
-        # Bounded local diagnostics. No API, credentials or raw source candles.
-        if not self.config.get('lab_audit',False):
-            return
-        p = Path('/lab/user_data/logs/s2-events.jsonl')
-        if p.exists() and p.stat().st_size > 4_000_000:
-            return
-        row = self.signal_row(pair,now,side)
-        item = {'schema_version':1,'strategy':self.__class__.__name__,'pair':pair,'side':side,
-                'decision_utc':now.isoformat(),'reason':reason,'geometry':g,'amount':amount,'rate':rate,
-                'signal_open_utc':None if row is None else row['date'].isoformat(),
-                'timeframe':'15m','expiry_seconds':300,'fee_round_trip':.0012,
-                'assumed_extra_friction':.002,'adverse_funding_allowance':.0003}
-        with p.open('a') as f:
-            f.write(json.dumps(item,allow_nan=False)+'\n')
+        try:
+            # Bounded local diagnostics. No API, credentials or raw source candles.
+            if not self.config.get('lab_audit',False):
+                return
+            p = Path('/lab/user_data/logs/s2-events.jsonl')
+            if p.exists() and p.stat().st_size > 4_000_000:
+                return
+            row = self.signal_row(pair,now,side)
+            item = {'schema_version':1,'strategy':self.__class__.__name__,'pair':pair,'side':side,
+                    'decision_utc':now.isoformat(),'reason':reason,'geometry':g,'amount':amount,'rate':rate,
+                    'signal_open_utc':None if row is None else row['date'].isoformat(),
+                    'timeframe':'15m','expiry_seconds':300,'fee_round_trip':.0012,
+                    'assumed_extra_friction':.002,'adverse_funding_allowance':.0003}
+            with p.open('a') as f:
+                f.write(json.dumps(item,allow_nan=False)+'\n')
+        except Exception:
+            pass  # Diagnostics must never change an admission decision.
 
     def custom_entry_price(self, pair, trade, current_time, proposed_rate, entry_tag, side, **kwargs):
         row = self.signal_row(pair,current_time,side)
@@ -169,10 +172,13 @@ class PlaybookRiskV1(IStrategy):
 
     def custom_stake_amount(self, pair, current_time, current_rate, proposed_stake,
                             min_stake, max_stake, leverage, entry_tag, side, **kwargs):
-        row = self.signal_row(pair,current_time,side)
-        if row is None or leverage != 1:
+        try:
+            row = self.signal_row(pair,current_time,side)
+            if row is None or leverage != 1:
+                return 0.
+            return stake_for(geometry(row,side,current_rate,self.stop_buffer),min_stake,max_stake)
+        except Exception:
             return 0.
-        return stake_for(geometry(row,side,current_rate,self.stop_buffer),min_stake,max_stake)
 
     def daily_allowed(self, current_time):
         """UTC realized net loss only; explicitly not a mark-to-market account-loss halt."""

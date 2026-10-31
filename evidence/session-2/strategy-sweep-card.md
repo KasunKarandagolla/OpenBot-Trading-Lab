@@ -6,7 +6,7 @@ Prior20 completed-bar rolling low/high, shifted1. Long: low below priorLow by[0.
 
 ## Shared execution and risk contract
 
-Version1.0.0, development research only. Gate BTC/ETH/SOL USDT perpetuals, 15m completed bars; 240bar startup including closed1h EMA20/50, ADX14. Hourly open H is usable by the 15m signal closing H+1h; native informative merge. Positive finite OHLCV, contiguous recent21 intervals, valid hourly context no older45minutes. ATR14/close in[0.001,0.025]. Prior20 volume denominator excludes current bar. No inference of real aggressor delta or liquidations.
+Version1.0.1, development research only. Gate BTC/ETH/SOL USDT perpetuals, 15m completed bars; 240bar startup including closed1h EMA20/50, ADX14. Hourly open H is usable by the 15m signal closing H+1h; native informative merge. Positive finite OHLCV, contiguous recent21 intervals, valid hourly context no older45minutes. ATR14/close in[0.001,0.025]. Prior20 volume denominator excludes current bar. No inference of real aggressor delta or liquidations.
 
 Trigger is completed signal close, known at date+15minutes. Custom limit reference is that close; admit rates only within min(0.15%,0.25ATR/reference). Five minute expiry from signal availability; native pending-order expiry5minutes; no repricing, retries only on a newly independently valid signal. Invalid/stale geometry blocks sizing/admission. Native15m fills are model-limited and cannot prove five minute queue execution or partial fills.
 

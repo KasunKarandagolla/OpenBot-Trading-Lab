@@ -4,3 +4,27 @@ exit=0
 exit=0
 2026-10-31T11:23:34.170410+00:00 /usr/local/bin/python /lab/scripts/guard.py backtesting --config /lab/configs/research-sweep.json --datadir /lab/user_data/data/session-2/gate --timerange 20260730-20261030 --fee 0.0006 --enable-protections --cache none --export trades --backtest-directory /lab/user_data/backtest_results/session-2/LiquiditySweepReversalV1 --config /lab/user_data/runtime/cloud.json
 exit=0
+2026-10-31T11:28:02.986332+00:00 /usr/local/bin/python /lab/scripts/guard.py backtesting --config /lab/configs/research.json --datadir /lab/user_data/data/session-2/gate --timerange 20260730-20261030 --fee 0.0006 --enable-protections --cache none --export trades --backtest-directory /lab/user_data/backtest_results/session-2/TrendPullbackBaselineV1 --config /lab/user_data/runtime/cloud.json
+exit=0
+2026-10-31T11:28:51.414402+00:00 /usr/local/bin/python /lab/scripts/guard.py backtesting --config /lab/configs/research-vwap.json --datadir /lab/user_data/data/session-2/gate --timerange 20260730-20261030 --fee 0.0006 --enable-protections --cache none --export trades --backtest-directory /lab/user_data/backtest_results/session-2/VWAPTrendContinuationV1 --config /lab/user_data/runtime/cloud.json
+exit=0
+2026-10-31T11:29:36.215915+00:00 /usr/local/bin/python /lab/scripts/guard.py backtesting --config /lab/configs/research-sweep.json --datadir /lab/user_data/data/session-2/gate --timerange 20260730-20261030 --fee 0.0006 --enable-protections --cache none --export trades --backtest-directory /lab/user_data/backtest_results/session-2/LiquiditySweepReversalV1 --config /lab/user_data/runtime/cloud.json
+exit=0
+
+Additional actual Cloud commands (operator form; LAB_EXEC_CONTAINER selected the one disposable runner):
+python3 scripts/init_runtime.py => exit 0
+pinned docker compose pull freqtrade => exit 0
+native public save_contracts/download-data exact 20260726-20261030 => initial conflicting proxy failure; corrected metadata/download exit 0
+python /lab/scripts/data_session2.py => exit 0, all 12 source hashes identical
+./scripts/lab.sh doctor => exit 0
+./scripts/lab.sh test => initial fixture run 9 errors; corrected pre-outcome 40 PASS; final 48 PASS, exit 0
+./scripts/lab.sh strategy-info VWAPTrendContinuationV1 => exit 0
+./scripts/lab.sh strategy-info LiquiditySweepReversalV1 => exit 0
+./scripts/lab.sh compare => repeated exit 0, byte-identical derived JSON
+compare with pandas.read_feather/subprocess.run forbidden => exit 0, neither called
+./scripts/lab.sh research-lookahead => first full 1.0.0 exit 0; final 1.0.1 append-export run exit 1; fresh-derived-output 1.0.1 rerun exit 0, no bias17/20
+./scripts/lab.sh research-download with retained files => expected exit 2, preserved source and no new download
+bash -n scripts/lab.sh => exit 0
+python3 -m py_compile scripts/*.py user_data/strategies/*.py tests/*.py => exit 0
+original Session1 tree/config/strategy/protocol diff => empty
+current freeze SHA256 and design manifest checks => exit 0

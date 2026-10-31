@@ -37,7 +37,10 @@ case "${1:-}" in
    py /lab/scripts/data_session2.py --verify
    for spec in 'vwap VWAPTrendContinuationV1' 'sweep LiquiditySweepReversalV1'; do
      read -r suffix name <<< "$spec"
+     # Native Pandas3 CSV append cannot restore empty string column dtypes; start a fresh derived diagnostic.
+     rm -f "user_data/lookahead-${suffix}.csv"
      ft lookahead-analysis --config "/lab/configs/research-${suffix}.json" --datadir /lab/user_data/data/session-2/gate --timerange 20260730-20261030 --fee 0.0006 --minimum-trade-amount 5 --targeted-trade-amount 20 --lookahead-analysis-exportfilename "/lab/user_data/lookahead-${suffix}.csv" > "evidence/session-2/lookahead-${suffix}.txt" 2>&1
+     cp "user_data/lookahead-${suffix}.csv" "evidence/session-2/native-lookahead-${suffix}.csv"
    done
    ;;
  doctor)

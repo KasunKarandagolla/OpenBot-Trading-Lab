@@ -103,7 +103,7 @@ def main():
                 registered.get('exchange',{}).pop(key,None)
             if expected != registered:
                 raise ValueError('unregistered strategy/config combination')
-        for field in ('stake_amount', 'max_open_trades', 'dry_run_wallet', 'strategy_path', 'db_url', 'pairs', 'pairs_file',
+        for field in ('stake_amount', 'max_open_trades', 'dry_run_wallet', 'strategy_path', 'user_data_dir', 'db_url', 'pairs', 'pairs_file',
                       'strategy_list', 'freqaimodel', 'freqaimodel_path'):
             if parsed.get(field) is not None:
                 raise ValueError('unsafe CLI override: '+field)
@@ -115,6 +115,9 @@ def main():
                 raise ValueError('unsafe CLI override: '+field)
         if parsed.get('fee') is not None and parsed['fee'] != .0006:
             raise ValueError('unregistered fee')
+        modules = {'TrendPullbackBaselineV1.py','VWAPTrendContinuationV1.py','LiquiditySweepReversalV1.py','PlaybookRiskV1.py'}
+        if any(p.name not in modules for p in (ROOT/'user_data/strategies').glob('*.py')):
+            raise ValueError('unregistered strategy module; duplicate-name bypass forbidden')
         if (ROOT/'user_data/strategies'/ (name+'.json')).exists():
             raise ValueError('unregistered strategy parameter file')
         if args[0] == 'trade' and str(ROOT/'configs/paper.json') not in configs:
@@ -127,6 +130,14 @@ def main():
             sha, filename = line.split(maxsplit=1)
             if hashlib.sha256((ROOT/filename).read_bytes()).hexdigest() != sha:
                 raise ValueError('frozen strategy/protocol changed')
+        if args[0] == 'trade' and str(parsed.get('datadir')) != '/lab/user_data/data/cache/gate':
+            raise ValueError('paper must use separate cache data path')
+        if args[0] in {'backtesting','lookahead-analysis','download-data'}:
+            if str(parsed.get('datadir')) not in {'/lab/user_data/data/research/gate','/lab/user_data/data/session-2/gate'}:
+                raise ValueError('unregistered research data path')
+            expected_range = '20260726-20261030' if args[0] == 'download-data' else '20260730-20261030'
+            if parsed.get('timerange') != expected_range:
+                raise ValueError('unregistered research calendar window')
     from freqtrade.main import main as freqtrade_main
     return freqtrade_main(args)
 
