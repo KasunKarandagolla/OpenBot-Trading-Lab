@@ -1,0 +1,165 @@
+{
+  "assumptions": {
+    "candle_types": [
+      "futures",
+      "mark",
+      "funding_rate"
+    ],
+    "data_directory": "user_data/data/session-2/gate",
+    "download_timerange": "20260726-20261030",
+    "entry_model": "Signal-close limit price; 5minute paper timeout; candle backtest fill timing model-limited",
+    "evaluation_timerange": "20260730-20261030",
+    "exchange": "gate",
+    "exits": "Frozen structure stop plus native custom ROI2x initial price-risk,8h/4h hold request,2bar cooldown",
+    "fee_per_side": 0.0006,
+    "fee_status": "conservative research assumption, not verified account tier",
+    "freeze_rule": "No outcome-dependent threshold changes. Software bug fixes logged and rerun all affected outputs.",
+    "friction_bps_per_side": [
+      0,
+      5,
+      10,
+      20
+    ],
+    "funding": "native actual observations required; missing funding blocks complete-economics claim",
+    "future_reservation": "Observations after2026-10-31 not acquired/evaluated in this session; Session3 separately authorized",
+    "leverage": 1,
+    "max_positions": 2,
+    "optimization": "NONE; no alternative window planned",
+    "outcome_status_rule": "Under30 trades INSUFFICIENT EVIDENCE; nonpositive larger samples REJECTED under evaluated assumptions; positive larger samples UNQUALIFIED DEVELOPMENT RESULT",
+    "pairs": [
+      "BTC/USDT:USDT",
+      "ETH/USDT:USDT",
+      "SOL/USDT:USDT"
+    ],
+    "regime_labels": "Only strategy hourly EMA/ADX filters; no hindsight calendar regimes or optimization",
+    "sample_identity": "All 12 reacquired files byte-identical to Session1: 1201184 bytes",
+    "sizing_cost_allowance": {
+      "adverse_funding": 0.0003,
+      "extra_friction_round_trip": 0.002,
+      "fee_round_trip": 0.0012
+    },
+    "stake": 25,
+    "status": "INSPECTED DEVELOPMENT DATA / UNQUALIFIED",
+    "strategies": [
+      "TrendPullbackBaselineV1",
+      "VWAPTrendContinuationV1",
+      "LiquiditySweepReversalV1"
+    ],
+    "timeframes": [
+      "15m",
+      "1h"
+    ],
+    "universe_selection": "BTC, ETH, SOL selected by name as large familiar currently listed contracts before observing results; survivorship/point-in-time eligibility not reconstructed",
+    "version": "session-2-v1",
+    "wallet": 1000,
+    "warmup_bars": {
+      "baseline": 200,
+      "challengers": 240
+    }
+  },
+  "limitations": [
+    "No independent holdout, no economic qualification or automatic promotion.",
+    "15m limit fills are within-candle simulations; five-minute expiry cannot establish historical queue fills.",
+    "Friction stresses deduct additional turnover costs without resimulating fills or drawdown.",
+    "Risk controls rely on assumed stop/friction/funding allowances; gaps/outages can exceed them.",
+    "UTC realized-loss halt excludes unrealized account losses; full daily-loss ceiling NOT ENFORCED.",
+    "Current surviving BTC/ETH/SOL only; correlated days are not independent samples."
+  ],
+  "mode": "SIMULATED HISTORICAL FUTURES",
+  "pairs": [
+    "BTC/USDT:USDT",
+    "ETH/USDT:USDT",
+    "SOL/USDT:USDT"
+  ],
+  "protocol_sha256": "3fb023c78f3cc54bd5959e4781c85551d99e3082a79f1e407f8dffaf610d2875",
+  "sample_class": "INSPECTED DEVELOPMENT DATA",
+  "schema_version": 1,
+  "source": "recorded native Freqtrade 2026.10 trade results",
+  "strategies": {
+    "LiquiditySweepReversalV1": {
+      "expectancy_usdt": 0.04490984230769231,
+      "fees_usdt": 1.03739169,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": 1.75148385
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.8869907750000001
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 0.022497700000000176
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -1.7064884499999997
+        }
+      ],
+      "funding_usdt": -0.00041448213799999954,
+      "max_drawdown_usdt": 1.0048103499999996,
+      "net_usdt": 1.75148385,
+      "profit_factor": 1.630495742152618,
+      "status": "UNQUALIFIED DEVELOPMENT RESULT",
+      "trades": 39
+    },
+    "TrendPullbackBaselineV1": {
+      "expectancy_usdt": -0.016882250518134717,
+      "fees_usdt": 10.405191444,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": -6.5165487
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": -15.18754157
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": -23.858534440000003
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -41.200520180000005
+        }
+      ],
+      "funding_usdt": -0.022477299936000002,
+      "max_drawdown_usdt": 8.622088980000001,
+      "net_usdt": -6.5165487,
+      "profit_factor": 0.8516852028347884,
+      "status": "REJECTED under evaluated assumptions",
+      "trades": 386
+    },
+    "VWAPTrendContinuationV1": {
+      "expectancy_usdt": 0.048023993529411765,
+      "fees_usdt": 0.45445267799999994,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": 0.81640789
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.4376973250000001
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 0.05898676000000014
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -0.6984343699999997
+        }
+      ],
+      "funding_usdt": -0.0015494412240000003,
+      "max_drawdown_usdt": 0.66030074,
+      "net_usdt": 0.81640789,
+      "profit_factor": 1.5418251562382932,
+      "status": "INSUFFICIENT EVIDENCE",
+      "trades": 17
+    }
+  },
+  "window": "20260730-20261030"
+}

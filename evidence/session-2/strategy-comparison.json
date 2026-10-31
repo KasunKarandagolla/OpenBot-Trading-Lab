@@ -1,0 +1,455 @@
+{
+  "assumptions": {
+    "candle_types": [
+      "futures",
+      "mark",
+      "funding_rate"
+    ],
+    "data_directory": "user_data/data/session-2/gate",
+    "download_timerange": "20260726-20261030",
+    "entry_model": "Signal-close limit price; 5minute paper timeout; candle backtest fill timing model-limited",
+    "evaluation_timerange": "20260730-20261030",
+    "exchange": "gate",
+    "exits": "Frozen structure stop plus native custom ROI2x initial price-risk,8h/4h hold request,2bar cooldown",
+    "fee_per_side": 0.0006,
+    "fee_status": "conservative research assumption, not verified account tier",
+    "freeze_rule": "No outcome-dependent threshold changes. Software bug fixes logged and rerun all affected outputs.",
+    "friction_bps_per_side": [
+      0,
+      5,
+      10,
+      20
+    ],
+    "funding": "native actual observations required; missing funding blocks complete-economics claim",
+    "future_reservation": "Observations after2026-10-31 not acquired/evaluated in this session; Session3 separately authorized",
+    "leverage": 1,
+    "max_positions": 2,
+    "optimization": "NONE; no alternative window planned",
+    "outcome_status_rule": "Under30 trades INSUFFICIENT EVIDENCE; nonpositive larger samples REJECTED under evaluated assumptions; positive larger samples UNQUALIFIED DEVELOPMENT RESULT",
+    "pairs": [
+      "BTC/USDT:USDT",
+      "ETH/USDT:USDT",
+      "SOL/USDT:USDT"
+    ],
+    "regime_labels": "Only strategy hourly EMA/ADX filters; no hindsight calendar regimes or optimization",
+    "sample_identity": "All 12 reacquired files byte-identical to Session1: 1201184 bytes",
+    "sizing_cost_allowance": {
+      "adverse_funding": 0.0003,
+      "extra_friction_round_trip": 0.002,
+      "fee_round_trip": 0.0012
+    },
+    "stake": 25,
+    "status": "INSPECTED DEVELOPMENT DATA / UNQUALIFIED",
+    "strategies": [
+      "TrendPullbackBaselineV1",
+      "VWAPTrendContinuationV1",
+      "LiquiditySweepReversalV1"
+    ],
+    "timeframes": [
+      "15m",
+      "1h"
+    ],
+    "universe_selection": "BTC, ETH, SOL selected by name as large familiar currently listed contracts before observing results; survivorship/point-in-time eligibility not reconstructed",
+    "version": "session-2-v1",
+    "wallet": 1000,
+    "warmup_bars": {
+      "baseline": 200,
+      "challengers": 240
+    }
+  },
+  "limitations": [
+    "No independent holdout, no economic qualification or automatic promotion.",
+    "15m limit fills are within-candle simulations; five-minute expiry cannot establish historical queue fills.",
+    "Friction stresses deduct additional turnover costs without resimulating fills or drawdown.",
+    "Risk controls rely on assumed stop/friction/funding allowances; gaps/outages can exceed them.",
+    "UTC realized-loss halt excludes unrealized account losses; full daily-loss ceiling NOT ENFORCED.",
+    "Current surviving BTC/ETH/SOL only; correlated days are not independent samples."
+  ],
+  "mode": "SIMULATED HISTORICAL FUTURES",
+  "pairs": [
+    "BTC/USDT:USDT",
+    "ETH/USDT:USDT",
+    "SOL/USDT:USDT"
+  ],
+  "protocol_sha256": "3fb023c78f3cc54bd5959e4781c85551d99e3082a79f1e407f8dffaf610d2875",
+  "sample_class": "INSPECTED DEVELOPMENT DATA",
+  "schema_version": 1,
+  "source": "recorded native Freqtrade 2026.10 trade results",
+  "strategies": {
+    "LiquiditySweepReversalV1": {
+      "average_gross_price_pnl_usdt": 0.07152025641025629,
+      "average_trade_ratio": 0.0019526022607562036,
+      "callback_counts": {
+        "ACCEPTED": 39
+      },
+      "coarse_bar_stop_target_overlap_trades": 0,
+      "directions": {
+        "long": {
+          "net_usdt": 0.09401587999999994,
+          "trades": 21
+        },
+        "short": {
+          "net_usdt": 1.6574679700000001,
+          "trades": 18
+        }
+      },
+      "draws": 0,
+      "exit_reasons": {
+        "force_exit": 1,
+        "max_hold_4h": 17,
+        "roi": 10,
+        "stop_loss": 11
+      },
+      "expectancy_usdt": 0.04490984230769231,
+      "exposure_notional_hours": 2160.3003725,
+      "fees_usdt": 1.03739169,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": 1.75148385
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.8869907750000001
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 0.022497700000000176
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -1.7064884499999997
+        }
+      ],
+      "funding_usdt": -0.00041448213799999954,
+      "gross_price_pnl_usdt": 2.7892899999999954,
+      "hold_minutes": {
+        "0": 0.0,
+        "0.25": 60.0,
+        "0.5": 180.0,
+        "0.75": 240.0,
+        "0.95": 240.0,
+        "1": 240.0
+      },
+      "initial_intended_risk_matched_trades": 39,
+      "losses": 19,
+      "max_drawdown_account": 0.0010034228582327966,
+      "max_drawdown_usdt": 1.0048103499999996,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_R_quantiles": {
+        "0": -0.877999408123653,
+        "0.25": -0.7558892931113164,
+        "0.5": 0.01040343828006294,
+        "0.75": 1.1533944883644578,
+        "1": 1.4990903407695515
+      },
+      "net_usdt": 1.75148385,
+      "net_without_top3_usdt": 0.37394104000000006,
+      "payoff": {
+        "average_loss_usdt": -0.14620774473684212,
+        "average_win_usdt": 0.22647155
+      },
+      "per_pair_usdt": {
+        "BTC/USDT:USDT": 0.35434521,
+        "ETH/USDT:USDT": 0.27231589,
+        "SOL/USDT:USDT": 1.12482275
+      },
+      "profit_factor": 1.630495742152618,
+      "provenance": {
+        "command": [
+          "/usr/local/bin/python",
+          "/lab/scripts/guard.py",
+          "backtesting",
+          "--config",
+          "/lab/configs/research-sweep.json",
+          "--datadir",
+          "/lab/user_data/data/session-2/gate",
+          "--timerange",
+          "20260730-20261030",
+          "--fee",
+          "0.0006",
+          "--enable-protections",
+          "--cache",
+          "none",
+          "--export",
+          "trades",
+          "--backtest-directory",
+          "/lab/user_data/backtest_results/session-2/LiquiditySweepReversalV1",
+          "--config",
+          "/lab/user_data/runtime/cloud.json"
+        ],
+        "completed_utc": "2026-10-31T11:24:21.526602+00:00",
+        "engine": "2026.10",
+        "exit_code": 0,
+        "native_result_sha256": "9308334bb243e765091e28dfa4b0442dd722c397342a2587d11337d30a96c139",
+        "native_zip_local_only": true,
+        "native_zip_sha256": "d146ee6f8157ca50588695427c42d90ba5ffcd19d033bd1a2c1b4d718b8446cf",
+        "source_data_manifest_sha256": "726600180ba3d4d1407caa08f150409f632a1531b6a7d26653722be9fac21b24",
+        "started_utc": "2026-10-31T11:23:34.170410+00:00",
+        "strategy_hashes": {
+          "configs/research-sweep.json": "c113aa3b84877ae9083d36349f88b7e4be07a66e6381543d30e5f470471f4897",
+          "user_data/strategies/LiquiditySweepReversalV1.py": "6d4af2c01717bd7c95533134e63e7c256e5068d0ffce834c60694ac291f12a21",
+          "user_data/strategies/PlaybookRiskV1.py": "7cf8201294a349feeae53949b8c142d554c1678270f11d54f60085eea48875ee"
+        }
+      },
+      "reconciliation_residual_usdt": 2.2138004762695118e-08,
+      "regime_breakdown": "UNAVAILABLE: no separate ex-ante calendar regime classification; strategy hourly filters only",
+      "status": "UNQUALIFIED DEVELOPMENT RESULT",
+      "top3_trade_pnl_usdt": 1.37754281,
+      "trades": 39,
+      "trading_days": 29,
+      "turnover_usdt": 1728.98615,
+      "win_rate": 0.5128205128205128,
+      "wins": 20
+    },
+    "TrendPullbackBaselineV1": {
+      "average_gross_price_pnl_usdt": 0.010132435233160656,
+      "average_trade_ratio": -0.0007352690832190319,
+      "callback_counts": {},
+      "coarse_bar_stop_target_overlap_trades": null,
+      "directions": {
+        "long": {
+          "net_usdt": -1.99799148,
+          "trades": 198
+        },
+        "short": {
+          "net_usdt": -4.51855722,
+          "trades": 188
+        }
+      },
+      "draws": 0,
+      "exit_reasons": {
+        "exit_signal": 229,
+        "max_hold_12h": 112,
+        "roi": 31,
+        "stop_loss": 14
+      },
+      "expectancy_usdt": -0.016882250518134717,
+      "exposure_notional_hours": 61717.025747499996,
+      "fees_usdt": 10.405191444,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": -6.5165487
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": -15.18754157
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": -23.858534440000003
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -41.200520180000005
+        }
+      ],
+      "funding_usdt": -0.022477299936000002,
+      "gross_price_pnl_usdt": 3.9111200000000133,
+      "hold_minutes": {
+        "0": 0.0,
+        "0.25": 180.0,
+        "0.5": 427.5,
+        "0.75": 720.0,
+        "0.95": 720.0,
+        "1": 720.0
+      },
+      "initial_intended_risk_matched_trades": 0,
+      "losses": 271,
+      "max_drawdown_account": 0.008603972968347171,
+      "max_drawdown_usdt": 8.622088980000001,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 312,
+      "native_timedout_entry_orders": 0,
+      "net_R_quantiles": null,
+      "net_usdt": -6.5165487,
+      "net_without_top3_usdt": -8.74374637,
+      "payoff": {
+        "average_loss_usdt": -0.1621301827306273,
+        "average_win_usdt": 0.32539765930434783
+      },
+      "per_pair_usdt": {
+        "BTC/USDT:USDT": -5.55257935,
+        "ETH/USDT:USDT": -0.5329479000000004,
+        "SOL/USDT:USDT": -0.4310214499999998
+      },
+      "profit_factor": 0.8516852028347884,
+      "provenance": {
+        "command": [
+          "/usr/local/bin/python",
+          "/lab/scripts/guard.py",
+          "backtesting",
+          "--config",
+          "/lab/configs/research.json",
+          "--datadir",
+          "/lab/user_data/data/session-2/gate",
+          "--timerange",
+          "20260730-20261030",
+          "--fee",
+          "0.0006",
+          "--enable-protections",
+          "--cache",
+          "none",
+          "--export",
+          "trades",
+          "--backtest-directory",
+          "/lab/user_data/backtest_results/session-2/TrendPullbackBaselineV1",
+          "--config",
+          "/lab/user_data/runtime/cloud.json"
+        ],
+        "completed_utc": "2026-10-31T11:22:49.138038+00:00",
+        "engine": "2026.10",
+        "exit_code": 0,
+        "native_result_sha256": "2e8d4995c721333fb8a03aa250ca1c9a8bd8fb368c62d54bb7560a45944ee27c",
+        "native_zip_local_only": true,
+        "native_zip_sha256": "dacfe3e3bd0872a5f4a350e3c53a731075c302df92394c76f7786f0fbe09a64f",
+        "source_data_manifest_sha256": "726600180ba3d4d1407caa08f150409f632a1531b6a7d26653722be9fac21b24",
+        "started_utc": "2026-10-31T11:21:59.061104+00:00",
+        "strategy_hashes": {
+          "configs/research.json": "dfcbebb920a4958854c3370096be15e35c2124335394454dd72b041272ecfe9a",
+          "user_data/strategies/TrendPullbackBaselineV1.py": "848069de46653edff802323e31ebc413cf6df632a72ce8ad7f4043230f409d06"
+        }
+      },
+      "reconciliation_residual_usdt": 4.39359864046196e-08,
+      "regime_breakdown": "UNAVAILABLE: no separate ex-ante calendar regime classification; strategy hourly filters only",
+      "status": "REJECTED under evaluated assumptions",
+      "top3_trade_pnl_usdt": 2.22719767,
+      "trades": 386,
+      "trading_days": 92,
+      "turnover_usdt": 17341.98574,
+      "win_rate": 0.2979274611398964,
+      "wins": 115
+    },
+    "VWAPTrendContinuationV1": {
+      "average_gross_price_pnl_usdt": 0.07484764705882337,
+      "average_trade_ratio": 0.0023953051498590374,
+      "callback_counts": {
+        "ACCEPTED": 17
+      },
+      "coarse_bar_stop_target_overlap_trades": 0,
+      "directions": {
+        "long": {
+          "net_usdt": 1.33593146,
+          "trades": 7
+        },
+        "short": {
+          "net_usdt": -0.51952357,
+          "trades": 10
+        }
+      },
+      "draws": 0,
+      "exit_reasons": {
+        "max_hold_8h": 4,
+        "roi": 6,
+        "stop_loss": 7
+      },
+      "expectancy_usdt": 0.048023993529411765,
+      "exposure_notional_hours": 1299.25588,
+      "fees_usdt": 0.45445267799999994,
+      "friction": [
+        {
+          "extra_bps_per_side": 0,
+          "net_usdt": 0.81640789
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.4376973250000001
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 0.05898676000000014
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -0.6984343699999997
+        }
+      ],
+      "funding_usdt": -0.0015494412240000003,
+      "gross_price_pnl_usdt": 1.2724099999999972,
+      "hold_minutes": {
+        "0": 15.0,
+        "0.25": 45.0,
+        "0.5": 120.0,
+        "0.75": 300.0,
+        "0.95": 480.0,
+        "1": 480.0
+      },
+      "initial_intended_risk_matched_trades": 17,
+      "losses": 8,
+      "max_drawdown_account": 0.000659327105972529,
+      "max_drawdown_usdt": 0.66030074,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_R_quantiles": {
+        "0": -0.8358042017823454,
+        "0.25": -0.7755351990858845,
+        "0.5": 0.2683521914332089,
+        "0.75": 1.2790215345591331,
+        "1": 1.419648990701019
+      },
+      "net_usdt": 0.81640789,
+      "net_without_top3_usdt": -0.15433319,
+      "payoff": {
+        "average_loss_usdt": -0.18834671125,
+        "average_win_usdt": 0.2581312866666667
+      },
+      "per_pair_usdt": {
+        "BTC/USDT:USDT": 0.14471860999999997,
+        "ETH/USDT:USDT": 0.24552746,
+        "SOL/USDT:USDT": 0.42616182
+      },
+      "profit_factor": 1.5418251562382932,
+      "provenance": {
+        "command": [
+          "/usr/local/bin/python",
+          "/lab/scripts/guard.py",
+          "backtesting",
+          "--config",
+          "/lab/configs/research-vwap.json",
+          "--datadir",
+          "/lab/user_data/data/session-2/gate",
+          "--timerange",
+          "20260730-20261030",
+          "--fee",
+          "0.0006",
+          "--enable-protections",
+          "--cache",
+          "none",
+          "--export",
+          "trades",
+          "--backtest-directory",
+          "/lab/user_data/backtest_results/session-2/VWAPTrendContinuationV1",
+          "--config",
+          "/lab/user_data/runtime/cloud.json"
+        ],
+        "completed_utc": "2026-10-31T11:23:34.169816+00:00",
+        "engine": "2026.10",
+        "exit_code": 0,
+        "native_result_sha256": "f5c05e3949a175180200a52f5be135cd1c9d28c0c9fa8c3ce260291202895259",
+        "native_zip_local_only": true,
+        "native_zip_sha256": "f7aa1a51b0066e5932e9d4bf82cd3adb513a6ce04efdae93f52c1f3af343440f",
+        "source_data_manifest_sha256": "726600180ba3d4d1407caa08f150409f632a1531b6a7d26653722be9fac21b24",
+        "started_utc": "2026-10-31T11:22:49.138754+00:00",
+        "strategy_hashes": {
+          "configs/research-vwap.json": "feb6913e504c35fa5a1f77a923e6d765c8a8a4e36e7a3d6780595869edb79bf7",
+          "user_data/strategies/PlaybookRiskV1.py": "7cf8201294a349feeae53949b8c142d554c1678270f11d54f60085eea48875ee",
+          "user_data/strategies/VWAPTrendContinuationV1.py": "6cdab5bce2ff9e77f8ad436fd81750370986c442bdb12a4fa40677d8ee14d1c3"
+        }
+      },
+      "reconciliation_residual_usdt": 9.22400289482539e-09,
+      "regime_breakdown": "UNAVAILABLE: no separate ex-ante calendar regime classification; strategy hourly filters only",
+      "status": "INSUFFICIENT EVIDENCE",
+      "top3_trade_pnl_usdt": 0.97074108,
+      "trades": 17,
+      "trading_days": 13,
+      "turnover_usdt": 757.42113,
+      "win_rate": 0.5294117647058824,
+      "wins": 9
+    }
+  },
+  "window": "20260730-20261030"
+}

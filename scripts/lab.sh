@@ -17,6 +17,29 @@ py() {
 }
 research=(--config /lab/configs/research.json --datadir /lab/user_data/data/research/gate)
 case "${1:-}" in
+ research-download)
+   test -f evidence/session-1/source-rights.md
+   if find user_data/data/session-2 -name '*.feather' -print -quit 2>/dev/null | rg -q .; then
+     echo 'Session 2 data already exist; preserving them. Use research-all to verify and run.' >&2; exit 2
+   fi
+   py /lab/scripts/save_contracts.py
+   ft download-data --config /lab/configs/research.json --datadir /lab/user_data/data/session-2/gate --trading-mode futures --timeframes 15m 1h --timerange 20260726-20261030
+   py /lab/scripts/data_session2.py
+   ;;
+ research-all) py /lab/scripts/research_session2.py run ;;
+ compare) py /lab/scripts/research_session2.py compare ;;
+ strategy-info)
+   case "${2:-}" in TrendPullbackBaselineV1|VWAPTrendContinuationV1|LiquiditySweepReversalV1) ;;
+     *) echo 'Unknown registered strategy' >&2; exit 2;; esac
+   py /lab/scripts/research_session2.py info "$2"
+   ;;
+ research-lookahead)
+   py /lab/scripts/data_session2.py --verify
+   for spec in 'vwap VWAPTrendContinuationV1' 'sweep LiquiditySweepReversalV1'; do
+     read -r suffix name <<< "$spec"
+     ft lookahead-analysis --config "/lab/configs/research-${suffix}.json" --datadir /lab/user_data/data/session-2/gate --timerange 20260730-20261030 --fee 0.0006 --minimum-trade-amount 5 --targeted-trade-amount 20 --lookahead-analysis-exportfilename "/lab/user_data/lookahead-${suffix}.csv" > "evidence/session-2/lookahead-${suffix}.txt" 2>&1
+   done
+   ;;
  doctor)
    "${compose[@]}" config --quiet
    ft --version
@@ -61,5 +84,5 @@ case "${1:-}" in
  paper-down) "${compose[@]}" stop paper ;;
  logs) "${compose[@]}" logs --tail 100 ui paper ;;
  test) "${compose[@]}" config --format json > user_data/runtime/compose-safety.json; py -m unittest discover -s /lab/tests -v ;;
- *) echo 'Usage: ./scripts/lab.sh {doctor|scan|download|validate|backtest|lookahead|report|ui-up|ui-down|paper-up|paper-down|logs|test}' >&2; exit 2 ;;
+ *) echo 'Usage: ./scripts/lab.sh {research-download|research-all|compare|strategy-info NAME|research-lookahead|doctor|scan|download|validate|backtest|lookahead|report|ui-up|ui-down|paper-up|paper-down|logs|test}' >&2; exit 2 ;;
 esac

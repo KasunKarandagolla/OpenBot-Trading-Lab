@@ -32,11 +32,18 @@ def validate(config):
     require(type(config.get('max_open_trades')) is int and 0 < config['max_open_trades'] <= 2, 'at most two positions')
     require(isinstance(config.get('stake_amount'), (int, float)) and 0 < config['stake_amount'] <= 25, 'fixed stake must be <=25 USDT')
     require(config.get('dry_run_wallet') == 1000, 'example wallet must be 1000 USDT')
-    require(config.get('timeframe') == '15m', '15m baseline only')
+    require(config.get('timeframe') == '15m', '15m only')
     require(not config.get('position_adjustment_enable'), 'DCA forbidden')
-    require(config.get('stoploss', -0.02) == -0.02, 'frozen stoploss required')
-    require(config.get('minimal_roi', {'0':0.03}) == {'0':0.03}, 'frozen ROI required')
-    require(config.get('strategy') == 'TrendPullbackBaselineV1', 'frozen baseline only')
+    name = config.get('strategy')
+    require(name in {'TrendPullbackBaselineV1','VWAPTrendContinuationV1','LiquiditySweepReversalV1'}, 'unknown strategy')
+    challenger = name != 'TrendPullbackBaselineV1'
+    require(config.get('stoploss', -.03 if challenger else -.02) == (-.03 if challenger else -.02), 'frozen stoploss required')
+    require(config.get('minimal_roi', {'0':100.} if challenger else {'0':.03}) == ({'0':100.} if challenger else {'0':.03}), 'frozen ROI required')
+    require(config.get('strategy_path', '/lab/user_data/strategies') == '/lab/user_data/strategies', 'fixed strategy directory required')
+    for key in ('leverage','trailing_stop','custom_price_max_distance_ratio','use_custom_stoploss','use_custom_roi',
+                'ignore_roi_if_entry_signal','exit_profit_only','ignore_buying_expired_candle_after','disable_dataframe_checks','freqai'):
+        require(key not in config, 'unauthorized strategy override: '+key)
+    require(not config.get('recursive_strategy_search'), 'recursive strategies forbidden')
     require(config.get('order_types', {}).get('stoploss_on_exchange') is False, 'exchange stops disabled')
     for opts in ('ccxt_config', 'ccxt_sync_config', 'ccxt_async_config'):
         cfg = ex.get(opts, {})
@@ -69,18 +76,54 @@ def main():
         for filename in configs:
             merge(effective, json.loads(Path(filename).read_text()))
         validate(effective)
-        for field in ('stake_amount', 'max_open_trades', 'dry_run_wallet', 'strategy_path',
+        public_configs = {'research.json','scanner.json','paper.json','ui.json','research-vwap.json','research-sweep.json'}
+        for filename in configs:
+            path = Path(filename)
+            if path.parent == ROOT/'configs' and path.name in public_configs:
+                continue
+            overlay = json.loads(path.read_text())
+            if path == ROOT/'user_data/runtime/cloud.json':
+                if set(overlay) != {'exchange'} or not set(overlay['exchange']) <= {'ccxt_config','ccxt_sync_config','ccxt_async_config'}:
+                    raise ValueError('unsafe network overlay')
+            elif path == ROOT/'user_data/runtime/api.json':
+                if set(overlay) != {'api_server'}:
+                    raise ValueError('unsafe API overlay')
+            else:
+                raise ValueError('unregistered configuration path')
+        name = effective['strategy']
+        if args[0] == 'trade' and name != 'TrendPullbackBaselineV1':
+            raise ValueError('challengers are research-only; no owner paper selection authorized')
+        # Challengers only accept the exact registered public config plus reviewed network overlay.
+        if name != 'TrendPullbackBaselineV1':
+            registry = json.loads((ROOT/'research/strategy-registry.json').read_text())
+            registered = json.loads((ROOT/registry['strategies'][name]['config']).read_text())
+            expected = json.loads(json.dumps(effective))
+            for key in ('ccxt_config','ccxt_sync_config','ccxt_async_config'):
+                expected.get('exchange',{}).pop(key,None)
+                registered.get('exchange',{}).pop(key,None)
+            if expected != registered:
+                raise ValueError('unregistered strategy/config combination')
+        for field in ('stake_amount', 'max_open_trades', 'dry_run_wallet', 'strategy_path', 'db_url', 'pairs', 'pairs_file',
                       'strategy_list', 'freqaimodel', 'freqaimodel_path'):
             if parsed.get(field) is not None:
                 raise ValueError('unsafe CLI override: '+field)
         for field in ('recursive_strategy_search', 'position_stacking', 'enable_dynamic_pairlist'):
             if parsed.get(field): raise ValueError('unsafe CLI override: '+field)
-        for field, expected in [('strategy','TrendPullbackBaselineV1'), ('timeframe','15m'),
+        for field, expected in [('strategy',name), ('timeframe','15m'),
                                 ('trading_mode','futures'), ('exchange','gate')]:
             if parsed.get(field) is not None and parsed[field] != expected:
                 raise ValueError('unsafe CLI override: '+field)
+        if parsed.get('fee') is not None and parsed['fee'] != .0006:
+            raise ValueError('unregistered fee')
+        if (ROOT/'user_data/strategies'/ (name+'.json')).exists():
+            raise ValueError('unregistered strategy parameter file')
+        if args[0] == 'trade' and str(ROOT/'configs/paper.json') not in configs:
+            raise ValueError('paper command requires approved paper configuration')
         import hashlib
-        for line in (ROOT/'evidence/session-1/freeze.sha256').read_text().splitlines():
+        freeze = (ROOT/'evidence/session-1/freeze.sha256').read_text().splitlines()
+        if (ROOT/'evidence/session-2/freeze.sha256').exists():
+            freeze += (ROOT/'evidence/session-2/freeze.sha256').read_text().splitlines()
+        for line in freeze:
             sha, filename = line.split(maxsplit=1)
             if hashlib.sha256((ROOT/filename).read_bytes()).hexdigest() != sha:
                 raise ValueError('frozen strategy/protocol changed')

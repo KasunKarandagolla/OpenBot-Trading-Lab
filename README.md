@@ -87,3 +87,31 @@ Stopping pauses all paper-position management; it does not guarantee simulated p
 Direct native/Compose equivalents and Cloud-specific proxy notes: [operations runbook](docs/operations/runbook.md). On exchange errors, inspect the exact response and source eligibility; no automatic venue switch. On auth failure use the local credentials file. On a port conflict stop the other lab service. Do not disable TLS verification. If disk is full, stop/remove only this lab's disposable containers; preserve research files and paper DB.
 
 Rollback: stop ui/paper, retain local data/SQLite and private credentials, then check out the prior approved commit. No automatic merge or follow-on session is authorized.
+
+## Session 2: two causal research playbooks
+
+Check out `codex/session-2-trading-intelligence` for the stacked Session 2 milestone. The [comparison](evidence/session-2/comparison-report.md), [acceptance evidence](evidence/session-2/manifest.md) and [risk report](evidence/session-2/strategy-risks.json) record actual results. The baseline remains frozen. Neither challenger is approved for persistent paper operation.
+
+```bash
+# Same Docker image and initialization as above; no exchange keys.
+./scripts/lab.sh strategy-info VWAPTrendContinuationV1
+./scripts/lab.sh strategy-info LiquiditySweepReversalV1
+# Only if the separate Session 2 dataset is absent and Gate still retains this window:
+./scripts/lab.sh research-download
+./scripts/lab.sh research-all
+./scripts/lab.sh compare
+./scripts/lab.sh research-lookahead
+./scripts/lab.sh test
+```
+
+`research-all` verifies both strategy freezes and source hashes, then runs all three through official Freqtrade with a common protocol. `compare` reads saved native results and callback evidence; it does not download data or run trades. Results and full CSV ledgers live under `evidence/session-2/runs/<strategy>/`. Costs, signed funding, per-pair and long/short results, holding times, R estimates and additional5/10/20bp friction appear in the comparison JSON. Full native ZIPs stay local because they may embed source data. Source candles stay out of Git.
+
+VWAP continuation uses a UTC daily typical-price VWAP reclaim in an aligned15m/closed1h trend. Sweep reversal uses a failed breakout of a strictly prior20bar range in a weaker1h ADX regime. Each has explicit ATR/structure stops, fixed2R native ROI requests, expiring signal-close limit entries and holding-time exits. Cards give every threshold. Tests verify both directions and NO_TRADE cases; they are not market performance.
+
+The reacquired12-file BTC/ETH/SOL sample is byte-identical to Session1. Preserve both datasets and committed manifests; if Gate's10,000bar window no longer includes July26, stop rather than change dates. Declare a new cohort and rerun all strategies if a future session authorizes it. This entire inspected cohort is DEVELOPMENT data, never an unseen holdout.
+
+The challengers enforce1x,<=25USDT initial stakes, max2 native positions, no DCA, a price-deviation gate and5minute paper order expiry. Intended-risk checks include assumed fees/friction/funding and reserve the3% emergency stop; realized UTC losses of10USDT halt new entries. Exact1% mark-to-market daily account loss, stop fills through gaps, downtime protection and historical5minute queue fills remain unqualified. Stop with `./scripts/lab.sh paper-down`; stopping pauses management and does not close paper positions. Inspect `research/strategy-registry.json` and `configs/paper.json` for the current baseline paper selection. No command promotes a research winner.
+
+A future isolated OpenBot Local reader can receive copies of `research-summary.json`, `strategy-comparison.json` and `strategy-risks.json` from `evidence/session-2/`. These are ordinary derived files. It needs no exchange keys, authenticated admin API, paper DB or writable engine directory. Isolation and automated integration are deferred.
+
+`INSUFFICIENT EVIDENCE` means too few observations; `REJECTED under evaluated assumptions` means this cohort loses; a positive development result remains `UNQUALIFIED DEVELOPMENT RESULT`. None implies future returns. Owner-host Docker/source eligibility, restart behavior and operation while the computer is awake need local verification. Roll back by stopping UI/paper, preserving data/SQLite/private credentials, then checking out `d76b6093796f78ce628943e8252033b34e9958ef`.
