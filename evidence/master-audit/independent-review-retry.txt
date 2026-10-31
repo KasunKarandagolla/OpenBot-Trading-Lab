@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/lab/scripts/master_review.py", line 274, in <module>
+    main()
+    ~~~~^^
+  File "/lab/scripts/master_review.py", line 266, in main
+    report['native_accounting']={p.stem:independent_accounting(read(p)['strategy'][p.stem]['trades']) for p in (OLD/'native-results').glob('*.json')}
+                                                               ~~~~~~~^^^^^^^^^^^^
+KeyError: 'strategy'

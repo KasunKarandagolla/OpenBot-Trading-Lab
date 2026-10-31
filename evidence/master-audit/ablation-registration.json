@@ -1,0 +1,14 @@
+{
+  "registered_at_utc": "2026-10-31T19:20:59.892570+00:00",
+  "classification": "INSPECTED_DEVELOPMENT_ABLATIONS_NOT_HOLDOUT",
+  "native_outcomes_run": false,
+  "source_sha256": {
+    "research/master_audit/AuditVariantsV1.py": "12652a9f1e96cd4161d6452dca84905f48fbb03e7630b78f49ed278b49406a3d",
+    "scripts/master_native.py": "62a4b1c01569256e29e8718f63fdd4fd762cb02ea60b6cfeace04600b014ff83"
+  },
+  "limitations": [
+    "RegimeOnly removes ranking from router; its other geometry differs from original parents",
+    "NearestObjective is deliberately conservative; may reject winning breakouts",
+    "StructuralClose leaves native stop active and removes opposite ADX exit"
+  ]
+}

@@ -1,0 +1,29 @@
+2026-10-31 19:17:57,674 - freqtrade - INFO - freqtrade 2026.10
+2026-10-31 19:17:57,900 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-10-31 19:17:58,579 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/master-configs/RouterOnlyV1.json ...
+2026-10-31 19:17:58,580 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-10-31 19:17:58,580 - freqtrade.loggers - INFO - Logfile configured
+2026-10-31 19:17:58,581 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-10-31 19:17:58,581 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20260726-20261030 ...
+2026-10-31 19:17:58,581 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-10-31 19:17:58,582 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/bonus/gate ...
+2026-10-31 19:17:58,582 - freqtrade.configuration.configuration - INFO - timeframes --timeframes: ['15m', '1h']
+2026-10-31 19:17:58,582 - freqtrade.configuration.configuration - INFO - Detected --trading-mode: futures
+2026-10-31 19:17:58,582 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20260726-20261030
+2026-10-31 19:17:58,583 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-10-31 19:17:58,587 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-10-31 19:17:58,587 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-10-31 19:17:58,587 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-10-31 19:17:58,969 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-10-31 19:17:58,969 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-10-31 19:17:58,969 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'enableRateLimit': True, 
+'timeout': 30000, 'requests_trust_env': True, 'aiohttp_trust_env': True, 'cafile': '/run/proxy-ca.pem', 'httpsProxy': 'http://proxy:8080', 'has': {'fetchCurrencies': False}}
+2026-10-31 19:17:58,971 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'enableRateLimit': True, 
+'timeout': 30000, 'requests_trust_env': True, 'aiohttp_trust_env': True, 'cafile': '/run/proxy-ca.pem', 'httpsProxy': 'http://proxy:8080', 'has': {'fetchCurrencies': False}}
+2026-10-31 19:17:58,973 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-10-31 19:17:58,974 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-10-31 19:17:58,974 - freqtrade.exchange.exchange - INFO - Markets were not loaded. Loading them now..
+2026-10-31 19:18:29,432 - freqtrade.exchange.common - WARNING - _load_async_markets() returned exception: "Error in reload_markets due to RequestTimeout. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/contracts". Retrying still for 3 times.
+2026-10-31 19:19:00,433 - freqtrade.exchange.common - WARNING - _load_async_markets() returned exception: "Error in reload_markets due to RequestTimeout. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/contracts". Retrying still for 2 times.
