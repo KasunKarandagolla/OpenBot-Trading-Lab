@@ -7,11 +7,12 @@ python3 scripts/init_runtime.py
 docker compose -f deploy/freqtrade/compose.session3.yaml pull
 ./scripts/lab3.sh --help
 ./scripts/lab3.sh structure-check
-./scripts/lab3.sh test
 # Recorded outputs: no source candles, downloads, strategies or admin access needed.
 ./scripts/lab3.sh economic-compare s3-development-v1
 ./scripts/lab3.sh validation-report s3-transfer-v1
 ```
+
+The complete `./scripts/lab3.sh test` suite includes original-source hash checks, so it requires the retained original `s3-development-v1` raw sample. If absent, `./scripts/lab3.sh research-download s3-development-v1` can reacquire it without replacing committed results; run the full suite afterward. `structure-check` and recorded comparisons do not need raw candles.
 
 The new Compose file does not publish ports, mount Docker socket, inherit trading keys or start persistent services. It makes code/strategies read-only. Staging copies verified strategy sources into ignored work/session3-strategies; unknown/tampered modules/parameter files reject. The original scripts/lab.sh and guard.py, strategy registry, configs and all prior evidence remain unchanged.
 
@@ -27,8 +28,8 @@ Committed primary results are immutable: `research-run s3-development-v1` intent
 ./scripts/lab3.sh native-replay owner-development-v1
 ./scripts/lab3.sh opportunity-asof SOL/USDT:USDT 2026-08-25T01:00:00Z --cohort owner-development-v1
 ./scripts/lab3.sh opportunity-scan --cohort owner-development-v1 --as-of 2026-08-25T01:00:00Z
-./scripts/lab3.sh lookahead s3-development-v1
-./scripts/lab3.sh recursive-check s3-development-v1
+./scripts/lab3.sh lookahead owner-development-v1
+./scripts/lab3.sh recursive-check owner-development-v1
 ```
 
 To rerun XRP/DOGE, register another ID with those two symbols and classification SHARED_CALENDAR_MARKET_TRANSFER, then use the same download/run/compare commands. If the original cohort raw candles are retained, `native-replay s3-development-v1` can reproduce its challenger directly; historical opportunity commands can use that original ID.
