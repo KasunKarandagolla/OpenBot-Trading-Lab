@@ -1,0 +1,23 @@
+# Secrets and local state — never commit operational credentials
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+user_data/config*.json
+**/user_data/config*.json
+# Freqtrade paper trading / market data
+user_data/data/
+user_data/tradesv3*.sqlite*
+*.sqlite
+*.sqlite3
+*.db
+# Python and local tool state
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+*.log
+.DS_Store
