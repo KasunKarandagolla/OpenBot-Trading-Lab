@@ -1,0 +1,78 @@
+{
+  "base_sha": "f09cb39b6116d103b9efc0f8c37bf6a1d607e7d6",
+  "bootstrap": {
+    "block": "UTC calendar week; all weeks including zero-trade weeks",
+    "draws": 2000,
+    "interval": 0.95,
+    "seed": 3103
+  },
+  "cohorts": {
+    "s3-development-v1": {
+      "classification": "WARMUP_CORRECTED_DEVELOPMENT",
+      "cohort_id": "s3-development-v1",
+      "download_timerange": "20260726-20261030",
+      "evaluation_timerange": "20260805-20261030",
+      "funding_interval_seconds": 28800,
+      "pairs": [
+        "BTC/USDT:USDT",
+        "ETH/USDT:USDT",
+        "SOL/USDT:USDT"
+      ],
+      "rights": "Bounded personal/noncommercial public API use; raw local only",
+      "schema_version": 1,
+      "selection": "Prior Session2 familiar surviving contracts; already inspected calendar and symbols",
+      "venue": "gate",
+      "warmup_hours": 240
+    },
+    "s3-transfer-v1": {
+      "classification": "SHARED_CALENDAR_MARKET_TRANSFER",
+      "cohort_id": "s3-transfer-v1",
+      "download_timerange": "20260726-20261030",
+      "evaluation_timerange": "20260805-20261030",
+      "funding_interval_seconds": 28800,
+      "pairs": [
+        "XRP/USDT:USDT",
+        "DOGE/USDT:USDT"
+      ],
+      "rights": "Bounded personal/noncommercial public API use; raw local only",
+      "schema_version": 1,
+      "selection": "Predeclared familiar liquid additional survivors; not independent calendar; selection contamination acknowledged",
+      "venue": "gate",
+      "warmup_hours": 240
+    }
+  },
+  "corrected_preoutcome_commit": "367808d41c8ada09e92cc5ba548dd2b2a3f2e7b6",
+  "engine": "Freqtrade2026.10 immutable official image; Python3.14.10/CCXT4.5.90",
+  "environment": "RESEARCH_ONLY",
+  "experiment_id": "s3-structure-v1",
+  "fee_per_side": 0.0006,
+  "first_declaration_commit": "f0d3d1ee62402a7e050e3c3fe122d0cf6308c313",
+  "freeze_sha256": "9b7064394bd06890baccc2195c3333127d9a7e8b91de1ec47816799ae197c2c4",
+  "friction_bps_per_side": [
+    5,
+    10,
+    20
+  ],
+  "leverage": 1,
+  "max_positions": 2,
+  "no_parameter_changes_after_outcomes": true,
+  "opposing_hourly_adx": 25,
+  "pivot_left": 2,
+  "pivot_right": 2,
+  "prospective_earliest_utc": "2026-10-31T14:00:00Z",
+  "schema_version": 1,
+  "selection": "No tuning; no claim of historical scanner membership; no paper promotion",
+  "source_rights": "Session1 personal/noncommercial public API assessment extended to bounded named cohorts; no raw redistribution; source access denial stops acquisition",
+  "stake_max_usdt": 25,
+  "strategies": [
+    "TrendPullbackBaselineV1",
+    "VWAPTrendContinuationV1",
+    "LiquiditySweepReversalV1",
+    "StructureAwareSweepV1",
+    "SweepThinningControlV1"
+  ],
+  "swing_proximity_atr": 0.5,
+  "ties": "STRICT_NO_PIVOT",
+  "wallet_usdt": 1000,
+  "warmup_hours": 240
+}

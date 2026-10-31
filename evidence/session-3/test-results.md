@@ -1,0 +1,7 @@
+# Verification
+
+Final suite:78 tests,0 failures/errors/skips, exit0 (final-tests.txt), including all48 unchanged foundation/playbook tests and30 new cases. Earlier80-count run included duplicate collection of an imported test class; final collection removes that duplication. No claim of80 unique tests. Original initial failures remain in initial-structure-tests.txt and structure-tests-dtype-failure.txt.
+
+Coverage includes exact causal structure/streaming/hour alignment; missing/nonUTC/misaligned/stale/gapped source rejection; future-sentinel asof masking; accepted/rejected/schema/geometry; inherited long/short stake, expiry, native stop/ROI/hold, callback failure and exposure protection; module impersonation/unsafe modes/config/environment; actual10 native primary runs, fees/funding/stakes/concurrency/common windows/CSV; preserved byte-identical data and strict240-hour warmup; future-data refusal; repeatable offline economic comparison with source reads and subprocesses forbidden; real partial trade receipts and deterministic delta/unit/duplicate/future vectors with unknown production semantics.
+
+Native lookahead7 signals found no bias. Native recursive120/240/480 check completed. Separate native replay preserves every field in all7 challenger trades. Optional native5m detail and15m common-window runs executed (4 more actual backtests); timing differences retained. These prove bounded Cloud execution only, not owner UI/persistence, real fills or future uptime.

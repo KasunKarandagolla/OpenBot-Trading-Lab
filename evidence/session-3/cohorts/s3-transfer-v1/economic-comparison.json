@@ -1,0 +1,751 @@
+{
+  "cohort_classification": "SHARED_CALENDAR_MARKET_TRANSFER",
+  "cohort_id": "s3-transfer-v1",
+  "costs": {
+    "account_drawdown": "native mark/candle model; friction closed-equity drawdown is separate",
+    "extra_friction": "5/10/20bps each turnover side; posthoc, no refills",
+    "funding": "actual validated Gate observations included natively; signed once",
+    "native_fee_per_side": 0.0006
+  },
+  "environment": "RESEARCH_ONLY",
+  "evaluation_timerange": "20260805-20261030",
+  "limitations": [
+    "Inspected DEVELOPMENT or shared-calendar TRANSFER, no untouched holdout.",
+    "Calendar week resampling assumes exchangeable weeks; few dependent blocks, no statistical qualification.",
+    "15m requested-price fills, no queue/partial fills/historical spreads.",
+    "UTC realized-loss halt excludes unrealized losses; full account daily halt NOT ENFORCED.",
+    "Prospective evidence requires code/data freezes before outcomes; no automatic promotion."
+  ],
+  "pairs": [
+    "XRP/USDT:USDT",
+    "DOGE/USDT:USDT"
+  ],
+  "parent_challenger": {
+    "control_interpretation": "Predeclared deterministic half-thinning control, same parent/risk/cost/window. Exposure-normalized, not count-matched; differing exits and capacity mean no causal alpha estimate.",
+    "exposure_aware_comparison": {
+      "LiquiditySweepReversalV1": -0.0009538838690049207,
+      "StructureAwareSweepV1": -0.0016523999128995335,
+      "SweepThinningControlV1": -0.0012461262428093852
+    },
+    "net_delta_usdt": 1.3631245400000003,
+    "paired_weekly_delta_interval": {
+      "draws": 2000,
+      "high_usdt": 4.422056700999999,
+      "low_usdt": -2.800778814,
+      "method": "IID calendar-week blocks, joint markets; descriptive stationarity assumption, few blocks, not significance proof",
+      "seed": 3103,
+      "weeks": 13
+    }
+  },
+  "provenance": {
+    "LiquiditySweepReversalV1": {
+      "base_sha": "f09cb39b6116d103b9efc0f8c37bf6a1d607e7d6",
+      "cohort_sha256": "caab2bc6f922674a26e30ea8beb6822964e3358390015f57235b1bc69c5c25eb",
+      "completed_utc": "2026-10-31T13:31:51.450821+00:00",
+      "config_sha256": "8a7b10893a75017ce93a599b93bfdb8be935ce87489c45b2fe92f3d6be70db66",
+      "engine": "2026.10",
+      "engine_image": "freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7",
+      "exit_code": 0,
+      "experiment_id": "s3-transfer-v1-LiquiditySweepReversalV1",
+      "native_result_sha256": "4bcba220870fabdeccd860c1d8da9538cce0ad190fdebe63f90849c20f2eea5f",
+      "native_zip_local_only": true,
+      "native_zip_sha256": "e7ba28a63cf0b4f6eec64c15ef3d9f154734262a5aa360272eaa16f2de0308c6",
+      "protocol_sha256": "f8924ca7014a3f9e988a77e89ea393d912647ae8dc421da50e47553ecc071e6e",
+      "source_manifest_sha256": "c2c5c17cc0f80259474714ba131aeebe961550ad82805600ec638bb8b979effe",
+      "started_utc": "2026-10-31T13:30:59.027148+00:00",
+      "strategy_hashes": {
+        "research/session3/StructureAwareSweepV1.py": "46b422bd8565cc75ee6cfbd8e181cbfe282e91cd7e01106e977d7f1883452a11",
+        "research/session3/SweepThinningControlV1.py": "57e15f4280eac0413cf0e95acc3764299bd51f8e2a4e4c99e778cd695acecd05",
+        "research/session3/causal_structure.py": "9b38138377b7fa5846b23ecdb31ecd24d6d8103c9e9b8b78c17ef5efb1b17742",
+        "user_data/strategies/LiquiditySweepReversalV1.py": "6d4af2c01717bd7c95533134e63e7c256e5068d0ffce834c60694ac291f12a21",
+        "user_data/strategies/PlaybookRiskV1.py": "56b857d3fca788dfd64a92cb664597db8c128237112c1d24d4b7006d2e8798be",
+        "user_data/strategies/TrendPullbackBaselineV1.py": "848069de46653edff802323e31ebc413cf6df632a72ce8ad7f4043230f409d06",
+        "user_data/strategies/VWAPTrendContinuationV1.py": "6cdab5bce2ff9e77f8ad436fd81750370986c442bdb12a4fa40677d8ee14d1c3"
+      },
+      "tags_sha256": "5f9c76310eacb8042d6259e6f507368745bdee684c06d5c2b42b63fecbfec474"
+    },
+    "StructureAwareSweepV1": {
+      "base_sha": "f09cb39b6116d103b9efc0f8c37bf6a1d607e7d6",
+      "cohort_sha256": "caab2bc6f922674a26e30ea8beb6822964e3358390015f57235b1bc69c5c25eb",
+      "completed_utc": "2026-10-31T13:32:49.687717+00:00",
+      "config_sha256": "2713b3287bc66dae632546680bb9644bc0e0b19e858520a7ad531497b4c3ef77",
+      "engine": "2026.10",
+      "engine_image": "freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7",
+      "exit_code": 0,
+      "experiment_id": "s3-transfer-v1-StructureAwareSweepV1",
+      "native_result_sha256": "264d9cf43bbcf5e2f86c070ae9abc8ba32e74bf9de39b3db6995cc35b9b12e64",
+      "native_zip_local_only": true,
+      "native_zip_sha256": "8d0fb25ea89871a176d395dab3ed13bf34db05c3bd6bfdf41612fbb0b7b568d3",
+      "protocol_sha256": "f8924ca7014a3f9e988a77e89ea393d912647ae8dc421da50e47553ecc071e6e",
+      "source_manifest_sha256": "c2c5c17cc0f80259474714ba131aeebe961550ad82805600ec638bb8b979effe",
+      "started_utc": "2026-10-31T13:31:51.452066+00:00",
+      "strategy_hashes": {
+        "research/session3/StructureAwareSweepV1.py": "46b422bd8565cc75ee6cfbd8e181cbfe282e91cd7e01106e977d7f1883452a11",
+        "research/session3/SweepThinningControlV1.py": "57e15f4280eac0413cf0e95acc3764299bd51f8e2a4e4c99e778cd695acecd05",
+        "research/session3/causal_structure.py": "9b38138377b7fa5846b23ecdb31ecd24d6d8103c9e9b8b78c17ef5efb1b17742",
+        "user_data/strategies/LiquiditySweepReversalV1.py": "6d4af2c01717bd7c95533134e63e7c256e5068d0ffce834c60694ac291f12a21",
+        "user_data/strategies/PlaybookRiskV1.py": "56b857d3fca788dfd64a92cb664597db8c128237112c1d24d4b7006d2e8798be",
+        "user_data/strategies/TrendPullbackBaselineV1.py": "848069de46653edff802323e31ebc413cf6df632a72ce8ad7f4043230f409d06",
+        "user_data/strategies/VWAPTrendContinuationV1.py": "6cdab5bce2ff9e77f8ad436fd81750370986c442bdb12a4fa40677d8ee14d1c3"
+      },
+      "tags_sha256": "b4405140b4e96d499656dd90740803d124d91a29ced6f97026e2c65e640654ff"
+    },
+    "SweepThinningControlV1": {
+      "base_sha": "f09cb39b6116d103b9efc0f8c37bf6a1d607e7d6",
+      "cohort_sha256": "caab2bc6f922674a26e30ea8beb6822964e3358390015f57235b1bc69c5c25eb",
+      "completed_utc": "2026-10-31T13:33:52.125028+00:00",
+      "config_sha256": "2b99f3d5635d0eec3682a12ca9fc80ab898757cf22931c6e2528ff68713efb73",
+      "engine": "2026.10",
+      "engine_image": "freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7",
+      "exit_code": 0,
+      "experiment_id": "s3-transfer-v1-SweepThinningControlV1",
+      "native_result_sha256": "7852504eaa058cde72cab988564e584d426557da6c7c8d398ba186b6626f7430",
+      "native_zip_local_only": true,
+      "native_zip_sha256": "1b1afbca5ad9d7f93045060fa3f2d5d7c2f10dbed8decea91d5c628ee55cabe5",
+      "protocol_sha256": "f8924ca7014a3f9e988a77e89ea393d912647ae8dc421da50e47553ecc071e6e",
+      "source_manifest_sha256": "c2c5c17cc0f80259474714ba131aeebe961550ad82805600ec638bb8b979effe",
+      "started_utc": "2026-10-31T13:32:49.688902+00:00",
+      "strategy_hashes": {
+        "research/session3/StructureAwareSweepV1.py": "46b422bd8565cc75ee6cfbd8e181cbfe282e91cd7e01106e977d7f1883452a11",
+        "research/session3/SweepThinningControlV1.py": "57e15f4280eac0413cf0e95acc3764299bd51f8e2a4e4c99e778cd695acecd05",
+        "research/session3/causal_structure.py": "9b38138377b7fa5846b23ecdb31ecd24d6d8103c9e9b8b78c17ef5efb1b17742",
+        "user_data/strategies/LiquiditySweepReversalV1.py": "6d4af2c01717bd7c95533134e63e7c256e5068d0ffce834c60694ac291f12a21",
+        "user_data/strategies/PlaybookRiskV1.py": "56b857d3fca788dfd64a92cb664597db8c128237112c1d24d4b7006d2e8798be",
+        "user_data/strategies/TrendPullbackBaselineV1.py": "848069de46653edff802323e31ebc413cf6df632a72ce8ad7f4043230f409d06",
+        "user_data/strategies/VWAPTrendContinuationV1.py": "6cdab5bce2ff9e77f8ad436fd81750370986c442bdb12a4fa40677d8ee14d1c3"
+      },
+      "tags_sha256": "4b8e4f17df5e9ca1554a2838e3f58d8c5ed51c698e51bcedfe46f4936794584b"
+    },
+    "TrendPullbackBaselineV1": {
+      "base_sha": "f09cb39b6116d103b9efc0f8c37bf6a1d607e7d6",
+      "cohort_sha256": "caab2bc6f922674a26e30ea8beb6822964e3358390015f57235b1bc69c5c25eb",
+      "completed_utc": "2026-10-31T13:30:07.178270+00:00",
+      "config_sha256": "8bd2fc5a3ee3a78a83c9f9d9cbefb4d8dd29cd32c5eb31802177888483207f2e",
+      "engine": "2026.10",
+      "engine_image": "freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7",
+      "exit_code": 0,
+      "experiment_id": "s3-transfer-v1-TrendPullbackBaselineV1",
+      "native_result_sha256": "7de5a758fa229cefebb0aeb706dbb99ace823fb15c6e397281a7e11ef82758fc",
+      "native_zip_local_only": true,
+      "native_zip_sha256": "464d759545ddbd84e9f472452d8b4203ea6e881ec8e48bf17569dd02c0b5bc1b",
+      "protocol_sha256": "f8924ca7014a3f9e988a77e89ea393d912647ae8dc421da50e47553ecc071e6e",
+      "source_manifest_sha256": "c2c5c17cc0f80259474714ba131aeebe961550ad82805600ec638bb8b979effe",
+      "started_utc": "2026-10-31T13:29:15.956398+00:00",
+      "strategy_hashes": {
+        "research/session3/StructureAwareSweepV1.py": "46b422bd8565cc75ee6cfbd8e181cbfe282e91cd7e01106e977d7f1883452a11",
+        "research/session3/SweepThinningControlV1.py": "57e15f4280eac0413cf0e95acc3764299bd51f8e2a4e4c99e778cd695acecd05",
+        "research/session3/causal_structure.py": "9b38138377b7fa5846b23ecdb31ecd24d6d8103c9e9b8b78c17ef5efb1b17742",
+        "user_data/strategies/LiquiditySweepReversalV1.py": "6d4af2c01717bd7c95533134e63e7c256e5068d0ffce834c60694ac291f12a21",
+        "user_data/strategies/PlaybookRiskV1.py": "56b857d3fca788dfd64a92cb664597db8c128237112c1d24d4b7006d2e8798be",
+        "user_data/strategies/TrendPullbackBaselineV1.py": "848069de46653edff802323e31ebc413cf6df632a72ce8ad7f4043230f409d06",
+        "user_data/strategies/VWAPTrendContinuationV1.py": "6cdab5bce2ff9e77f8ad436fd81750370986c442bdb12a4fa40677d8ee14d1c3"
+      },
+      "tags_sha256": "5710c3064229c041de313457e17a78b9f8c2d05a9525169678fc7f553ff33d73"
+    },
+    "VWAPTrendContinuationV1": {
+      "base_sha": "f09cb39b6116d103b9efc0f8c37bf6a1d607e7d6",
+      "cohort_sha256": "caab2bc6f922674a26e30ea8beb6822964e3358390015f57235b1bc69c5c25eb",
+      "completed_utc": "2026-10-31T13:30:59.025895+00:00",
+      "config_sha256": "3417519b24dead76ba669d9a0015a063651252de3a7a818305b43b6dfd72f2be",
+      "engine": "2026.10",
+      "engine_image": "freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7",
+      "exit_code": 0,
+      "experiment_id": "s3-transfer-v1-VWAPTrendContinuationV1",
+      "native_result_sha256": "a80e34dd4bd71d1df9f539640d86ba61b9fea12149ab774355d5af41117a636c",
+      "native_zip_local_only": true,
+      "native_zip_sha256": "12c76310c8c42473ad554e068d6f5983e3e8cbf40f24e01dfd52af6b28c1a19e",
+      "protocol_sha256": "f8924ca7014a3f9e988a77e89ea393d912647ae8dc421da50e47553ecc071e6e",
+      "source_manifest_sha256": "c2c5c17cc0f80259474714ba131aeebe961550ad82805600ec638bb8b979effe",
+      "started_utc": "2026-10-31T13:30:07.180003+00:00",
+      "strategy_hashes": {
+        "research/session3/StructureAwareSweepV1.py": "46b422bd8565cc75ee6cfbd8e181cbfe282e91cd7e01106e977d7f1883452a11",
+        "research/session3/SweepThinningControlV1.py": "57e15f4280eac0413cf0e95acc3764299bd51f8e2a4e4c99e778cd695acecd05",
+        "research/session3/causal_structure.py": "9b38138377b7fa5846b23ecdb31ecd24d6d8103c9e9b8b78c17ef5efb1b17742",
+        "user_data/strategies/LiquiditySweepReversalV1.py": "6d4af2c01717bd7c95533134e63e7c256e5068d0ffce834c60694ac291f12a21",
+        "user_data/strategies/PlaybookRiskV1.py": "56b857d3fca788dfd64a92cb664597db8c128237112c1d24d4b7006d2e8798be",
+        "user_data/strategies/TrendPullbackBaselineV1.py": "848069de46653edff802323e31ebc413cf6df632a72ce8ad7f4043230f409d06",
+        "user_data/strategies/VWAPTrendContinuationV1.py": "6cdab5bce2ff9e77f8ad436fd81750370986c442bdb12a4fa40677d8ee14d1c3"
+      },
+      "tags_sha256": "149394f8b3ee266115e17f9d7235390fae2860e0524de05b0ff2637119f7d387"
+    }
+  },
+  "schema_version": 1,
+  "source": "recorded native Freqtrade2026.10 results and causal entry tags",
+  "strategies": {
+    "LiquiditySweepReversalV1": {
+      "average_trade_ratio": -0.0019697265042732766,
+      "break_even_extra_bps_per_side": -9.880429183504612,
+      "decision": "NO_PROMOTION",
+      "directions": {
+        "long": {
+          "net_usdt": -1.36501969,
+          "trades": 33
+        },
+        "short": {
+          "net_usdt": -1.10279752,
+          "trades": 18
+        }
+      },
+      "draws": 0,
+      "evidence_classification": "REJECTED UNDER TESTED ASSUMPTIONS",
+      "exit_reasons": {
+        "force_exit": 1,
+        "max_hold_4h": 16,
+        "roi": 6,
+        "stop_loss": 28
+      },
+      "expectancy_usdt": -0.04838857274509804,
+      "exposure_notional_hours": 2587.125425,
+      "fees_usdt": 1.49860932,
+      "forced_end_exits": {
+        "net_excluding_forced_usdt": -2.48608601,
+        "net_usdt": 0.0182688,
+        "trades": 1
+      },
+      "friction": [
+        {
+          "closed_equity_drawdown_usdt": 3.989007129999999,
+          "extra_bps_per_side": 0,
+          "fills_changed": false,
+          "net_usdt": -2.46781721
+        },
+        {
+          "closed_equity_drawdown_usdt": 4.82003143,
+          "extra_bps_per_side": 5,
+          "fills_changed": false,
+          "net_usdt": -3.71665831
+        },
+        {
+          "closed_equity_drawdown_usdt": 5.65105573,
+          "extra_bps_per_side": 10,
+          "fills_changed": false,
+          "net_usdt": -4.9654994100000005
+        },
+        {
+          "closed_equity_drawdown_usdt": 7.59002363,
+          "extra_bps_per_side": 20,
+          "fills_changed": false,
+          "net_usdt": -7.46318161
+        }
+      ],
+      "funding_signed_usdt": -0.0040078914,
+      "gross_price_pnl_usdt": -0.9652000000000144,
+      "hold_minutes": {
+        "0": 0.0,
+        "0.25": 37.5,
+        "0.5": 105.0,
+        "0.75": 240.0,
+        "0.95": 240.0,
+        "1": 240.0
+      },
+      "longest_loss_streak": 7,
+      "losses": 33,
+      "max_drawdown_account": 0.003989007130000005,
+      "max_drawdown_usdt": 3.9890071299999996,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_R_quantiles": {
+        "0": -0.8622953260380565,
+        "0.25": -0.7870429404104647,
+        "0.5": -0.7569360789631353,
+        "0.75": 0.34757316427718976,
+        "1": 1.4905110226971918
+      },
+      "net_per_notional_hour": -0.0009538838690049207,
+      "net_usdt": -2.46781721,
+      "net_without_top3_usdt": -3.92638961,
+      "per_pair_usdt": {
+        "DOGE/USDT:USDT": -2.24592614,
+        "XRP/USDT:USDT": -0.22189106999999988
+      },
+      "profit_factor": 0.6342007793677659,
+      "reconciliation_residual_usdt": 1.4000143266912346e-09,
+      "regimes": {
+        "RANGE_LOW_ADX": {
+          "net_usdt": -3.12245679,
+          "trades": 39
+        },
+        "TREND_DOWN": {
+          "net_usdt": 1.05666518,
+          "trades": 7
+        },
+        "TREND_UP": {
+          "net_usdt": -0.4020256,
+          "trades": 5
+        }
+      },
+      "trades": 51,
+      "trading_days": 28,
+      "turnover_usdt": 2497.6822,
+      "weekly_block_net_interval": {
+        "draws": 2000,
+        "high_usdt": 1.601242944249999,
+        "low_usdt": -5.93326566275,
+        "method": "IID calendar-week blocks, joint markets; descriptive stationarity assumption, few blocks, not significance proof",
+        "seed": 3103,
+        "weeks": 13
+      },
+      "win_rate": 0.35294117647058826,
+      "wins": 18
+    },
+    "StructureAwareSweepV1": {
+      "average_trade_ratio": -0.0032412368150598167,
+      "break_even_extra_bps_per_side": -16.189327283337526,
+      "decision": "NO_PROMOTION",
+      "directions": {
+        "long": {
+          "net_usdt": -2.02068787,
+          "trades": 10
+        },
+        "short": {
+          "net_usdt": 0.9159952,
+          "trades": 4
+        }
+      },
+      "draws": 0,
+      "evidence_classification": "REJECTED UNDER TESTED ASSUMPTIONS",
+      "exit_reasons": {
+        "max_hold_4h": 4,
+        "roi": 2,
+        "stop_loss": 8
+      },
+      "expectancy_usdt": -0.07890661928571428,
+      "exposure_notional_hours": 668.538325,
+      "fees_usdt": 0.40941515999999994,
+      "forced_end_exits": {
+        "net_excluding_forced_usdt": -1.10469267,
+        "net_usdt": 0,
+        "trades": 0
+      },
+      "friction": [
+        {
+          "closed_equity_drawdown_usdt": 1.41297044,
+          "extra_bps_per_side": 0,
+          "fills_changed": false,
+          "net_usdt": -1.10469267
+        },
+        {
+          "closed_equity_drawdown_usdt": 1.72775464,
+          "extra_bps_per_side": 5,
+          "fills_changed": false,
+          "net_usdt": -1.44587197
+        },
+        {
+          "closed_equity_drawdown_usdt": 2.0441987900000003,
+          "extra_bps_per_side": 10,
+          "fills_changed": false,
+          "net_usdt": -1.78705127
+        },
+        {
+          "closed_equity_drawdown_usdt": 2.6770870899999997,
+          "extra_bps_per_side": 20,
+          "fills_changed": false,
+          "net_usdt": -2.4694098700000002
+        }
+      ],
+      "funding_signed_usdt": 0.0015224898000000004,
+      "gross_price_pnl_usdt": -0.6968000000000026,
+      "hold_minutes": {
+        "0": 0.0,
+        "0.25": 52.5,
+        "0.5": 90.0,
+        "0.75": 210.0,
+        "0.95": 240.0,
+        "1": 240.0
+      },
+      "longest_loss_streak": 4,
+      "losses": 11,
+      "max_drawdown_account": 0.001412970439999981,
+      "max_drawdown_usdt": 1.41297044,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_R_quantiles": {
+        "0": -0.8578473447842355,
+        "0.25": -0.8039323756570942,
+        "0.5": -0.7746173726634342,
+        "0.75": -0.1623707796583932,
+        "1": 1.3042092362997548
+      },
+      "net_per_notional_hour": -0.0016523999128995335,
+      "net_usdt": -1.10469267,
+      "net_without_top3_usdt": -2.21795347,
+      "per_pair_usdt": {
+        "DOGE/USDT:USDT": -1.15328879,
+        "XRP/USDT:USDT": 0.048596119999999965
+      },
+      "profit_factor": 0.501931539618818,
+      "reconciliation_residual_usdt": 2.000026810833333e-10,
+      "regimes": {
+        "RANGE_LOW_ADX": {
+          "net_usdt": -1.10469267,
+          "trades": 14
+        }
+      },
+      "trades": 14,
+      "trading_days": 8,
+      "turnover_usdt": 682.3586,
+      "weekly_block_net_interval": {
+        "draws": 2000,
+        "high_usdt": 0.3476561294999997,
+        "low_usdt": -2.6131841222500003,
+        "method": "IID calendar-week blocks, joint markets; descriptive stationarity assumption, few blocks, not significance proof",
+        "seed": 3103,
+        "weeks": 13
+      },
+      "win_rate": 0.21428571428571427,
+      "wins": 3
+    },
+    "SweepThinningControlV1": {
+      "average_trade_ratio": -0.0021807733783527927,
+      "break_even_extra_bps_per_side": -10.867217593244327,
+      "decision": "NO_PROMOTION",
+      "directions": {
+        "long": {
+          "net_usdt": -0.58724737,
+          "trades": 19
+        },
+        "short": {
+          "net_usdt": -0.79301402,
+          "trades": 7
+        }
+      },
+      "draws": 0,
+      "evidence_classification": "REJECTED UNDER TESTED ASSUMPTIONS",
+      "exit_reasons": {
+        "force_exit": 1,
+        "max_hold_4h": 6,
+        "roi": 4,
+        "stop_loss": 15
+      },
+      "expectancy_usdt": -0.05308697653846153,
+      "exposure_notional_hours": 1107.6417,
+      "fees_usdt": 0.76206888,
+      "forced_end_exits": {
+        "net_excluding_forced_usdt": -1.39853019,
+        "net_usdt": 0.0182688,
+        "trades": 1
+      },
+      "friction": [
+        {
+          "closed_equity_drawdown_usdt": 2.04627814,
+          "extra_bps_per_side": 0,
+          "fills_changed": false,
+          "net_usdt": -1.38026139
+        },
+        {
+          "closed_equity_drawdown_usdt": 2.5085903400000005,
+          "extra_bps_per_side": 5,
+          "fills_changed": false,
+          "net_usdt": -2.01531879
+        },
+        {
+          "closed_equity_drawdown_usdt": 2.97090254,
+          "extra_bps_per_side": 10,
+          "fills_changed": false,
+          "net_usdt": -2.6503761900000002
+        },
+        {
+          "closed_equity_drawdown_usdt": 3.9204909900000002,
+          "extra_bps_per_side": 20,
+          "fills_changed": false,
+          "net_usdt": -3.92049099
+        }
+      ],
+      "funding_signed_usdt": -0.0007925087999999999,
+      "gross_price_pnl_usdt": -0.6173999999999985,
+      "hold_minutes": {
+        "0": 0.0,
+        "0.25": 30.0,
+        "0.5": 82.5,
+        "0.75": 176.25,
+        "0.95": 240.0,
+        "1": 240.0
+      },
+      "longest_loss_streak": 4,
+      "losses": 17,
+      "max_drawdown_account": 0.0020462781400000267,
+      "max_drawdown_usdt": 2.04627814,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_R_quantiles": {
+        "0": -0.8622953260380565,
+        "0.25": -0.7940543877668871,
+        "0.5": -0.7639957932717815,
+        "0.75": 0.29083182361473214,
+        "1": 1.4905110226971918
+      },
+      "net_per_notional_hour": -0.0012461262428093852,
+      "net_usdt": -1.38026139,
+      "net_without_top3_usdt": -2.66549751,
+      "per_pair_usdt": {
+        "DOGE/USDT:USDT": -1.4103877200000001,
+        "XRP/USDT:USDT": 0.030126330000000062
+      },
+      "profit_factor": 0.6126754669834651,
+      "reconciliation_residual_usdt": -1.2000016536006797e-09,
+      "regimes": {
+        "RANGE_LOW_ADX": {
+          "net_usdt": -1.79213893,
+          "trades": 19
+        },
+        "TREND_DOWN": {
+          "net_usdt": 0.63608554,
+          "trades": 6
+        },
+        "TREND_UP": {
+          "net_usdt": -0.224208,
+          "trades": 1
+        }
+      },
+      "trades": 26,
+      "trading_days": 17,
+      "turnover_usdt": 1270.1148,
+      "weekly_block_net_interval": {
+        "draws": 2000,
+        "high_usdt": 1.1084991652499996,
+        "low_usdt": -3.59937379,
+        "method": "IID calendar-week blocks, joint markets; descriptive stationarity assumption, few blocks, not significance proof",
+        "seed": 3103,
+        "weeks": 13
+      },
+      "win_rate": 0.34615384615384615,
+      "wins": 9
+    },
+    "TrendPullbackBaselineV1": {
+      "average_trade_ratio": -0.001856775905191277,
+      "break_even_extra_bps_per_side": -9.34489335709002,
+      "decision": "NO_PROMOTION",
+      "directions": {
+        "long": {
+          "net_usdt": -11.33979937,
+          "trades": 175
+        },
+        "short": {
+          "net_usdt": -4.1739959099999995,
+          "trades": 165
+        }
+      },
+      "draws": 0,
+      "evidence_classification": "REJECTED UNDER TESTED ASSUMPTIONS",
+      "exit_reasons": {
+        "exit_signal": 173,
+        "max_hold_12h": 74,
+        "roi": 47,
+        "stop_loss": 46
+      },
+      "expectancy_usdt": -0.04562880964705882,
+      "exposure_notional_hours": 51070.122675,
+      "fees_usdt": 9.9608169,
+      "forced_end_exits": {
+        "net_excluding_forced_usdt": -15.51379528,
+        "net_usdt": 0,
+        "trades": 0
+      },
+      "friction": [
+        {
+          "closed_equity_drawdown_usdt": 17.675933209999997,
+          "extra_bps_per_side": 0,
+          "fills_changed": false,
+          "net_usdt": -15.51379528
+        },
+        {
+          "closed_equity_drawdown_usdt": 24.382605910000002,
+          "extra_bps_per_side": 5,
+          "fills_changed": false,
+          "net_usdt": -23.81447603
+        },
+        {
+          "closed_equity_drawdown_usdt": 32.13120594,
+          "extra_bps_per_side": 10,
+          "fills_changed": false,
+          "net_usdt": -32.11515678
+        },
+        {
+          "closed_equity_drawdown_usdt": 48.71651828000003,
+          "extra_bps_per_side": 20,
+          "fills_changed": false,
+          "net_usdt": -48.71651828
+        }
+      ],
+      "funding_signed_usdt": -0.031078379700000006,
+      "gross_price_pnl_usdt": -5.521899999999998,
+      "hold_minutes": {
+        "0": 15.0,
+        "0.25": 150.0,
+        "0.5": 322.5,
+        "0.75": 622.5,
+        "0.95": 720.0,
+        "1": 720.0
+      },
+      "longest_loss_streak": 27,
+      "losses": 239,
+      "max_drawdown_account": 0.017637797858248934,
+      "max_drawdown_usdt": 17.675933209999997,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_R_quantiles": {
+        "0": -0.9100576891749944,
+        "0.25": -0.49192377201647275,
+        "0.5": -0.23765579667707673,
+        "0.75": 0.14775084793861762,
+        "1": 1.2848112319150822
+      },
+      "net_per_notional_hour": -0.0003037743883782437,
+      "net_usdt": -15.51379528,
+      "net_without_top3_usdt": -17.76164356,
+      "per_pair_usdt": {
+        "DOGE/USDT:USDT": -11.67946516,
+        "XRP/USDT:USDT": -3.8343301200000006
+      },
+      "profit_factor": 0.7439585041707514,
+      "reconciliation_residual_usdt": -3.000035775357901e-10,
+      "regimes": {
+        "RANGE_LOW_ADX": {
+          "net_usdt": -12.78005682,
+          "trades": 186
+        },
+        "TREND_DOWN": {
+          "net_usdt": 0.16562762000000011,
+          "trades": 89
+        },
+        "TREND_UP": {
+          "net_usdt": -2.89936608,
+          "trades": 65
+        }
+      },
+      "trades": 340,
+      "trading_days": 86,
+      "turnover_usdt": 16601.3615,
+      "weekly_block_net_interval": {
+        "draws": 2000,
+        "high_usdt": 1.4770943640000003,
+        "low_usdt": -32.83175404275,
+        "method": "IID calendar-week blocks, joint markets; descriptive stationarity assumption, few blocks, not significance proof",
+        "seed": 3103,
+        "weeks": 13
+      },
+      "win_rate": 0.29705882352941176,
+      "wins": 101
+    },
+    "VWAPTrendContinuationV1": {
+      "average_trade_ratio": -0.00019886321072904738,
+      "break_even_extra_bps_per_side": -1.0885345752801385,
+      "decision": "NO_PROMOTION",
+      "directions": {
+        "long": {
+          "net_usdt": 0.79745816,
+          "trades": 5
+        },
+        "short": {
+          "net_usdt": -0.87221792,
+          "trades": 9
+        }
+      },
+      "draws": 0,
+      "evidence_classification": "REJECTED UNDER TESTED ASSUMPTIONS",
+      "exit_reasons": {
+        "max_hold_8h": 1,
+        "roi": 4,
+        "stop_loss": 9
+      },
+      "expectancy_usdt": -0.005339982857142856,
+      "exposure_notional_hours": 870.52295,
+      "fees_usdt": 0.41207562,
+      "forced_end_exits": {
+        "net_excluding_forced_usdt": -0.07475975999999995,
+        "net_usdt": 0,
+        "trades": 0
+      },
+      "friction": [
+        {
+          "closed_equity_drawdown_usdt": 1.29584379,
+          "extra_bps_per_side": 0,
+          "fills_changed": false,
+          "net_usdt": -0.07475975999999995
+        },
+        {
+          "closed_equity_drawdown_usdt": 1.4182788899999998,
+          "extra_bps_per_side": 5,
+          "fills_changed": false,
+          "net_usdt": -0.41815610999999986
+        },
+        {
+          "closed_equity_drawdown_usdt": 1.54071399,
+          "extra_bps_per_side": 10,
+          "fills_changed": false,
+          "net_usdt": -0.76155246
+        },
+        {
+          "closed_equity_drawdown_usdt": 1.7855841899999998,
+          "extra_bps_per_side": 20,
+          "fills_changed": false,
+          "net_usdt": -1.44834516
+        }
+      ],
+      "funding_signed_usdt": 0.0018158597000000002,
+      "gross_price_pnl_usdt": 0.3354999999999906,
+      "hold_minutes": {
+        "0": 0.0,
+        "0.25": 37.5,
+        "0.5": 120.0,
+        "0.75": 232.5,
+        "0.95": 362.99999999999994,
+        "1": 480.0
+      },
+      "longest_loss_streak": 5,
+      "losses": 9,
+      "max_drawdown_account": 0.0012955432260573147,
+      "max_drawdown_usdt": 1.29584379,
+      "native_canceled_entry_orders": 0,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_R_quantiles": {
+        "0": -0.897449951713516,
+        "0.25": -0.7919245083811298,
+        "0.5": -0.771463636958073,
+        "0.75": 1.1932714097989774,
+        "1": 1.6371193463431613
+      },
+      "net_per_notional_hour": -8.587913736220274e-05,
+      "net_usdt": -0.07475975999999995,
+      "net_without_top3_usdt": -1.5913365600000002,
+      "per_pair_usdt": {
+        "DOGE/USDT:USDT": -0.7941746,
+        "XRP/USDT:USDT": 0.71941484
+      },
+      "profit_factor": 0.964577872473573,
+      "reconciliation_residual_usdt": 3.00009433962245e-10,
+      "regimes": {
+        "RANGE_LOW_ADX": {
+          "net_usdt": 0.6868358299999999,
+          "trades": 2
+        },
+        "TREND_DOWN": {
+          "net_usdt": -1.10421631,
+          "trades": 8
+        },
+        "TREND_UP": {
+          "net_usdt": 0.34262072000000005,
+          "trades": 4
+        }
+      },
+      "trades": 14,
+      "trading_days": 13,
+      "turnover_usdt": 686.7927,
+      "weekly_block_net_interval": {
+        "draws": 2000,
+        "high_usdt": 3.2911218649999934,
+        "low_usdt": -2.9323696215,
+        "method": "IID calendar-week blocks, joint markets; descriptive stationarity assumption, few blocks, not significance proof",
+        "seed": 3103,
+        "weeks": 13
+      },
+      "win_rate": 0.35714285714285715,
+      "wins": 5
+    }
+  }
+}

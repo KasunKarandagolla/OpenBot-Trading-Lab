@@ -115,3 +115,17 @@ The challengers enforce1x,<=25 USDT initial stakes, max 2 native positions, no D
 A future isolated OpenBot Local reader can receive copies of `research-summary.json`, `strategy-comparison.json` and `strategy-risks.json` from `evidence/session-2/`. These are ordinary derived files. It needs no exchange keys, authenticated admin API, paper DB or writable engine directory. Isolation and automated integration are deferred.
 
 `INSUFFICIENT EVIDENCE` means too few observations; `REJECTED under evaluated assumptions` means this cohort loses; a positive development result remains `UNQUALIFIED DEVELOPMENT RESULT`. None implies future returns. Owner-host Docker/source eligibility, restart behavior and operation while the computer is awake need local verification. Roll back by stopping UI/paper, preserving data/SQLite/private credentials, then checking out `d76b6093796f78ce628943e8252033b34e9958ef`.
+
+## Session3: causal structure and reusable economic research
+
+The additive [Session3 workflow](docs/operations/session-3.md) combines confirmed15m/closed1h structure, existing scanner candidates, historical asof reports and a native structure-aware sweep comparison. [Executed evidence](evidence/session-3/manifest.md) includes two real cohorts, full native trade exports, cost/funding/uncertainty reports and5m execution sensitivity. The enhancement has7 development trades/+0.085728USDT, loses with5bp extra friction per side, and loses1.104693USDT on14 XRP/DOGE transfer trades. No economic edge or paper promotion is established. Prior Session1/2 freezes and evidence are preserved.
+
+```bash
+./scripts/lab3.sh structure-check
+./scripts/lab3.sh opportunity-scan --cohort s3-development-v1 --as-of 2026-08-25T01:00:00Z
+./scripts/lab3.sh opportunity-asof SOL/USDT:USDT 2026-08-25T01:00:00Z
+./scripts/lab3.sh economic-compare s3-development-v1
+./scripts/lab3.sh validation-report s3-transfer-v1
+```
+
+Recorded comparisons need no downloads or raw candles. Historical opportunity reports need the preserved/reacquired source sample. Fresh native runs and new/prospective cohort registration are described in the runbook. Session3 never starts paper, UI, an agent bridge or exchange orders.

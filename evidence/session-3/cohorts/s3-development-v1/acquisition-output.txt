@@ -1,0 +1,68 @@
+2026-10-31 13:19:12,408 - freqtrade - INFO - freqtrade 2026.10
+2026-10-31 13:19:12,959 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-10-31 13:19:14,609 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/session3-configs/s3-development-v1/TrendPullbackBaselineV1.json ...
+2026-10-31 13:19:14,613 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-10-31 13:19:14,614 - freqtrade.loggers - INFO - Logfile configured
+2026-10-31 13:19:14,614 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-10-31 13:19:14,614 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20260726-20261030 ...
+2026-10-31 13:19:14,616 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-10-31 13:19:14,616 - freqtrade.configuration.directory_operations - INFO - Created data directory: /lab/user_data/data/session-3/s3-development-v1/gate
+2026-10-31 13:19:14,616 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/session-3/s3-development-v1/gate ...
+2026-10-31 13:19:14,617 - freqtrade.configuration.configuration - INFO - timeframes --timeframes: ['15m', '1h']
+2026-10-31 13:19:14,617 - freqtrade.configuration.configuration - INFO - Detected --trading-mode: futures
+2026-10-31 13:19:14,617 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20260726-20261030
+2026-10-31 13:19:14,618 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-10-31 13:19:14,625 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-10-31 13:19:14,626 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-10-31 13:19:14,626 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-10-31 13:19:14,629 - freqtrade.configuration.config_validation - CRITICAL - Invalid configuration. Reason: 'listen_ip_address' is a required property
+
+Failed validating 'required' in schema['properties']['api_server']:
+    {'description': 'API server settings.',
+     'type': 'object',
+     'properties': {'enabled': {'description': 'Whether the API server is '
+                                               'enabled.',
+                                'type': 'boolean'},
+                    'listen_ip_address': {'description': 'IP address the '
+                                                         'API server '
+                                                         'listens on.',
+                                          'format': 'ipv4'},
+                    'listen_port': {'description': 'Port the API server '
+                                                   'listens on.',
+                                    'type': 'integer',
+                                    'minimum': 1024,
+                                    'maximum': 65535},
+                    'username': {'description': 'Username for API server '
+                                                'authentication.',
+                                 'type': 'string'},
+                    'password': {'description': 'Password for API server '
+                                                'authentication.',
+                                 'type': 'string'},
+                    'ws_token': {'description': 'WebSocket token for API '
+                                                'server.',
+                                 'type': ['string', 'array'],
+                                 'items': {'type': 'string'}},
+                    'jwt_secret_key': {'description': 'Secret key for JWT '
+                                                      'authentication.',
+                                       'type': 'string',
+                                       'default': 'somethingRandomSomethingRandom123',
+                                       'minLength': 32},
+                    'CORS_origins': {'description': 'List of allowed CORS '
+                                                    'origins.',
+                                     'type': 'array',
+                                     'items': {'type': 'string'}},
+                    'verbosity': {'description': 'Logging verbosity level.',
+                                  'type': 'string',
+                                  'enum': ['error', 'info']}},
+     'required': ['enabled',
+                  'listen_ip_address',
+                  'listen_port',
+                  'username',
+                  'password',
+                  'jwt_secret_key']}
+
+On instance['api_server']:
+    {'enabled': False,
+     'jwt_secret_key': 'somethingRandomSomethingRandom123'}
+2026-10-31 13:19:14,631 - freqtrade - ERROR - Configuration error: 'listen_ip_address' is a required property
+Please make sure to review the documentation at https://www.freqtrade.io/en/stable.

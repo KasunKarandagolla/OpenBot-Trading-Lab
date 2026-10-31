@@ -1,0 +1,115 @@
+test_every_prefix_equals_batch_and_future_append (test_session3_structure.Structure.test_every_prefix_equals_batch_and_future_append) ... ERROR
+test_exact_right_confirmation_and_ties (test_session3_structure.Structure.test_exact_right_confirmation_and_ties) ... ERROR
+test_gap_and_invalid_reset_unknown (test_session3_structure.Structure.test_gap_and_invalid_reset_unknown) ... ERROR
+test_hour_merge_exact_native_availability (test_session3_structure.Structure.test_hour_merge_exact_native_availability) ... ok
+test_unknown_initial_bos_choch_wick_and_level_invalidation (test_session3_structure.Structure.test_unknown_initial_bos_choch_wick_and_level_invalidation) ... ERROR
+test_actual_hold4 (test_session3_workflow.AdvancedCallbacks.test_actual_hold4) ... ok
+test_capacity_symbol_fallback_and_daily_utc (test_session3_workflow.AdvancedCallbacks.test_capacity_symbol_fallback_and_daily_utc) ... ok
+test_closed_fresh_signal_price_and_expiry (test_session3_workflow.AdvancedCallbacks.test_closed_fresh_signal_price_and_expiry) ... ok
+test_geometry_sides_prices_atr_and_fee_sizing (test_session3_workflow.AdvancedCallbacks.test_geometry_sides_prices_atr_and_fee_sizing) ... ok
+test_native_short_stop_precedes_roi_same_bar (test_session3_workflow.AdvancedCallbacks.test_native_short_stop_precedes_roi_same_bar) ... ok
+test_native_stop_precedes_roi_same_bar (test_session3_workflow.AdvancedCallbacks.test_native_stop_precedes_roi_same_bar) ... ok
+test_native_stop_rounding_roi_hold_and_fill (test_session3_workflow.AdvancedCallbacks.test_native_stop_rounding_roi_hold_and_fill) ... ok
+test_paper_pending_quote_invalidation (test_session3_workflow.AdvancedCallbacks.test_paper_pending_quote_invalidation) ... ok
+test_safe_stake_missing_not_exception_fallback (test_session3_workflow.AdvancedCallbacks.test_safe_stake_missing_not_exception_fallback) ... ok
+test_unexpected_provider_and_audit_fail_closed (test_session3_workflow.AdvancedCallbacks.test_unexpected_provider_and_audit_fail_closed) ... ok
+test_historical_future_sentinel_and_schema (test_session3_workflow.Assessment.test_historical_future_sentinel_and_schema) ... ERROR
+test_input_times (test_session3_workflow.Assessment.test_input_times) ... ok
+test_missing_stale_gap_warmup_current_timestamp (test_session3_workflow.Assessment.test_missing_stale_gap_warmup_current_timestamp) ... ok
+test_capacity_symbol_fallback_and_daily_utc (test_playbooks.Callbacks.test_capacity_symbol_fallback_and_daily_utc) ... ok
+test_closed_fresh_signal_price_and_expiry (test_playbooks.Callbacks.test_closed_fresh_signal_price_and_expiry) ... ok
+test_geometry_sides_prices_atr_and_fee_sizing (test_playbooks.Callbacks.test_geometry_sides_prices_atr_and_fee_sizing) ... ok
+test_native_short_stop_precedes_roi_same_bar (test_playbooks.Callbacks.test_native_short_stop_precedes_roi_same_bar) ... ok
+test_native_stop_precedes_roi_same_bar (test_playbooks.Callbacks.test_native_stop_precedes_roi_same_bar) ... ok
+test_native_stop_rounding_roi_hold_and_fill (test_playbooks.Callbacks.test_native_stop_rounding_roi_hold_and_fill) ... ok
+test_paper_pending_quote_invalidation (test_playbooks.Callbacks.test_paper_pending_quote_invalidation) ... ok
+test_safe_stake_missing_not_exception_fallback (test_playbooks.Callbacks.test_safe_stake_missing_not_exception_fallback) ... ok
+test_unexpected_provider_and_audit_fail_closed (test_playbooks.Callbacks.test_unexpected_provider_and_audit_fail_closed) ... ok
+test_fee_funding_costs_forced_exit_zero_and_blocks (test_session3_workflow.Economics.test_fee_funding_costs_forced_exit_zero_and_blocks) ... ok
+test_configs_env_and_frozen_sources (test_session3_workflow.Safety.test_configs_env_and_frozen_sources) ... ok
+test_no_cli_bypass_and_staging_impersonator (test_session3_workflow.Safety.test_no_cli_bypass_and_staging_impersonator) ... ok
+test_future_known_levels_forbidden_and_risk_inherited (test_session3_workflow.Strategy.test_future_known_levels_forbidden_and_risk_inherited) ... ok
+test_symmetric_signals_and_explainable_rejection (test_session3_workflow.Strategy.test_symmetric_signals_and_explainable_rejection) ... ok
+
+======================================================================
+ERROR: test_every_prefix_equals_batch_and_future_append (test_session3_structure.Structure.test_every_prefix_equals_batch_and_future_append)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_session3_structure.py", line 33, in test_every_prefix_equals_batch_and_future_append
+    batch=structure(d)
+  File "/lab/research/session3/causal_structure.py", line 48, in structure
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                     ^^^
+  File "/lab/research/session3/causal_structure.py", line 48, in <genexpr>
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                                      ^^^^^^
+AttributeError: 'tuple' object has no attribute 'high'
+
+======================================================================
+ERROR: test_exact_right_confirmation_and_ties (test_session3_structure.Structure.test_exact_right_confirmation_and_ties)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_session3_structure.py", line 16, in test_exact_right_confirmation_and_ties
+    d=bars([11,12,16,13,12,11,12]);r=structure(d)
+                                     ~~~~~~~~~^^^
+  File "/lab/research/session3/causal_structure.py", line 48, in structure
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                     ^^^
+  File "/lab/research/session3/causal_structure.py", line 48, in <genexpr>
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                                      ^^^^^^
+AttributeError: 'tuple' object has no attribute 'high'
+
+======================================================================
+ERROR: test_gap_and_invalid_reset_unknown (test_session3_structure.Structure.test_gap_and_invalid_reset_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_session3_structure.py", line 39, in test_gap_and_invalid_reset_unknown
+    r=structure(d);self.assertEqual(r.struct_direction.iloc[7],'UNKNOWN');self.assertTrue(pd.isna(r.swing_high.iloc[7]));self.assertFalse(r.struct_valid.iloc[7])
+  File "/lab/research/session3/causal_structure.py", line 48, in structure
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                     ^^^
+  File "/lab/research/session3/causal_structure.py", line 48, in <genexpr>
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                                      ^^^^^^
+AttributeError: 'tuple' object has no attribute 'high'
+
+======================================================================
+ERROR: test_unknown_initial_bos_choch_wick_and_level_invalidation (test_session3_structure.Structure.test_unknown_initial_bos_choch_wick_and_level_invalidation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_session3_structure.py", line 23, in test_unknown_initial_bos_choch_wick_and_level_invalidation
+    r=structure(d,left=1,right=1)
+  File "/lab/research/session3/causal_structure.py", line 48, in structure
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                     ^^^
+  File "/lab/research/session3/causal_structure.py", line 48, in <genexpr>
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                                      ^^^^^^
+AttributeError: 'tuple' object has no attribute 'high'
+
+======================================================================
+ERROR: test_historical_future_sentinel_and_schema (test_session3_workflow.Assessment.test_historical_future_sentinel_and_schema)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_session3_workflow.py", line 53, in test_historical_future_sentinel_and_schema
+    a=assess('BTC/USDT:USDT',b,h,at,'fixture');changed=b.copy();changed.loc[1041:,'close']=1e12;changedh=h.copy();changedh.loc[changedh.date+pd.Timedelta(hours=1)>at,'close']=1e12
+  File "/lab/scripts/opportunity3.py", line 52, in assess
+    try:d=analyze(base,hour,asof)
+          ~~~~~~~^^^^^^^^^^^^^^^^
+  File "/lab/scripts/opportunity3.py", line 40, in analyze
+    h=s.populate_indicators_1h(h,{});f=closed_merge(b,h)
+  File "/lab/research/session3/StructureAwareSweepV1.py", line 15, in populate_indicators_1h
+    return structure(d, '1h')
+  File "/lab/research/session3/causal_structure.py", line 48, in structure
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                     ^^^
+  File "/lab/research/session3/causal_structure.py", line 48, in <genexpr>
+    for side, qualifies in [('high', all(pivot.high > r.high for r in others)),
+                                                      ^^^^^^
+AttributeError: 'tuple' object has no attribute 'high'
+
+----------------------------------------------------------------------
+Ran 32 tests in 0.449s
+
+FAILED (errors=5)

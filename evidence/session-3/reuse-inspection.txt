@@ -1,0 +1,171 @@
+gate-openapi HTTPError 404 Client Error: Not Found for url: https://raw.githubusercontent.com/gateio/rest-v4/master/swagger.yaml
+smc-source 40213 6dd994e65322233be420ae750075cbe11a6ca55531521f2afe26b14adf036793
+def swing_highs_lows(cls, ohlc: DataFrame, swing_length: int = 50) -> Series:
+        """
+        Swing Highs and Lows
+        A swing high is when the current high is the highest high out of the swing_length amount of candles before and after.
+        A swing low is when the current low is the lowest low out of the swing_length amount of candles before and after.
+
+        parameters:
+        swing_length: int - the amount of candles to look back and forward to determine the swing high or low
+
+        returns:
+        HighLow = 1 if swing high, -1 if swing low
+        Level = the level of the swing high or low
+        """
+
+        swing_length *= 2
+        # set the highs to 1 if the current high is the highest high in the last 5 candles and next 5 candles
+        swing_highs_lows = np.where(
+            ohlc["high"]
+            == ohlc["high"].shift(-(swing_length // 2)).rolling(swing_length).max(),
+            1,
+            np.where(
+                ohlc["low"]
+                == ohlc["low"].shift(-(swing_length // 2)).rolling(swing_length).min(),
+                -1,
+                np.nan,
+            ),
+        )
+
+        while True:
+            positions = np.where(~np.isnan(swing_highs_lows))[0]
+
+            if len(positions) < 2:
+                break
+
+            current = swing_highs_lows[positions[:-1]]
+            next = swing_highs_lows[positions[1:]]
+
+            highs = ohlc["high"].iloc[positions[:-1]].values
+            lows = ohlc["low"].iloc[positions[:-1]].values
+
+            next_highs = ohlc["high"].iloc[positions[1:]].values
+            next_lows = ohlc["low"].iloc[positions[1:]].values
+
+            index_to_remove = np.zeros(len(positions), dtype=bool)
+
+            consecutive_highs = (current == 1) & (next == 1)
+            index_to_remove[:-1] |= consecutive_highs & (highs < next_highs)
+            index_to_remove[1:] |= consecutive_highs & (highs >= next_highs)
+
+            consecutive_lows = (current == -1) & (next == -1)
+            index_to_remove[:-1] |= consecutive_lows & (lows > next_lows)
+            index_to_remove[1:] |= consecutive_lows & (lows <= next_lows)
+
+            if not index_to_remove.any():
+                break
+
+            swing_highs_lows[positions[index_to_remove]] = np.nan
+
+        positions = np.where(~np.isnan(swing_highs_lows))[0]
+
+        if len(positions) > 0:
+            if swing_highs_lows[positions[0]] == 1:
+                swing_highs_lows[0] = -1
+            if swing_highs_lows[positions[0]] == -1:
+                swing_highs_lows[0] = 1
+            if swing_highs_lows[positions[-1]] == -1:
+                swing_highs_lows[-1] = 1
+            if swing_highs_lows[positions[-1]] == 1:
+                swing_highs_lows[-1] = -1
+
+        level = np.where(
+            ~np.isnan(swing_highs_lows)
+def bos_choch(
+        cls, ohlc: DataFrame, swing_highs_lows: DataFrame, close_break: bool = True
+    ) -> Series:
+        """
+        BOS - Break of Structure
+        CHoCH - Change of Character
+        these are both indications of market structure changing
+
+        parameters:
+        swing_highs_lows: DataFrame - provide the dataframe from the swing_highs_lows function
+        close_break: bool - if True then the break of structure will be mitigated based on the close of the candle otherwise it will be the high/low.
+
+        returns:
+        BOS = 1 if bullish break of structure, -1 if bearish break of structure
+        CHOCH = 1 if bullish change of character, -1 if bearish change of character
+        Level = the level of the break of structure or change of character
+        BrokenIndex = the index of the candle that broke the level
+        """
+
+        swing_highs_lows = swing_highs_lows.copy()
+
+        level_order = []
+        highs_lows_order = []
+
+        bos = np.zeros(len(ohlc), dtype=np.int32)
+        choch = np.zeros(len(ohlc), dtype=np.int32)
+        level = np.zeros(len(ohlc), dtype=np.float32)
+
+        last_positions = []
+
+        for i in range(len(swing_highs_lows["HighLow"])):
+            if not np.isnan(swing_highs_lows["HighLow"][i]):
+                level_order.append(swing_highs_lows["Level"][i])
+                highs_lows_order.append(swing_highs_lows["HighLow"][i])
+                if len(level_order) >= 4:
+                    # bullish bos
+                    bos[last_positions[-2]] = (
+                        1
+                        if (
+       
+freqtrade-orderflow 6119 a3b9684e3e67c512d282bd721e38623bb8d2a2704419270de27c115f6374065c
+# Orderflow data
+
+This guide walks you through utilizing public trade data for advanced orderflow analysis in Freqtrade.
+
+!!! Warning "Experimental Feature"
+    The orderflow feature is currently in beta and may be subject to changes in future releases. Please report any issues or feedback on the [Freqtrade GitHub repository](https://github.com/freqtrade/freqtrade/issues).
+    It's also currently not been tested with freqAI - and combining these two features is considered out of scope at this point.
+
+!!! Warning "Performance"
+    Orderflow requires raw trades data. This data is rather large, and can cause a slow initial startup, when freqtrade needs to download the trades data for the last X candles. Additionally, enabling this feature will cause increased memory usage. Please ensure to have sufficient resources available.
+
+## Getting Started
+
+### Enable Public Trades
+
+In your `config.json` file, set the `use_public_trades` option to true under the `exchange` section.
+
+```json
+"exchange": {
+   ...
+   "use_public_trades": true,
+}
+```
+
+### Configure Orderflow Processing
+
+Define your desired settings for orderflow processing within the orderflow section of config.json. Here, you can adjust factors like:
+
+- `cache_size`: How many previous orderflow candles are saved into cache instead of calculated every new candle
+- `max_candles`: Filter how many candles would you like to get trades data for.
+- `scale`: This controls the price bin size for the footprint chart.
+- `stacked_imbalance_range`: Defines the minimum consecutive imbalanced price levels required for consideration.
+- `imbalance_volume`: Filters out imbalances with volume below this threshold.
+- `imbalance_ratio`: Filters out imbalances with a ratio (difference between ask and bid volume) lower than this value.
+
+```json
+"orderflow": {
+    "cache_size": 1000, 
+    "max_candles": 1500, 
+    "scale": 0.5, 
+    "stacked_imbalance_range": 3, //  needs at least this amount of imbalance next to each other
+    "imbalance_volume": 1, //  filters out below
+    "imbalance_ratio": 3 //  filters out ratio lower than
+  },
+```
+
+## Downloading Trade Data for Backtesting
+
+To download historical trade data for backtesting, use the --dl-trades flag with the freqtrade download-data command.
+
+```bash
+freqtrade download-data -p BTC/USDT:USDT --timerange 20230101- --trading-mode futures --timeframes 5m --dl-trades
+```
+
+!!! Warning "Data availability"
+    Not all exchanges provide public trade data. For supported exchanges, fre

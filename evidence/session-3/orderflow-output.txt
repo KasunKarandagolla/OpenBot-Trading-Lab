@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "declared_at_utc": "2026-10-31T13:28:54.700457+00:00",
+  "requested_from_utc": "2026-10-31T13:27:54+00:00",
+  "requested_to_utc": "2026-10-31T13:28:54+00:00",
+  "max_pages": 1,
+  "max_prints": 1000,
+  "max_bytes": 2000000,
+  "public_only": true,
+  "environment": "RESEARCH_ONLY",
+  "symbol": "BTC/USDT:USDT",
+  "received_at_utc": "2026-10-31T13:28:55.479751+00:00",
+  "source": "Gate public futures/usdt/trades via CCXT4.5.90",
+  "source_status": "ACTUAL_PUBLIC_TRADE_PRINTS",
+  "fidelity": "TRADE_PRINTS",
+  "coverage_status": "PARTIAL_COVERAGE",
+  "coverage_reasons": [
+    "Single bounded page; unproven start/end boundary completeness",
+    "Trade-ID sequence continuity not established for this endpoint; no missing-page assertion"
+  ],
+  "raw_rows": 62,
+  "raw_bytes": 8827,
+  "raw_sha256": "b2a3e2d0615eb4c0ac509f77817a1f47e183759dcf983738f1b6cbf2b50f25d5",
+  "raw_local_only": true,
+  "contract_multiplier_btc_per_contract": 0.0001,
+  "price_unit": "USDT/BTC",
+  "quantity_unit": "contracts converted to BTC",
+  "aggregation_available_at_utc": "2026-10-31T13:28:55.479751+00:00",
+  "summary": {
+    "distinct_available_prints": 62,
+    "duplicate_ids": 0,
+    "total_base_btc": 11.6346,
+    "buy_aggressor_btc": null,
+    "sell_aggressor_btc": null,
+    "signed_delta_btc": null,
+    "first_execution_utc": "2026-10-31T13:27:56.322999954+00:00",
+    "last_execution_utc": "2026-10-31T13:28:52.582999945+00:00",
+    "side_status": "AGGRESSOR_SIDE_UNKNOWN"
+  },
+  "aggressor_semantics": "UNVALIDATED: current Gate public FuturesTrade schema does not explicitly define taker mapping; CCXT sign convention alone insufficient",
+  "docs": "https://www.gate.com/docs/developers/apiv4/en/futures/#futures-trade",
+  "strategy_feature_eligible": false
+}

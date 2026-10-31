@@ -1,0 +1,14 @@
+# Bounded source and dependency assessment
+
+Extend the prior scoped personal/noncommercial Gate public REST assessment to the predeclared Session3 BTC/ETH/SOL and XRP/DOGE cohorts, finite current candidates, October1–30 detail sample and one BTC trade-page proof. User explicitly authorized bounded real research. No paid feed, private account, keys, trading endpoints, raw-data redistribution, commercial use clearance or geographic workaround. Stop on source access denial/rate limiting. Preserve local samples because rolling retention limits reproducibility. Jurisdiction/account eligibility and later reuse remain owner checks.
+
+Primary references inspected:
+
+- https://www.gate.com/docs/developers/apiv4/en/futures/ — public contracts/candles/funding/trades, time/size schemas, unauthenticated market endpoints. Public FuturesTrade size is described only as trading size; it does not independently establish taker-side meaning. Therefore real captured prints remain AGGRESSOR_SIDE_UNKNOWN/PARTIAL_COVERAGE.
+- https://www.gate.com/legal/user-agreement and prior evidence/session-1/source-rights.md — scoped source-use assumptions retained, no broader sublicensing assertion.
+- https://raw.githubusercontent.com/gateio/gateapi-python/master/gate_api/models/futures_trade.py — official SDK field/time/unit descriptions; no sufficient public aggressor interpretation.
+- Installed pinned CCXT4.5.90 gate.parse_trade maps positive/negative size to buy/sell; adapter convention alone is insufficient independent semantic confirmation. Actual prints use documented create_time seconds and source contract multiplier0.0001BTC/contract; no candle-color delta.
+- https://raw.githubusercontent.com/freqtrade/freqtrade/2026.10/docs/advanced-orderflow.md — experimental trade ingestion with use_public_trades/orderflow configuration and --dl-trades. Existing adapter considered; no full orderflow service installed, no synchronized historical delta feature claimed.
+- https://raw.githubusercontent.com/joshyattridge/smart-money-concepts/master/smartmoneyconcepts/smc.py — inspected source hash6dd994e65322233be420ae750075cbe11a6ca55531521f2afe26b14adf036793. Negative shifts and iterative later-swing pruning revise earlier labels; rejected for this causal hypothesis. No package installed/copied into active code. Small custom forward state machine tests every prefix.
+
+Reuse official Freqtrade2026.10 image/engine, native informative merges/callbacks, TA-Lib EMA/ADX/ATR and frozen prior VWAP/range/volume/risk implementations. New code uses existing pandas/NumPy/jsonschema; no new dependency/image build or license-affecting indicator bundle. Existing third-party distributions retain their respective licenses; package/license metadata is recorded in version-manifest.json. Raw public pages/source inspections are qualification records, not a new data redistribution grant.

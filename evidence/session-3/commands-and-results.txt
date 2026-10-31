@@ -1,0 +1,77 @@
+2026-10-31T13:24:14.262544+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-development-v1 TrendPullbackBaselineV1
+exit=0
+2026-10-31T13:25:13.701829+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-development-v1 VWAPTrendContinuationV1
+exit=0
+2026-10-31T13:26:05.278300+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-development-v1 LiquiditySweepReversalV1
+exit=0
+2026-10-31T13:26:58.379331+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-development-v1 StructureAwareSweepV1
+exit=0
+2026-10-31T13:28:33.371615+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-development-v1 SweepThinningControlV1
+exit=0
+2026-10-31T13:29:15.956398+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-transfer-v1 TrendPullbackBaselineV1
+exit=0
+2026-10-31T13:30:07.180003+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-transfer-v1 VWAPTrendContinuationV1
+exit=0
+2026-10-31T13:30:59.027148+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-transfer-v1 LiquiditySweepReversalV1
+exit=0
+2026-10-31T13:31:51.452066+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-transfer-v1 StructureAwareSweepV1
+exit=0
+2026-10-31T13:32:49.688902+00:00 /usr/local/bin/python /lab/scripts/engine3.py backtesting s3-transfer-v1 SweepThinningControlV1
+exit=0
+2026-10-31T13:42:01.639229+00:00 ./scripts/lab3.sh structure-check
+exit=0 expected=0 output=structure-final.txt
+2026-10-31T13:42:14.351863+00:00 ./scripts/lab3.sh economic-compare s3-development-v1
+exit=0 expected=0 output=economic-development-output.txt
+2026-10-31T13:42:15.817353+00:00 ./scripts/lab3.sh economic-compare s3-transfer-v1
+exit=0 expected=0 output=economic-transfer-output.txt
+2026-10-31T13:42:17.382727+00:00 ./scripts/lab3.sh validation-report s3-development-v1
+exit=0 expected=0 output=validation-output.txt
+2026-10-31T13:42:18.890019+00:00 ./scripts/lab3.sh validation-report s3-transfer-v1
+exit=0 expected=0 output=transfer-validation-output.txt
+2026-10-31T13:42:20.535491+00:00 ./scripts/lab3.sh opportunity-asof SOL/USDT:USDT 2026-08-25T01:00:00Z
+exit=0 expected=0 output=asof-command-output.txt
+2026-10-31T13:42:27.216158+00:00 ./scripts/lab3.sh research-download s3-development-v1
+exit=2 expected=2 output=preservation-refusal.txt
+2026-10-31T13:42:28.749509+00:00 ./scripts/lab3.sh research-download s3-prospective-v1
+exit=2 expected=2 output=future-data-refusal.txt
+2026-10-31T13:42:30.399569+00:00 ./scripts/lab3.sh trade
+exit=2 expected=2 output=mode-refusal.txt
+2026-10-31T13:42:30.989387+00:00 ./scripts/lab3.sh --help
+exit=0 expected=0 output=operator-help.txt
+Observed execution completion receipts (original stdout/stderr retained):
+python /lab/scripts/data_session3.py s3-development-v1 [first attempt] -> native configuration error misleading engine exit0; seal script exit1; see acquisition-output.txt and failure history.
+python /lab/scripts/data_session3.py s3-development-v1 [corrected attempt] -> exit0;12files/1201184bytes/all prior hashes match.
+./scripts/lab3.sh research-download s3-transfer-v1 -> exit0;8files/804320bytes.
+./scripts/lab3.sh structure-check [initial tuple defect] -> exit1;5errors; initial-structure-tests.txt.
+./scripts/lab3.sh structure-check [dtype fixture correction] -> exit1;2failures; structure-tests-dtype-failure.txt.
+./scripts/lab3.sh lookahead s3-development-v1 -> exit0;7signals/no bias; lookahead-output.txt and actual CSV.
+./scripts/lab3.sh recursive-check s3-development-v1 [initial unsupported flags] -> exit2; recursive-initial-parser-failure.txt.
+./scripts/lab3.sh recursive-check s3-development-v1 [correct installed flags] -> exit0; recursive-output.txt.
+./scripts/lab3.sh detail-download -> exit0; followed by execution-sensitivity -> exit0;4native runs/actual5m data.
+./scripts/lab3.sh native-replay s3-development-v1 -> exit0;all7native trade records field-identical.
+./scripts/lab3.sh test [final78-case suite] -> exit0;78tests/0failures/errors/skips; final-tests.txt.
+docker compose -f deploy/freqtrade/compose.session3.yaml config --quiet -> exit0.
+git diff --check -> exit0.
+python3 -m compileall -q [new Session3 source/test files] -> exit0.
+No dependency changes, real/testnet orders, paper/UI startup, merge or prior-branch rewrite.
+2026-10-31T13:50:25.409781+00:00 ./scripts/lab3.sh structure-check
+exit=0 expected=0 output=structure-final.txt
+2026-10-31T13:50:36.522269+00:00 ./scripts/lab3.sh economic-compare s3-development-v1
+exit=0 expected=0 output=economic-development-output.txt
+2026-10-31T13:50:38.145560+00:00 ./scripts/lab3.sh economic-compare s3-transfer-v1
+exit=0 expected=0 output=economic-transfer-output.txt
+2026-10-31T13:50:39.961652+00:00 ./scripts/lab3.sh validation-report s3-development-v1
+exit=0 expected=0 output=validation-output.txt
+2026-10-31T13:50:41.629428+00:00 ./scripts/lab3.sh validation-report s3-transfer-v1
+exit=0 expected=0 output=transfer-validation-output.txt
+2026-10-31T13:50:43.205757+00:00 ./scripts/lab3.sh opportunity-asof SOL/USDT:USDT 2026-08-25T01:00:00Z
+exit=0 expected=0 output=asof-command-output.txt
+2026-10-31T13:50:50.200581+00:00 ./scripts/lab3.sh research-download s3-development-v1
+exit=2 expected=2 output=preservation-refusal.txt
+2026-10-31T13:50:51.694975+00:00 ./scripts/lab3.sh research-download s3-prospective-v1
+exit=2 expected=2 output=future-data-refusal.txt
+2026-10-31T13:50:53.018799+00:00 ./scripts/lab3.sh trade
+exit=2 expected=2 output=mode-refusal.txt
+2026-10-31T13:50:53.520627+00:00 ./scripts/lab3.sh --help
+exit=0 expected=0 output=operator-help.txt
+Full staged whitespace check reported retained native console padding/CSV CRLF (exit2); original evidence bytes preserved. Source-only staged diff check excluding evidence/session-3/** exit0. No raw market/native ZIP/runtime/private DB files staged.

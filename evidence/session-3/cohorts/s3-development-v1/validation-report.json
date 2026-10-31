@@ -1,0 +1,54 @@
+{
+  "cohort_id": "s3-development-v1",
+  "environment": "RESEARCH_ONLY",
+  "parent_challenger": {
+    "control_interpretation": "Predeclared deterministic half-thinning control, same parent/risk/cost/window. Exposure-normalized, not count-matched; differing exits and capacity mean no causal alpha estimate.",
+    "exposure_aware_comparison": {
+      "LiquiditySweepReversalV1": 0.0007624812588003364,
+      "StructureAwareSweepV1": 0.0002259724210071605,
+      "SweepThinningControlV1": 0.0016408466699148225
+    },
+    "net_delta_usdt": -1.49105181,
+    "paired_weekly_delta_interval": {
+      "draws": 2000,
+      "high_usdt": 0.722802059749998,
+      "low_usdt": -3.9919540507499995,
+      "method": "IID calendar-week blocks, joint markets; descriptive stationarity assumption, few blocks, not significance proof",
+      "seed": 3103,
+      "weeks": 13
+    }
+  },
+  "schema_version": 1,
+  "strategies": {
+    "LiquiditySweepReversalV1": {
+      "classification": "INSUFFICIENT EVIDENCE",
+      "decision": "NO_PROMOTION",
+      "net_usdt": 1.57677993,
+      "trades": 38
+    },
+    "StructureAwareSweepV1": {
+      "classification": "INSUFFICIENT EVIDENCE",
+      "decision": "NO_PROMOTION",
+      "net_usdt": 0.08572811999999996,
+      "trades": 7
+    },
+    "SweepThinningControlV1": {
+      "classification": "INSUFFICIENT EVIDENCE",
+      "decision": "NO_PROMOTION",
+      "net_usdt": 1.8929367,
+      "trades": 22
+    },
+    "TrendPullbackBaselineV1": {
+      "classification": "REJECTED UNDER TESTED ASSUMPTIONS",
+      "decision": "NO_PROMOTION",
+      "net_usdt": -4.80718764,
+      "trades": 360
+    },
+    "VWAPTrendContinuationV1": {
+      "classification": "INSUFFICIENT EVIDENCE",
+      "decision": "NO_PROMOTION",
+      "net_usdt": 0.81640789,
+      "trades": 17
+    }
+  }
+}
