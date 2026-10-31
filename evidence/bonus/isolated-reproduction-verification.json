@@ -1,0 +1,57 @@
+{
+  "source_commit": "8e35359",
+  "completed_variants": 8,
+  "matched_trade_records": 154,
+  "variants": {
+    "IntegratedM0V1": {
+      "trades": 0,
+      "all_trade_fields_identical": true
+    },
+    "LiquiditySweepReversalV1": {
+      "trades": 86,
+      "all_trade_fields_identical": true
+    },
+    "RouterICTV1": {
+      "trades": 0,
+      "all_trade_fields_identical": true
+    },
+    "RouterOnlyV1": {
+      "trades": 9,
+      "all_trade_fields_identical": true
+    },
+    "RouterProfileV1": {
+      "trades": 3,
+      "all_trade_fields_identical": true
+    },
+    "RouterSMCV1": {
+      "trades": 5,
+      "all_trade_fields_identical": true
+    },
+    "StructureAwareSweepV1": {
+      "trades": 21,
+      "all_trade_fields_identical": true
+    },
+    "VWAPTrendContinuationV1": {
+      "trades": 30,
+      "all_trade_fields_identical": true
+    }
+  },
+  "trading_sources_identical": {
+    "OpportunityRouterV1.py": true,
+    "advanced_features.py": true,
+    "futures_risk.py": true,
+    "protocol.json": true,
+    "management-supplement.json": true
+  },
+  "remaining": [
+    "IntegratedM1V1",
+    "RouterOnlyM1V1"
+  ],
+  "status": "PARTIAL_EXTERNAL_GATE_HTTP503",
+  "primary_all_ten_variants_completed": true,
+  "separate_native_router_replay_passed": true,
+  "limits": [
+    "Gate public risk-limit-tier and currencies endpoints returned repeated HTTP503; no policy, source or fee changes to work around it.",
+    "Disposable VFS container startup exhausted disk; stopping and removing only the own idle research worker freed 1.9GB. Subsequent native attempt still hit Gate503."
+  ]
+}

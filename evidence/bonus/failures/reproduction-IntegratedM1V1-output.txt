@@ -1,0 +1,246 @@
+2026-10-31 17:46:27,043 - freqtrade - INFO - freqtrade 2026.10
+2026-10-31 17:46:28,965 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/bonus-configs/IntegratedM1V1.json ...
+2026-10-31 17:46:28,966 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-10-31 17:46:28,967 - freqtrade.loggers - INFO - Logfile configured
+2026-10-31 17:46:28,967 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-10-31 17:46:28,967 - freqtrade.configuration.configuration - INFO - Parameter --enable-protections detected, enabling Protections ...
+2026-10-31 17:46:28,967 - freqtrade.configuration.configuration - INFO - Using max_open_trades: 2 ...
+2026-10-31 17:46:28,967 - freqtrade.configuration.configuration - INFO - Parameter --fee detected, setting fee to: 0.0006 ...
+2026-10-31 17:46:28,967 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20260805-20261030 ...
+2026-10-31 17:46:28,968 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-10-31 17:46:28,968 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/bonus/gate ...
+2026-10-31 17:46:28,968 - freqtrade.configuration.configuration - INFO - Using /lab/user_data/backtest_results/bonus/IntegratedM1V1 as backtest directory ...
+2026-10-31 17:46:28,968 - freqtrade.configuration.configuration - INFO - Parameter --export detected: trades ...
+2026-10-31 17:46:28,968 - freqtrade.configuration.configuration - INFO - Parameter --cache=none detected ...
+2026-10-31 17:46:28,969 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20260805-20261030
+2026-10-31 17:46:28,969 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-10-31 17:46:28,974 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-10-31 17:46:28,975 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-10-31 17:46:28,975 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-10-31 17:46:28,976 - freqtrade.commands.optimize_commands - INFO - Starting freqtrade in Backtesting mode
+2026-10-31 17:46:28,977 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-10-31 17:46:28,977 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-10-31 17:46:28,977 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'aiohttp_trust_env': True, 'cafile': '/run/proxy-ca.pem', 
+'enableRateLimit': True, 'httpsProxy': 'http://172.31.0.13:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-10-31 17:46:28,979 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'aiohttp_trust_env': True, 'cafile': '/run/proxy-ca.pem', 
+'enableRateLimit': True, 'httpsProxy': 'http://172.31.0.13:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-10-31 17:46:28,982 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-10-31 17:46:31,819 - freqtrade.exchange.common - WARNING - _load_async_markets() returned exception: "Error in reload_markets due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/spot/currency_pairs 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection failure, transport failure reason: 
+immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/". Retrying still for 3 times.
+2026-10-31 17:46:32,055 - freqtrade.exchange.common - WARNING - _load_async_markets() returned exception: "Error in reload_markets due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/spot/currencies 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection failure, transport failure reason: 
+immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/". Retrying still for 2 times.
+2026-10-31 17:46:32,135 - freqtrade.exchange.common - WARNING - _load_async_markets() returned exception: "Error in reload_markets due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/spot/currencies 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection failure, transport failure reason: 
+immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/". Retrying still for 1 times.
+2026-10-31 17:46:32,206 - freqtrade.exchange.common - WARNING - _load_async_markets() returned exception: "Error in reload_markets due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/spot/currencies 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection failure, transport failure reason: 
+immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/". Giving up.
+2026-10-31 17:46:32,207 - freqtrade.exchange.exchange - ERROR - Could not load markets.
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 756, in _api_reload_markets
+    await self._api_async.load_markets(reload=reload, params={})
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 372, in load_markets
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 364, in load_markets
+    result = await self.markets_loading
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 331, in load_markets_helper
+    markets = await self.fetch_markets(params)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 1408, in fetch_markets
+    results = await asyncio.gather(*rawPromises)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 1414, in fetch_spot_markets
+    marginResponse, spotMarketsResponse = await asyncio.gather(*[marginPromise, spotMarketsPromise])
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1036, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 291, in fetch
+    self.handle_http_status_code(http_status_code, http_status_text, url, method, http_response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 2113, in handle_http_status_code
+    raise ErrorClass(self.id + ' ' + method + ' ' + url + ' ' + codeAsString + ' ' + reason + ' ' + body)
+ccxt.base.errors.ExchangeNotAvailable: gate GET https://api.gateio.ws/api/v4/spot/currency_pairs 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote
+connection failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 175, in wrapper
+    return f(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 769, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/usr/local/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 760, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: gate GET https://api.gateio.ws/api/v4/spot/currency_pairs 503 Service Unavailable upstream connect 
+error or disconnect/reset before headers. reset reason: remote connection failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 756, in _api_reload_markets
+    await self._api_async.load_markets(reload=reload, params={})
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 372, in load_markets
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 364, in load_markets
+    result = await self.markets_loading
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 329, in load_markets_helper
+    currencies = await self.fetch_currencies()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 2023, in fetch_currencies
+    response = await self.publicSpotGetCurrencies(params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1036, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 291, in fetch
+    self.handle_http_status_code(http_status_code, http_status_text, url, method, http_response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 2113, in handle_http_status_code
+    raise ErrorClass(self.id + ' ' + method + ' ' + url + ' ' + codeAsString + ' ' + reason + ' ' + body)
+ccxt.base.errors.ExchangeNotAvailable: gate GET https://api.gateio.ws/api/v4/spot/currencies 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote 
+connection failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 175, in wrapper
+    return f(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 769, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/usr/local/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 760, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: gate GET https://api.gateio.ws/api/v4/spot/currencies 503 Service Unavailable upstream connect error 
+or disconnect/reset before headers. reset reason: remote connection failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 756, in _api_reload_markets
+    await self._api_async.load_markets(reload=reload, params={})
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 372, in load_markets
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 364, in load_markets
+    result = await self.markets_loading
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 329, in load_markets_helper
+    currencies = await self.fetch_currencies()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 2023, in fetch_currencies
+    response = await self.publicSpotGetCurrencies(params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1036, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 291, in fetch
+    self.handle_http_status_code(http_status_code, http_status_text, url, method, http_response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 2113, in handle_http_status_code
+    raise ErrorClass(self.id + ' ' + method + ' ' + url + ' ' + codeAsString + ' ' + reason + ' ' + body)
+ccxt.base.errors.ExchangeNotAvailable: gate GET https://api.gateio.ws/api/v4/spot/currencies 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote 
+connection failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 175, in wrapper
+    return f(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 769, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/usr/local/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 760, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: gate GET https://api.gateio.ws/api/v4/spot/currencies 503 Service Unavailable upstream connect error 
+or disconnect/reset before headers. reset reason: remote connection failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 756, in _api_reload_markets
+    await self._api_async.load_markets(reload=reload, params={})
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 372, in load_markets
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 364, in load_markets
+    result = await self.markets_loading
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 329, in load_markets_helper
+    currencies = await self.fetch_currencies()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 2023, in fetch_currencies
+    response = await self.publicSpotGetCurrencies(params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1036, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 291, in fetch
+    self.handle_http_status_code(http_status_code, http_status_text, url, method, http_response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 2113, in handle_http_status_code
+    raise ErrorClass(self.id + ' ' + method + ' ' + url + ' ' + codeAsString + ' ' + reason + ' ' + body)
+ccxt.base.errors.ExchangeNotAvailable: gate GET https://api.gateio.ws/api/v4/spot/currencies 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote 
+connection failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 796, in reload_markets
+    retrier(self._load_async_markets, retries=retries)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 187, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/common.py", line 187, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/common.py", line 187, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/common.py", line 175, in wrapper
+    return f(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 769, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/usr/local/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 760, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: gate GET https://api.gateio.ws/api/v4/spot/currencies 503 Service Unavailable upstream connect error 
+or disconnect/reset before headers. reset reason: remote connection failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/
+2026-10-31 17:46:32,215 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.

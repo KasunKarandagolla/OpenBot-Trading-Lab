@@ -21,7 +21,7 @@ def paths(observation_id=None):
     return folder/'orderflow-observation.json',raw
 
 
-def observed_setup(e,contract,observation):
+def observed_setup(e,contract,observation,symbol='BTC/USDT:USDT'):
     """Real completed-candle opportunity at observation cutoff, with strict UNKNOWNs."""
     import pandas as pd
     from freqtrade.strategy import merge_informative_pair
@@ -30,7 +30,7 @@ def observed_setup(e,contract,observation):
     from advanced_features import qualifiers,plan
     from VWAPTrendContinuationV1 import VWAPTrendContinuationV1
     from LiquiditySweepReversalV1 import LiquiditySweepReversalV1
-    symbol='BTC/USDT:USDT';asof=pd.Timestamp(observation['asof_ms'],unit='ms',tz='UTC')
+    asof=pd.Timestamp(observation['asof_ms'],unit='ms',tz='UTC')
     frames={}
     for tf,step in [('15m',pd.Timedelta(minutes=15)),('1h',pd.Timedelta(hours=1))]:
         rows=e.fetch_ohlcv(symbol,tf,limit=300)
@@ -58,14 +58,21 @@ def observed_setup(e,contract,observation):
     return answer
 
 
-async def capture(seconds=95,observation_id=None):
+async def capture(seconds=95,observation_id=None,symbol='BTC/USDT:USDT'):
     check()
+    import re
+    if not re.fullmatch(r'[A-Z0-9]+/USDT:USDT',symbol):raise ValueError('USDT linear perpetual symbol required')
     target,raw=paths(observation_id)
     if target.exists():raise ValueError('preserve observed capture; create separate experiment')
     from public_exchange import public_exchange
-    e=public_exchange();market=e.load_markets()['BTC/USDT:USDT']
-    if not(market['swap'] and market['linear'] and market['settle']=='USDT'):raise ValueError('invalid contract')
+    e=public_exchange();market=e.load_markets()[symbol]
+    info=market['info']
+    if not(market['active'] and market['swap'] and market['linear'] and market['settle']=='USDT'
+           and market['quote']=='USDT' and info.get('contract_type')==''
+           and info.get('in_delisting') is False and info.get('is_pre_market') is False):raise ValueError('invalid contract')
     contract=market['id'];multiplier=market['contractSize']
+    scale=float(market['precision']['price'])*10
+    if not scale>0:raise ValueError('price precision unavailable')
     coverage={'subscribed_ms':None,'connected_until_ms':0,'disconnects':0,'invalid_events':0,
               'out_of_order':0,'duplicate_ids':0,'received_batches':0}
     rows=[];seen=set();last=0;error=None
@@ -74,7 +81,8 @@ async def capture(seconds=95,observation_id=None):
     try:
         async with aiohttp.ClientSession(trust_env=True) as session:
             async with session.ws_connect('wss://fx-ws.gateio.ws/v4/ws/usdt',proxy=proxy,
-                                          ssl=ssl.create_default_context(),heartbeat=15,timeout=15) as ws:
+                                          ssl=ssl.create_default_context(),heartbeat=15,timeout=15,
+                                          headers={'X-Gate-Size-Decimal':'1'}) as ws:
                 await ws.send_json({'time':int(time.time()),'channel':'futures.trades','event':'subscribe','payload':[contract]})
                 deadline=time.monotonic()+seconds
                 with raw.open('x') as f:
@@ -109,7 +117,7 @@ async def capture(seconds=95,observation_id=None):
         start=(int(coverage['subscribed_ms']/30000)+1)*30000
         for at in range(start,int(coverage['connected_until_ms'])-30000,30000):
             # Only events actually received by the window end+1s are eligible.
-            observation=features(rows,at,at+30000,at+31000,coverage,scale=10.)
+            observation=features(rows,at,at+30000,at+31000,coverage,scale=scale)
             windows.append(observation)
             for recipe in ('vwap','sweep'):
                 for side in ('long','short'):
@@ -118,7 +126,9 @@ async def capture(seconds=95,observation_id=None):
                     shadow_rows.append(shadow(plan,observation,at+31000)|{'setup_fidelity':'PLUMBING_DEMONSTRATION_NOT_ACTUAL_CANDLE_SETUP'})
     # Persist only derived bounded output; raw prints stay local.
     from freqtrade.data.converter.orderflow import trades_to_volumeprofile_with_total_delta_bid_ask as native
-    obj={'source':'Gate futures.trades public USDT websocket','contract':contract,
+    obj={'source':'Gate futures.trades public USDT websocket','contract':contract,'symbol':symbol,
+         'footprint_scale_quote':scale,
+         'decimal_size_header':True,
          'contract_size_base':multiplier,'coverage':coverage,'error':error,'observed_trades':len(rows),
          'normalized_base_volume':sum(r['amount'] for r in rows),'windows':windows,'shadow':shadow_rows,
          'raw_local_path':str(raw.relative_to(ROOT)),'raw_sha256':sha(raw) if raw.exists() else None,
@@ -127,7 +137,7 @@ async def capture(seconds=95,observation_id=None):
          'economic_impact':'UNMEASURED; bounded mechanics observation, no genuine historical trade cohort',
          'orders_created':False}
     if windows:
-        try:obj['actual_completed_candle_shadow']=observed_setup(e,contract,windows[-1])
+        try:obj['actual_completed_candle_shadow']=observed_setup(e,contract,windows[-1],symbol)
         except Exception as exc:obj['actual_completed_candle_shadow']={'status':'UNKNOWN','error':type(exc).__name__+': '+str(exc),'orders_created':False}
     write(target,obj)
     print(json.dumps({k:v for k,v in obj.items() if k not in ('windows','shadow')},indent=2))
@@ -143,9 +153,10 @@ def replay(observation_id=None):
         raw=json.loads(line);event=raw['message']
         if event.get('channel')!='futures.trades' or event.get('event')!='update':continue
         for trade in event['result']:
-            r=normalize(trade,raw['received_ms'],obj['contract'],obj['contract_size_base'])
+            try:r=normalize(trade,raw['received_ms'],obj['contract'],obj['contract_size_base'])
+            except (ValueError,KeyError,TypeError):continue # same rejected-event policy as capture
             if r['id'] not in seen:rows.append(r);seen.add(r['id'])
-    windows=[features(rows,w['start_ms'],w['end_ms'],w['asof_ms'],obj['coverage'],10.) for w in obj['windows']]
+    windows=[features(rows,w['start_ms'],w['end_ms'],w['asof_ms'],obj['coverage'],obj.get('footprint_scale_quote',10.)) for w in obj['windows']]
     if windows!=obj['windows']:raise ValueError('observed replay mismatch')
     result={'pass':True,'windows':len(windows),'trades':len(rows),'raw_sha256':sha(p)}
     write(target.parent/'orderflow-replay.json',result);return result

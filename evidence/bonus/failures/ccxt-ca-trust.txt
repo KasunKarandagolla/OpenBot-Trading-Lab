@@ -1,0 +1,68 @@
+time="2026-10-31T16:54:46Z" level=warning msg="Found orphan containers ([openbot-bonus-research-bonus-run-bc40fb8ac6b0]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain (_ssl.c:1085)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ftuser/.local/lib/python3.14/site-packages/requests/adapters.py", line 696, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "/home/ftuser/.local/lib/python3.14/site-packages/urllib3/connectionpool.py", line 847, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/home/ftuser/.local/lib/python3.14/site-packages/urllib3/util/retry.py", line 555, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.gateio.ws', port=443): Max retries exceeded with url: /api/v4/spot/currencies (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain (_ssl.c:1085)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 605, in fetch
+    response = self.session.request(
+        method,
+    ...<6 lines>...
+        files=files
+    )
+  File "/home/ftuser/.local/lib/python3.14/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/ftuser/.local/lib/python3.14/site-packages/requests/sessions.py", line 784, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/ftuser/.local/lib/python3.14/site-packages/requests/adapters.py", line 727, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='api.gateio.ws', port=443): Max retries exceeded with url: /api/v4/spot/currencies (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain (_ssl.c:1085)')))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/lab/scripts/bonus.py", line 39, in <module>
+    try:raise SystemExit(main())
+                         ~~~~^^
+  File "/lab/scripts/bonus.py", line 15, in main
+    acquire() if a.action=='acquire' else detail()
+    ~~~~~~~^^
+  File "/lab/scripts/bonus_data.py", line 24, in acquire
+    e = public_exchange(); markets = e.load_markets()
+                                     ~~~~~~~~~~~~~~^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 1912, in load_markets
+    currencies = self.fetch_currencies()
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/gate.py", line 2022, in fetch_currencies
+    response = self.publicSpotGetCurrencies(params)
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/types.py", line 43, in unbound_method
+    return _self.request(self.path, self.api, self.method, params, config=self.config)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6018, in request
+    return self.fetch2(path, api, method, params, config)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6012, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 5995, in fetch2
+    response = self.fetch(request['url'], request['method'], request['headers'], request['body'])
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 661, in fetch
+    raise NetworkError(details) from e
+ccxt.base.errors.NetworkError: gate GET https://api.gateio.ws/api/v4/spot/currencies
+

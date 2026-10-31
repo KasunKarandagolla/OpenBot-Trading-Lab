@@ -1,0 +1,33 @@
+ Network openbot-bonus-research_default  Creating
+ Network openbot-bonus-research_default  Created
+Traceback (most recent call last):
+  File "/lab/scripts/bonus.py", line 39, in <module>
+    try:raise SystemExit(main())
+                         ~~~~^^
+  File "/lab/scripts/bonus.py", line 15, in main
+    acquire() if a.action=='acquire' else detail()
+    ~~~~~~~^^
+  File "/lab/scripts/bonus_data.py", line 24, in acquire
+    e = public_exchange(); markets = e.load_markets()
+                                     ~~~~~~~~~~~~~~^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 1912, in load_markets
+    currencies = self.fetch_currencies()
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/gate.py", line 2022, in fetch_currencies
+    response = self.publicSpotGetCurrencies(params)
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/types.py", line 43, in unbound_method
+    return _self.request(self.path, self.api, self.method, params, config=self.config)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6018, in request
+    return self.fetch2(path, api, method, params, config)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6014, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 5995, in fetch2
+    response = self.fetch(request['url'], request['method'], request['headers'], request['body'])
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 552, in fetch
+    httpProxy, httpsProxy, socksProxy = self.check_proxy_settings(url, method, headers, body)
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 3372, in check_proxy_settings
+    raise InvalidProxySettings(self.id + ' you have multiple conflicting proxy settings (' + joinedProxyNames + '), please use only one from: httpProxy, httpsProxy, httpProxyCallback, httpsProxyCallback, socksProxy, socksProxyCallback')
+ccxt.base.errors.InvalidProxySettings: gate you have multiple conflicting proxy settings (httpProxy,httpsProxy), please use only one from: httpProxy, httpsProxy, httpProxyCallback, httpsProxyCallback, socksProxy, socksProxyCallback
+

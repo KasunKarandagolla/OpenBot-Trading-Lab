@@ -82,6 +82,7 @@ class Flow(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'DUPLICATE'):flow_features([buy,buy],0,2000,2000,cov,1)
         with self.assertRaisesRegex(ValueError,'UNOBSERVED'):flow_features([buy],0,2001,2000,cov,1)
         with self.assertRaises(ValueError):self.trade(at=5000)
+        with self.assertRaises(ValueError):self.trade(size=0)
     def test_missing_coverage_unknown_for_both_recipes_and_sides(self):
         obs={'coverage_status':'PARTIAL','trade_count':10,'imbalance':.5,'price_return':.01}
         for recipe in ['vwap','sweep']:

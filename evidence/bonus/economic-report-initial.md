@@ -1,0 +1,26 @@
+# Bonus economic results
+
+Inspected development, 2026-08-05 to 2026-10-30 UTC exclusive. Five-market survivor sample; 1,000 USDT equity, <=25 notional, 1x, max two positions. Fee 0.06%/side plus actual signed funding.
+
+|Policy|Trades|Net USDT|PF|Mean net R|Fees|+10bp/side net|Verdict|
+|---|---:|---:|---:|---:|---:|---:|---|
+|VWAPTrendContinuationV1|30|0.959708|1.282329331101556|0.1416375444780565|0.836568|-0.434571|PROMISING BUT UNQUALIFIED|
+|LiquiditySweepReversalV1|86|-2.259367|0.7627791225698918|-0.08479614951123024|2.420190|-6.293016|REJECTED UNDER TESTED ASSUMPTIONS|
+|StructureAwareSweepV1|21|-1.018965|0.6398988058530021|-0.15239021731508698|0.597568|-2.014912|REJECTED UNDER TESTED ASSUMPTIONS|
+|RouterOnlyV1|9|1.089457|2.21170252166526|0.35956483728460553|0.250957|0.671195|PROMISING BUT UNQUALIFIED|
+|RouterSMCV1|5|0.687792|2.1439379585450036|0.3665405740646783|0.140268|0.454012|PROMISING BUT UNQUALIFIED|
+|RouterICTV1|0|0.000000|None|None|0.000000|0.000000|INSUFFICIENT OR UNAVAILABLE EVIDENCE|
+|RouterProfileV1|3|0.565607|2.150330614011396|0.46008207617628605|0.086453|0.421519|PROMISING BUT UNQUALIFIED|
+|IntegratedM0V1|0|0.000000|None|None|0.000000|0.000000|INSUFFICIENT OR UNAVAILABLE EVIDENCE|
+|IntegratedM1V1|0|0.000000|None|None|0.000000|0.000000|INSUFFICIENT OR UNAVAILABLE EVIDENCE|
+|RouterOnlyM1V1|9|1.492089|3.4816457424670215|0.4847824765994223|0.251199|1.073423|PROMISING BUT UNQUALIFIED|
+
+- Five surviving markets, no historic full-universe eligibility or quote spreads.
+- OHLCV profile is approximate; no historical aggressor prints or news feed.
+- Native requested-price fills; no queue model or observed partial execution.
+- MFE/MAE only complete intermediate bars; entry/exit intrabar extrema intentionally excluded.
+- Funding sign included exactly once; mark-equity approximation recognizes aggregate at final exit.
+- No independent calendar holdout, new prospective cohort starts Nov9 after prior reserved cohort.
+- Extra friction stresses native turnover without resimulating fills. No operational promotion.
+
+**Profitability is not demonstrated.** Full recipe, risk, movement, concentration, drawdown and cost statistics: `economic-results.json`; native-fill accounting: `trade-ledgers/`; management: `management-comparison.json`.

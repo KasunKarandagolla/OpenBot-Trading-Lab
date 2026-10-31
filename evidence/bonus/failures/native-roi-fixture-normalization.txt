@@ -1,0 +1,43 @@
+test_cross_section_rank_is_causal_and_both_directions (test_bonus.Causality.test_cross_section_rank_is_causal_and_both_directions) ... ok
+test_every_prefix_and_append_future (test_bonus.Causality.test_every_prefix_and_append_future) ... ok
+test_prior_day_session_and_fvg_known_at (test_bonus.Causality.test_prior_day_session_and_fvg_known_at) ... ok
+test_profile_units_value_area_and_trade_not_proxy (test_bonus.Causality.test_profile_units_value_area_and_trade_not_proxy) ... ok
+test_missing_coverage_unknown_for_both_recipes_and_sides (test_bonus.Flow.test_missing_coverage_unknown_for_both_recipes_and_sides) ... ok
+test_shadow_expiry_and_no_economic_labels (test_bonus.Flow.test_shadow_expiry_and_no_economic_labels) ... ok
+test_signed_multiplier_quote_duplicate_future_cutoff (test_bonus.Flow.test_signed_multiplier_quote_duplicate_future_cutoff) ... ok
+test_after_fill_cannot_loosen_persisted_stop (test_bonus.Management.test_after_fill_cannot_loosen_persisted_stop) ... ok
+test_m0_no_partials_and_max_hold (test_bonus.Management.test_m0_no_partials_and_max_hold) ... ok
+test_mark_to_market_admission_veto_and_missing_state (test_bonus.Management.test_mark_to_market_admission_veto_and_missing_state) ... ok
+test_native_long_short_partial_pending_minimum_and_duplicate_fill (test_bonus.Management.test_native_long_short_partial_pending_minimum_and_duplicate_fill) ... ok
+test_native_partially_filled_pending_order_blocks_repeat (test_bonus.Management.test_native_partially_filled_pending_order_blocks_repeat) ... ok
+test_native_roi_uses_frozen_target_on_both_sides (test_bonus.Management.test_native_roi_uses_frozen_target_on_both_sides) ... ERROR
+test_native_stop_tightening_and_restart_state (test_bonus.Management.test_native_stop_tightening_and_restart_state) ... ok
+test_1_10_20_same_notional_price_risk_and_stop_conversion (test_bonus.Risk.test_1_10_20_same_notional_price_risk_and_stop_conversion) ... ok
+test_mtm_pending_correlated_and_missing_tier_fail_closed (test_bonus.Risk.test_mtm_pending_correlated_and_missing_tier_fail_closed) ... ok
+
+======================================================================
+ERROR: test_native_roi_uses_frozen_target_on_both_sides (test_bonus.Management.test_native_roi_uses_frozen_target_on_both_sides)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_bonus.py", line 185, in test_native_roi_uses_frozen_target_on_both_sides
+    exits=s.should_exit(t,100.,self.now,enter=False,exit_=False,
+                        low=96. if short else 99.5,high=100.5 if short else 104.)
+  File "/freqtrade/freqtrade/strategy/interface.py", line 1462, in should_exit
+    roi_reached = not (enter and self.ignore_roi_if_entry_signal) and self.min_roi_reached(
+                                                                      ~~~~~~~~~~~~~~~~~~~~^
+        trade=trade, current_profit=current_profit_best, current_time=current_time
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/freqtrade/freqtrade/strategy/interface.py", line 1728, in min_roi_reached
+    _, roi = self.min_roi_reached_entry(trade, trade_dur, current_time)
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/strategy/interface.py", line 1705, in min_roi_reached_entry
+    roi_list = [x for x in self.minimal_roi if x <= trade_dur]
+                                               ^^^^^^^^^^^^^^
+TypeError: '<=' not supported between instances of 'str' and 'int'
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.841s
+
+FAILED (errors=1)

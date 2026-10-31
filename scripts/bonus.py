@@ -10,16 +10,18 @@ def main():
     parser.add_argument('action',choices=['acquire','detail','schedule','run','economics','reconcile','scan',
                                         'capture','replay','test','lookahead','risk','detail-run','restore-prior-raw','native-replay','funding-audit'])
     parser.add_argument('--observation-id')
+    parser.add_argument('--symbol')
     a=parser.parse_args();check()
     if a.observation_id and a.action not in ('capture','replay'):
         raise ValueError('observation ID applies only to capture/replay')
+    if a.symbol and a.action!='capture':raise ValueError('symbol applies only to bounded capture')
     if a.action in ('acquire','detail','risk'):
         from bonus_data import acquire,detail,risk_examples
         {'acquire':acquire,'detail':detail,'risk':risk_examples}[a.action]()
     elif a.action=='capture':
         import asyncio
         from bonus_orderflow import capture
-        asyncio.run(capture(observation_id=a.observation_id))
+        asyncio.run(capture(observation_id=a.observation_id,symbol=a.symbol or 'BTC/USDT:USDT'))
     elif a.action=='replay':
         from bonus_orderflow import replay
         print(replay(a.observation_id))

@@ -1,0 +1,29 @@
+test_cross_section_rank_is_causal_and_both_directions (test_bonus.Causality.test_cross_section_rank_is_causal_and_both_directions) ... ok
+test_every_prefix_and_append_future (test_bonus.Causality.test_every_prefix_and_append_future) ... ok
+test_prior_day_session_and_fvg_known_at (test_bonus.Causality.test_prior_day_session_and_fvg_known_at) ... ok
+test_profile_units_value_area_and_trade_not_proxy (test_bonus.Causality.test_profile_units_value_area_and_trade_not_proxy) ... ok
+test_missing_coverage_unknown_for_both_recipes_and_sides (test_bonus.Flow.test_missing_coverage_unknown_for_both_recipes_and_sides) ... ok
+test_shadow_expiry_and_no_economic_labels (test_bonus.Flow.test_shadow_expiry_and_no_economic_labels) ... ok
+test_signed_multiplier_quote_duplicate_future_cutoff (test_bonus.Flow.test_signed_multiplier_quote_duplicate_future_cutoff) ... ok
+test_m0_no_partials_and_max_hold (test_bonus.Management.test_m0_no_partials_and_max_hold) ... ok
+test_native_long_short_partial_pending_minimum_and_duplicate_fill (test_bonus.Management.test_native_long_short_partial_pending_minimum_and_duplicate_fill) ... ok
+test_native_stop_tightening_and_restart_state (test_bonus.Management.test_native_stop_tightening_and_restart_state) ... ok
+test_1_10_20_same_notional_price_risk_and_stop_conversion (test_bonus.Risk.test_1_10_20_same_notional_price_risk_and_stop_conversion) ... ok
+test_mtm_pending_correlated_and_missing_tier_fail_closed (test_bonus.Risk.test_mtm_pending_correlated_and_missing_tier_fail_closed) ... FAIL
+
+======================================================================
+FAIL: test_mtm_pending_correlated_and_missing_tier_fail_closed (test_bonus.Risk.test_mtm_pending_correlated_and_missing_tier_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_bonus.py", line 112, in test_mtm_pending_correlated_and_missing_tier_fail_closed
+    self.assertEqual(evaluate(**a)['reason'],'BUFFERED_LIQUIDATION_CLEARANCE')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'ILLUSTRATIVE_BUDGET_AND_CLEARANCE' != 'BUFFERED_LIQUIDATION_CLEARANCE'
+- ILLUSTRATIVE_BUDGET_AND_CLEARANCE
++ BUFFERED_LIQUIDATION_CLEARANCE
+
+
+----------------------------------------------------------------------
+Ran 12 tests in 1.095s
+
+FAILED (failures=1)

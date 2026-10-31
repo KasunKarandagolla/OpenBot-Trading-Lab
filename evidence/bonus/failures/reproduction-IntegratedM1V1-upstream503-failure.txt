@@ -1,0 +1,45 @@
+2026-10-31 17:39:20,022 - freqtrade - INFO - freqtrade 2026.10
+2026-10-31 17:39:20,972 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/bonus-configs/IntegratedM1V1.json ...
+2026-10-31 17:39:20,974 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-10-31 17:39:20,974 - freqtrade.loggers - INFO - Logfile configured
+2026-10-31 17:39:20,974 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-10-31 17:39:20,974 - freqtrade.configuration.configuration - INFO - Parameter --enable-protections detected, enabling Protections ...
+2026-10-31 17:39:20,975 - freqtrade.configuration.configuration - INFO - Using max_open_trades: 2 ...
+2026-10-31 17:39:20,975 - freqtrade.configuration.configuration - INFO - Parameter --fee detected, setting fee to: 0.0006 ...
+2026-10-31 17:39:20,975 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20260805-20261030 ...
+2026-10-31 17:39:20,975 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-10-31 17:39:20,975 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/bonus/gate ...
+2026-10-31 17:39:20,975 - freqtrade.configuration.configuration - INFO - Using /lab/user_data/backtest_results/bonus/IntegratedM1V1 as backtest directory ...
+2026-10-31 17:39:20,975 - freqtrade.configuration.configuration - INFO - Parameter --export detected: trades ...
+2026-10-31 17:39:20,976 - freqtrade.configuration.configuration - INFO - Parameter --cache=none detected ...
+2026-10-31 17:39:20,976 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20260805-20261030
+2026-10-31 17:39:20,976 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-10-31 17:39:20,980 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-10-31 17:39:20,980 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-10-31 17:39:20,980 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-10-31 17:39:20,982 - freqtrade.commands.optimize_commands - INFO - Starting freqtrade in Backtesting mode
+2026-10-31 17:39:20,982 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-10-31 17:39:20,982 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-10-31 17:39:20,982 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'aiohttp_trust_env': True, 'cafile': '/run/proxy-ca.pem', 
+'enableRateLimit': True, 'httpsProxy': 'http://172.31.0.13:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-10-31 17:39:20,984 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap'}, 'aiohttp_trust_env': True, 'cafile': '/run/proxy-ca.pem', 
+'enableRateLimit': True, 'httpsProxy': 'http://172.31.0.13:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-10-31 17:39:20,986 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-10-31 17:39:55,982 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=500 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection 
+failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/". Retrying still for 4 times.
+2026-10-31 17:39:56,029 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection 
+failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/". Retrying still for 3 times.
+2026-10-31 17:39:56,088 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection 
+failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/". Retrying still for 2 times.
+2026-10-31 17:39:56,134 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection 
+failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/". Retrying still for 1 times.
+2026-10-31 17:39:56,579 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=100 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection 
+failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/". Giving up.
+2026-10-31 17:39:56,579 - freqtrade - ERROR - Could not load leverage tiers due to ExchangeNotAvailable. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=100 503 Service Unavailable upstream connect error or disconnect/reset before headers. reset reason: remote connection 
+failure, transport failure reason: immediate connect error: Invalid argument|remote address:envoy://cloudflare_https_tunnel/
