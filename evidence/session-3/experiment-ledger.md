@@ -1,0 +1,13 @@
+# Session 3 experiment ledger
+
+2026-10-31: main 2343053ce68f6fff4525c5b67771ea445deb3779; PR1 OPEN d76b6093796f78ce628943e8252033b34e9958ef; PR2 OPEN f09cb39b6116d103b9efc0f8c37bf6a1d607e7d6. New branch from PR2 head. No merges.
+
+Pre-outcome declaration: no original feather files found in /workspace, /mnt or /tmp, including shared/downloads. Committed prior metrics are not raw data. Reacquire exact July26–Oct30 sample separately; compare hashes. New common evaluation August5–Oct30 reserves 240 complete hourly bars from July26. All four strategies evaluated with identical pairs/windows/costs. Classification: warm-up-corrected inspected DEVELOPMENT. No tuning or pair exclusions.
+
+Structural hypothesis fixed before new outcomes: strict 2-left/2-right pivots; ties produce no pivot. Level first available at confirmation candle close. Close breaks of previously known unbroken levels establish UNKNOWN direction, then continuation BOS/opposite CHOCH. Gap resets state. Parent sweep unchanged; add proximity between prior20 boundary and last prior confirmed swing within0.5ATR; require defined hourly structure and reject opposing hourly direction when ADX>=25. Parent ADX<=30/rvol>=1.2/ATR/stop/target/expiry/cooldown/hold/risk identical. No FVG in strategy.
+
+Control: deterministic SHA256(symbol,signal timestamp) parity applied to parent signals, with same callbacks. Eligibility control tests a generic thinning rule; count/exposure reported, not falsely called matched. Exposure-aware parent comparison: net per notional-hour, with paired weekly P&L resampling and caution about differing exposure.
+
+Additional evidence predeclared: XRP and DOGE linear USDT perpetuals (familiar liquid non-BTC/ETH/SOL contracts selected by name before outcomes; current-survivor selection contamination), same download/evaluation window. Shared-calendar TRANSFER, no unseen claim. Public metadata must verify identity/age/funding schedule; incomplete source blocks the cohort. No alternative symbols if inaccessible. A prospective cohort freezes code now with earliest October31 2026 14:00UTC evaluation, collect only after completed dates exist; no future data fabricated.
+
+P1: bounded one-symbol BTC public-trade sample, max3 requests/1000 trades per request/2MB, only documented signed-size semantics; partial-history label mandatory absent boundary proof. Optional detail5m only if retention covers a separately declared common short window, otherwise not evaluable. No orderflow strategy filter.
