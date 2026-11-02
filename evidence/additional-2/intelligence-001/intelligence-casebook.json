@@ -1,0 +1,5484 @@
+{
+  "cases": [
+    {
+      "candidate_key": [
+        "BTC/USDT:USDT",
+        "2026-10-08T15:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:BTC/USDT:USDT:vwap:short:2026-10-08T15:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-08T04:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:ETH/USDT:USDT:vwap:short:2026-10-08T04:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:ETH/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-25T23:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:ETH/USDT:USDT:sweep:long:2026-10-25T23:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-28T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:ETH/USDT:USDT:sweep:short:2026-10-28T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:ETH/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3078380536509568,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016470133991231026,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 2256.47,
+        "risk_fraction": 0.012670133991231026,
+        "side": "long",
+        "signal_close": 2256.47,
+        "stop": 2227.8802227528067,
+        "target": 2313.649554494386,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:SOL/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.314486776678866,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01662987614559782,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 121.72,
+        "risk_fraction": 0.01282987614559782,
+        "side": "short",
+        "signal_close": 121.72,
+        "stop": 123.28165252444217,
+        "target": 118.59669495111567,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-09T13:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:SOL/USDT:USDT:vwap:short:2026-10-09T13:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:SOL/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:SOL/USDT:USDT:sweep:long:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:SOL/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-20T14:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:SOL/USDT:USDT:sweep:short:2026-10-20T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-21T09:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:SOL/USDT:USDT:sweep:short:2026-10-21T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-23T14:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:SOL/USDT:USDT:sweep:long:2026-10-23T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:SOL/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3105169946101125,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016534127615739493,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.537,
+        "risk_fraction": 0.012734127615739494,
+        "side": "short",
+        "signal_close": 1.537,
+        "stop": 1.5565723541453915,
+        "target": 1.4978552917092167,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.5034,
+        "exit_reason": "max_hold_4h",
+        "net_usdt": 0.50352528,
+        "open_rate": 1.537
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-09T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:sweep:long:2026-10-09T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-13T11:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:vwap:short:2026-10-13T11:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:vwap:short:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-27T13:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:sweep:short:2026-10-27T13:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3657250205723261,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01797327715857021,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.2376,
+        "risk_fraction": 0.014173277158570209,
+        "side": "long",
+        "signal_close": 1.2376,
+        "stop": 1.2200591521885535,
+        "target": 1.272681695622893,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-30T15:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:XRP/USDT:USDT:sweep:short:2026-10-30T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-02T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:DOGE/USDT:USDT:sweep:long:2026-10-02T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-07T09:00:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:DOGE/USDT:USDT:vwap:short:2026-10-07T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:DOGE/USDT:USDT:sweep:short:2026-10-12T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T12:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:DOGE/USDT:USDT:sweep:long:2026-10-12T12:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-14T13:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:DOGE/USDT:USDT:sweep:long:2026-10-14T13:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:DOGE/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:DOGE/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-26T08:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:DOGE/USDT:USDT:vwap:short:2026-10-26T08:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-30T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceCostV2:DOGE/USDT:USDT:sweep:long:2026-10-30T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceCostV2"
+    },
+    {
+      "candidate_key": [
+        "BTC/USDT:USDT",
+        "2026-10-08T15:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:BTC/USDT:USDT:vwap:short:2026-10-08T15:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-08T04:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:ETH/USDT:USDT:vwap:short:2026-10-08T04:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:ETH/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-25T23:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:ETH/USDT:USDT:sweep:long:2026-10-25T23:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-28T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:ETH/USDT:USDT:sweep:short:2026-10-28T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:ETH/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3078380536509568,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016470133991231026,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 2256.47,
+        "risk_fraction": 0.012670133991231026,
+        "side": "long",
+        "signal_close": 2256.47,
+        "stop": 2227.8802227528067,
+        "target": 2313.649554494386,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 2227.89,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.35070697,
+        "open_rate": 2256.47
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:SOL/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.314486776678866,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01662987614559782,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 121.72,
+        "risk_fraction": 0.01282987614559782,
+        "side": "short",
+        "signal_close": 121.72,
+        "stop": 123.28165252444217,
+        "target": 118.59669495111567,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-09T13:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:SOL/USDT:USDT:vwap:short:2026-10-09T13:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:SOL/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:SOL/USDT:USDT:sweep:long:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:SOL/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-20T14:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:SOL/USDT:USDT:sweep:short:2026-10-20T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-21T09:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:SOL/USDT:USDT:sweep:short:2026-10-21T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-23T14:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:SOL/USDT:USDT:sweep:long:2026-10-23T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:SOL/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3105169946101125,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016534127615739493,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.537,
+        "risk_fraction": 0.012734127615739494,
+        "side": "short",
+        "signal_close": 1.537,
+        "stop": 1.5565723541453915,
+        "target": 1.4978552917092167,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.5034,
+        "exit_reason": "max_hold_4h",
+        "net_usdt": 0.50352528,
+        "open_rate": 1.537
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-09T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:sweep:long:2026-10-09T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-13T11:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:vwap:short:2026-10-13T11:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:vwap:short:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-27T13:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:sweep:short:2026-10-27T13:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3657250205723261,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01797327715857021,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.2376,
+        "risk_fraction": 0.014173277158570209,
+        "side": "long",
+        "signal_close": 1.2376,
+        "stop": 1.2200591521885535,
+        "target": 1.272681695622893,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.2201,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.38718715,
+        "open_rate": 1.2376
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-30T15:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:XRP/USDT:USDT:sweep:short:2026-10-30T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-02T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:DOGE/USDT:USDT:sweep:long:2026-10-02T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-07T09:00:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:DOGE/USDT:USDT:vwap:short:2026-10-07T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:DOGE/USDT:USDT:sweep:short:2026-10-12T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T12:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:DOGE/USDT:USDT:sweep:long:2026-10-12T12:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-14T13:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:DOGE/USDT:USDT:sweep:long:2026-10-14T13:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:DOGE/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:DOGE/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-26T08:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:DOGE/USDT:USDT:vwap:short:2026-10-26T08:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-30T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceSignedV2:DOGE/USDT:USDT:sweep:long:2026-10-30T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_LEGACY_REGIME",
+      "status": "REJECT",
+      "variant": "IntelligenceSignedV2"
+    },
+    {
+      "candidate_key": [
+        "BTC/USDT:USDT",
+        "2026-10-08T15:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:BTC/USDT:USDT:vwap:short:2026-10-08T15:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-08T04:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:ETH/USDT:USDT:vwap:short:2026-10-08T04:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:ETH/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-25T23:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:ETH/USDT:USDT:sweep:long:2026-10-25T23:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-28T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:ETH/USDT:USDT:sweep:short:2026-10-28T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:ETH/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3078380536509568,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016470133991231026,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 2256.47,
+        "risk_fraction": 0.012670133991231026,
+        "side": "long",
+        "signal_close": 2256.47,
+        "stop": 2227.8802227528067,
+        "target": 2313.649554494386,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 2227.89,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.35070697,
+        "open_rate": 2256.47
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:SOL/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.314486776678866,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01662987614559782,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 121.72,
+        "risk_fraction": 0.01282987614559782,
+        "side": "short",
+        "signal_close": 121.72,
+        "stop": 123.28165252444217,
+        "target": 118.59669495111567,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-09T13:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:SOL/USDT:USDT:vwap:short:2026-10-09T13:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:SOL/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:SOL/USDT:USDT:sweep:long:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:SOL/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-20T14:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:SOL/USDT:USDT:sweep:short:2026-10-20T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-21T09:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:SOL/USDT:USDT:sweep:short:2026-10-21T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-23T14:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:SOL/USDT:USDT:sweep:long:2026-10-23T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:SOL/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3105169946101125,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016534127615739493,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.537,
+        "risk_fraction": 0.012734127615739494,
+        "side": "short",
+        "signal_close": 1.537,
+        "stop": 1.5565723541453915,
+        "target": 1.4978552917092167,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.5034,
+        "exit_reason": "max_hold_4h",
+        "net_usdt": 0.50352528,
+        "open_rate": 1.537
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-09T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:sweep:long:2026-10-09T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-13T11:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:vwap:short:2026-10-13T11:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:vwap:short:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-27T13:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:sweep:short:2026-10-27T13:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3657250205723261,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01797327715857021,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.2376,
+        "risk_fraction": 0.014173277158570209,
+        "side": "long",
+        "signal_close": 1.2376,
+        "stop": 1.2200591521885535,
+        "target": 1.272681695622893,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.2201,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.38718715,
+        "open_rate": 1.2376
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-30T15:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:XRP/USDT:USDT:sweep:short:2026-10-30T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-02T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:DOGE/USDT:USDT:sweep:long:2026-10-02T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-07T09:00:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:DOGE/USDT:USDT:vwap:short:2026-10-07T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:DOGE/USDT:USDT:sweep:short:2026-10-12T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T12:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:DOGE/USDT:USDT:sweep:long:2026-10-12T12:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-14T13:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:DOGE/USDT:USDT:sweep:long:2026-10-14T13:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:DOGE/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:DOGE/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-26T08:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:DOGE/USDT:USDT:vwap:short:2026-10-26T08:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-30T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceRegimeV2:DOGE/USDT:USDT:sweep:long:2026-10-30T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceRegimeV2"
+    },
+    {
+      "candidate_key": [
+        "BTC/USDT:USDT",
+        "2026-10-08T15:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:BTC/USDT:USDT:vwap:short:2026-10-08T15:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-08T04:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:ETH/USDT:USDT:vwap:short:2026-10-08T04:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:ETH/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-25T23:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:ETH/USDT:USDT:sweep:long:2026-10-25T23:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-28T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:ETH/USDT:USDT:sweep:short:2026-10-28T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:ETH/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3078380536509568,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016470133991231026,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 2256.47,
+        "risk_fraction": 0.012670133991231026,
+        "side": "long",
+        "signal_close": 2256.47,
+        "stop": 2227.8802227528067,
+        "target": 2313.649554494386,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 2227.89,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.35070697,
+        "open_rate": 2256.47
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:SOL/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.314486776678866,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01662987614559782,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 121.72,
+        "risk_fraction": 0.01282987614559782,
+        "side": "short",
+        "signal_close": 121.72,
+        "stop": 123.28165252444217,
+        "target": 118.59669495111567,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-09T13:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:SOL/USDT:USDT:vwap:short:2026-10-09T13:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:SOL/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:SOL/USDT:USDT:sweep:long:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:SOL/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-20T14:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:SOL/USDT:USDT:sweep:short:2026-10-20T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-21T09:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:SOL/USDT:USDT:sweep:short:2026-10-21T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-23T14:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:SOL/USDT:USDT:sweep:long:2026-10-23T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:SOL/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3105169946101125,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016534127615739493,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.537,
+        "risk_fraction": 0.012734127615739494,
+        "side": "short",
+        "signal_close": 1.537,
+        "stop": 1.5565723541453915,
+        "target": 1.4978552917092167,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.5034,
+        "exit_reason": "max_hold_4h",
+        "net_usdt": 0.50352528,
+        "open_rate": 1.537
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-09T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:sweep:long:2026-10-09T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-13T11:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:vwap:short:2026-10-13T11:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:vwap:short:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-27T13:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:sweep:short:2026-10-27T13:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3657250205723261,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01797327715857021,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.2376,
+        "risk_fraction": 0.014173277158570209,
+        "side": "long",
+        "signal_close": 1.2376,
+        "stop": 1.2200591521885535,
+        "target": 1.272681695622893,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.2201,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.38718715,
+        "open_rate": 1.2376
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-30T15:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:XRP/USDT:USDT:sweep:short:2026-10-30T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-02T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:DOGE/USDT:USDT:sweep:long:2026-10-02T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-07T09:00:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:DOGE/USDT:USDT:vwap:short:2026-10-07T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:DOGE/USDT:USDT:sweep:short:2026-10-12T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T12:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:DOGE/USDT:USDT:sweep:long:2026-10-12T12:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-14T13:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:DOGE/USDT:USDT:sweep:long:2026-10-14T13:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:DOGE/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:DOGE/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-26T08:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:DOGE/USDT:USDT:vwap:short:2026-10-26T08:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-30T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceAllV2:DOGE/USDT:USDT:sweep:long:2026-10-30T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceAllV2"
+    },
+    {
+      "candidate_key": [
+        "BTC/USDT:USDT",
+        "2026-10-08T15:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:BTC/USDT:USDT:vwap:short:2026-10-08T15:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-08T04:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:ETH/USDT:USDT:vwap:short:2026-10-08T04:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:ETH/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-25T23:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:ETH/USDT:USDT:sweep:long:2026-10-25T23:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-28T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:ETH/USDT:USDT:sweep:short:2026-10-28T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:ETH/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3078380536509568,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016470133991231026,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 2256.47,
+        "risk_fraction": 0.012670133991231026,
+        "side": "long",
+        "signal_close": 2256.47,
+        "stop": 2227.8802227528067,
+        "target": 2313.649554494386,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:SOL/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.314486776678866,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01662987614559782,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 121.72,
+        "risk_fraction": 0.01282987614559782,
+        "side": "short",
+        "signal_close": 121.72,
+        "stop": 123.28165252444217,
+        "target": 118.59669495111567,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-09T13:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:SOL/USDT:USDT:vwap:short:2026-10-09T13:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_HOURLY_STRUCTURE_NOT_ALIGNED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:SOL/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:SOL/USDT:USDT:sweep:long:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:SOL/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-20T14:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:SOL/USDT:USDT:sweep:short:2026-10-20T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-21T09:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:SOL/USDT:USDT:sweep:short:2026-10-21T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-23T14:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:SOL/USDT:USDT:sweep:long:2026-10-23T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:SOL/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3105169946101125,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016534127615739493,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.537,
+        "risk_fraction": 0.012734127615739494,
+        "side": "short",
+        "signal_close": 1.537,
+        "stop": 1.5565723541453915,
+        "target": 1.4978552917092167,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.5034,
+        "exit_reason": "max_hold_4h",
+        "net_usdt": 0.50352528,
+        "open_rate": 1.537
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-09T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:sweep:long:2026-10-09T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-13T11:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:vwap:short:2026-10-13T11:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_HOURLY_STRUCTURE_NOT_ALIGNED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:vwap:short:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-27T13:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:sweep:short:2026-10-27T13:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3657250205723261,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01797327715857021,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.2376,
+        "risk_fraction": 0.014173277158570209,
+        "side": "long",
+        "signal_close": 1.2376,
+        "stop": 1.2200591521885535,
+        "target": 1.272681695622893,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-30T15:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:XRP/USDT:USDT:sweep:short:2026-10-30T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-02T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:DOGE/USDT:USDT:sweep:long:2026-10-02T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-07T09:00:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:DOGE/USDT:USDT:vwap:short:2026-10-07T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:DOGE/USDT:USDT:sweep:short:2026-10-12T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T12:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:DOGE/USDT:USDT:sweep:long:2026-10-12T12:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-14T13:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:DOGE/USDT:USDT:sweep:long:2026-10-14T13:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:DOGE/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_MEANINGFUL_BOUNDARY_NOT_CONFIRMED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:DOGE/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-26T08:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:DOGE/USDT:USDT:vwap:short:2026-10-26T08:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_HOURLY_STRUCTURE_NOT_ALIGNED",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-30T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceStructureV2:DOGE/USDT:USDT:sweep:long:2026-10-30T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceStructureV2"
+    },
+    {
+      "candidate_key": [
+        "BTC/USDT:USDT",
+        "2026-10-08T15:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:BTC/USDT:USDT:vwap:short:2026-10-08T15:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-08T04:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:ETH/USDT:USDT:vwap:short:2026-10-08T04:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:ETH/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-25T23:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:ETH/USDT:USDT:sweep:long:2026-10-25T23:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-28T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:ETH/USDT:USDT:sweep:short:2026-10-28T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:ETH/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3078380536509568,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016470133991231026,
+        "obstacles": [
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 2318.0926664527115,
+            "reference": "vp2_poc"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 2342.560872732201,
+            "reference": "vp2_vah"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 2256.47,
+        "risk_fraction": 0.012670133991231026,
+        "side": "long",
+        "signal_close": 2256.47,
+        "stop": 2227.8802227528067,
+        "target": 2313.649554494386,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 2227.89,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.35070697,
+        "open_rate": 2256.47
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:SOL/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.314486776678866,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01662987614559782,
+        "obstacles": [
+          {
+            "known_at": "2026-10-02 12:30:00+00:00",
+            "price": 117.8013816586827,
+            "reference": "vp2_val"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 121.72,
+        "risk_fraction": 0.01282987614559782,
+        "side": "short",
+        "signal_close": 121.72,
+        "stop": 123.28165252444217,
+        "target": 118.59669495111567,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-09T13:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:SOL/USDT:USDT:vwap:short:2026-10-09T13:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:SOL/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:SOL/USDT:USDT:sweep:long:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:SOL/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-20T14:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:SOL/USDT:USDT:sweep:short:2026-10-20T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-21T09:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:SOL/USDT:USDT:sweep:short:2026-10-21T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-23T14:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:SOL/USDT:USDT:sweep:long:2026-10-23T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:SOL/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3105169946101125,
+        "cautions": [
+          "NEAR_OBJECTIVE_HAS_INSUFFICIENT_NET_ROOM_FIXED_2R_RETAINS_BREAKTHROUGH_RISK"
+        ],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016534127615739493,
+        "obstacles": [
+          {
+            "known_at": "2026-10-02 12:30:00+00:00",
+            "price": 1.5364890869116754,
+            "reference": "vp2_poc"
+          },
+          {
+            "known_at": "2026-10-02 12:30:00+00:00",
+            "price": 1.4948113326760428,
+            "reference": "vp2_val"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.537,
+        "risk_fraction": 0.012734127615739494,
+        "side": "short",
+        "signal_close": 1.537,
+        "stop": 1.5565723541453915,
+        "target": 1.4978552917092167,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.5034,
+        "exit_reason": "max_hold_4h",
+        "net_usdt": 0.50352528,
+        "open_rate": 1.537
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-09T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:sweep:long:2026-10-09T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-13T11:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:vwap:short:2026-10-13T11:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:vwap:short:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-27T13:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:sweep:short:2026-10-27T13:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3657250205723261,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01797327715857021,
+        "obstacles": [
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 1.2898165513432749,
+            "reference": "vp2_poc"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 1.3034309757783689,
+            "reference": "vp2_vah"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.2376,
+        "risk_fraction": 0.014173277158570209,
+        "side": "long",
+        "signal_close": 1.2376,
+        "stop": 1.2200591521885535,
+        "target": 1.272681695622893,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.2201,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.38718715,
+        "open_rate": 1.2376
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-30T15:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:XRP/USDT:USDT:sweep:short:2026-10-30T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-02T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:DOGE/USDT:USDT:sweep:long:2026-10-02T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-07T09:00:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:DOGE/USDT:USDT:vwap:short:2026-10-07T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:DOGE/USDT:USDT:sweep:short:2026-10-12T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T12:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:DOGE/USDT:USDT:sweep:long:2026-10-12T12:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-14T13:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:DOGE/USDT:USDT:sweep:long:2026-10-14T13:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:DOGE/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:DOGE/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-26T08:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:DOGE/USDT:USDT:vwap:short:2026-10-26T08:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-30T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceProfileV2:DOGE/USDT:USDT:sweep:long:2026-10-30T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceProfileV2"
+    },
+    {
+      "candidate_key": [
+        "BTC/USDT:USDT",
+        "2026-10-08T15:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:BTC/USDT:USDT:vwap:short:2026-10-08T15:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-08T04:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:ETH/USDT:USDT:vwap:short:2026-10-08T04:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:ETH/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-25T23:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:ETH/USDT:USDT:sweep:long:2026-10-25T23:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-28T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:ETH/USDT:USDT:sweep:short:2026-10-28T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:ETH/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3078380536509568,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016470133991231026,
+        "obstacles": [
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 2318.0926664527115,
+            "reference": "vp2_poc"
+          },
+          {
+            "known_at": "2026-10-29 20:30:00+00:00",
+            "price": 2338.42,
+            "reference": "prior_swing_high"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 2342.560872732201,
+            "reference": "vp2_vah"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 2390.9,
+            "reference": "prior_day_high"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 2256.47,
+        "risk_fraction": 0.012670133991231026,
+        "side": "long",
+        "signal_close": 2256.47,
+        "stop": 2227.8802227528067,
+        "target": 2313.649554494386,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 2227.89,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.35070697,
+        "open_rate": 2256.47
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:SOL/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.314486776678866,
+        "cautions": [
+          "NEAR_OBJECTIVE_HAS_INSUFFICIENT_NET_ROOM_FIXED_2R_RETAINS_BREAKTHROUGH_RISK"
+        ],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01662987614559782,
+        "obstacles": [
+          {
+            "known_at": "2026-10-02 11:00:00+00:00",
+            "price": 121.29,
+            "reference": "prior_swing_low"
+          },
+          {
+            "known_at": "2026-10-02 12:30:00+00:00",
+            "price": 117.8013816586827,
+            "reference": "vp2_val"
+          },
+          {
+            "known_at": "2026-10-02 12:30:00+00:00",
+            "price": 116.66,
+            "reference": "prior_day_low"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 121.72,
+        "risk_fraction": 0.01282987614559782,
+        "side": "short",
+        "signal_close": 121.72,
+        "stop": 123.28165252444217,
+        "target": 118.59669495111567,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-09T13:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:SOL/USDT:USDT:vwap:short:2026-10-09T13:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:SOL/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:SOL/USDT:USDT:sweep:long:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:SOL/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-20T14:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:SOL/USDT:USDT:sweep:short:2026-10-20T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-21T09:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:SOL/USDT:USDT:sweep:short:2026-10-21T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-23T14:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:SOL/USDT:USDT:sweep:long:2026-10-23T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:SOL/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3105169946101125,
+        "cautions": [
+          "NEAR_OBJECTIVE_HAS_INSUFFICIENT_NET_ROOM_FIXED_2R_RETAINS_BREAKTHROUGH_RISK"
+        ],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016534127615739493,
+        "obstacles": [
+          {
+            "known_at": "2026-10-02 12:30:00+00:00",
+            "price": 1.5364890869116754,
+            "reference": "vp2_poc"
+          },
+          {
+            "known_at": "2026-10-02 09:45:00+00:00",
+            "price": 1.532,
+            "reference": "prior_swing_low"
+          },
+          {
+            "known_at": "2026-10-02 12:30:00+00:00",
+            "price": 1.4948113326760428,
+            "reference": "vp2_val"
+          },
+          {
+            "known_at": "2026-10-02 12:30:00+00:00",
+            "price": 1.4734,
+            "reference": "prior_day_low"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.537,
+        "risk_fraction": 0.012734127615739494,
+        "side": "short",
+        "signal_close": 1.537,
+        "stop": 1.5565723541453915,
+        "target": 1.4978552917092167,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.5034,
+        "exit_reason": "max_hold_4h",
+        "net_usdt": 0.50352528,
+        "open_rate": 1.537
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-09T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:sweep:long:2026-10-09T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-13T11:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:vwap:short:2026-10-13T11:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:vwap:short:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-27T13:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:sweep:short:2026-10-27T13:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3657250205723261,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01797327715857021,
+        "obstacles": [
+          {
+            "known_at": "2026-10-29 20:15:00+00:00",
+            "price": 1.2872,
+            "reference": "prior_swing_high"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 1.2898165513432749,
+            "reference": "vp2_poc"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 1.3034309757783689,
+            "reference": "vp2_vah"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 1.3438,
+            "reference": "prior_day_high"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.2376,
+        "risk_fraction": 0.014173277158570209,
+        "side": "long",
+        "signal_close": 1.2376,
+        "stop": 1.2200591521885535,
+        "target": 1.272681695622893,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.2201,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.38718715,
+        "open_rate": 1.2376
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-30T15:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:XRP/USDT:USDT:sweep:short:2026-10-30T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-02T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:DOGE/USDT:USDT:sweep:long:2026-10-02T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-07T09:00:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:DOGE/USDT:USDT:vwap:short:2026-10-07T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:DOGE/USDT:USDT:sweep:short:2026-10-12T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T12:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:DOGE/USDT:USDT:sweep:long:2026-10-12T12:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-14T13:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:DOGE/USDT:USDT:sweep:long:2026-10-14T13:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:DOGE/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:DOGE/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-26T08:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:DOGE/USDT:USDT:vwap:short:2026-10-26T08:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-30T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceTargetV2:DOGE/USDT:USDT:sweep:long:2026-10-30T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceTargetV2"
+    },
+    {
+      "candidate_key": [
+        "BTC/USDT:USDT",
+        "2026-10-08T15:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:BTC/USDT:USDT:vwap:short:2026-10-08T15:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-08T04:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:ETH/USDT:USDT:vwap:short:2026-10-08T04:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:ETH/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-25T23:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:ETH/USDT:USDT:sweep:long:2026-10-25T23:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-28T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:ETH/USDT:USDT:sweep:short:2026-10-28T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:ETH/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3078380536509568,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016470133991231026,
+        "obstacles": [
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 2318.0926664527115,
+            "reference": "vp2_poc"
+          },
+          {
+            "known_at": "2026-10-29 20:30:00+00:00",
+            "price": 2338.42,
+            "reference": "prior_swing_high"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 2342.560872732201,
+            "reference": "vp2_vah"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 2390.9,
+            "reference": "prior_day_high"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 2256.47,
+        "risk_fraction": 0.012670133991231026,
+        "side": "long",
+        "signal_close": 2256.47,
+        "stop": 2227.8802227528067,
+        "target": 2313.649554494386,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 2227.89,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.35070697,
+        "open_rate": 2256.47
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:SOL/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-09T13:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:SOL/USDT:USDT:vwap:short:2026-10-09T13:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:SOL/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:SOL/USDT:USDT:sweep:long:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:SOL/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-20T14:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:SOL/USDT:USDT:sweep:short:2026-10-20T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-21T09:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:SOL/USDT:USDT:sweep:short:2026-10-21T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-23T14:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:SOL/USDT:USDT:sweep:long:2026-10-23T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:SOL/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-09T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:sweep:long:2026-10-09T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-13T11:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:vwap:short:2026-10-13T11:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:vwap:short:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-27T13:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:sweep:short:2026-10-27T13:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.3657250205723261,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "SIGNAL_CLOSE_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01797327715857021,
+        "obstacles": [
+          {
+            "known_at": "2026-10-29 20:15:00+00:00",
+            "price": 1.2872,
+            "reference": "prior_swing_high"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 1.2898165513432749,
+            "reference": "vp2_poc"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 1.3034309757783689,
+            "reference": "vp2_vah"
+          },
+          {
+            "known_at": "2026-10-29 20:45:00+00:00",
+            "price": 1.3438,
+            "reference": "prior_day_high"
+          }
+        ],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.2376,
+        "risk_fraction": 0.014173277158570209,
+        "side": "long",
+        "signal_close": 1.2376,
+        "stop": 1.2200591521885535,
+        "target": 1.272681695622893,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.2201,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.38718715,
+        "open_rate": 1.2376
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-30T15:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:XRP/USDT:USDT:sweep:short:2026-10-30T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-02T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:DOGE/USDT:USDT:sweep:long:2026-10-02T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-07T09:00:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:DOGE/USDT:USDT:vwap:short:2026-10-07T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:DOGE/USDT:USDT:sweep:short:2026-10-12T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T12:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:DOGE/USDT:USDT:sweep:long:2026-10-12T12:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-14T13:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:DOGE/USDT:USDT:sweep:long:2026-10-14T13:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:DOGE/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:DOGE/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-26T08:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:DOGE/USDT:USDT:vwap:short:2026-10-26T08:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-30T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceNearestV2:DOGE/USDT:USDT:sweep:long:2026-10-30T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceNearestV2"
+    },
+    {
+      "candidate_key": [
+        "BTC/USDT:USDT",
+        "2026-10-08T15:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:BTC/USDT:USDT:vwap:short:2026-10-08T15:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-08T04:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:ETH/USDT:USDT:vwap:short:2026-10-08T04:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:ETH/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-25T23:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:ETH/USDT:USDT:sweep:long:2026-10-25T23:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-28T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:ETH/USDT:USDT:sweep:short:2026-10-28T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "ETH/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:ETH/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.2736587671716895,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "0.1_ATR_RETRACEMENT_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.015695102363402085,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 2254.700111376403,
+        "risk_fraction": 0.011895102363402086,
+        "side": "long",
+        "signal_close": 2256.47,
+        "stop": 2227.8802227528067,
+        "target": 2308.339888623596,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 2227.89,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.33122237,
+        "open_rate": 2254.7
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:SOL/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.294797078552606,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "0.1_ATR_RETRACEMENT_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.016165559803130232,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 121.77582626222107,
+        "risk_fraction": 0.012365559803130232,
+        "side": "short",
+        "signal_close": 121.72,
+        "stop": 123.28165252444217,
+        "target": 118.76417373777889,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-09T13:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:SOL/USDT:USDT:vwap:short:2026-10-09T13:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:SOL/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:SOL/USDT:USDT:sweep:long:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:SOL/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-20T14:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:SOL/USDT:USDT:sweep:short:2026-10-20T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-21T09:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:SOL/USDT:USDT:sweep:short:2026-10-21T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-23T14:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:SOL/USDT:USDT:sweep:long:2026-10-23T14:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "SOL/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:SOL/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-02T12:45:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:sweep:short:2026-10-02T12:45:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.2882285826893778,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "0.1_ATR_RETRACEMENT_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01601637790271783,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.5377861770726957,
+        "risk_fraction": 0.01221637790271783,
+        "side": "short",
+        "signal_close": 1.537,
+        "stop": 1.5565723541453915,
+        "target": 1.500213822927304,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.5002,
+        "exit_reason": "roi",
+        "net_usdt": 0.56755408,
+        "open_rate": 1.5378
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-09T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:sweep:long:2026-10-09T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-13T11:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:vwap:short:2026-10-13T11:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T03:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:vwap:short:2026-10-15T03:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-15T12:45:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:vwap:short:2026-10-15T12:45:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-27T13:00:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:sweep:short:2026-10-27T13:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T16:15:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:sweep:short:2026-10-29T16:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-29T21:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:sweep:long:2026-10-29T21:00:00+00:00",
+      "geometry": {
+        "admission_cost_allowance": 0.0038,
+        "after_cost_rr": 1.334107429710016,
+        "cautions": [],
+        "cost_components": {
+          "adverse_funding": 0.0003,
+          "fees_round_trip": 0.0015,
+          "friction_round_trip": 0.002
+        },
+        "entry_policy": "0.1_ATR_RETRACEMENT_LIMIT",
+        "entry_trigger": "CLOSED_FAILED_PRIOR_20_BAR_BOUNDARY_REJECTION",
+        "expiry_seconds": 300,
+        "fill_likelihood": "UNKNOWN_QUEUE; NATIVE_OHLCV_RANGE_FILL_SCENARIO_ONLY",
+        "invalidation": "BREACH_OF_SIGNAL_EXTREME_PLUS_0.2_ATR_BUFFER",
+        "max_hold_hours": 4,
+        "modeled_loss_per_notional": 0.01711987865405303,
+        "obstacles": [],
+        "profile_fidelity": "OHLCV_PROXY",
+        "recipe": "sweep",
+        "reference": 1.236529576094277,
+        "risk_fraction": 0.013319878654053027,
+        "side": "long",
+        "signal_close": 1.2376,
+        "stop": 1.2200591521885535,
+        "target": 1.2694704239057237,
+        "target_origin": "FIXED_2R",
+        "version": 2
+      },
+      "native_fill": {
+        "close_rate": 1.2201,
+        "exit_reason": "stop_loss",
+        "net_usdt": -0.36517065,
+        "open_rate": 1.2365
+      },
+      "reason": "TRADE",
+      "status": "RESEARCH_CANDIDATE",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "XRP/USDT:USDT",
+        "2026-10-30T15:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:XRP/USDT:USDT:sweep:short:2026-10-30T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-02T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:DOGE/USDT:USDT:sweep:long:2026-10-02T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-07T09:00:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:DOGE/USDT:USDT:vwap:short:2026-10-07T09:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T02:30:00+00:00",
+        "sweep",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:DOGE/USDT:USDT:sweep:short:2026-10-12T02:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-12T12:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:DOGE/USDT:USDT:sweep:long:2026-10-12T12:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-14T13:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:DOGE/USDT:USDT:sweep:long:2026-10-14T13:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-16T15:30:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:DOGE/USDT:USDT:sweep:long:2026-10-16T15:30:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-19T14:15:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:DOGE/USDT:USDT:sweep:long:2026-10-19T14:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_SELECTION",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-26T08:15:00+00:00",
+        "vwap",
+        "short"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:DOGE/USDT:USDT:vwap:short:2026-10-26T08:15:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "REJECT_COST_OR_TARGET_GEOMETRY",
+      "status": "REJECT",
+      "variant": "IntelligenceEntryV2"
+    },
+    {
+      "candidate_key": [
+        "DOGE/USDT:USDT",
+        "2026-10-30T19:00:00+00:00",
+        "sweep",
+        "long"
+      ],
+      "decision_id": "intelligence-001:IntelligenceEntryV2:DOGE/USDT:USDT:sweep:long:2026-10-30T19:00:00+00:00",
+      "geometry": null,
+      "native_fill": null,
+      "reason": "WATCH_OPPOSING_TREND_CONTINUATION_DANGER",
+      "status": "WATCH",
+      "variant": "IntelligenceEntryV2"
+    }
+  ],
+  "join": "EXACT_PAIR_SIDE_RECIPE_SIGNAL_CLOSE_NATIVE_ENTRY_TIME",
+  "version": 2
+}

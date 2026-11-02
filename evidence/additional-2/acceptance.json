@@ -1,0 +1,249 @@
+{
+  "bounded_reader_hash_check": true,
+  "diagnostics": {
+    "intelligence-001": {
+      "all_commands_exited_zero": true,
+      "all_variants_diagnostically_qualified": false,
+      "checks": [
+        {
+          "command_exit": 0,
+          "csv_rows": [
+            {
+              "biased_entry_signals": "0",
+              "biased_exit_signals": "0",
+              "biased_indicators": "",
+              "filename": "IntelligenceRouterV2.py",
+              "has_bias": "False",
+              "strategy": "IntelligenceRegimeV2",
+              "total_signals": "3"
+            }
+          ],
+          "csv_sha256": "a8a1e04cc21addd10fe75247ba43bc5abc9c1c6ae84d11335f08a01db8e0110a",
+          "log_sha256": "e55bf4b54988b8109e325e91d10f311a30030ff35d86934e9e41387be04d0d8f",
+          "status": "NO_DETECTED_BIAS_IN_REPORTED_SAMPLE",
+          "strategy": "IntelligenceRegimeV2",
+          "total_signals": 3
+        },
+        {
+          "command_exit": 0,
+          "csv_rows": [
+            {
+              "biased_entry_signals": "0",
+              "biased_exit_signals": "0",
+              "biased_indicators": "",
+              "filename": "IntelligenceRouterV2.py",
+              "has_bias": "False",
+              "strategy": "IntelligenceTargetV2",
+              "total_signals": "3"
+            }
+          ],
+          "csv_sha256": "6dee06f2df651d8042e7fa1bca922fcd55171f1572dc445ed81a04826f8be51a",
+          "log_sha256": "a05ec6c135795cd35bc57d115c4b7bb931431ea76938cf8ecb2995eb61186ea7",
+          "status": "NO_DETECTED_BIAS_IN_REPORTED_SAMPLE",
+          "strategy": "IntelligenceTargetV2",
+          "total_signals": 3
+        },
+        {
+          "command_exit": 0,
+          "csv_rows": [],
+          "csv_sha256": "ee1bfa76dc2496fb7670ca9697e91f8b4351756ea85249c9f813c95c4913c98a",
+          "log_sha256": "44e88f4a78c55a52548f5de980d123935eeef3736a4515428e8207c9e3db9f30",
+          "status": "INSUFFICIENT_SIGNALS",
+          "strategy": "IntelligenceEntryV2",
+          "total_signals": 0
+        }
+      ],
+      "interpretation": "A zero command exit is not a passing diagnostic when no signals were analyzed. Tiny development samples do not prove universal absence of bias."
+    },
+    "intelligence-003": {
+      "all_commands_exited_zero": true,
+      "all_variants_diagnostically_qualified": false,
+      "checks": [
+        {
+          "command_exit": 0,
+          "csv_rows": [
+            {
+              "biased_entry_signals": "0",
+              "biased_exit_signals": "0",
+              "biased_indicators": "",
+              "filename": "IntelligenceRouterV2.py",
+              "has_bias": "False",
+              "strategy": "IntelligenceRegimeV2",
+              "total_signals": "3"
+            }
+          ],
+          "csv_sha256": "a8a1e04cc21addd10fe75247ba43bc5abc9c1c6ae84d11335f08a01db8e0110a",
+          "log_sha256": "5e73befec9fce84a3ff55ec039b497e73cf4b3ace7a3d29ab290bd698dbf45f5",
+          "status": "NO_DETECTED_BIAS_IN_REPORTED_SAMPLE",
+          "strategy": "IntelligenceRegimeV2",
+          "total_signals": 3
+        },
+        {
+          "command_exit": 0,
+          "csv_rows": [
+            {
+              "biased_entry_signals": "0",
+              "biased_exit_signals": "0",
+              "biased_indicators": "",
+              "filename": "IntelligenceRouterV2.py",
+              "has_bias": "False",
+              "strategy": "IntelligenceTargetV2",
+              "total_signals": "3"
+            }
+          ],
+          "csv_sha256": "6dee06f2df651d8042e7fa1bca922fcd55171f1572dc445ed81a04826f8be51a",
+          "log_sha256": "b5f65e4328f4212b846b90d9935941ddb10a42a0473955746f92a703f689f496",
+          "status": "NO_DETECTED_BIAS_IN_REPORTED_SAMPLE",
+          "strategy": "IntelligenceTargetV2",
+          "total_signals": 3
+        },
+        {
+          "command_exit": 0,
+          "csv_rows": [],
+          "csv_sha256": "ee1bfa76dc2496fb7670ca9697e91f8b4351756ea85249c9f813c95c4913c98a",
+          "log_sha256": "bece12a3625df6ff77a95b1024aa84cf1a1c887a541700b2b91a58d575c4076b",
+          "status": "INSUFFICIENT_SIGNALS",
+          "strategy": "IntelligenceEntryV2",
+          "total_signals": 0
+        }
+      ],
+      "interpretation": "A zero command exit is not a passing diagnostic when no signals were analyzed. Tiny development samples do not prove universal absence of bias."
+    }
+  },
+  "economic_qualification": "BLOCKED",
+  "engineering_evidence_checks": "PASS",
+  "independent_order_accounting_reconciles": true,
+  "limitations": [
+    "October already inspected; current-survivor membership",
+    "No historical genuine flow/news/depth/queue or original receipt clocks",
+    "15m range fills cannot prove sub-bar five-minute expiry",
+    "Entry native lookahead has insufficient samples; never count zero samples as no bias",
+    "One positive routed trade is not an economic edge; reserved future holdout untouched"
+  ],
+  "native_trade_field_replay": [
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "TrendPullbackBaselineV1",
+      "trades": 162
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "VWAPTrendContinuationV1",
+      "trades": 9
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "LiquiditySweepReversalV1",
+      "trades": 24
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "RouterOnlyV1",
+      "trades": 1
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "FoundationRouterM0V1",
+      "trades": 1
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "IntelligenceCostV2",
+      "trades": 1
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "IntelligenceSignedV2",
+      "trades": 3
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "IntelligenceRegimeV2",
+      "trades": 3
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "IntelligenceAllV2",
+      "trades": 3
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "IntelligenceStructureV2",
+      "trades": 1
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "IntelligenceProfileV2",
+      "trades": 3
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "IntelligenceTargetV2",
+      "trades": 3
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "IntelligenceNearestV2",
+      "trades": 2
+    },
+    {
+      "all_native_trade_fields_identical": true,
+      "strategy": "IntelligenceEntryV2",
+      "trades": 3
+    }
+  ],
+  "orders_created": false,
+  "persistent_paper_started": false,
+  "prior_artifacts": [
+    {
+      "entries": 150,
+      "manifest": "evidence/additional-1/artifact-hashes.sha256",
+      "passed": 150
+    },
+    {
+      "entries": 165,
+      "manifest": "evidence/bonus/artifact-hashes.sha256",
+      "passed": 165
+    },
+    {
+      "entries": 86,
+      "manifest": "evidence/master-audit/artifact-hashes.sha256",
+      "passed": 86
+    },
+    {
+      "entries": 62,
+      "manifest": "evidence/session-2/artifact-hashes.sha256",
+      "passed": 62
+    },
+    {
+      "entries": 156,
+      "manifest": "evidence/session-3/artifact-hashes.sha256",
+      "passed": 156
+    }
+  ],
+  "prior_freezes": [
+    {
+      "all_match": true,
+      "entries": 2,
+      "manifest": "evidence/session-1/freeze.sha256"
+    },
+    {
+      "all_match": true,
+      "entries": 18,
+      "manifest": "evidence/session-2/freeze.sha256"
+    },
+    {
+      "all_match": true,
+      "entries": 6,
+      "manifest": "evidence/session-3/freeze.sha256"
+    },
+    {
+      "all_match": true,
+      "entries": 15,
+      "manifest": "evidence/bonus/freeze.sha256"
+    }
+  ],
+  "repaired_funding_within_source_bounds": true,
+  "schema_version": 2,
+  "tests_full_137_pass": true
+}

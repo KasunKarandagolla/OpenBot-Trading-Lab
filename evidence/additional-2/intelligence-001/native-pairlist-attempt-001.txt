@@ -1,0 +1,32 @@
+["ETH/USDT:USDT","BTC/USDT:USDT","XAU/USDT:USDT","SOL/USDT:USDT","XAG/USDT:USDT","ZEC/USDT:USDT","SOXL/USDT:USDT","SNDK/USDT:USDT","DOGE/USDT:USDT","CL/USDT:USDT","XRP/USDT:USDT","SKHYNIX/USDT:USDT","BZ/USDT:USDT","QQQ/USDT:USDT","HYPE/USDT:USDT","BNB/USDT:USDT","SPCX/USDT:USDT","INTC/USDT:USDT","NEAR/USDT:USDT","SOXS/USDT:USDT","AKE/USDT:USDT","ESPORTS/USDT:USDT","TRUMP/USDT:USDT","SKHY/USDT:USDT","PEPE/USDT:USDT","UNI/USDT:USDT","LTC/USDT:USDT","MU/USDT:USDT","GOOGL/USDT:USDT","KORU/USDT:USDT","OPENAI/USDT:USDT","UNITREE/USDT:USDT","XAUT/USDT:USDT","IDOL/USDT:USDT","LITE/USDT:USDT","BTW/USDT:USDT","NVDA/USDT:USDT","CRCL/USDT:USDT"]
+2026-11-02 16:51:34,604 - freqtrade - INFO - freqtrade 2026.10
+2026-11-02 16:51:34,995 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-11-02 16:51:36,976 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/foundation-configs/intelligence-001/scanner.json ...
+2026-11-02 16:51:36,979 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-11-02 16:51:36,979 - freqtrade.loggers - INFO - Logfile configured
+2026-11-02 16:51:36,979 - freqtrade.loggers - INFO - Verbosity set to 0
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-11-02 16:51:36,983 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-11-02 16:51:36,984 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-11-02 16:51:36,984 - freqtrade.configuration.directory_operations - INFO - Created data directory: None
+2026-11-02 16:51:36,984 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/gate ...
+2026-11-02 16:51:36,985 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-11-02 16:51:36,992 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-11-02 16:51:36,992 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-11-02 16:51:36,993 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-11-02 16:51:36,995 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-11-02 16:51:36,995 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-11-02 16:51:36,996 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': 
+'/run/research-ca.pem', 'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.5.13:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-11-02 16:51:36,998 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': 
+'/run/research-ca.pem', 'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.5.13:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-11-02 16:51:37,001 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-11-02 16:51:37,002 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-11-02 16:51:37,013 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist VolumePairList from '/freqtrade/freqtrade/plugins/pairlist/VolumePairList.py'...
+2026-11-02 16:51:37,016 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist SpreadFilter from '/freqtrade/freqtrade/plugins/pairlist/SpreadFilter.py'...
+2026-11-02 16:51:42,445 - freqtrade.exchange.exchange - INFO - Markets were not loaded. Loading them now..
+2026-11-02 16:52:02,883 - freqtrade.plugins.pairlistmanager - INFO - Whitelist with 38 pairs: ['ETH/USDT:USDT', 'BTC/USDT:USDT', 'XAU/USDT:USDT', 'SOL/USDT:USDT', 'XAG/USDT:USDT', 'ZEC/USDT:USDT', 
+'SOXL/USDT:USDT', 'SNDK/USDT:USDT', 'DOGE/USDT:USDT', 'CL/USDT:USDT', 'XRP/USDT:USDT', 'SKHYNIX/USDT:USDT', 'BZ/USDT:USDT', 'QQQ/USDT:USDT', 'HYPE/USDT:USDT', 'BNB/USDT:USDT', 'SPCX/USDT:USDT', 
+'INTC/USDT:USDT', 'NEAR/USDT:USDT', 'SOXS/USDT:USDT', 'AKE/USDT:USDT', 'ESPORTS/USDT:USDT', 'TRUMP/USDT:USDT', 'SKHY/USDT:USDT', 'PEPE/USDT:USDT', 'UNI/USDT:USDT', 'LTC/USDT:USDT', 'MU/USDT:USDT', 
+'GOOGL/USDT:USDT', 'KORU/USDT:USDT', 'OPENAI/USDT:USDT', 'UNITREE/USDT:USDT', 'XAUT/USDT:USDT', 'IDOL/USDT:USDT', 'LITE/USDT:USDT', 'BTW/USDT:USDT', 'NVDA/USDT:USDT', 'CRCL/USDT:USDT']

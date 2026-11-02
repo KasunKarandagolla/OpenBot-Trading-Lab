@@ -1,10 +1,18 @@
 # OpenBot Trading Lab
 
-A real-market crypto futures research and paper-trading foundation using official **Freqtrade 2026.10** and FreqUI. The current milestone is **Additional Session 1 of 5**. Engineering works; **economic qualification remains blocked**. No strategy is approved by this research for persistent paper operation.
+A real-market crypto futures research and paper-trading foundation using official **Freqtrade 2026.10** and FreqUI. **Additional Session 2 of 5** adds signed opportunity selection, conditional recipe matching, qualified genuine Order Flow, labeled Volume Profile and comparative native target/entry research. **Economic qualification remains blocked.** No strategy is approved by this research for persistent paper operation.
+
+[Session 2 evidence and results](evidence/additional-2/README.md) · [Session 2 setup and rollback](docs/operations/intelligence-session2.md) · [Session 3 handoff](docs/operations/intelligence-session3-handoff.md)
+
+```bash
+git checkout codex/additional-2-opportunity-intelligence
+docker compose -f deploy/freqtrade/compose.yaml pull
+./scripts/lab-foundation.sh run intelligence-owner-001
+```
 
 [Executed milestone and limitations](evidence/additional-1/README.md) · [Beginner runbook](docs/operations/foundation.md) · [Session 2 handoff](docs/operations/foundation-session2-handoff.md) · [Original design](docs/design/README.md) · [Prior sessions](docs/operations/prior-sessions-readme.md)
 
-## Run one complete research cycle
+## Session 1 compatibility workflow
 
 Install Git, Python 3 and Docker with Compose v2. On Windows use Docker Desktop with WSL2. Owner OS/browser verification remains outstanding.
 
