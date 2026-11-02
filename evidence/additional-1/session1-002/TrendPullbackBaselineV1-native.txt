@@ -1,0 +1,10 @@
+Source validation: 20 files, hashes/UTC/continuity/funding PASS
+Traceback (most recent call last):
+  File "/lab/scripts/foundation.py", line 31, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/lab/scripts/foundation.py", line 15, in main
+    return native(run_id, extra[0], action == 'native-lookahead')
+  File "/lab/scripts/foundation_native.py", line 89, in native
+    from foundation.funding import EventOnceFunding
+ModuleNotFoundError: No module named 'foundation.funding'; 'foundation' is not a package

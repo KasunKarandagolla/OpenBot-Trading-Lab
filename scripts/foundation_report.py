@@ -8,6 +8,27 @@ import pandas as pd
 from foundation_common import *
 
 
+def validate_reader_content(obj):
+    """Reject credential/admin fields and private paths, including nested data.
+
+    A publisher's ordinary headline can contain the word 'password'. Field
+    allowlists and actual paths identify disclosure, not keyword sentiment.
+    """
+    forbidden_keys = {'api_server', 'password', 'secret', 'key', 'apikey', 'api_key',
+                      'jwt_secret_key', 'ws_token', 'db_url', 'privatekey', 'credentials'}
+    def check(value):
+        if isinstance(value, dict):
+            if any(k.lower() in forbidden_keys for k in value):
+                raise ValueError('export contains forbidden credential/admin field')
+            for child in value.values(): check(child)
+        elif isinstance(value, list):
+            for child in value: check(child)
+        elif isinstance(value, str):
+            if any(word in value.lower() for word in ('/lab/', '/workspace/', 'sqlite://', 'file://')):
+                raise ValueError('export contains private runtime path')
+    check(obj)
+
+
 def report(run_id):
     from bonus_funding_audit import event_bounds
     out, data, spec = verify(run_id)
@@ -114,7 +135,8 @@ def report(run_id):
 def export(run_id):
     import jsonschema
     out, _, _ = verify(run_id)
-    target = out/'openbot'; target.mkdir()
+    target = out/'openbot'; target.mkdir(exist_ok=True)
+    if any(target.iterdir()): raise ValueError('preserve existing reader snapshot')
     current = read(out/'opportunities.json'); hist = read(out/'historical-opportunities.json')
     events = read(out/('event-briefing-reparsed.json' if (out/'event-briefing-reparsed.json').exists() else 'event-briefing.json')); economics = read(out/'economic-report.json')
     scan = read(out/'scan.json')
@@ -143,8 +165,7 @@ def export(run_id):
     jsonschema.validate(snapshot, schema)
     serialized = json.dumps(snapshot, allow_nan=False)
     if len(serialized.encode()) > 1_000_000: raise ValueError('export exceeds 1MB bound')
-    forbidden = ('sqlite', '/lab/', '/workspace/', 'api_server', 'jwt_secret', 'password', 'secret_key')
-    if any(word in serialized.lower() for word in forbidden): raise ValueError('export contains forbidden runtime/admin details')
+    validate_reader_content(snapshot)
     write(target/'research-snapshot.json', snapshot)
     write(target/'manifest.json', dict(schema_version=1, snapshot_sha256=sha(target/'research-snapshot.json'),
         schema_sha256=sha(ROOT/'research/foundation/openbot.schema.json'), bytes=(target/'research-snapshot.json').stat().st_size,

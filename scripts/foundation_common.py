@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'scripts'), str(ROOT/'research'),
                str(ROOT/'research/bonus'), str(ROOT/'research/session3'),
                str(ROOT/'research/master_audit'), str(ROOT/'user_data/strategies')]
+sys.path.insert(0, str(ROOT))
 PROTOCOL = ROOT/'research/foundation/protocol.json'
 IMAGE = 'freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7'
 

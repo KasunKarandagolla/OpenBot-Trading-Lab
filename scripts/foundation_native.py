@@ -70,7 +70,8 @@ def native(run_id, name, lookahead=False):
     out, data, spec = verify(run_id)
     validate(run_id)
     cfg_path = config(run_id, name)
-    directory = ROOT/'user_data/backtest_results/foundation'/run_id/name
+    base = ROOT/'user_data/backtest_results/foundation'/run_id/name
+    directory = base/('attempt-'+str(len(list(base.glob('attempt-*')))+1).zfill(3))
     if not lookahead:
         directory.mkdir(parents=True)  # refuse overwrite/implicit cached replay
     args = ['lookahead-analysis' if lookahead else 'backtesting', '--config', str(cfg_path),
@@ -86,7 +87,7 @@ def native(run_id, name, lookahead=False):
     from freqtrade.commands.optimize_commands import setup_optimize_configuration
     from freqtrade.enums import RunMode
     from freqtrade.optimize.backtesting import Backtesting
-    from foundation.funding import EventOnceFunding
+    from research.foundation.funding import EventOnceFunding
     class RepairedBacktesting(EventOnceFunding, Backtesting):
         pass
     parsed = Arguments(args).get_parsed_arg()
@@ -109,7 +110,10 @@ def native(run_id, name, lookahead=False):
         argv=args, engine='Freqtrade 2026.10 native Backtesting',
         funding='ORIGINAL_NATIVE_CONTROL' if name == 'RouterOnlyV1' else 'EVENT_ONCE_BEFORE_EXIT_RESEARCH_SUBCLASS',
         configuration_sha256=sha(cfg_path), dataset_manifest_sha256=sha(out/'data-manifest.json'),
+        archive_local_path=str(archive.relative_to(ROOT)),
         source_registration_sha256=sha(out/'registration.json'), result_sha256=sha(dest), archive_sha256=sha(archive),
+        effective_source_hashes={str(p.relative_to(ROOT)): sha(p) for p in source_files()},
+        source_amendments={p.name: sha(p) for p in sorted((out/'source-amendments').glob('*.json'))},
         partial_fill_priority='UNKNOWN venue priority; before-exit at identical native timestamps is a declared scenario',
         persistent_lifecycle_qualified=False))
     return 0
@@ -121,9 +125,7 @@ def backtest(run_id):
         if (out/'native-results'/(name+'.json')).exists():
             print('Preserving completed native portfolio:', name)
             continue
-        log = out/(name+'-native.txt')
-        # Failed attempts remain; a fresh name is needed for an intentional retry.
-        if log.exists(): raise ValueError('preserve failed native attempt; inspect before retry')
+        log = out/(name+'-native-attempt-'+str(len(list(out.glob(name+'-native-attempt-*.txt')))+1).zfill(3)+'.txt')
         with log.open('x') as file:
             result = subprocess.run([sys.executable, str(ROOT/'scripts/foundation.py'), 'native', run_id, name], stdout=file, stderr=subprocess.STDOUT)
         if result.returncode: raise ValueError('native run failed: '+name+'; see '+log.name)

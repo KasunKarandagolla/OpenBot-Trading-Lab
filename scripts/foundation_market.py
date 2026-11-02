@@ -2,6 +2,7 @@
 import json
 import math
 import subprocess
+import shutil
 import sys
 import tarfile
 import time
@@ -55,9 +56,13 @@ def scan(run_id):
     write(scan_cfg, cfg)
     result = subprocess.run(['freqtrade', 'test-pairlist', '--config', str(scan_cfg), '--print-json'],
                             capture_output=True, text=True)
-    (out/'native-pairlist.txt').write_text(result.stdout+result.stderr)
+    attempt = out/('native-pairlist-attempt-'+str(len(list(out.glob('native-pairlist-attempt-*.txt')))+1).zfill(3)+'.txt')
+    attempt.write_text(result.stdout+result.stderr)
     if result.returncode:
-        raise ValueError('native pairlist failed; see native-pairlist.txt')
+        raise ValueError('native pairlist failed; see '+attempt.name)
+    # Successful evidence is published once; failed attempts remain separately.
+    if not (out/'native-pairlist.txt').exists():
+        (out/'native-pairlist.txt').write_text(result.stdout+result.stderr)
     native = None
     for line in result.stdout.splitlines():
         try:
@@ -129,6 +134,33 @@ def acquire(run_id):
         contracts[symbol].update(funding_interval_seconds=int(info['funding_interval']),
                                  observed_at=now(), historical_identity='Current contract metadata; historical membership unverified')
     write(data.parent/'contracts.json', contracts)
+    # Reuse a preserved, hash-verified identical cohort before requesting any
+    # candles again. Current eligibility/cost metadata above is still checked.
+    for prior_path in sorted((ROOT/'evidence/additional-1').glob('*/data-manifest.json')):
+        if prior_path.parent == out: continue
+        prior = read(prior_path)
+        if prior.get('venue') != 'gate' or prior.get('timerange') != spec['download_timerange'] or set(prior.get('contracts', {})) != set(spec['pairs']):
+            continue
+        if any(not (ROOT/r['path']).exists() or sha(ROOT/r['path']) != r['sha256'] for r in prior['files']):
+            continue
+        if any(any(prior['contracts'][s].get(k) != contracts[s].get(k) for k in ('id', 'contractSize', 'linear', 'settle')) for s in spec['pairs']):
+            raise ValueError('cached cohort contract identity changed; do not mix sources')
+        files = []
+        for row in prior['files']:
+            target = data/'futures'/Path(row['path']).name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT/row['path'], target)
+            if sha(target) != row['sha256']: raise ValueError('copied source hash mismatch')
+            files.append(row | dict(path=str(target.relative_to(ROOT))))
+        write(out/'source-reuse.json', dict(original_manifest_sha256=sha(prior_path),
+            original_run=prior_path.parent.name, copied_at=now(), files=len(files), redownloaded=False,
+            method='Byte-identical preserved sample, current public contract identity/eligibility/costs rechecked separately'))
+        write(out/'data-manifest.json', prior | dict(files=files, contracts=contracts,
+            source_copied_at=now(), original_manifest_sha256=sha(prior_path)))
+        validate(run_id)
+        preserve(run_id)
+        print('Reused preserved cohort:', len(files), 'files; no historical redownload')
+        return
     cfg = config(run_id, 'TrendPullbackBaselineV1')
     started = now()
     args = ['freqtrade', 'download-data', '--config', str(cfg), '--datadir', str(data),
@@ -152,7 +184,12 @@ def acquire(run_id):
           boundary_policy='Trim to registered UTC end-exclusive interval; no filling/interpolation.',
           raw_redistribution=False))
     validate(run_id)
-    # A bounded private bundle solves rolling endpoint retention for this cohort.
+    preserve(run_id)
+
+
+def preserve(run_id):
+    """A bounded private bundle solves rolling endpoint retention for a cohort."""
+    out, data, _ = verify(run_id)
     vault = ROOT/'user_data/data/source-vault'/('foundation-'+run_id+'.tar.gz')
     vault.parent.mkdir(parents=True, exist_ok=True)
     with tarfile.open(vault, 'x:gz') as archive:
@@ -190,8 +227,9 @@ def validate(run_id):
         rows.append(dict(symbol=symbol, timeframe=tf, candle_type=kind, sha256=item['sha256'], **result))
     missing = sorted(required-found)
     valid = not missing and len(rows) == len(required) and not any(r['errors'] for r in rows)
-    write(out/'data-validation.json', dict(valid=valid, missing=missing, files=rows, checked_at=now(),
-          warmup_hours=spec['warmup_hours'], source_clocks='Exchange candle-open/funding clocks; acquisition clock is separate.'))
+    validation = dict(valid=valid, missing=missing, files=rows, checked_at=now(),
+          warmup_hours=spec['warmup_hours'], source_clocks='Exchange candle-open/funding clocks; acquisition clock is separate.')
+    if not (out/'data-validation.json').exists(): write(out/'data-validation.json', validation)
     if not valid:
         raise ValueError('source validation failed; no native run admitted')
     print(f'Source validation: {len(rows)} files, hashes/UTC/continuity/funding PASS')

@@ -1,0 +1,631 @@
+{
+  "all_order_accounting_reconciles": true,
+  "cost_assumptions": {
+    "fee": "Conservative scenario informed by current Gate public generic taker metadata; account tier and historical fee schedule UNKNOWN. Reject if current public taker rate exceeds this scenario.",
+    "funding": "Actual Gate source events; native hourly mark-open valuation proxy",
+    "historical_account_fee_tier": "UNKNOWN",
+    "stress": "Additional bps/side applied to actual fill turnover; no refill or stop-path simulation"
+  },
+  "economic_qualification": "BLOCKED",
+  "environment": "NATIVE_BACKTEST_DEVELOPMENT",
+  "evaluation_timerange": "20261001-20261101",
+  "generated_at": "2026-11-02T15:50:27.670651+00:00",
+  "limits": [
+    "Current-survivor sample, not point-in-time historical discovery or an independent holdout",
+    "No historical quote/depth/queue or actual fills; limit OHLCV fill model can overstate fillability",
+    "No persistent native partial-fill/restart qualification or midnight account MTM baseline",
+    "Historical news and original availability/receipt times UNKNOWN",
+    "Separate portfolios are alternatives; never sum their performance."
+  ],
+  "portfolios": {
+    "FoundationRouterM0V1": {
+      "best_trade": {
+        "close_date": "2026-10-02 16:45:00+00:00",
+        "close_timestamp": 1790959500000,
+        "duration_minutes": 240,
+        "entry_tag": "sweep:bonus-v1",
+        "exit_reason": "max_hold_4h",
+        "fees_usdt": 0.0364848,
+        "funding_usdt": 0.00241008,
+        "gross_usdt": 0.5376,
+        "net_usdt": 0.50352528,
+        "open_date": "2026-10-02 12:45:00+00:00",
+        "open_timestamp": 1790945100000,
+        "pair": "XRP/USDT:USDT",
+        "partial_exits": 0,
+        "side": "short",
+        "turnover_usdt": 48.6464
+      },
+      "by_pair": {
+        "BTC/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "DOGE/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "ETH/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "SOL/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "XRP/USDT:USDT": {
+          "net_usdt": 0.50352528,
+          "trades": 1
+        }
+      },
+      "by_side": {
+        "long": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "short": {
+          "net_usdt": 0.50352528,
+          "trades": 1
+        }
+      },
+      "distinct_entry_days": 1,
+      "economic_status": "POSITIVE_DEVELOPMENT_UNQUALIFIED",
+      "expectancy_usdt": 0.50352528,
+      "extra_cost_stress": [
+        {
+          "extra_bps_per_side": 1.5,
+          "net_usdt": 0.49622831999999995
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.47920208
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 0.45487888
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": 0.40623247999999995
+        }
+      ],
+      "fee_per_side": 0.00075,
+      "fees_usdt": 0.0364848,
+      "gross_usdt": 0.5376,
+      "loss_count": 0,
+      "native_max_drawdown_usdt": 0.0,
+      "native_net_usdt": 0.50352528,
+      "partial_exits": 0,
+      "reconciliation_max_residual_usdt": "0",
+      "signed_funding_usdt": 0.00241008,
+      "trades": 1,
+      "win_count": 1,
+      "worst_trade": {
+        "close_date": "2026-10-02 16:45:00+00:00",
+        "close_timestamp": 1790959500000,
+        "duration_minutes": 240,
+        "entry_tag": "sweep:bonus-v1",
+        "exit_reason": "max_hold_4h",
+        "fees_usdt": 0.0364848,
+        "funding_usdt": 0.00241008,
+        "gross_usdt": 0.5376,
+        "net_usdt": 0.50352528,
+        "open_date": "2026-10-02 12:45:00+00:00",
+        "open_timestamp": 1790945100000,
+        "pair": "XRP/USDT:USDT",
+        "partial_exits": 0,
+        "side": "short",
+        "turnover_usdt": 48.6464
+      }
+    },
+    "FoundationRouterM1V1": {
+      "best_trade": {
+        "close_date": "2026-10-02 16:45:00+00:00",
+        "close_timestamp": 1790959500000,
+        "duration_minutes": 240,
+        "entry_tag": "sweep:bonus-v1",
+        "exit_reason": "max_hold_4h",
+        "fees_usdt": 0.0365418,
+        "funding_usdt": 0.00120504,
+        "gross_usdt": 0.4616,
+        "net_usdt": 0.42626324,
+        "open_date": "2026-10-02 12:45:00+00:00",
+        "open_timestamp": 1790945100000,
+        "pair": "XRP/USDT:USDT",
+        "partial_exits": 1,
+        "side": "short",
+        "turnover_usdt": 48.7224
+      },
+      "by_pair": {
+        "BTC/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "DOGE/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "ETH/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "SOL/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "XRP/USDT:USDT": {
+          "net_usdt": 0.42626324,
+          "trades": 1
+        }
+      },
+      "by_side": {
+        "long": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "short": {
+          "net_usdt": 0.42626324,
+          "trades": 1
+        }
+      },
+      "distinct_entry_days": 1,
+      "economic_status": "POSITIVE_DEVELOPMENT_UNQUALIFIED",
+      "expectancy_usdt": 0.42626324,
+      "extra_cost_stress": [
+        {
+          "extra_bps_per_side": 1.5,
+          "net_usdt": 0.41895488
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": 0.40190203999999996
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": 0.37754084
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": 0.32881844
+        }
+      ],
+      "fee_per_side": 0.00075,
+      "fees_usdt": 0.0365418,
+      "gross_usdt": 0.4616,
+      "loss_count": 0,
+      "native_max_drawdown_usdt": 0.0,
+      "native_net_usdt": 0.42626324,
+      "partial_exits": 1,
+      "reconciliation_max_residual_usdt": "0",
+      "signed_funding_usdt": 0.00120504,
+      "trades": 1,
+      "win_count": 1,
+      "worst_trade": {
+        "close_date": "2026-10-02 16:45:00+00:00",
+        "close_timestamp": 1790959500000,
+        "duration_minutes": 240,
+        "entry_tag": "sweep:bonus-v1",
+        "exit_reason": "max_hold_4h",
+        "fees_usdt": 0.0365418,
+        "funding_usdt": 0.00120504,
+        "gross_usdt": 0.4616,
+        "net_usdt": 0.42626324,
+        "open_date": "2026-10-02 12:45:00+00:00",
+        "open_timestamp": 1790945100000,
+        "pair": "XRP/USDT:USDT",
+        "partial_exits": 1,
+        "side": "short",
+        "turnover_usdt": 48.7224
+      }
+    },
+    "LiquiditySweepReversalV1": {
+      "best_trade": {
+        "close_date": "2026-10-02 16:45:00+00:00",
+        "close_timestamp": 1790959500000,
+        "duration_minutes": 240,
+        "entry_tag": "LiquiditySweepReversalV1:v1",
+        "exit_reason": "max_hold_4h",
+        "fees_usdt": 0.0364848,
+        "funding_usdt": 0.00241008,
+        "gross_usdt": 0.5376,
+        "net_usdt": 0.50352528,
+        "open_date": "2026-10-02 12:45:00+00:00",
+        "open_timestamp": 1790945100000,
+        "pair": "XRP/USDT:USDT",
+        "partial_exits": 0,
+        "side": "short",
+        "turnover_usdt": 48.6464
+      },
+      "by_pair": {
+        "BTC/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "DOGE/USDT:USDT": {
+          "net_usdt": -0.41972268,
+          "trades": 7
+        },
+        "ETH/USDT:USDT": {
+          "net_usdt": -0.56440633,
+          "trades": 3
+        },
+        "SOL/USDT:USDT": {
+          "net_usdt": -0.21386294999999994,
+          "trades": 7
+        },
+        "XRP/USDT:USDT": {
+          "net_usdt": 0.47270007999999997,
+          "trades": 7
+        }
+      },
+      "by_side": {
+        "long": {
+          "net_usdt": -1.42640618,
+          "trades": 14
+        },
+        "short": {
+          "net_usdt": 0.7011143,
+          "trades": 10
+        }
+      },
+      "distinct_entry_days": 15,
+      "economic_status": "REJECTED_UNDER_TESTED_ASSUMPTIONS",
+      "expectancy_usdt": -0.030220495,
+      "extra_cost_stress": [
+        {
+          "extra_bps_per_side": 1.5,
+          "net_usdt": -0.894929166
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": -1.2907495
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": -1.85620712
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -2.98712236
+        }
+      ],
+      "fee_per_side": 0.00075,
+      "fees_usdt": 0.84818643,
+      "gross_usdt": 0.12609999999999993,
+      "loss_count": 16,
+      "native_max_drawdown_usdt": 1.7024590899999998,
+      "native_net_usdt": -0.72529188,
+      "partial_exits": 0,
+      "reconciliation_max_residual_usdt": "5.0E-9",
+      "signed_funding_usdt": -0.0032054589299999993,
+      "trades": 24,
+      "win_count": 8,
+      "worst_trade": {
+        "close_date": "2026-10-30 00:15:00+00:00",
+        "close_timestamp": 1793319300000,
+        "duration_minutes": 195,
+        "entry_tag": "LiquiditySweepReversalV1:v1",
+        "exit_reason": "stop_loss",
+        "fees_usdt": 0.036873,
+        "funding_usdt": -0.000321646,
+        "gross_usdt": -0.34,
+        "net_usdt": -0.37719465,
+        "open_date": "2026-10-29 21:00:00+00:00",
+        "open_timestamp": 1793307600000,
+        "pair": "XRP/USDT:USDT",
+        "partial_exits": 0,
+        "side": "long",
+        "turnover_usdt": 49.164
+      }
+    },
+    "RouterOnlyV1": {
+      "best_trade": {
+        "close_date": "2026-10-02 13:00:00+00:00",
+        "close_timestamp": 1790946000000,
+        "duration_minutes": 15,
+        "entry_tag": "sweep:bonus-v1",
+        "exit_reason": "closed_hour_thesis_invalidated",
+        "fees_usdt": 0.036948,
+        "funding_usdt": 0.0,
+        "gross_usdt": -0.08,
+        "net_usdt": -0.116948,
+        "open_date": "2026-10-02 12:45:00+00:00",
+        "open_timestamp": 1790945100000,
+        "pair": "XRP/USDT:USDT",
+        "partial_exits": 0,
+        "side": "short",
+        "turnover_usdt": 49.263999999999996
+      },
+      "by_pair": {
+        "BTC/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "DOGE/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "ETH/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "SOL/USDT:USDT": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "XRP/USDT:USDT": {
+          "net_usdt": -0.116948,
+          "trades": 1
+        }
+      },
+      "by_side": {
+        "long": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "short": {
+          "net_usdt": -0.116948,
+          "trades": 1
+        }
+      },
+      "distinct_entry_days": 1,
+      "economic_status": "REJECTED_UNDER_TESTED_ASSUMPTIONS",
+      "expectancy_usdt": -0.116948,
+      "extra_cost_stress": [
+        {
+          "extra_bps_per_side": 1.5,
+          "net_usdt": -0.12433759999999999
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": -0.14157999999999998
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": -0.166212
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -0.215476
+        }
+      ],
+      "fee_per_side": 0.00075,
+      "fees_usdt": 0.036948,
+      "gross_usdt": -0.08,
+      "loss_count": 1,
+      "native_max_drawdown_usdt": 0.116948,
+      "native_net_usdt": -0.116948,
+      "partial_exits": 0,
+      "reconciliation_max_residual_usdt": "0",
+      "signed_funding_usdt": 0.0,
+      "trades": 1,
+      "win_count": 0,
+      "worst_trade": {
+        "close_date": "2026-10-02 13:00:00+00:00",
+        "close_timestamp": 1790946000000,
+        "duration_minutes": 15,
+        "entry_tag": "sweep:bonus-v1",
+        "exit_reason": "closed_hour_thesis_invalidated",
+        "fees_usdt": 0.036948,
+        "funding_usdt": 0.0,
+        "gross_usdt": -0.08,
+        "net_usdt": -0.116948,
+        "open_date": "2026-10-02 12:45:00+00:00",
+        "open_timestamp": 1790945100000,
+        "pair": "XRP/USDT:USDT",
+        "partial_exits": 0,
+        "side": "short",
+        "turnover_usdt": 49.263999999999996
+      }
+    },
+    "TrendPullbackBaselineV1": {
+      "best_trade": {
+        "close_date": "2026-10-08 17:00:00+00:00",
+        "close_timestamp": 1791478800000,
+        "duration_minutes": 105,
+        "entry_tag": "ema20_rejection_v1",
+        "exit_reason": "roi",
+        "fees_usdt": 0.036666,
+        "funding_usdt": -0.0005084855999999999,
+        "gross_usdt": 0.7812,
+        "net_usdt": 0.74402551,
+        "open_date": "2026-10-08 15:15:00+00:00",
+        "open_timestamp": 1791472500000,
+        "pair": "XRP/USDT:USDT",
+        "partial_exits": 0,
+        "side": "short",
+        "turnover_usdt": 48.888
+      },
+      "by_pair": {
+        "BTC/USDT:USDT": {
+          "net_usdt": -3.42356635,
+          "trades": 35
+        },
+        "DOGE/USDT:USDT": {
+          "net_usdt": -0.9993514,
+          "trades": 27
+        },
+        "ETH/USDT:USDT": {
+          "net_usdt": 1.56338091,
+          "trades": 35
+        },
+        "SOL/USDT:USDT": {
+          "net_usdt": -1.28463607,
+          "trades": 36
+        },
+        "XRP/USDT:USDT": {
+          "net_usdt": -2.24293042,
+          "trades": 29
+        }
+      },
+      "by_side": {
+        "long": {
+          "net_usdt": -9.36340392,
+          "trades": 86
+        },
+        "short": {
+          "net_usdt": 2.97630059,
+          "trades": 76
+        }
+      },
+      "distinct_entry_days": 31,
+      "economic_status": "REJECTED_UNDER_TESTED_ASSUMPTIONS",
+      "expectancy_usdt": -0.039426563765432104,
+      "extra_cost_stress": [
+        {
+          "extra_bps_per_side": 1.5,
+          "net_usdt": -7.515297172
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": -10.14774947
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": -13.90839561
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -21.42968789
+        }
+      ],
+      "fee_per_side": 0.00075,
+      "fees_usdt": 5.64096921,
+      "gross_usdt": -0.7210200000000001,
+      "loss_count": 120,
+      "native_max_drawdown_usdt": 8.16602953,
+      "native_net_usdt": -6.38710333,
+      "partial_exits": 0,
+      "reconciliation_max_residual_usdt": "5.0E-9",
+      "signed_funding_usdt": -0.025114139889000003,
+      "trades": 162,
+      "win_count": 42,
+      "worst_trade": {
+        "close_date": "2026-10-29 01:45:00+00:00",
+        "close_timestamp": 1793238300000,
+        "duration_minutes": 150,
+        "entry_tag": "ema20_reclaim_v1",
+        "exit_reason": "stop_loss",
+        "fees_usdt": 0.036774525,
+        "funding_usdt": -0.0022000266,
+        "gross_usdt": -0.4929,
+        "net_usdt": -0.53187455,
+        "open_date": "2026-10-28 23:15:00+00:00",
+        "open_timestamp": 1793229300000,
+        "pair": "DOGE/USDT:USDT",
+        "partial_exits": 0,
+        "side": "long",
+        "turnover_usdt": 49.032700000000006
+      }
+    },
+    "VWAPTrendContinuationV1": {
+      "best_trade": {
+        "close_date": "2026-10-08 16:00:00+00:00",
+        "close_timestamp": 1791475200000,
+        "duration_minutes": 45,
+        "entry_tag": "VWAPTrendContinuationV1:v1",
+        "exit_reason": "roi",
+        "fees_usdt": 0.03666411,
+        "funding_usdt": 0.000753396255,
+        "gross_usdt": 0.39132,
+        "net_usdt": 0.35540929,
+        "open_date": "2026-10-08 15:15:00+00:00",
+        "open_timestamp": 1791472500000,
+        "pair": "BTC/USDT:USDT",
+        "partial_exits": 0,
+        "side": "short",
+        "turnover_usdt": 48.88548
+      },
+      "by_pair": {
+        "BTC/USDT:USDT": {
+          "net_usdt": 0.35540929,
+          "trades": 1
+        },
+        "DOGE/USDT:USDT": {
+          "net_usdt": 0.09897866999999999,
+          "trades": 2
+        },
+        "ETH/USDT:USDT": {
+          "net_usdt": 0.018011990000000005,
+          "trades": 2
+        },
+        "SOL/USDT:USDT": {
+          "net_usdt": -0.49985500000000005,
+          "trades": 2
+        },
+        "XRP/USDT:USDT": {
+          "net_usdt": -0.42200943,
+          "trades": 2
+        }
+      },
+      "by_side": {
+        "long": {
+          "net_usdt": 0,
+          "trades": 0
+        },
+        "short": {
+          "net_usdt": -0.44946448000000006,
+          "trades": 9
+        }
+      },
+      "distinct_entry_days": 6,
+      "economic_status": "REJECTED_UNDER_TESTED_ASSUMPTIONS",
+      "expectancy_usdt": -0.04994049777777779,
+      "extra_cost_stress": [
+        {
+          "extra_bps_per_side": 1.5,
+          "net_usdt": -0.5129739895000001
+        },
+        {
+          "extra_bps_per_side": 5,
+          "net_usdt": -0.661162845
+        },
+        {
+          "extra_bps_per_side": 10,
+          "net_usdt": -0.87286121
+        },
+        {
+          "extra_bps_per_side": 20,
+          "net_usdt": -1.29625794
+        }
+      ],
+      "fee_per_side": 0.00075,
+      "fees_usdt": 0.31754754749999997,
+      "gross_usdt": -0.13237,
+      "loss_count": 6,
+      "native_max_drawdown_usdt": 1.2989687600000002,
+      "native_net_usdt": -0.44946448000000006,
+      "partial_exits": 0,
+      "reconciliation_max_residual_usdt": "5.00E-9",
+      "signed_funding_usdt": 0.00045308182500000005,
+      "trades": 9,
+      "win_count": 3,
+      "worst_trade": {
+        "close_date": "2026-10-15 04:15:00+00:00",
+        "close_timestamp": 1792037700000,
+        "duration_minutes": 60,
+        "entry_tag": "VWAPTrendContinuationV1:v1",
+        "exit_reason": "stop_loss",
+        "fees_usdt": 0.0308865,
+        "funding_usdt": 0.0,
+        "gross_usdt": -0.222,
+        "net_usdt": -0.2528865,
+        "open_date": "2026-10-15 03:15:00+00:00",
+        "open_timestamp": 1792034100000,
+        "pair": "SOL/USDT:USDT",
+        "partial_exits": 0,
+        "side": "short",
+        "turnover_usdt": 41.182
+      }
+    }
+  },
+  "protocol_sha256": "cc2b145a65f1811644c11a504989c3a9891b4049c79baca33e2bc2cc2707af0c",
+  "repaired_source_funding_within_bounds": true,
+  "router_exit_comparison": {
+    "identical_entry_keys": true,
+    "interpretation": "Inspected development comparison; changed position occupancy can change later admissions. No tuned parameters.",
+    "net_delta_usdt": 0.6204732799999999
+  },
+  "schema_version": 1,
+  "venue": "gate"
+}

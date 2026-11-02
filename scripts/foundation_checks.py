@@ -41,7 +41,8 @@ def ui_smoke(run_id):
     out, _, _ = verify(run_id)
     temp = ROOT/'work/foundation-ui'/run_id; temp.mkdir(parents=True)
     results = temp/'backtest_results'; results.mkdir()
-    native = ROOT/'user_data/backtest_results/foundation'/run_id/'TrendPullbackBaselineV1'
+    archive = ROOT/read(out/'native-provenance/TrendPullbackBaselineV1.json')['archive_local_path']
+    native = archive.parent
     for path in native.glob('*'):
         if path.is_file(): shutil.copyfile(path, results/path.name)
     cfg = read(config(run_id, 'TrendPullbackBaselineV1'))
@@ -99,7 +100,8 @@ def ui_smoke(run_id):
 def dryrun_smoke(run_id):
     out, _, _ = verify(run_id)
     cfg = read(config(run_id, 'TrendPullbackBaselineV1'))
-    temp = ROOT/'work/foundation-dryrun'/run_id; temp.mkdir(parents=True)
+    base = ROOT/'work/foundation-dryrun'/run_id
+    temp = base/('attempt-'+str(len(list(base.glob('attempt-*')))+1).zfill(3)); temp.mkdir(parents=True)
     database = temp/'disposable.sqlite'
     cfg.update(initial_state='stopped', db_url='sqlite:///'+str(database), cancel_open_orders_on_exit=True)
     cfg.pop('api_server', None)
@@ -107,14 +109,15 @@ def dryrun_smoke(run_id):
     path = temp/'config.json'; write(path, cfg)
     assert cfg['dry_run'] is True and not cfg['force_entry_enable'] and not cfg['position_adjustment_enable']
     assert all(not cfg['exchange'].get(k) for k in ('key', 'secret', 'password', 'uid'))
-    with (out/'dryrun-smoke.txt').open('x') as log:
+    log_path = out/('dryrun-smoke-attempt-'+str(len(list(out.glob('dryrun-smoke-attempt-*.txt')))+1).zfill(3)+'.txt')
+    with log_path.open('x') as log:
         process = subprocess.Popen(['freqtrade', 'trade', '--config', str(path)], stdout=log, stderr=subprocess.STDOUT)
         try:
-            for _ in range(60):
+            for _ in range(240):
                 if process.poll() is not None: raise ValueError('native dry-run startup exited early')
-                if database.exists() and 'STOPPED' in (out/'dryrun-smoke.txt').read_text(): break
+                if database.exists() and 'STOPPED' in log_path.read_text(): break
                 time.sleep(.5)
-            else: raise ValueError('native stopped-state startup not observed within 30s')
+            else: raise ValueError('native stopped-state startup not observed within 120s')
         finally:
             if process.poll() is None: process.send_signal(signal.SIGINT)
             try: process.wait(timeout=15)

@@ -24,8 +24,11 @@ if [[ "$action" == run ]]; then
   for step in register doctor preflight scan acquire assess schedule backtest events report export lookahead ui-smoke dryrun-smoke; do
     echo "Foundation step: $step"
     native "$step" "$run_id"
+    if [[ "$step" == lookahead ]]; then
+      docker exec "$runner" python scripts/summarize_lookahead.py "$run_id"
+    fi
   done
-  docker exec "$runner" python -m unittest discover -s tests -p test_foundation_session1.py -v
+  docker exec -e FOUNDATION_RUN_ID="$run_id" "$runner" python -m unittest discover -s tests -p test_foundation_session1.py -v
 else
   native "$action" "$run_id"
 fi
