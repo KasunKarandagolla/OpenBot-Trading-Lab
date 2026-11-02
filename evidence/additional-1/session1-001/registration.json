@@ -1,0 +1,61 @@
+{
+  "image": "freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7",
+  "protocol": {
+    "classification": "INSPECTED_DEVELOPMENT_CURRENT_SURVIVORS",
+    "cohort_id": "gate-october-development-v1",
+    "download_timerange": "20260921-20261101",
+    "economic_status": "UNQUALIFIED_DEVELOPMENT",
+    "evaluation_timerange": "20261001-20261101",
+    "extra_cost_bps_per_side": [
+      1.5,
+      5,
+      10,
+      20
+    ],
+    "fallback_venue": "gate",
+    "fee_evidence": "Conservative scenario informed by current Gate public generic taker metadata; account tier and historical fee schedule UNKNOWN. Reject if current public taker rate exceeds this scenario.",
+    "fee_per_side": 0.00075,
+    "max_deep_analysis": 5,
+    "max_scan_shortlist": 20,
+    "membership": "Five predeclared familiar survivors, selected before this session's outcomes, not historical exchange membership. Current scanner does not determine historical inclusion.",
+    "orders_allowed": false,
+    "pairs": [
+      "BTC/USDT:USDT",
+      "ETH/USDT:USDT",
+      "SOL/USDT:USDT",
+      "XRP/USDT:USDT",
+      "DOGE/USDT:USDT"
+    ],
+    "persistent_paper_allowed": false,
+    "policy": "Existing numerical entry/rank/geometry parameters unchanged. M0 adopts audited frozen-price invalidation. M1 is a research-only full native replay with event-once funding under before-exit event priority; operational partial fills/restart remain unqualified.",
+    "preferred_venue": "binance",
+    "schema_version": 1,
+    "strategies": [
+      "TrendPullbackBaselineV1",
+      "VWAPTrendContinuationV1",
+      "LiquiditySweepReversalV1",
+      "RouterOnlyV1",
+      "FoundationRouterM0V1",
+      "FoundationRouterM1V1"
+    ],
+    "warmup_hours": 240
+  },
+  "registered_at": "2026-11-02T15:41:17.795238+00:00",
+  "run_id": "session1-001",
+  "schema_version": 1,
+  "source_hashes": {
+    "research/foundation/FoundationRouterV1.py": "61752e46ed298a4a29e5128fd156d8c962575bfb45a50b58d0ada94e1a6df13e",
+    "research/foundation/event-sources.json": "995df162d0b38b5d0a5fd2dab8c98c13e8f8789615c19fdbe973a9781e67d504",
+    "research/foundation/funding.py": "782a3eee3fe0a248ad8f754e4a5abe98b150c8418d1c0255469e992ddc28841d",
+    "research/foundation/openbot.schema.json": "511b9b36bead4cb51877b5b1dafcc59bccb6ce064175b3a74dcb35d7dbf5651f",
+    "research/foundation/protocol.json": "cc2b145a65f1811644c11a504989c3a9891b4049c79baca33e2bc2cc2707af0c",
+    "scripts/foundation.py": "bd2b9373bce487304e8f0225ed05ad8b72933bbf5486114b4581ed5086748323",
+    "scripts/foundation_checks.py": "bd0c25df91542211c360f3bd11462704f2e59ce0d4b67d3366963ac01eddd722",
+    "scripts/foundation_common.py": "b4196c3cc9e991ed9af568730d3cc685dc5fcea007e43e74ae0752b675558e67",
+    "scripts/foundation_events.py": "177bbfaf967db36af9e9164d867aacdcfe8a2c39a5e34f485b093dc31ea24dde",
+    "scripts/foundation_market.py": "a72d9124a3593c431f3645f90016a1aeecfd302a16eb10eb9fca8ac9b0a3e3b1",
+    "scripts/foundation_native.py": "00e4d4881d7efea723d16c708f70ac8a411cd51879319aa88c5b8a4c498b8a13",
+    "scripts/foundation_report.py": "52bd24dbbcef171b582ab64fd8e73c0e1c37f1f76459010bb22f11a69c60583c",
+    "scripts/foundation_restore.py": "97478992bcaf144e62b92c6d9a033ae2409c611d76afed80852f7cf88438ab22"
+  }
+}

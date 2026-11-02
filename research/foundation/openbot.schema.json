@@ -1,0 +1,26 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object",
+  "required":["schema_version","snapshot_id","generated_at","mode","venue","source_provenance","candidates","event_briefing","orders_created","uncertainty"],
+  "properties":{
+    "schema_version":{"const":1},
+    "mode":{"const":"READ_ONLY_RESEARCH"},
+    "venue":{"const":"gate"},
+    "orders_created":{"const":false},
+    "candidates":{"type":"array","maxItems":200,"items":{
+      "type":"object",
+      "required":["decision_id","venue","symbol","status","reason","environment","event_context","orders_created"],
+      "properties":{
+        "status":{"enum":["RESEARCH_CANDIDATE","WATCH","REJECT","NO_TRADE"]},
+        "venue":{"const":"gate"},
+        "orders_created":{"const":false},
+        "geometry":{"type":["object","null"]},
+        "data_gaps":{"type":"array","items":{"type":"string"}},
+        "opposing_evidence":{"type":"array","maxItems":20},
+        "decision_id":{"type":"string","maxLength":240}
+      }
+    }},
+    "event_briefing":{"type":"object","required":["schema_version","clearance","coverage","events"],"properties":{"clearance":{"const":"UNKNOWN"},"events":{"type":"array","maxItems":200}}},
+    "uncertainty":{"type":"array","items":{"type":"string"}}
+  }
+}
