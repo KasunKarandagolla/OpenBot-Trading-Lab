@@ -127,3 +127,23 @@ def qualified_flow(trades, start_ms, end_ms, asof_ms, coverage, scale, boundary=
         confirmation='UNKNOWN' if not good or len(selected)<2 else 'OBSERVED_PARTICIPATION_ONLY',
         max_latency_ms=max((r['latency_ms'] for r in selected),default=None),
         economic_uplift='UNMEASURED_NO_HISTORICAL_FLOW',orders_created=False)
+
+
+def normalize_gate_rest(parsed, received_ms, contract, multiplier):
+    """CCXT Gate REST amounts are contracts; mislabeled raw ms field is seconds.
+
+    Cross-check the adapter's millisecond timestamp against the independent
+    raw create_time seconds. WS keeps its original genuine millisecond field.
+    """
+    event=dict(parsed['info'])
+    if event.get('contract')!=contract: raise ValueError('CONTRACT_IDENTITY')
+    stamp=float(parsed['timestamp'])
+    if abs(stamp-float(event['create_time'])*1000)>1.01: raise ValueError('REST_SOURCE_CLOCK_MISMATCH')
+    event['create_time_ms']=stamp
+    row=normalize(event,received_ms,contract,multiplier)
+    expected=float(parsed['amount'])*multiplier
+    if row['side']!=parsed['side'] or abs(row['amount']-expected)>max(1e-10,abs(expected)*1e-8):
+        raise ValueError('REST_SIDE_OR_UNIT_MISMATCH')
+    row['timestamp_semantics']='CCXT_MS_VERIFIED_AGAINST_RAW_CREATE_TIME_SECONDS'
+    row['amount_semantics']='ABS_CONTRACTS_TIMES_VERIFIED_BASE_MULTIPLIER'
+    return row

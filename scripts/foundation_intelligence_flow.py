@@ -7,12 +7,14 @@ import ssl
 import time
 import aiohttp
 from foundation_common import *
-from orderflow import normalize,qualified_flow
+from orderflow import normalize,normalize_gate_rest,qualified_flow
 
 
 async def capture(run_id,seconds=45):
     out,data,spec=verify(run_id)
     if (out/'orderflow.json').exists(): raise ValueError('preserve flow observation')
+    source_dir=data.parent/'flow'/('attempt-'+str(len(list((data.parent/'flow').glob('attempt-*')))+1).zfill(3))
+    source_dir.mkdir(parents=True)
     shortlist=read(out/'deep-shortlist.json')['deep'][:3]
     candidates=read(out/'opportunities.json')['records']
     ex=public(); markets=ex.load_markets(); contexts={}; results=[]
@@ -22,22 +24,21 @@ async def capture(run_id,seconds=45):
     # Retain the adapter implementing the venue's signed-size mapping by hash.
     import ccxt
     adapter=inspect.getsource(ccxt.gate.parse_trade)
-    adapter_path=data.parent/'current/gate-parse-trade-source.txt'; adapter_path.write_text(adapter)
+    adapter_path=source_dir/'gate-parse-trade-source.txt'; adapter_path.write_text(adapter)
     documentation='https://www.gate.com/docs/developers/futures/ws/#trades-notification'
     for candidate in shortlist:
         symbol=candidate['symbol']; market=markets[symbol]; contract=market['id']; multiplier=market['contractSize']
         if not multiplier or not market['linear'] or market['settle']!='USDT': raise ValueError('unverified linear base multiplier')
         raw=ex.fetch_trades(symbol,limit=1000); received=time.time()*1000; normalized=[]; seen=set(); duplicates=0; invalid=0; side_mismatches=0
         for trade in raw:
-            event=dict(trade['info']); event['contract']=contract
             try:
-                r=normalize(event,received,contract,multiplier)
-                if r['side']!=trade['side'] or abs(r['amount']-trade['amount'])>max(1e-10,r['amount']*1e-8):
-                    side_mismatches+=1; continue
+                r=normalize_gate_rest(trade,received,contract,multiplier)
                 if r['id'] in seen: duplicates+=1; continue
                 seen.add(r['id']); normalized.append(r)
-            except (KeyError,ValueError,TypeError): invalid+=1
-        path=data.parent/'current'/(contract+'-public-trades.json'); write(path,dict(received_ms=received,trades=raw))
+            except (KeyError,ValueError,TypeError) as error:
+                invalid+=1
+                if 'MISMATCH' in str(error): side_mismatches+=1
+        path=source_dir/(contract+'-public-trades.json'); write(path,dict(received_ms=received,trades=raw))
         scale=float(market['precision']['price'])*10
         coverage=dict(source='REST',pagination_continuity='UNKNOWN_BOUNDED_PAGE',disconnects=0,invalid_events=invalid,
             duplicate_ids=duplicates,side_unit_mismatches=side_mismatches,server_clock_offset_ms=offset)
@@ -47,13 +48,13 @@ async def capture(run_id,seconds=45):
         results.append(dict(symbol=symbol,contract=contract,contract_size_base=multiplier,source='GATE_PUBLIC_EXECUTED_TRADES_REST',
             side_semantics='SIGNED_SIZE_POSITIVE_AGGRESSIVE_BUY_NEGATIVE_AGGRESSIVE_SELL',ccxt_side_unit_mismatches=side_mismatches,
             verified_adapter_sha256=sha(adapter_path),semantics_reference=documentation,coverage=coverage,
-            observation=obs,source_sha256=sha(path),orders_created=False))
+            observation=obs,source_sha256=sha(path),raw_source_local_path=str(path.relative_to(ROOT)),orders_created=False))
         context=next((r.get('structure',{}) for r in candidates if r['symbol']==symbol and r.get('structure')), {})
         boundaries=[dict(price=context['prior_boundary_low'],side='long',known_at=context['boundary_known_at']),
                     dict(price=context['prior_boundary_high'],side='short',known_at=context['boundary_known_at'])] if 'prior_boundary_low' in context else []
         contexts[contract]=dict(symbol=symbol,multiplier=multiplier,scale=scale,rows=[],seen=set(),last=0,boundaries=boundaries,
             coverage=dict(source='WEBSOCKET',subscribed_ms=None,connected_until_ms=0,disconnects=0,invalid_events=0,out_of_order=0,duplicate_ids=0,server_clock_offset_ms=offset))
-    rawpath=data.parent/'current/flow-websocket.jsonl'; error=None
+    rawpath=source_dir/'flow-websocket.jsonl'; error=None
     proxy=os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')
     try:
         async with aiohttp.ClientSession(trust_env=True) as session:
@@ -108,6 +109,7 @@ async def capture(run_id,seconds=45):
         streams.append(dict(symbol=ctx['symbol'],contract=contract,observed_trades=len(ctx['rows']),coverage=coverage,windows=windows))
     write(out/'orderflow.json',dict(version=2,observed_at=now(),venue='gate',rest=results,websocket=streams,
         websocket_error=error,websocket_source_sha256=sha(rawpath) if rawpath.exists() else None,
+        websocket_source_local_path=str(rawpath.relative_to(ROOT)),
         server_clock=dict(offset_ms=offset,round_trip_ms=t1-t0),duration_budget_seconds=seconds,
         historical_flow='UNKNOWN_NO_GENUINE_HISTORICAL_COVERAGE',economic_uplift='UNMEASURED',orders_created=False))
     print('Real flow:',sum(r['observation']['trade_count'] if r['observation'] else 0 for r in results),'REST prints;',sum(s['observed_trades'] for s in streams),'WS prints;',sum(len(s['windows']) for s in streams),'qualified-window attempts; error',error,flush=True)

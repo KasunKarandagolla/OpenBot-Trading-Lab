@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'research/intelligence'),str(ROOT/'research/bonus'),str(ROOT/'research/session3'),str(ROOT/'research/master_audit'),str(ROOT/'research/foundation'),str(ROOT/'user_data/strategies')]
 from intelligence_features import COST,match,research_plan,profiles
 from advanced_features import volume_profile_v2
-from orderflow import normalize,qualified_flow
+from orderflow import normalize,normalize_gate_rest,qualified_flow
 
 
 class IntelligenceTests(unittest.TestCase):
@@ -101,6 +101,14 @@ class IntelligenceTests(unittest.TestCase):
 
     def test_internal_trade_excluded(self):
         with self.assertRaises(ValueError): normalize(dict(is_internal=True),1000,'BTC_USDT',.01)
+
+    def test_gate_rest_seconds_and_contract_units_differ_from_ws(self):
+        raw=dict(id='7',contract='BTC_USDT',create_time=1793638039.776,create_time_ms=1793638039.776,size='-2',price='100')
+        parsed=dict(info=raw,timestamp=1793638039776,amount=2.,side='sell')
+        row=normalize_gate_rest(parsed,1793638040000,'BTC_USDT',.001)
+        self.assertAlmostEqual(row['amount'],.002); self.assertEqual(row['event_ms'],1793638039776)
+        self.assertAlmostEqual(row['latency_ms'],224.)
+        with self.assertRaises(ValueError): normalize_gate_rest(parsed|dict(timestamp=1793638039),1793638040000,'BTC_USDT',.001)
 
 
 if __name__=='__main__': unittest.main()
