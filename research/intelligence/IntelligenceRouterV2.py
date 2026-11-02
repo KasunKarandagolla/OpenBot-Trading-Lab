@@ -1,5 +1,6 @@
 """Native research variants. No operational allowlist or execution bridge."""
 import json
+from datetime import timedelta
 from pathlib import Path
 import pandas as pd
 from FoundationRouterV1 import FoundationRouterM0V1
@@ -74,6 +75,18 @@ class IntelligenceCostV2(FoundationRouterM0V1):
     def custom_entry_price(self,pair,trade,current_time,proposed_rate,entry_tag,side,**kwargs):
         row=self.signal_row(pair,current_time,side)
         return json.loads(row.bonus_plan)['reference'] if row is not None and isinstance(row.get('bonus_plan'),str) else proposed_rate
+
+    def check_entry_timeout(self,pair,trade,order,current_time,**kwargs):
+        side='short' if trade.is_short else 'long'
+        if current_time-order.order_date_utc>=timedelta(minutes=5) or self.signal_row(pair,current_time,side) is None:
+            return True
+        mode=self.config.get('runmode')
+        if getattr(mode,'value',mode)=='dry_run':
+            try:
+                quote=self.dp.ticker(pair); rate=float(quote['bid' if trade.is_short else 'ask'])
+                return self.row_plan(pair,current_time,side,rate) is None
+            except Exception: return True
+        return False
 
     def confirm_trade_entry(self,pair,order_type,amount,rate,time_in_force,current_time,entry_tag,side,**kwargs):
         # Parent callback already invokes V2 row_plan. Its reserve of 0.0335 is

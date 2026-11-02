@@ -120,11 +120,27 @@ class IntelligenceTests(unittest.TestCase):
 
     def test_signed_schedule_has_no_reversal_without_actual_failure(self):
         path=ROOT/'evidence/additional-2/intelligence-001/signed-market-ranking.csv'
-        if not path.exists(): return  # pure fixtures still run before acquisition
+        if not path.exists(): self.skipTest('Requires actual registered signed schedule')
         rows=pd.read_csv(path)
         eligible=rows.loc[(rows.recipe=='sweep')&rows.eligible]
         self.assertTrue(eligible.failed_boundary_confirmed.all())
         self.assertTrue(rows.loc[(rows.recipe=='vwap')&rows.eligible].side.isin(['long','short']).all())
+
+    def test_native_price_recheck_uses_same_cost_and_expiry(self):
+        import json
+        from types import SimpleNamespace
+        from IntelligenceRouterV2 import IntelligenceRegimeV2
+        from freqtrade.enums import CandleType
+        s=IntelligenceRegimeV2({'candle_type_def':CandleType.FUTURES,'runmode':'dry_run'})
+        row=self.row();row['enter_long']=1;row['enter_short']=0
+        row['bonus_plan']=json.dumps(research_plan(row,'vwap','long'))
+        s.dp=SimpleNamespace(get_analyzed_dataframe=lambda *a:(pd.DataFrame([row]),None),ticker=lambda *a:dict(bid=100.,ask=100.))
+        now=row.date+pd.Timedelta(minutes=15)
+        self.assertAlmostEqual(s.row_plan('BTC',now,'long',100.)['modeled_loss_per_notional'],.022+.0038)
+        self.assertIsNone(s.row_plan('BTC',now,'long',101.))
+        order=SimpleNamespace(order_date_utc=now);trade=SimpleNamespace(is_short=False)
+        self.assertFalse(s.check_entry_timeout('BTC',trade,order,now))
+        self.assertTrue(s.check_entry_timeout('BTC',trade,order,now+pd.Timedelta(minutes=5)))
 
 
 if __name__=='__main__': unittest.main()
