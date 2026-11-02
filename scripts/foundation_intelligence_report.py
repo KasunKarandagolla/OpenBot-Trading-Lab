@@ -96,6 +96,14 @@ def export(run_id):
                     executed_buy_base=obs['buy_base'] if obs else None,executed_sell_base=obs['sell_base'] if obs else None,
                     delta_base=obs['delta_base'] if obs else None,profile_fidelity='OBSERVED_TRADES',
                     confirmation='UNKNOWN_CURRENT_WINDOW_IS_NOT_HISTORICAL_SIGNAL_WINDOW',economic_uplift='UNMEASURED')
+                latest=ws['windows'][-1] if ws and ws['windows'] else obs
+                if latest:
+                    r['orderflow']['observed_window']={k:latest.get(k) for k in
+                        ['start_ms','end_ms','asof_ms','coverage_status','trade_count','buy_base','sell_base','delta_base',
+                         'cvd_base_window','cvd_resets_at','imbalance','price_return','divergence','max_latency_ms']}
+                    r['orderflow']['observed_trade_profile']=latest.get('profile')
+                    r['orderflow']['location_assessments']=[v for v in latest.get('location_assessments',[]) if v['side']==r.get('side')]
+                    r['orderflow']['causal_use']='Later current observation only; never retroactive confirmation of the earlier candle setup'
         candidates.append(r)
     snapshot=dict(schema_version=1,snapshot_id='intelligence:'+run_id,generated_at=now(),mode='READ_ONLY_RESEARCH',
         execution_authority='NATIVE_DETERMINISTIC_ADMISSION_ONLY',venue='gate',orders_created=False,
