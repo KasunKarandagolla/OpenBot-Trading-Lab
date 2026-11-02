@@ -14,6 +14,7 @@ async def capture(run_id,seconds=45):
     out,data,spec=verify(run_id)
     if (out/'orderflow.json').exists(): raise ValueError('preserve flow observation')
     shortlist=read(out/'deep-shortlist.json')['deep'][:3]
+    candidates=read(out/'opportunities.json')['records']
     ex=public(); markets=ex.load_markets(); contexts={}; results=[]
     t0=time.time()*1000
     try: venue=ex.fetch_time(); t1=time.time()*1000; offset=float(venue)-(t0+t1)/2
@@ -47,7 +48,10 @@ async def capture(run_id,seconds=45):
             side_semantics='SIGNED_SIZE_POSITIVE_AGGRESSIVE_BUY_NEGATIVE_AGGRESSIVE_SELL',ccxt_side_unit_mismatches=side_mismatches,
             verified_adapter_sha256=sha(adapter_path),semantics_reference=documentation,coverage=coverage,
             observation=obs,source_sha256=sha(path),orders_created=False))
-        contexts[contract]=dict(symbol=symbol,multiplier=multiplier,scale=scale,rows=[],seen=set(),last=0,
+        context=next((r.get('structure',{}) for r in candidates if r['symbol']==symbol and r.get('structure')), {})
+        boundaries=[dict(price=context['prior_boundary_low'],side='long',known_at=context['boundary_known_at']),
+                    dict(price=context['prior_boundary_high'],side='short',known_at=context['boundary_known_at'])] if 'prior_boundary_low' in context else []
+        contexts[contract]=dict(symbol=symbol,multiplier=multiplier,scale=scale,rows=[],seen=set(),last=0,boundaries=boundaries,
             coverage=dict(source='WEBSOCKET',subscribed_ms=None,connected_until_ms=0,disconnects=0,invalid_events=0,out_of_order=0,duplicate_ids=0,server_clock_offset_ms=offset))
     rawpath=data.parent/'current/flow-websocket.jsonl'; error=None
     proxy=os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')
@@ -93,7 +97,14 @@ async def capture(run_id,seconds=45):
             start=(int(coverage['subscribed_ms']//10000)+1)*10000
             end=int((coverage['connected_until_ms']-1000)//10000)*10000
             for at in range(start,end,10000):
-                windows.append(qualified_flow(ctx['rows'],at,at+10000,at+11000,coverage,ctx['scale']))
+                observation=qualified_flow(ctx['rows'],at,at+10000,at+11000,coverage,ctx['scale'])
+                observation['location_assessments']=[]
+                for boundary in ctx['boundaries']:
+                    if __import__('datetime').datetime.fromisoformat(boundary['known_at']).timestamp()*1000>at:
+                        raise ValueError('boundary not known before flow window')
+                    located=qualified_flow(ctx['rows'],at,at+10000,at+11000,coverage,ctx['scale'],boundary)
+                    observation['location_assessments'].append(dict(side=boundary['side'],location=located['location'],flow_at_boundary=located['flow_at_boundary']))
+                windows.append(observation)
         streams.append(dict(symbol=ctx['symbol'],contract=contract,observed_trades=len(ctx['rows']),coverage=coverage,windows=windows))
     write(out/'orderflow.json',dict(version=2,observed_at=now(),venue='gate',rest=results,websocket=streams,
         websocket_error=error,websocket_source_sha256=sha(rawpath) if rawpath.exists() else None,
