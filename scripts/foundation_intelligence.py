@@ -191,7 +191,7 @@ def lookahead(run_id):
         with log.open('x') as f:
             r=subprocess.run([sys.executable,str(ROOT/'scripts/foundation.py'),'native-lookahead',run_id,name],stdout=f,stderr=subprocess.STDOUT)
         path=out/(name+'-lookahead.csv')
-        rows=pd.read_csv(path).to_dict('records') if path.exists() else []
+        rows=pd.read_csv(path,keep_default_na=False).to_dict('records') if path.exists() else []
         checks.append(dict(strategy=name,exit_code=r.returncode,csv_rows=rows,
             interpretation='INSPECT_TEXT_TABLE_AND_SAMPLE_SIZE; HEADER_ONLY_CSV_IS_NOT_PROOF_OF_NO_BIAS',log_sha256=sha(log)))
         print('Native lookahead',name,'exit',r.returncode,flush=True)
