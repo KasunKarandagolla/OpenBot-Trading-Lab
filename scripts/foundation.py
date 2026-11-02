@@ -22,6 +22,9 @@ def main():
     actions = dict(preflight=preflight, scan=scan, acquire=acquire, validate=validate,
         assess=assess, schedule=schedule, backtest=backtest, report=report, export=export,
         events=collect, doctor=doctor, lookahead=lookahead, **{'events-replay': replay, 'ui-smoke': ui_smoke, 'dryrun-smoke': dryrun_smoke})
+    if run_id.startswith('intelligence-'):
+        from foundation_intelligence import schedule as intelligent_schedule, assess as intelligent_assess, flow, compare, export as intelligent_export, lookahead as intelligent_lookahead
+        actions.update(schedule=intelligent_schedule, assess=intelligent_assess, flow=flow, compare=compare, export=intelligent_export, **{'intelligence-lookahead':intelligent_lookahead})
     if action not in actions: raise ValueError('unsupported research action')
     actions[action](run_id)
     return 0

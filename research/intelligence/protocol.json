@@ -1,0 +1,33 @@
+{
+  "schema_version": 2,
+  "cohort_id": "gate-intelligence-october-development-v2",
+  "classification": "INSPECTED_DEVELOPMENT_CURRENT_SURVIVORS",
+  "pairs": ["BTC/USDT:USDT", "ETH/USDT:USDT", "SOL/USDT:USDT", "XRP/USDT:USDT", "DOGE/USDT:USDT"],
+  "download_timerange": "20260921-20261101",
+  "evaluation_timerange": "20261001-20261101",
+  "warmup_hours": 240,
+  "fee_per_side": 0.00075,
+  "fee_evidence": "Conservative 0.075% per side scenario; current generic taker metadata checked; historical account tier UNKNOWN.",
+  "admission_cost": {"fees_round_trip": 0.0015, "friction_round_trip": 0.002, "adverse_funding": 0.0003, "total": 0.0038},
+  "extra_cost_bps_per_side": [1.5, 5, 10, 20],
+  "max_scan_shortlist": 20,
+  "max_deep_analysis": 5,
+  "strategies": ["TrendPullbackBaselineV1", "VWAPTrendContinuationV1", "LiquiditySweepReversalV1", "RouterOnlyV1", "FoundationRouterM0V1", "IntelligenceCostV2", "IntelligenceSignedV2", "IntelligenceRegimeV2", "IntelligenceAllV2", "IntelligenceStructureV2", "IntelligenceProfileV2", "IntelligenceTargetV2", "IntelligenceNearestV2", "IntelligenceEntryV2"],
+  "membership": "Same five preregistered Session 1 current-survivor contracts; historical exchange membership UNKNOWN. Current broad scan is separate from historical inclusion.",
+  "hypotheses": [
+    "Cost control changes only admission allowance from frozen 0.0035 to consistent 0.0038 and callbacks; native fees remain equal.",
+    "Signed ranks use side*4h BTC-relative return plus existing capped activity term; reversal ranks require an actual failed-boundary parent signal and rank reclaim distance/ATR, never absolute opposing momentum.",
+    "Signed arm holds legacy ADX25 recipe routing; regime arm admits both frozen parent recipes in their native ADX20/30 overlap and rejects strong opposing continuation without a local change of character.",
+    "All-market regime control removes only signed top-three filtering; identical candidate keys expose coverage costs and missed native winners.",
+    "Structure arm requires non-opposing confirmed hourly direction for VWAP, and proximity within 0.5ATR to a prior confirmed pivot or prior-day boundary for sweeps.",
+    "Profile arm uses prior-day OHLCV proxy objectives, target arm adds prior confirmed swing/day objectives. A nearer objective is used only if net RR>=1.25, otherwise fixed2R remains with obstacle caution.",
+    "Nearest arm always truncates at nearest structural/profile objective and rejects poor net RR; measures harmful obstacle vetoes.",
+    "Entry arm changes only limit reference to 0.1ATR retracement; maximum price deviation and five-minute expiry remain; compare native modeled fills and net results."
+  ],
+  "profile": "96 prior contiguous candles, typical-price base-volume proxy; observed executed-trade profiles kept separate. No historical genuine Order Flow available.",
+  "flow": "At most three shortlisted Gate contracts; bounded REST executed-trade pages plus live WebSocket if available; REST pagination completeness not proven means UNKNOWN confirmation. No large tick archive.",
+  "holdout": "November17-December1 reserved parent holdout remains untouched and unobserved; October already inspected, no independent generalization claim.",
+  "economic_status": "UNQUALIFIED_DEVELOPMENT",
+  "persistent_paper_allowed": false,
+  "orders_allowed": false
+}

@@ -13,6 +13,8 @@ sys.path[:0] = [str(ROOT/'scripts'), str(ROOT/'research'),
                str(ROOT/'research/bonus'), str(ROOT/'research/session3'),
                str(ROOT/'research/master_audit'), str(ROOT/'user_data/strategies')]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT/'research/intelligence'))
+sys.path.insert(0, str(ROOT/'research/foundation'))
 PROTOCOL = ROOT/'research/foundation/protocol.json'
 IMAGE = 'freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7'
 
@@ -41,7 +43,7 @@ def write(path, obj):
 def paths(run_id):
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{2,40}', run_id):
         raise ValueError('use a bounded lowercase run ID')
-    out = ROOT/'evidence/additional-1'/run_id
+    out = ROOT/('evidence/additional-2' if run_id.startswith('intelligence-') else 'evidence/additional-1')/run_id
     data = ROOT/'user_data/data/foundation'/run_id/'gate'
     return out, data
 
@@ -65,7 +67,9 @@ def public(venue='gate'):
 def source_files():
     return sorted(list((ROOT/'research/foundation').glob('*.py')) +
                   list((ROOT/'research/foundation').glob('*.json')) +
-                  list((ROOT/'scripts').glob('foundation*.py')))
+                  list((ROOT/'scripts').glob('foundation*.py')) +
+                  list((ROOT/'research/intelligence').glob('*.*')) +
+                  [ROOT/'research/bonus/advanced_features.py', ROOT/'research/bonus/orderflow.py'])
 
 
 def register(run_id):
@@ -75,7 +79,8 @@ def register(run_id):
     if out.exists():
         raise ValueError('preserve existing run; use individual actions or a new ID')
     obj = dict(schema_version=1, run_id=run_id, registered_at=now(), image=IMAGE,
-               protocol=read(PROTOCOL), source_hashes={str(p.relative_to(ROOT)): sha(p) for p in source_files()})
+               protocol=read(ROOT/'research/intelligence/protocol.json' if run_id.startswith('intelligence-') else PROTOCOL),
+               source_hashes={str(p.relative_to(ROOT)): sha(p) for p in source_files()})
     write(out/'registration.json', obj)
     return obj
 
@@ -118,6 +123,8 @@ def config(run_id, name):
                list((ROOT/'research/session3').glob('*.py')) +
                list((ROOT/'research/bonus').glob('*.py')) +
                [ROOT/'research/master_audit/AuditVariantsV1.py', ROOT/'research/foundation/FoundationRouterV1.py'])
+    if run_id.startswith('intelligence-'):
+        sources += list((ROOT/'research/intelligence').glob('*.py'))
     expected = {p.name: p for p in sources}
     if len(expected) != len(sources):
         raise ValueError('duplicate strategy module')
@@ -135,6 +142,9 @@ def config(run_id, name):
                fee=spec['fee_per_side'], position_adjustment_enable=name == 'FoundationRouterM1V1',
                bonus_schedule=str(out/'schedule.json'))
     cfg['exchange']['pair_whitelist'] = spec['pairs']
+    if run_id.startswith('intelligence-'):
+        cfg['intelligence_schedule'] = str(out/'signed-schedule.json')
+        cfg['intelligence_ledger'] = str(out/'runtime-admission.jsonl')
     for key in ('key', 'secret', 'password', 'uid'):
         cfg['exchange'].pop(key, None)
     opts = dict(has={'fetchCurrencies': False}, requests_trust_env=True,
