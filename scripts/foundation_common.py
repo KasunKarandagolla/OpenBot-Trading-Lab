@@ -118,6 +118,11 @@ def config(run_id, name):
     if name not in spec['strategies']:
         raise ValueError('unknown strategy')
     stage = ROOT/'work/foundation-strategies'/run_id
+    revision = 'revision-'+str(len(list((out/'source-amendments').glob('*.json')))).zfill(3)
+    if run_id.startswith('intelligence-'):
+        # A declared amendment creates a new immutable stage, never edits a
+        # module already associated with an earlier attempt/provenance record.
+        stage = stage/revision
     stage.mkdir(parents=True, exist_ok=True)
     sources = (list((ROOT/'user_data/strategies').glob('*.py')) +
                list((ROOT/'research/session3').glob('*.py')) +
@@ -160,5 +165,7 @@ def config(run_id, name):
     cfg.pop('api_server', None)
     assert cfg['dry_run'] is True and cfg['trading_mode'] == 'futures'
     target = ROOT/'work/foundation-configs'/run_id/(name+'.json')
+    if run_id.startswith('intelligence-'):
+        target = target.parent/revision/target.name
     write(target, cfg)
     return target
