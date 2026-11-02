@@ -1,0 +1,227 @@
+2026-11-02 15:50:34,839 - freqtrade - INFO - freqtrade 2026.10
+2026-11-02 15:50:36,709 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/foundation-configs/session1-002/LiquiditySweepReversalV1.json ...
+2026-11-02 15:50:36,712 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-11-02 15:50:36,712 - freqtrade.loggers - INFO - Logfile configured
+2026-11-02 15:50:36,713 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-11-02 15:50:36,713 - freqtrade.configuration.configuration - INFO - Parameter --fee detected, setting fee to: 0.00075 ...
+2026-11-02 15:50:36,713 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20261001-20261101 ...
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-11-02 15:50:36,717 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-11-02 15:50:36,717 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-11-02 15:50:36,718 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/foundation/session1-002/gate ...
+2026-11-02 15:50:36,718 - freqtrade.configuration.configuration - INFO - Saving lookahead analysis results into /lab/evidence/additional-1/session1-002/LiquiditySweepReversalV1-lookahead.csv ...
+2026-11-02 15:50:36,718 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20261001-20261101
+2026-11-02 15:50:36,719 - freqtrade.configuration.configuration - INFO - Targeted Trade amount: 20
+2026-11-02 15:50:36,719 - freqtrade.configuration.configuration - INFO - Minimum Trade amount: 1
+2026-11-02 15:50:36,719 - freqtrade.configuration.configuration - INFO - Path to store lookahead-analysis-results: /lab/evidence/additional-1/session1-002/LiquiditySweepReversalV1-lookahead.csv
+2026-11-02 15:50:36,720 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-11-02 15:50:36,727 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-11-02 15:50:36,727 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-11-02 15:50:36,728 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-11-02 15:50:36,730 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Forced order_types to market orders.
+2026-11-02 15:50:36,730 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Forced max_open_trades to -1 (same amount as there are pairs)
+2026-11-02 15:50:36,731 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Dry run wallet was not set to 1 billion, pushing it up there just to avoid false positives
+2026-11-02 15:50:36,731 - freqtrade.optimize.analysis.lookahead_helpers - INFO - fixing stake_amount to 10k
+2026-11-02 15:50:36,802 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Bias test of LiquiditySweepReversalV1.py started.
+2026-11-02 15:50:36,804 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-11-02 15:50:36,804 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-11-02 15:50:36,804 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': '/run/proxy-ca.pem',
+'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.2.13:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-11-02 15:50:36,808 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': '/run/proxy-ca.pem',
+'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.2.13:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-11-02 15:50:36,812 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-11-02 15:51:00,335 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-11-02 15:51:00,337 - freqtrade.resolvers.iresolver - INFO - Using resolved strategy LiquiditySweepReversalV1 from '/lab/work/foundation-strategies/session1-002/LiquiditySweepReversalV1.py'...
+2026-11-02 15:51:00,337 - freqtrade.strategy.hyper - INFO - Found no parameter file.
+2026-11-02 15:51:00,338 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'minimal_roi' with value from the configuration: {'0': 100.0}.
+2026-11-02 15:51:00,339 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'timeframe' with value from the configuration: 15m.
+2026-11-02 15:51:00,339 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stoploss' with value from the configuration: -0.03.
+2026-11-02 15:51:00,339 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'order_types' with value from the configuration: {'entry': 'market', 'exit': 'market', 'stoploss': 'market', 
+'stoploss_on_exchange': False}.
+2026-11-02 15:51:00,340 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_currency' with value from the configuration: USDT.
+2026-11-02 15:51:00,340 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_amount' with value from the configuration: 10000.
+2026-11-02 15:51:00,340 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'unfilledtimeout' with value from the configuration: {'entry': 5, 'exit': 5, 'exit_timeout_count': 0, 'unit':
+'minutes'}.
+2026-11-02 15:51:00,341 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'position_adjustment_enable' with value from the configuration: False.
+2026-11-02 15:51:00,341 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'max_open_trades' with value from the configuration: -1.
+2026-11-02 15:51:00,341 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using minimal_roi: {'0': 100.0}
+2026-11-02 15:51:00,342 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using timeframe: 15m
+2026-11-02 15:51:00,342 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stoploss: -0.03
+2026-11-02 15:51:00,342 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_stop: False
+2026-11-02 15:51:00,343 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_stop_positive_offset: 0.0
+2026-11-02 15:51:00,343 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_only_offset_is_reached: False
+2026-11-02 15:51:00,344 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using use_custom_stoploss: True
+2026-11-02 15:51:00,344 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using process_only_new_candles: True
+2026-11-02 15:51:00,344 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using order_types: {'entry': 'market', 'exit': 'market', 'stoploss': 'market', 'stoploss_on_exchange': False}
+2026-11-02 15:51:00,344 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using order_time_in_force: {'entry': 'GTC', 'exit': 'GTC'}
+2026-11-02 15:51:00,345 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stake_currency: USDT
+2026-11-02 15:51:00,345 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stake_amount: 10000
+2026-11-02 15:51:00,345 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using startup_candle_count: 240
+2026-11-02 15:51:00,346 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using unfilledtimeout: {'entry': 5, 'exit': 5, 'exit_timeout_count': 0, 'unit': 'minutes'}
+2026-11-02 15:51:00,346 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using use_exit_signal: True
+2026-11-02 15:51:00,346 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using exit_profit_only: False
+2026-11-02 15:51:00,346 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using ignore_roi_if_entry_signal: False
+2026-11-02 15:51:00,347 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using exit_profit_offset: 0.0
+2026-11-02 15:51:00,347 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using disable_dataframe_checks: False
+2026-11-02 15:51:00,348 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using ignore_buying_expired_candle_after: 0
+2026-11-02 15:51:00,348 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using position_adjustment_enable: False
+2026-11-02 15:51:00,348 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using max_entry_position_adjustment: -1
+2026-11-02 15:51:00,348 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using max_open_trades: -1
+2026-11-02 15:51:00,349 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-11-02 15:51:00,353 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist StaticPairList from '/freqtrade/freqtrade/plugins/pairlist/StaticPairList.py'...
+2026-11-02 15:51:00,356 - freqtrade.optimize.backtesting - INFO - Using fee 0.0750% from config.
+2026-11-02 15:51:00,379 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT:USDT, futures, 15m, data ends at 2026-10-31 23:45:00
+2026-11-02 15:51:00,402 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, futures, 15m, data ends at 2026-10-31 23:45:00
+2026-11-02 15:51:00,421 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, futures, 15m, data ends at 2026-10-31 23:45:00
+2026-11-02 15:51:00,439 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, futures, 15m, data ends at 2026-10-31 23:45:00
+2026-11-02 15:51:00,456 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, futures, 15m, data ends at 2026-10-31 23:45:00
+2026-11-02 15:51:00,470 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-31 23:45:00 (33 days).
+2026-11-02 15:51:00,476 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT:USDT, funding_rate, 1h, data ends at 2026-10-31 16:00:00
+2026-11-02 15:51:00,485 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, funding_rate, 1h, data ends at 2026-10-31 16:00:00
+2026-11-02 15:51:00,494 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-31 16:00:00
+2026-11-02 15:51:00,502 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-31 16:00:00
+2026-11-02 15:51:00,510 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-31 16:00:00
+2026-11-02 15:51:00,519 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT:USDT, mark, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:00,535 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, mark, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:00,550 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, mark, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:00,567 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, mark, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:00,582 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, mark, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:00,789 - freqtrade.data.dataprovider - INFO - Loading data for BTC/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-11-01 00:00:00
+2026-11-02 15:51:00,795 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT:USDT, futures, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:00,843 - freqtrade.data.dataprovider - INFO - Loading data for ETH/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-11-01 00:00:00
+2026-11-02 15:51:00,848 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, futures, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:00,892 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-11-01 00:00:00
+2026-11-02 15:51:00,898 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, futures, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:00,943 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-11-01 00:00:00
+2026-11-02 15:51:00,949 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, futures, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:00,992 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-11-01 00:00:00
+2026-11-02 15:51:00,998 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, futures, 1h, data ends at 2026-10-31 23:00:00
+2026-11-02 15:51:01,597 - freqtrade.loggers.set_log_levels - INFO - Reducing verbosity for bias tester.
+2026-11-02 15:51:01,597 - freqtrade.optimize.analysis.lookahead - INFO - Found 25 trades, calculating 20 trades.
+2026-11-02 15:51:01,628 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-02 13:00:00 (4 days).
+2026-11-02 15:51:01,633 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-02 08:00:00
+2026-11-02 15:51:01,669 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-02 13:00:00
+2026-11-02 15:51:01,783 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-02 13:45:00 (4 days).
+2026-11-02 15:51:01,789 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-02 08:00:00
+2026-11-02 15:51:01,821 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-02 13:45:00
+2026-11-02 15:51:01,975 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-02 13:00:00 (4 days).
+2026-11-02 15:51:01,981 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-02 08:00:00
+2026-11-02 15:51:02,014 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-02 13:00:00
+2026-11-02 15:51:02,130 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-02 17:00:00 (4 days).
+2026-11-02 15:51:02,136 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-02 16:00:00
+2026-11-02 15:51:02,173 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-02 17:00:00
+2026-11-02 15:51:02,334 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-02 19:15:00 (4 days).
+2026-11-02 15:51:02,339 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-02 16:00:00
+2026-11-02 15:51:02,375 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-02 19:15:00
+2026-11-02 15:51:02,504 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-02 23:15:00 (4 days).
+2026-11-02 15:51:02,542 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-02 23:15:00
+2026-11-02 15:51:02,714 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-09 14:30:00 (11 days).
+2026-11-02 15:51:02,721 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-09 08:00:00
+2026-11-02 15:51:02,758 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-09 14:30:00
+2026-11-02 15:51:02,899 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-09 18:30:00 (11 days).
+2026-11-02 15:51:02,906 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-09 16:00:00
+2026-11-02 15:51:02,949 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-09 18:30:00
+2026-11-02 15:51:03,138 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-12 02:45:00 (13 days).
+2026-11-02 15:51:03,144 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-12 00:00:00
+2026-11-02 15:51:03,187 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-12 02:45:00
+2026-11-02 15:51:03,334 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-12 04:45:00 (13 days).
+2026-11-02 15:51:03,339 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-12 00:00:00
+2026-11-02 15:51:03,382 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-12 04:45:00
+2026-11-02 15:51:03,566 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-12 12:15:00 (14 days).
+2026-11-02 15:51:03,572 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-12 08:00:00
+2026-11-02 15:51:03,615 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-12 12:15:00
+2026-11-02 15:51:03,767 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-12 12:45:00 (14 days).
+2026-11-02 15:51:03,773 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-12 08:00:00
+2026-11-02 15:51:03,815 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-12 12:45:00
+2026-11-02 15:51:04,003 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-14 13:45:00 (16 days).
+2026-11-02 15:51:04,008 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-14 08:00:00
+2026-11-02 15:51:04,056 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-14 13:45:00
+2026-11-02 15:51:04,223 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-14 14:15:00 (16 days).
+2026-11-02 15:51:04,229 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-14 08:00:00
+2026-11-02 15:51:04,272 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-14 14:15:00
+2026-11-02 15:51:04,477 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-15 13:00:00 (17 days).
+2026-11-02 15:51:04,483 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-15 08:00:00
+2026-11-02 15:51:04,530 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-15 13:00:00
+2026-11-02 15:51:04,678 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-15 13:45:00 (17 days).
+2026-11-02 15:51:04,684 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-15 08:00:00
+2026-11-02 15:51:04,731 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-15 13:45:00
+2026-11-02 15:51:04,910 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-16 15:45:00 (18 days).
+2026-11-02 15:51:04,959 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-16 15:45:00
+2026-11-02 15:51:05,104 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-16 16:00:00 (18 days).
+2026-11-02 15:51:05,153 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-16 16:00:00
+2026-11-02 15:51:05,331 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-16 15:45:00 (18 days).
+2026-11-02 15:51:05,381 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-16 15:45:00
+2026-11-02 15:51:05,549 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-16 17:15:00 (18 days).
+2026-11-02 15:51:05,555 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-16 16:00:00
+2026-11-02 15:51:05,606 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-16 17:15:00
+2026-11-02 15:51:05,834 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-19 14:30:00 (21 days).
+2026-11-02 15:51:05,840 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-19 08:00:00
+2026-11-02 15:51:05,890 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-19 14:30:00
+2026-11-02 15:51:06,057 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-19 18:30:00 (21 days).
+2026-11-02 15:51:06,062 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-19 16:00:00
+2026-11-02 15:51:06,110 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-19 18:30:00
+2026-11-02 15:51:06,326 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-19 14:30:00 (21 days).
+2026-11-02 15:51:06,332 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-19 08:00:00
+2026-11-02 15:51:06,382 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-19 14:30:00
+2026-11-02 15:51:06,563 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-19 18:30:00 (21 days).
+2026-11-02 15:51:06,568 - freqtrade.data.history.datahandlers.idatahandler - WARNING - DOGE/USDT:USDT, funding_rate, 1h, data ends at 2026-10-19 16:00:00
+2026-11-02 15:51:06,615 - freqtrade.data.dataprovider - INFO - Loading data for DOGE/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-19 18:30:00
+2026-11-02 15:51:06,845 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-20 14:45:00 (22 days).
+2026-11-02 15:51:06,851 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-20 08:00:00
+2026-11-02 15:51:06,902 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-20 14:45:00
+2026-11-02 15:51:07,066 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-20 15:15:00 (22 days).
+2026-11-02 15:51:07,122 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-20 15:15:00
+2026-11-02 15:51:07,319 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-21 09:15:00 (22 days).
+2026-11-02 15:51:07,324 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-21 08:00:00
+2026-11-02 15:51:07,376 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-21 09:15:00
+2026-11-02 15:51:07,543 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-21 13:15:00 (23 days).
+2026-11-02 15:51:07,548 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-21 08:00:00
+2026-11-02 15:51:07,599 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-21 13:15:00
+2026-11-02 15:51:07,808 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-23 14:45:00 (25 days).
+2026-11-02 15:51:07,813 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-23 08:00:00
+2026-11-02 15:51:07,863 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-23 14:45:00
+2026-11-02 15:51:08,055 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-23 18:45:00 (25 days).
+2026-11-02 15:51:08,060 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-23 16:00:00
+2026-11-02 15:51:08,115 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-23 18:45:00
+2026-11-02 15:51:08,352 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-26 00:00:00 (27 days).
+2026-11-02 15:51:08,416 - freqtrade.data.dataprovider - INFO - Loading data for ETH/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-26 00:00:00
+2026-11-02 15:51:08,576 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-26 01:45:00 (27 days).
+2026-11-02 15:51:08,581 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, funding_rate, 1h, data ends at 2026-10-26 00:00:00
+2026-11-02 15:51:08,635 - freqtrade.data.dataprovider - INFO - Loading data for ETH/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-26 01:45:00
+2026-11-02 15:51:08,833 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-27 13:15:00 (29 days).
+2026-11-02 15:51:08,839 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-27 08:00:00
+2026-11-02 15:51:08,893 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-27 13:15:00
+2026-11-02 15:51:09,092 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-27 15:30:00 (29 days).
+2026-11-02 15:51:09,153 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-27 15:30:00
+2026-11-02 15:51:09,404 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-28 02:45:00 (29 days).
+2026-11-02 15:51:09,410 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, funding_rate, 1h, data ends at 2026-10-28 00:00:00
+2026-11-02 15:51:09,470 - freqtrade.data.dataprovider - INFO - Loading data for ETH/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-28 02:45:00
+2026-11-02 15:51:09,652 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-28 06:45:00 (29 days).
+2026-11-02 15:51:09,658 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT:USDT, funding_rate, 1h, data ends at 2026-10-28 00:00:00
+2026-11-02 15:51:09,713 - freqtrade.data.dataprovider - INFO - Loading data for ETH/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-28 06:45:00
+2026-11-02 15:51:09,925 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-29 16:30:00 (31 days).
+2026-11-02 15:51:09,930 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-29 16:00:00
+2026-11-02 15:51:09,987 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-29 16:30:00
+2026-11-02 15:51:10,188 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-29 17:45:00 (31 days).
+2026-11-02 15:51:10,193 - freqtrade.data.history.datahandlers.idatahandler - WARNING - SOL/USDT:USDT, funding_rate, 1h, data ends at 2026-10-29 16:00:00
+2026-11-02 15:51:10,249 - freqtrade.data.dataprovider - INFO - Loading data for SOL/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-29 17:45:00
+2026-11-02 15:51:10,489 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-29 16:30:00 (31 days).
+2026-11-02 15:51:10,494 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-29 16:00:00
+2026-11-02 15:51:10,551 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-29 16:30:00
+2026-11-02 15:51:10,755 - freqtrade.optimize.backtesting - INFO - Loading data from 2026-09-28 12:00:00 up to 2026-10-29 17:45:00 (31 days).
+2026-11-02 15:51:10,761 - freqtrade.data.history.datahandlers.idatahandler - WARNING - XRP/USDT:USDT, funding_rate, 1h, data ends at 2026-10-29 16:00:00
+2026-11-02 15:51:10,824 - freqtrade.data.dataprovider - INFO - Loading data for XRP/USDT:USDT 1h from 2026-09-21 00:00:00 to 2026-10-29 17:45:00
+2026-11-02 15:51:11,054 - freqtrade.optimize.analysis.lookahead - INFO - Found targeted trade amount = 20 signals.
+2026-11-02 15:51:11,055 - freqtrade.loggers.set_log_levels - INFO - Restoring log verbosity.
+2026-11-02 15:51:11,055 - freqtrade.optimize.analysis.lookahead - INFO - LiquiditySweepReversalV1: no bias detected
+2026-11-02 15:51:11,056 - freqtrade.optimize.analysis.lookahead_helpers - INFO - Checking look ahead bias via backtests of LiquiditySweepReversalV1.py took 34 seconds.
+Analyzing trades ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 20/20 100% • 0:00:09 • 0:00:00
+Source validation: 20 files, hashes/UTC/continuity/funding PASS
+                                                                  Lookahead Analysis                                                                  
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃                    filename ┃                 strategy ┃ has_bias ┃ total_signals ┃ biased_entry_signals ┃ biased_exit_signals ┃ biased_indicators ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ LiquiditySweepReversalV1.py │ LiquiditySweepReversalV1 │       No │            20 │                    0 │                   0 │                   │
+└─────────────────────────────┴──────────────────────────┴──────────┴───────────────┴──────────────────────┴─────────────────────┴───────────────────┘
+2026-11-02 15:51:11,064 - freqtrade.optimize.analysis.lookahead_helpers - INFO - saving /lab/evidence/additional-1/session1-002/LiquiditySweepReversalV1-lookahead.csv

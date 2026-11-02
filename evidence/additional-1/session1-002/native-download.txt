@@ -1,0 +1,192 @@
+2026-11-02 15:42:56,637 - freqtrade - INFO - freqtrade 2026.10
+2026-11-02 15:42:57,066 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-11-02 15:42:58,274 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/foundation-configs/session1-002/TrendPullbackBaselineV1.json ...
+2026-11-02 15:42:58,276 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-11-02 15:42:58,276 - freqtrade.loggers - INFO - Logfile configured
+2026-11-02 15:42:58,277 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-11-02 15:42:58,277 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20260921-20261101 ...
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-11-02 15:42:58,281 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-11-02 15:42:58,281 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-11-02 15:42:58,282 - freqtrade.configuration.directory_operations - INFO - Created data directory: /lab/user_data/data/foundation/session1-002/gate
+2026-11-02 15:42:58,282 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/foundation/session1-002/gate ...
+2026-11-02 15:42:58,282 - freqtrade.configuration.configuration - INFO - timeframes --timeframes: ['15m', '1h']
+2026-11-02 15:42:58,282 - freqtrade.configuration.configuration - INFO - Detected --trading-mode: futures
+2026-11-02 15:42:58,283 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20260921-20261101
+2026-11-02 15:42:58,284 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-11-02 15:42:58,290 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-11-02 15:42:58,290 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-11-02 15:42:58,291 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-11-02 15:42:58,997 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-11-02 15:42:58,998 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-11-02 15:42:58,998 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': '/run/proxy-ca.pem',
+'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.2.13:8080', 'timeout': 30000}
+2026-11-02 15:42:59,001 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': '/run/proxy-ca.pem',
+'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.2.13:8080', 'timeout': 30000}
+2026-11-02 15:42:59,005 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-11-02 15:42:59,005 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-11-02 15:42:59,006 - freqtrade.exchange.exchange - INFO - Markets were not loaded. Loading them now..
+2026-11-02 15:43:03,409 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0". Retrying still for 4 times.
+2026-11-02 15:43:03,453 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0". Retrying still for 3 times.
+2026-11-02 15:43:03,502 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0". Retrying still for 2 times.
+2026-11-02 15:43:03,551 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0". Retrying still for 1 times.
+2026-11-02 15:43:03,601 - freqtrade.exchange.common - WARNING - get_leverage_tiers() returned exception: "Could not load leverage tiers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0". Giving up.
+2026-11-02 15:43:03,602 - freqtrade.exchange.exchange - ERROR - Could not load markets.
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain (_ssl.c:1085)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ftuser/.local/lib/python3.14/site-packages/requests/adapters.py", line 696, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "/home/ftuser/.local/lib/python3.14/site-packages/urllib3/connectionpool.py", line 847, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/home/ftuser/.local/lib/python3.14/site-packages/urllib3/util/retry.py", line 555, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.gateio.ws', port=443): Max retries exceeded with url: /api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0 (Caused by 
+SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain (_ssl.c:1085)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 605, in fetch
+    response = self.session.request(
+        method,
+    ...<6 lines>...
+        files=files
+    )
+  File "/home/ftuser/.local/lib/python3.14/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/ftuser/.local/lib/python3.14/site-packages/requests/sessions.py", line 784, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/ftuser/.local/lib/python3.14/site-packages/requests/adapters.py", line 727, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='api.gateio.ws', port=443): Max retries exceeded with url: /api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0 (Caused by 
+SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain (_ssl.c:1085)')))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3819, in get_leverage_tiers
+    return self._api.fetch_leverage_tiers()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/gate.py", line 6295, in fetch_leverage_tiers
+    response = self.publicFuturesGetSettleRiskLimitTiers(self.extend(request, paramsOmitted))
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/types.py", line 43, in unbound_method
+    return _self.request(self.path, self.api, self.method, params, config=self.config)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6018, in request
+    return self.fetch2(path, api, method, params, config)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6012, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 5995, in fetch2
+    response = self.fetch(request['url'], request['method'], request['headers'], request['body'])
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 661, in fetch
+    raise NetworkError(details) from e
+ccxt.base.errors.NetworkError: gate GET https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 812, in reload_markets
+    self.fill_leverage_tiers()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3943, in fill_leverage_tiers
+    leverage_tiers = self.load_leverage_tiers()
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3849, in load_leverage_tiers
+    return self.get_leverage_tiers()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 187, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/common.py", line 187, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/common.py", line 187, in wrapper
+    return wrapper(*args, **kwargs)
+  [Previous line repeated 1 more time]
+  File "/freqtrade/freqtrade/exchange/common.py", line 175, in wrapper
+    return f(*args, **kwargs)
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3823, in get_leverage_tiers
+    raise TemporaryError(
+        f"Could not load leverage tiers due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not load leverage tiers due to NetworkError. Message: gate GET https://api.gateio.ws/api/v4/futures/usdt/risk_limit_tiers?limit=100&offset=0
+2026-11-02 15:43:03,617 - freqtrade.data.history.history_utils - INFO - About to download pairs: ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'SOL/USDT:USDT', 'XRP/USDT:USDT', 'DOGE/USDT:USDT'], intervals: 
+['15m', '1h'] to /lab/user_data/data/foundation/session1-002/gate
+2026-11-02 15:43:03,660 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 15m, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:05,817 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 15m, futures with length 3997.
+2026-11-02 15:43:05,829 - freqtrade.data.history.history_utils - INFO - Downloading parallel candles for 1h for all pairs since 2026-09-21T00:00:00
+2026-11-02 15:43:07,944 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:09,748 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, futures with length 1023.
+2026-11-02 15:43:09,753 - freqtrade.data.history.history_utils - INFO - Downloading parallel candles for 1h for all pairs since 2026-09-21T00:00:00
+2026-11-02 15:43:11,885 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, mark and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:13,815 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, mark with length 1023.
+2026-11-02 15:43:13,821 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:16,457 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, funding_rate with length 128.
+2026-11-02 15:43:16,460 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 15m, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:18,496 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 15m, futures with length 3997.
+2026-11-02 15:43:18,505 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:20,249 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, futures with length 1023.
+2026-11-02 15:43:20,255 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, mark and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:21,607 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, mark with length 1023.
+2026-11-02 15:43:21,613 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:23,519 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, funding_rate with length 128.
+2026-11-02 15:43:23,523 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 15m, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:25,105 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 15m, futures with length 3997.
+2026-11-02 15:43:25,114 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:26,521 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, futures with length 1023.
+2026-11-02 15:43:26,526 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, mark and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:27,909 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, mark with length 1023.
+2026-11-02 15:43:27,914 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:30,259 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, funding_rate with length 128.
+2026-11-02 15:43:30,263 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 15m, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:31,848 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 15m, futures with length 3997.
+2026-11-02 15:43:31,854 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 1h, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:33,784 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 1h, futures with length 1023.
+2026-11-02 15:43:33,789 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 1h, mark and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:35,176 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 1h, mark with length 1023.
+2026-11-02 15:43:35,181 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:37,107 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 1h, funding_rate with length 128.
+2026-11-02 15:43:37,110 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 15m, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:39,383 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 15m, futures with length 3997.
+2026-11-02 15:43:39,390 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 1h, futures and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:40,809 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 1h, futures with length 1023.
+2026-11-02 15:43:40,813 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 1h, mark and store in /lab/user_data/data/foundation/session1-002/gate. From 
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:42,179 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 1h, mark with length 1023.
+2026-11-02 15:43:42,184 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/foundation/session1-002/gate. From
+2026-09-21T00:00:00 to 2026-11-01T00:00:00
+2026-11-02 15:43:44,116 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 1h, funding_rate with length 128.
+Timeframe                  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4/4 100% • 0:00:12 • 0:00:00
+Downloading DOGE/USDT:USDT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5/5 100% • 0:00:40 • 0:00:00

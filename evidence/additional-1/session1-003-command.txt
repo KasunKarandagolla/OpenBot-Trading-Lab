@@ -1,0 +1,113 @@
+Foundation step: register
+Registered session1-003
+Foundation step: doctor
+Environment/Compose/frozen configs: PASS
+Foundation step: preflight
+[
+  {
+    "venue": "binance",
+    "status": "BLOCKED",
+    "requested_at": "2026-11-02T15:56:38.623039+00:00",
+    "observed_at": "2026-11-02T15:56:40.253888+00:00",
+    "error": "ExchangeNotAvailable: binanceusdm GET https://fapi.binance.com/fapi/v1/exchangeInfo 451 Unknown {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}"
+  },
+  {
+    "venue": "gate",
+    "status": "ACCESSIBLE",
+    "requested_at": "2026-11-02T15:56:40.253950+00:00",
+    "observed_at": "2026-11-02T15:56:46.373141+00:00",
+    "candles": 3,
+    "contract_id": "BTC_USDT",
+    "funding_timestamp": null,
+    "public_taker_rate": 0.0005
+  }
+]
+Foundation step: scan
+Scan: 586 eligible; native 36; shortlist 17; liquidity rejects 569; metadata rejects 484
+Foundation step: acquire
+Source validation: 20 files, hashes/UTC/continuity/funding PASS
+Preserved source bundle: foundation-session1-003.tar.gz 962974 bytes
+Reused preserved cohort: 20 files; no historical redownload
+Foundation step: assess
+Current assessment: {'RESEARCH_CANDIDATE': 0, 'WATCH': 10, 'REJECT': 10, 'NO_TRADE': 0}
+Foundation step: schedule
+Source validation: 20 files, hashes/UTC/continuity/funding PASS
+Historical opportunities: 28 plans 1
+Foundation step: backtest
+TrendPullbackBaselineV1: 162 trades; native net -6.38710333 USDT
+VWAPTrendContinuationV1: 9 trades; native net -0.44946448 USDT
+LiquiditySweepReversalV1: 24 trades; native net -0.72529188 USDT
+RouterOnlyV1: 1 trades; native net -0.11694800 USDT
+FoundationRouterM0V1: 1 trades; native net 0.50352528 USDT
+FoundationRouterM1V1: 1 trades; native net 0.42626324 USDT
+Foundation step: events
+Event source fed-fomc RETRIEVED_PARTIAL_COVERAGE
+Event source bls RETRIEVED_PARTIAL_COVERAGE
+Event source bea RETRIEVED_PARTIAL_COVERAGE
+Event source binance-notices RETRIEVED_PARTIAL_COVERAGE
+Event source gate-notices RETRIEVED_PARTIAL_COVERAGE
+Event source coindesk RETRIEVED_PARTIAL_COVERAGE
+Event source cointelegraph RETRIEVED_PARTIAL_COVERAGE
+Event source the-block RETRIEVED_PARTIAL_COVERAGE
+Event source cryptoslate RETRIEVED_PARTIAL_COVERAGE
+Event source decrypt RETRIEVED_PARTIAL_COVERAGE
+Foundation step: report
+{
+  "TrendPullbackBaselineV1": {
+    "trades": 162,
+    "net_usdt": -6.38710333,
+    "partial_exits": 0
+  },
+  "VWAPTrendContinuationV1": {
+    "trades": 9,
+    "net_usdt": -0.44946448000000006,
+    "partial_exits": 0
+  },
+  "LiquiditySweepReversalV1": {
+    "trades": 24,
+    "net_usdt": -0.72529188,
+    "partial_exits": 0
+  },
+  "RouterOnlyV1": {
+    "trades": 1,
+    "net_usdt": -0.116948,
+    "partial_exits": 0
+  },
+  "FoundationRouterM0V1": {
+    "trades": 1,
+    "net_usdt": 0.50352528,
+    "partial_exits": 0
+  },
+  "FoundationRouterM1V1": {
+    "trades": 1,
+    "net_usdt": 0.42626324,
+    "partial_exits": 1
+  }
+}
+Foundation step: export
+OpenBot export: 48 records; 276262 bytes
+Foundation step: lookahead
+Native lookahead VWAPTrendContinuationV1 exit 0
+Native lookahead LiquiditySweepReversalV1 exit 0
+Native lookahead FoundationRouterM0V1 exit 0
+[{'csv_exists': True, 'exit_code': 0, 'log_sha256': 'd00bf17020c7f80ee3b555533f34b0138506313cbdbfd64ebfaef592e910c786', 'strategy': 'VWAPTrendContinuationV1', 'csv_sha256': 'b939a2148fe610efa747babc4a44b661f857fcb25ada8a81c0f80ef5b93c6e85', 'exported_rows': 1, 'signals': 9, 'has_bias': False, 'evidence': 'NATIVE_CSV'}, {'csv_exists': True, 'exit_code': 0, 'log_sha256': '22aff7d3f67c6593c1006c6524d725058d57b00977b5ff2bc023ea40bd1d1155', 'strategy': 'LiquiditySweepReversalV1', 'csv_sha256': 'acb8cf5d7f138f535bfc24133639dc6f82c952a13cbd93f853e2d74018892718', 'exported_rows': 1, 'signals': 20, 'has_bias': False, 'evidence': 'NATIVE_CSV'}, {'csv_exists': True, 'exit_code': 0, 'log_sha256': '47a1b7018771c4d1c517cab3f3597e0b650436f1056a715b406509d6f9fe4db9', 'strategy': 'FoundationRouterM0V1', 'csv_sha256': 'ee1bfa76dc2496fb7670ca9697e91f8b4351756ea85249c9f813c95c4913c98a', 'exported_rows': 0, 'signals': 1, 'has_bias': False, 'evidence': 'RETAINED_NATIVE_TEXT_TABLE', 'export_limitation': 'Pinned native exporter wrote a header-only CSV for this inherited strategy; actual table and log retained'}]
+Foundation step: ui-smoke
+FreqUI authenticated HTTP/native-result smoke: PASS; service stopped
+Foundation step: dryrun-smoke
+Native keyless dry-run stopped-state startup: PASS; zero trades; stopped
+test_bls_custom_zone_and_dst_keep_publication_unknown (test_foundation_session1.EventTruth.test_bls_custom_zone_and_dst_keep_publication_unknown) ... ok
+test_official_html_dates_do_not_invent_utc_times_or_incidents (test_foundation_session1.EventTruth.test_official_html_dates_do_not_invent_utc_times_or_incidents) ... ok
+test_unverified_incident_headline_is_never_verified_or_signal (test_foundation_session1.EventTruth.test_unverified_incident_headline_is_never_verified_or_signal) ... ok
+test_duplicate_event_clock_fails_closed (test_foundation_session1.FundingLifecycle.test_duplicate_event_clock_fails_closed) ... ok
+test_native_partial_funding_event_once_both_sides (test_foundation_session1.FundingLifecycle.test_native_partial_funding_event_once_both_sides) ... ok
+test_new_exit_does_not_reintroduce_adx_invalidation (test_foundation_session1.FundingLifecycle.test_new_exit_does_not_reintroduce_adx_invalidation) ... ok
+test_new_research_sources_are_explicit_and_preserved (test_foundation_session1.SourceAndAdmission.test_new_research_sources_are_explicit_and_preserved) ... ok
+test_paper_guard_still_rejects_repaired_research_strategy (test_foundation_session1.SourceAndAdmission.test_paper_guard_still_rejects_repaired_research_strategy) ... ok
+test_private_archive_traversal_and_overwrite_refused (test_foundation_session1.SourceAndAdmission.test_private_archive_traversal_and_overwrite_refused) ... ok
+test_reader_rejects_credentials_paths_and_keeps_public_headline (test_foundation_session1.SourceAndAdmission.test_reader_rejects_credentials_paths_and_keeps_public_headline) ... ok
+test_research_cli_cannot_start_trade_or_accept_unknown_strategy (test_foundation_session1.SourceAndAdmission.test_research_cli_cannot_start_trade_or_accept_unknown_strategy) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 5.040s
+
+OK

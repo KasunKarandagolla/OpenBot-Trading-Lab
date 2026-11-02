@@ -1,0 +1,37 @@
+2026-11-02 15:41:30,254 - freqtrade - INFO - freqtrade 2026.10
+2026-11-02 15:41:30,677 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-11-02 15:41:32,719 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/foundation-configs/session1-001/scanner.json ...
+2026-11-02 15:41:32,721 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-11-02 15:41:32,721 - freqtrade.loggers - INFO - Logfile configured
+2026-11-02 15:41:32,722 - freqtrade.loggers - INFO - Verbosity set to 0
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-11-02 15:41:32,731 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-11-02 15:41:32,732 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-11-02 15:41:32,733 - freqtrade.configuration.directory_operations - INFO - Created data directory: None
+2026-11-02 15:41:32,733 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/gate ...
+2026-11-02 15:41:32,734 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-11-02 15:41:32,740 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-11-02 15:41:32,741 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-11-02 15:41:32,741 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-11-02 15:41:32,743 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-11-02 15:41:32,744 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-11-02 15:41:32,744 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'enableRateLimit': True, 
+'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.2.13:8080', 'timeout': 30000}
+2026-11-02 15:41:32,747 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'enableRateLimit': True, 
+'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.2.13:8080', 'timeout': 30000}
+2026-11-02 15:41:32,750 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-11-02 15:41:32,750 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-11-02 15:41:32,763 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist VolumePairList from '/freqtrade/freqtrade/plugins/pairlist/VolumePairList.py'...
+2026-11-02 15:41:32,766 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist SpreadFilter from '/freqtrade/freqtrade/plugins/pairlist/SpreadFilter.py'...
+2026-11-02 15:41:32,917 - freqtrade.exchange.common - WARNING - get_tickers() returned exception: "Could not load tickers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/contracts". Retrying still for 4 times.
+2026-11-02 15:41:33,089 - freqtrade.exchange.common - WARNING - get_tickers() returned exception: "Could not load tickers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/contracts". Retrying still for 3 times.
+2026-11-02 15:41:33,111 - freqtrade.exchange.common - WARNING - get_tickers() returned exception: "Could not load tickers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/contracts". Retrying still for 2 times.
+2026-11-02 15:41:33,159 - freqtrade.exchange.common - WARNING - get_tickers() returned exception: "Could not load tickers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/contracts". Retrying still for 1 times.
+2026-11-02 15:41:33,209 - freqtrade.exchange.common - WARNING - get_tickers() returned exception: "Could not load tickers due to NetworkError. Message: gate GET 
+https://api.gateio.ws/api/v4/futures/usdt/contracts". Giving up.
+2026-11-02 15:41:33,209 - freqtrade - ERROR - Could not load tickers due to NetworkError. Message: gate GET https://api.gateio.ws/api/v4/futures/usdt/contracts

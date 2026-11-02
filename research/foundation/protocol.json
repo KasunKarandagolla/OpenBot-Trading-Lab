@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "cohort_id": "gate-october-development-v1",
+  "classification": "INSPECTED_DEVELOPMENT_CURRENT_SURVIVORS",
+  "preferred_venue": "binance",
+  "fallback_venue": "gate",
+  "pairs": ["BTC/USDT:USDT", "ETH/USDT:USDT", "SOL/USDT:USDT", "XRP/USDT:USDT", "DOGE/USDT:USDT"],
+  "download_timerange": "20260921-20261101",
+  "evaluation_timerange": "20261001-20261101",
+  "warmup_hours": 240,
+  "fee_per_side": 0.00075,
+  "fee_evidence": "Conservative scenario informed by current Gate public generic taker metadata; account tier and historical fee schedule UNKNOWN. Reject if current public taker rate exceeds this scenario.",
+  "extra_cost_bps_per_side": [1.5, 5, 10, 20],
+  "max_scan_shortlist": 20,
+  "max_deep_analysis": 5,
+  "strategies": ["TrendPullbackBaselineV1", "VWAPTrendContinuationV1", "LiquiditySweepReversalV1", "RouterOnlyV1", "FoundationRouterM0V1", "FoundationRouterM1V1"],
+  "policy": "Existing numerical entry/rank/geometry parameters unchanged. M0 adopts audited frozen-price invalidation. M1 is a research-only full native replay with event-once funding under before-exit event priority; operational partial fills/restart remain unqualified.",
+  "membership": "Five predeclared familiar survivors, selected before this session's outcomes, not historical exchange membership. Current scanner does not determine historical inclusion.",
+  "economic_status": "UNQUALIFIED_DEVELOPMENT",
+  "persistent_paper_allowed": false,
+  "orders_allowed": false
+}
