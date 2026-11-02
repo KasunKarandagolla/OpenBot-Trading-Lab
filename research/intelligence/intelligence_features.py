@@ -11,6 +11,30 @@ def finite(value):
     except (ValueError,TypeError): return False
 
 
+def executable_contract(market, price, notional=25.):
+    """Can the research cap represent a legal contract-size order?
+
+    Gate CCXT futures amount precision/limits are contracts. This verifies lot
+    geometry only, never queue priority or historical execution quality.
+    """
+    multiplier=market.get('contractSize'); step=market.get('precision',{}).get('amount')
+    if not all(finite(v) and float(v)>0 for v in (price,multiplier,step,notional)):
+        return dict(status='UNKNOWN',reason='CONTRACT_SIZE_OR_LOT_PRECISION_MISSING')
+    contracts=math.floor(notional/(price*multiplier*step)+1e-12)*step
+    actual=contracts*multiplier*price
+    limits=market.get('limits',{}); amount=limits.get('amount',{}); cost=limits.get('cost',{})
+    violated=[]
+    if contracts<=0: violated.append('ONE_LOT_EXCEEDS_RESEARCH_CAP')
+    for value,lower,upper,label in [(contracts,amount.get('min'),amount.get('max'),'CONTRACT_AMOUNT'),(actual,cost.get('min'),cost.get('max'),'NOTIONAL')]:
+        if lower is not None and value+1e-10<float(lower): violated.append(label+'_UNDER_MINIMUM')
+        if upper is not None and value>float(upper)+1e-10: violated.append(label+'_OVER_MAXIMUM')
+    return dict(status='REJECT' if violated else 'LOT_GEOMETRY_CHECKED',reason=','.join(violated) if violated else 'RESEARCH_CAP_REPRESENTABLE',
+        contract_size_base=float(multiplier),lot_step_contracts=float(step),contracts=float(contracts),base_amount=float(contracts*multiplier),
+        modeled_notional_usdt=float(actual),min_contracts=amount.get('min'),min_notional_usdt=cost.get('min'),
+        missing_limits='UNKNOWN' if amount.get('min') is None or cost.get('min') is None else None,
+        fill_quality='UNKNOWN_QUEUE_AND_DEPTH')
+
+
 def match(row, recipe, side, structural=False):
     """Parent signal supplies reclaim/rejection. This answers continuation danger."""
     opposite='DOWN' if side=='long' else 'UP'

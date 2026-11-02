@@ -91,7 +91,7 @@ def assess(run_id):
     from freqtrade.enums import CandleType
     from VWAPTrendContinuationV1 import VWAPTrendContinuationV1
     from LiquiditySweepReversalV1 import LiquiditySweepReversalV1
-    from intelligence_features import match,research_plan
+    from intelligence_features import match,research_plan,executable_contract
     out,data,spec=verify(run_id); scan=read(out/'scan.json'); ex=public(); markets=ex.load_markets()
     asof=pd.Timestamp.now(tz='UTC'); cheap=[]; bars={}
     # Cheap OHLCV context on the capped native shortlist. No structure/profile
@@ -139,6 +139,9 @@ def assess(run_id):
                     status='RESEARCH_CANDIDATE' if active and reason=='MATCH' and g else 'WATCH'
                     if not active: reason='WAIT_CLOSED_VWAP_RECLAIM' if recipe=='vwap' else 'WAIT_ACTUAL_BOUNDARY_FAILURE_REJECTION'
                     elif g is None: status='REJECT'; reason='INSUFFICIENT_NET_TARGET_OR_STOP_GEOMETRY'
+                    feasibility=executable_contract(markets[symbol],ask if side=='long' else bid)
+                    if feasibility['status']=='REJECT': status='REJECT'; reason='CONTRACT_NOT_EXECUTABLE_AT_RESEARCH_SIZE'
+                    elif feasibility['status']=='UNKNOWN': status='NO_TRADE'; reason='CONTRACT_EXECUTION_GEOMETRY_UNKNOWN'
                     at=row.date+pd.Timedelta(minutes=15); expires=at+pd.Timedelta(minutes=5)
                     gaps=['ACCOUNT_MTM_PENDING_EXPOSURE_UNQUALIFIED','NEWS_CLEARANCE_UNKNOWN','QUEUE_AND_SEQUENCE_UNKNOWN']
                     if not fresh: gaps.append('QUOTE_UNVERIFIED_OR_STALE')
@@ -149,6 +152,7 @@ def assess(run_id):
                         recipe=recipe,side=side,available_at=at.isoformat(),expires_at=expires.isoformat(),observed_at=now(),
                         regime='TREND' if row.adx_1h>=25 else 'RANGE_OR_WEAK_TREND',adx_1h=float(row.adx_1h),
                         geometry=g,signed_suitability=(1 if side=='long' else -1)*candidate['btc_relative4h'],
+                        execution_feasibility=feasibility,
                         structure=dict(hourly_direction=row.get('struct_direction_1h'),local_direction=row.struct_direction,known_at=str(row.struct_known_at),
                             prior_boundary_low=float(row.prior_low),prior_boundary_high=float(row.prior_high),boundary_known_at=str(row.date)),
                         profile=dict(fidelity='OHLCV_PROXY',poc=float(row.vp2_poc),val=float(row.vp2_val),vah=float(row.vp2_vah),anchor=str(row.vp2_anchor),known_at=str(row.vp2_known_at),

@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'research/intelligence'),str(ROOT/'research/bonus'),str(ROOT/'research/session3'),str(ROOT/'research/master_audit'),str(ROOT/'research/foundation'),str(ROOT/'user_data/strategies')]
-from intelligence_features import COST,match,research_plan,profiles
+from intelligence_features import COST,match,research_plan,profiles,executable_contract
 from advanced_features import volume_profile_v2
 from orderflow import normalize,normalize_gate_rest,qualified_flow
 
@@ -109,6 +109,22 @@ class IntelligenceTests(unittest.TestCase):
         self.assertAlmostEqual(row['amount'],.002); self.assertEqual(row['event_ms'],1793638039776)
         self.assertAlmostEqual(row['latency_ms'],224.)
         with self.assertRaises(ValueError): normalize_gate_rest(parsed|dict(timestamp=1793638039),1793638040000,'BTC_USDT',.001)
+
+    def test_executable_contract_checks_lots_and_minimums(self):
+        market=dict(contractSize=.001,precision=dict(amount=1),limits=dict(amount=dict(min=1,max=10000),cost=dict(min=5)))
+        r=executable_contract(market,10000)
+        self.assertEqual(r['contracts'],2);self.assertEqual(r['base_amount'],.002)
+        self.assertEqual(r['modeled_notional_usdt'],20)
+        self.assertEqual(executable_contract(market,100000)['status'],'REJECT')
+        self.assertEqual(executable_contract(market|dict(contractSize=None),10000)['status'],'UNKNOWN')
+
+    def test_signed_schedule_has_no_reversal_without_actual_failure(self):
+        path=ROOT/'evidence/additional-2/intelligence-001/signed-market-ranking.csv'
+        if not path.exists(): return  # pure fixtures still run before acquisition
+        rows=pd.read_csv(path)
+        eligible=rows.loc[(rows.recipe=='sweep')&rows.eligible]
+        self.assertTrue(eligible.failed_boundary_confirmed.all())
+        self.assertTrue(rows.loc[(rows.recipe=='vwap')&rows.eligible].side.isin(['long','short']).all())
 
 
 if __name__=='__main__': unittest.main()
