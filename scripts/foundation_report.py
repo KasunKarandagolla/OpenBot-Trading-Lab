@@ -116,7 +116,7 @@ def export(run_id):
     out, _, _ = verify(run_id)
     target = out/'openbot'; target.mkdir()
     current = read(out/'opportunities.json'); hist = read(out/'historical-opportunities.json')
-    events = read(out/'event-briefing.json'); economics = read(out/'economic-report.json')
+    events = read(out/('event-briefing-reparsed.json' if (out/'event-briefing-reparsed.json').exists() else 'event-briefing.json')); economics = read(out/'economic-report.json')
     scan = read(out/'scan.json')
     candidates = []
     allowed = {'schema_version', 'decision_id', 'venue', 'symbol', 'contract_id', 'status', 'reason', 'available_at', 'expires_at',

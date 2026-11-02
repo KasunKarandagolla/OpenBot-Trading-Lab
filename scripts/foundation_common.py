@@ -50,11 +50,14 @@ def public(venue='gate'):
     if venue not in ('gate', 'binance'):
         raise ValueError('unsupported source')
     opts = dict(enableRateLimit=True, timeout=15000,
-                options={'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}},
+                options={'defaultType': 'swap' if venue == 'gate' else 'future',
+                         'fetchMarkets': {'types': ['swap' if venue == 'gate' else 'linear']}},
                 has={'fetchCurrencies': False}, requests_trust_env=True)
     proxy = os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')
     if proxy:
         opts['httpsProxy'] = proxy
+    if os.environ.get('SSL_CERT_FILE'):
+        opts['cafile'] = os.environ['SSL_CERT_FILE']
     return (ccxt.gate if venue == 'gate' else ccxt.binanceusdm)(opts)
 
 
@@ -81,7 +84,16 @@ def verify(run_id):
     frozen(); sanitized_env()
     out, data = paths(run_id)
     reg = read(out/'registration.json')
-    for name, digest in reg['source_hashes'].items():
+    hashes = dict(reg['source_hashes'])
+    for amendment in sorted((out/'source-amendments').glob('*.json')):
+        change = read(amendment)
+        if change['registration_sha256'] != sha(out/'registration.json') or not change['reason']:
+            raise ValueError('invalid source amendment')
+        for name, entry in change['changes'].items():
+            if entry['old_sha256'] != hashes.get(name):
+                raise ValueError('source amendment chain mismatch')
+            hashes[name] = entry['new_sha256']
+    for name, digest in hashes.items():
         if sha(ROOT/name) != digest:
             raise ValueError('registered source changed: '+name)
     return out, data, reg['protocol']
@@ -124,11 +136,13 @@ def config(run_id, name):
     cfg['exchange']['pair_whitelist'] = spec['pairs']
     for key in ('key', 'secret', 'password', 'uid'):
         cfg['exchange'].pop(key, None)
-    opts = dict(has={'fetchCurrencies': False},
+    opts = dict(has={'fetchCurrencies': False}, requests_trust_env=True,
                 options={'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}})
     proxy = os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')
     if proxy:
         opts['httpsProxy'] = proxy
+    if os.environ.get('SSL_CERT_FILE'):
+        opts['cafile'] = os.environ['SSL_CERT_FILE']
     for key in ('ccxt_config', 'ccxt_sync_config', 'ccxt_async_config'):
         cfg['exchange'].setdefault(key, {}).update(opts)
     cfg['db_url'] = 'sqlite://'

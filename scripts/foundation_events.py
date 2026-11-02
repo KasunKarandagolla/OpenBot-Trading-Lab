@@ -91,7 +91,11 @@ def parse_ics(payload, source, observed):
                 stamp = datetime.strptime(value.rstrip('Z'), '%Y%m%dT%H%M%S')
                 tz = re.search(r'TZID=([^;:]+)', start_key)
                 if value.endswith('Z'): stamp = stamp.replace(tzinfo=timezone.utc)
-                elif tz: stamp = stamp.replace(tzinfo=ZoneInfo(tz.group(1)))
+                elif tz:
+                    # BLS declares this custom TZID with US DST rules in the
+                    # same calendar. IANA names use America/New_York.
+                    zone = {'US-Eastern': 'America/New_York'}.get(tz.group(1), tz.group(1))
+                    stamp = stamp.replace(tzinfo=ZoneInfo(zone))
                 else: continue  # floating local schedule time is not a UTC event
                 at = stamp.astimezone(timezone.utc).isoformat()
         except (ValueError, KeyError):
@@ -124,9 +128,62 @@ def parse_reference(payload, source, observed):
     text = ' '.join(parser.parts)
     # HTML references remain source references, never invented scheduled events
     # or incidents. This interface can safely carry official human-review links.
-    return [record(source, source['id']+' official calendar/notices reference', source['url'], None, observed,
+    result = [record(source, source['id']+' official calendar/notices reference', source['url'], None, observed,
              reason='Official source retrieved; individual HTML event dates/incident status require verification. Missing coverage is not no risk') |
              dict(source_excerpt=clean(text, 600), event_time=None)]
+    raw = payload.decode('utf-8', errors='replace')
+    if source['id'] == 'fed-fomc':
+        years = list(re.finditer(r'(\d{4}) FOMC Meetings', raw))
+        for i, year in enumerate(years):
+            section = raw[year.end():years[i+1].start() if i+1 < len(years) else len(raw)]
+            for month, days in re.findall(r'fomc-meeting__month[^>]*>(.*?)</div>.*?fomc-meeting__date[^>]*>(.*?)</div>', section, re.S):
+                month, days = clean(month), clean(days)
+                try:
+                    # Meeting end date only; do not invent a decision-hour clock.
+                    at = datetime.strptime(month.split('/')[-1]+' '+re.findall(r'\d+', days)[-1]+' '+year.group(1), '%B %d %Y').date().isoformat()
+                except (ValueError, IndexError): continue
+                if at < observed[:10]: continue
+                result.append(record(source, 'FOMC scheduled meeting '+month+' '+days, source['url'], None, observed, at, True,
+                    'Official scheduled meeting end date; announcement time UNKNOWN') | dict(schedule_precision='DATE_ONLY'))
+    if source['id'] == 'bea':
+        for table in re.findall(r'<table\b.*?</table>', raw, re.S):
+            year = re.search(r'Year\s+(\d{4})', table)
+            if not year: continue
+            for row in re.findall(r'<tr\b.*?</tr>', table, re.S):
+                date = re.search(r'class="release-date"[^>]*>(.*?)</div>', row, re.S)
+                title = re.search(r'class="release-title[^\"]*"[^>]*>(.*?)</td>', row, re.S)
+                local_time = re.search(r'<small[^>]*>(.*?)</small>', row, re.S)
+                if not date or not title: continue
+                try: at = datetime.strptime(clean(date.group(1))+' '+year.group(1), '%B %d %Y').date().isoformat()
+                except ValueError: continue
+                if at < observed[:10]: continue
+                result.append(record(source, clean(title.group(1)), source['url'], None, observed, at, True,
+                    'Official release date; page does not establish UTC time-zone semantics in this adapter') |
+                    dict(schedule_precision='DATE_ONLY', source_local_time=clean(local_time.group(1)) if local_time else None))
+    return result[:30]
+
+
+def replay(run_id):
+    out, data, _ = verify(run_id)
+    original = read(out/'event-briefing.json')
+    sources = {s['id']: s for s in read(ROOT/'research/foundation/event-sources.json')['sources']}
+    rows = []; coverage = []
+    for item in original['coverage']:
+        source = sources[item['source_id']]
+        raw = data.parent/'events'/(source['id']+'.source')
+        check = dict(item)
+        if raw.exists():
+            if sha(raw) != item['source_sha256']: raise ValueError('event source changed')
+            parser = {'rss': parse_rss, 'ics': parse_ics, 'html': parse_reference}[source['format']]
+            events = parser(raw.read_bytes(), source, item['observed_at'])
+            for event in events: event['source_sha256'] = sha(raw)
+            rows.extend(events)
+            check.update(record_count=len(events), status='RETRIEVED_PARTIAL_COVERAGE' if events else 'EMPTY_OR_UNPARSED')
+        coverage.append(check)
+    write(out/'event-briefing-reparsed.json', original | dict(events=rows, coverage=coverage,
+          reparsed_at=now(), original_briefing_sha256=sha(out/'event-briefing.json'),
+          reparse_reason='Support documented BLS custom US-Eastern TZID and official Fed/BEA HTML calendar dates. Raw sources and observation clocks preserved; no redownload.'))
+    print('Reparsed events:', len(rows), 'official scheduled events', sum(e['verification_state'] == 'VERIFIED_OFFICIAL_SCHEDULE' for e in rows))
 
 
 def collect(run_id):

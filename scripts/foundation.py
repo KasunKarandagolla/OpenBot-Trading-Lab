@@ -17,11 +17,11 @@ def main():
     from foundation_market import preflight, scan, acquire, validate, assess
     from foundation_native import schedule, backtest, lookahead
     from foundation_report import report, export
-    from foundation_events import collect
+    from foundation_events import collect, replay
     from foundation_checks import doctor, ui_smoke, dryrun_smoke
     actions = dict(preflight=preflight, scan=scan, acquire=acquire, validate=validate,
         assess=assess, schedule=schedule, backtest=backtest, report=report, export=export,
-        events=collect, doctor=doctor, lookahead=lookahead, **{'ui-smoke': ui_smoke, 'dryrun-smoke': dryrun_smoke})
+        events=collect, doctor=doctor, lookahead=lookahead, **{'events-replay': replay, 'ui-smoke': ui_smoke, 'dryrun-smoke': dryrun_smoke})
     if action not in actions: raise ValueError('unsupported research action')
     actions[action](run_id)
     return 0
