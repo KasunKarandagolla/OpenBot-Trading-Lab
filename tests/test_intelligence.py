@@ -7,8 +7,9 @@ import numpy as np
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'research/intelligence'),str(ROOT/'research/bonus'),str(ROOT/'research/session3'),str(ROOT/'research/master_audit'),str(ROOT/'research/foundation'),str(ROOT/'user_data/strategies')]
 from intelligence_features import COST,match,research_plan,profiles,executable_contract
-from advanced_features import volume_profile_v2
-from orderflow import normalize,normalize_gate_rest,qualified_flow
+from intelligence_profile import volume_profile_v2
+from orderflow import normalize
+from intelligence_orderflow import normalize_gate_rest,qualified_flow
 
 
 class IntelligenceTests(unittest.TestCase):

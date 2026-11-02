@@ -7,7 +7,8 @@ import ssl
 import time
 import aiohttp
 from foundation_common import *
-from orderflow import normalize,normalize_gate_rest,qualified_flow
+from orderflow import normalize
+from intelligence_orderflow import normalize_gate_rest,qualified_flow
 
 
 async def capture(run_id,seconds=45):

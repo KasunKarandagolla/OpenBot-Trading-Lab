@@ -1,7 +1,7 @@
 """Versioned causal opportunity questions and economic research plans."""
 import math
 import numpy as np
-from advanced_features import volume_profile_v2
+from intelligence_profile import volume_profile_v2
 
 COST=.00075*2+.002+.0003
 
