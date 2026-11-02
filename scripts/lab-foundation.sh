@@ -21,14 +21,20 @@ else
 fi
 native() { docker exec "$runner" python scripts/foundation.py "$@"; }
 if [[ "$action" == run ]]; then
-  for step in register doctor preflight scan acquire assess schedule backtest events report export lookahead ui-smoke dryrun-smoke; do
+  steps=(register doctor preflight scan acquire assess schedule backtest events report export lookahead ui-smoke dryrun-smoke)
+  test_pattern=test_foundation_session1.py
+  if [[ "$run_id" == intelligence-* ]]; then
+    steps=(register doctor preflight scan acquire assess flow schedule backtest events report compare export intelligence-lookahead)
+    test_pattern=test_intelligence.py
+  fi
+  for step in "${steps[@]}"; do
     echo "Foundation step: $step"
     native "$step" "$run_id"
     if [[ "$step" == lookahead ]]; then
       docker exec "$runner" python scripts/summarize_lookahead.py "$run_id"
     fi
   done
-  docker exec -e FOUNDATION_RUN_ID="$run_id" "$runner" python -m unittest discover -s tests -p test_foundation_session1.py -v
+  docker exec -e FOUNDATION_RUN_ID="$run_id" "$runner" python -m unittest discover -s tests -p "$test_pattern" -v
 else
   native "$action" "$run_id"
 fi

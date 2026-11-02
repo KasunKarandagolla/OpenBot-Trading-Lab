@@ -1,0 +1,27 @@
+{
+  "binance_policy": "Native Binance USD-M adapter tested once; no regional workaround. Separate cohort required.",
+  "ccxt": "4.5.90",
+  "engine": "2026.10",
+  "orders_created": false,
+  "paper_mode": "native dry_run=true; no sandbox/demo adapter",
+  "research_venue": "gate",
+  "venues": [
+    {
+      "error": "ExchangeNotAvailable: binanceusdm GET https://fapi.binance.com/fapi/v1/exchangeInfo 451 Unknown {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}",
+      "observed_at": "2026-11-02T16:51:26.298443+00:00",
+      "requested_at": "2026-11-02T16:51:24.621921+00:00",
+      "status": "BLOCKED",
+      "venue": "binance"
+    },
+    {
+      "candles": 3,
+      "contract_id": "BTC_USDT",
+      "funding_timestamp": null,
+      "observed_at": "2026-11-02T16:51:32.563851+00:00",
+      "public_taker_rate": 0.0005,
+      "requested_at": "2026-11-02T16:51:26.298475+00:00",
+      "status": "ACCESSIBLE",
+      "venue": "gate"
+    }
+  ]
+}

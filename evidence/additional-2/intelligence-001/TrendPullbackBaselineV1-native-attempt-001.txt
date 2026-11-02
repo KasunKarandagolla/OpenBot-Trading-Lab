@@ -1,0 +1,12 @@
+Source validation: 20 files, hashes/UTC/continuity/funding PASS
+Traceback (most recent call last):
+  File "/lab/scripts/foundation.py", line 34, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/lab/scripts/foundation.py", line 15, in main
+    return native(run_id, extra[0], action == 'native-lookahead')
+  File "/lab/scripts/foundation_native.py", line 72, in native
+    cfg_path = config(run_id, name)
+  File "/lab/scripts/foundation_common.py", line 136, in config
+    raise ValueError('staged strategy changed')
+ValueError: staged strategy changed

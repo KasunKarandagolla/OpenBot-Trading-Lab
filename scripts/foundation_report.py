@@ -98,7 +98,7 @@ def report(run_id):
     repaired = read(out/'native-results/FoundationRouterM0V1.json')['strategy']['FoundationRouterM0V1']['trades']
     keys = lambda ts: sorted((r['pair'], r['open_timestamp'], r['is_short']) for r in ts)
     write(out/'economic-report.json', dict(schema_version=1, environment='NATIVE_BACKTEST_DEVELOPMENT', venue='gate',
-        generated_at=now(), evaluation_timerange=spec['evaluation_timerange'], protocol_sha256=sha(PROTOCOL),
+        generated_at=now(), evaluation_timerange=spec['evaluation_timerange'], protocol_sha256=sha(ROOT/'research/intelligence/protocol.json' if run_id.startswith('intelligence-') else PROTOCOL),
         portfolios=summaries, all_order_accounting_reconciles=True, repaired_source_funding_within_bounds=source_ok,
         router_exit_comparison=dict(identical_entry_keys=keys(old) == keys(repaired),
             net_delta_usdt=summaries['FoundationRouterM0V1']['native_net_usdt']-summaries['RouterOnlyV1']['native_net_usdt'],

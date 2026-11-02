@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/lab/scripts/foundation.py", line 34, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/lab/scripts/foundation.py", line 11, in main
+    verify(run_id)
+    ~~~~~~^^^^^^^^
+  File "/lab/scripts/foundation_common.py", line 104, in verify
+    raise ValueError('registered source changed: '+name)
+ValueError: registered source changed: scripts/foundation_intelligence_report.py

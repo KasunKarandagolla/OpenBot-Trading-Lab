@@ -1,0 +1,54 @@
+{
+  "all_commands_exited_zero": true,
+  "all_variants_diagnostically_qualified": false,
+  "checks": [
+    {
+      "command_exit": 0,
+      "csv_rows": [
+        {
+          "biased_entry_signals": "0",
+          "biased_exit_signals": "0",
+          "biased_indicators": "",
+          "filename": "IntelligenceRouterV2.py",
+          "has_bias": "False",
+          "strategy": "IntelligenceRegimeV2",
+          "total_signals": "3"
+        }
+      ],
+      "csv_sha256": "a8a1e04cc21addd10fe75247ba43bc5abc9c1c6ae84d11335f08a01db8e0110a",
+      "log_sha256": "5e73befec9fce84a3ff55ec039b497e73cf4b3ace7a3d29ab290bd698dbf45f5",
+      "status": "NO_DETECTED_BIAS_IN_REPORTED_SAMPLE",
+      "strategy": "IntelligenceRegimeV2",
+      "total_signals": 3
+    },
+    {
+      "command_exit": 0,
+      "csv_rows": [
+        {
+          "biased_entry_signals": "0",
+          "biased_exit_signals": "0",
+          "biased_indicators": "",
+          "filename": "IntelligenceRouterV2.py",
+          "has_bias": "False",
+          "strategy": "IntelligenceTargetV2",
+          "total_signals": "3"
+        }
+      ],
+      "csv_sha256": "6dee06f2df651d8042e7fa1bca922fcd55171f1572dc445ed81a04826f8be51a",
+      "log_sha256": "b5f65e4328f4212b846b90d9935941ddb10a42a0473955746f92a703f689f496",
+      "status": "NO_DETECTED_BIAS_IN_REPORTED_SAMPLE",
+      "strategy": "IntelligenceTargetV2",
+      "total_signals": 3
+    },
+    {
+      "command_exit": 0,
+      "csv_rows": [],
+      "csv_sha256": "ee1bfa76dc2496fb7670ca9697e91f8b4351756ea85249c9f813c95c4913c98a",
+      "log_sha256": "bece12a3625df6ff77a95b1024aa84cf1a1c887a541700b2b91a58d575c4076b",
+      "status": "INSUFFICIENT_SIGNALS",
+      "strategy": "IntelligenceEntryV2",
+      "total_signals": 0
+    }
+  ],
+  "interpretation": "A zero command exit is not a passing diagnostic when no signals were analyzed. Tiny development samples do not prove universal absence of bias."
+}

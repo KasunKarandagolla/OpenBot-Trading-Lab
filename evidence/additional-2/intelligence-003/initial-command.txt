@@ -1,0 +1,52 @@
+Foundation step: register
+Registered intelligence-003
+Foundation step: doctor
+Environment/Compose/frozen configs: PASS
+Foundation step: preflight
+[
+  {
+    "venue": "binance",
+    "status": "BLOCKED",
+    "requested_at": "2026-11-02T17:05:22.973015+00:00",
+    "observed_at": "2026-11-02T17:05:24.590848+00:00",
+    "error": "ExchangeNotAvailable: binanceusdm GET https://fapi.binance.com/fapi/v1/exchangeInfo 451 Unknown {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}"
+  },
+  {
+    "venue": "gate",
+    "status": "ACCESSIBLE",
+    "requested_at": "2026-11-02T17:05:24.590882+00:00",
+    "observed_at": "2026-11-02T17:05:31.156561+00:00",
+    "candles": 3,
+    "contract_id": "BTC_USDT",
+    "funding_timestamp": null,
+    "public_taker_rate": 0.0005
+  }
+]
+Foundation step: scan
+Scan: 586 eligible; native 38; shortlist 17; liquidity rejects 569; metadata rejects 484
+Foundation step: acquire
+Source validation: 20 files, hashes/UTC/continuity/funding PASS
+Preserved source bundle: foundation-intelligence-003.tar.gz 963952 bytes
+Reused preserved cohort: 20 files; no historical redownload
+Foundation step: assess
+Current deep checks 5 {'WATCH': 20}
+Foundation step: flow
+Real flow: 3000 REST prints; 129 WS prints; 12 qualified-window attempts; error None
+Foundation step: schedule
+Source validation: 20 files, hashes/UTC/continuity/funding PASS
+Historical opportunities: 28 plans 1
+Signed schedule: 3936 closes; 306 candidate-arm records
+Foundation step: backtest
+TrendPullbackBaselineV1: 162 trades; native net -6.38710333 USDT
+VWAPTrendContinuationV1: 9 trades; native net -0.44946448 USDT
+Traceback (most recent call last):
+  File "/lab/scripts/foundation.py", line 34, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/lab/scripts/foundation.py", line 29, in main
+    actions[action](run_id)
+    ~~~~~~~~~~~~~~~^^^^^^^^
+  File "/lab/scripts/foundation_native.py", line 131, in backtest
+    if result.returncode: raise ValueError('native run failed: '+name+'; see '+log.name)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: native run failed: LiquiditySweepReversalV1; see LiquiditySweepReversalV1-native-attempt-001.txt
