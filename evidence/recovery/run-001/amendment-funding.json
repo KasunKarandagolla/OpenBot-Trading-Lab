@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-03T15:18:12.714728+00:00",
+  "hashes": {
+    "research/recovery/recovery_funding.py": "56c77a6d5135113e91a47aff5291433742ffe0f3cafd0ac298f1462455045044",
+    "scripts/recovery_native.py": "59584e9d1fef37a81e300442b6e2439e3f341d146db0447027e3475e8821d4e9"
+  },
+  "hourly_freeze": "27c9d314f62a80bb36c6961aaf077a8f7b0e33d8895abab7fcf2df56b2a83da9",
+  "original_freeze": "4a074bd8e5c4d9937bd2d13120b35543c5116a5b1bb0ebc78382a8e5f9be0a83",
+  "reason": "Audit of the first native source replay found actual Gate funding timestamps seconds after the hour. Native equality join dropped events. Quarantine this result; retain raw event clocks and asof previous hourly source mark, native fee calculation and persisted cursor. Apply identically to every official portfolio. No rules changed."
+}

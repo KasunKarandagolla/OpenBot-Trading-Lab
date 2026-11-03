@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-03T15:16:13.950450+00:00",
+  "comparisons": "Also run exact same hourly policy on development;15m continuation has no independent validation.",
+  "constraints": "Same1x,1000USDT,25USDTcap,2positions,.25 modeledrisk,sourcefunding,.00075fee,+10bpstress",
+  "execution": "REAL_1H_NATIVE_NEXT_OPEN;COARSE_BARRIER_PATH_UNKNOWN",
+  "hashes": {
+    "research/recovery/RecoveryPolicyR1.py": "808906d3a21d4e68654ce8f3aef6b2f988ba81c77817e59e0b75015eca4046db",
+    "scripts/recovery_hourly.py": "3ea84ad28f91e77cbf84f751107d3411a308caa42f8f7b5fbf50e2081595b327",
+    "scripts/recovery_native.py": "85045810d1dbe7233e52430875b2a4343f60c56b71da2fe2e4e4360d0380d478"
+  },
+  "hypotheses": [
+    "momentum",
+    "liquid-momentum"
+  ],
+  "minute_independent": "UNAVAILABLE_BY_KNOWN_10000POINT_RETENTION",
+  "parent_freeze_sha256": "4a074bd8e5c4d9937bd2d13120b35543c5116a5b1bb0ebc78382a8e5f9be0a83",
+  "reason": "Availability amendment before examining independent returns: Gate15m data beyond10000points and funding beyond180days rejected; Binance archived prices reachable but contract metadataHTTP451. Retain all failed sources. Use real Gate1h data only for daily momentum, with67days May20-July26 and10daywarmup. No15m prices fabricated,no venue blending,no rule tuning."
+}
