@@ -1,0 +1,138 @@
+[
+  {
+    "funding": [
+      {
+        "at": "2026-10-31T00:00:00+00:00",
+        "mark": 77305.47,
+        "quantity": 0.0003,
+        "rate": 0.0001
+      },
+      {
+        "at": "2026-10-31T08:00:00+00:00",
+        "mark": 77298.2,
+        "quantity": 0.0003,
+        "rate": 0.0001
+      },
+      {
+        "at": "2026-10-31T16:00:00+00:00",
+        "mark": 77553.5,
+        "quantity": 0.0003,
+        "rate": 0.0001
+      },
+      {
+        "at": "2026-11-01T00:00:00+00:00",
+        "mark": 77515.51,
+        "quantity": 0.0003,
+        "rate": 8.6e-05
+      }
+    ],
+    "id": 1,
+    "open_date": "2026-10-31T00:00:00+00:00",
+    "pair": "BTC/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 3.0109925412973797,
+      "approved_notional": 23.189969999999995,
+      "approved_risk": 0.4455371429199781,
+      "atr_at_signal": 236.01637414810054,
+      "available_at": "2026-10-31T00:00:00+00:00",
+      "boundary": null,
+      "decision_id": "BTC/USDT:USDT:momentum:short:2026-10-31T00:00:00+00:00",
+      "deviation_fraction": 0.0015,
+      "entry_policy": "NEXT_OPEN_MARKET",
+      "expires_at": "2026-10-31T00:05:00+00:00",
+      "fill_model": "NATIVE_NEXT_OPEN; ADVERSE_COSTS_SEPARATE",
+      "flow": {
+        "status": "UNKNOWN"
+      },
+      "invalidation": "2_COMPLETED_HOUR_ATR_STOP",
+      "leverage": 1.0,
+      "max_hold_hours": 24,
+      "methodology": "daily-relative-momentum",
+      "modeled_loss_per_notional": 0.019212493285673857,
+      "policy_id": "recovery-v1.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "momentum",
+      "reference": 77300.0,
+      "risk_fraction": 0.015412493285673855,
+      "side": "short",
+      "signal_close": 77300.0,
+      "stop": 78491.28418973325,
+      "structural_stop": 78491.28418973325,
+      "target": 72534.863241067,
+      "target_origin": "4R_WITH_24H_TIMEOUT"
+    },
+    "state": {
+      "entry_amount": 0.0003,
+      "exited_amount": 0.0003,
+      "first_fill": 1793404800.0,
+      "partial_done": true,
+      "tight_stop": 78491.28418973325
+    }
+  },
+  {
+    "funding": [
+      {
+        "at": "2026-11-02T00:00:01+00:00",
+        "mark": 7.215,
+        "quantity": 3.0,
+        "rate": 0.0001
+      },
+      {
+        "at": "2026-11-02T08:00:01+00:00",
+        "mark": 7.187,
+        "quantity": 3.0,
+        "rate": 0.0001
+      },
+      {
+        "at": "2026-11-02T16:00:01+00:00",
+        "mark": 7.199,
+        "quantity": 3.0,
+        "rate": 0.0001
+      }
+    ],
+    "id": 2,
+    "open_date": "2026-11-02T00:00:00+00:00",
+    "pair": "UNI/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 3.2953272052400258,
+      "approved_notional": 21.642000000000003,
+      "approved_risk": 0.5864609145226154,
+      "atr_at_signal": 0.0412702043956705,
+      "available_at": "2026-11-02T00:00:00+00:00",
+      "boundary": null,
+      "decision_id": "UNI/USDT:USDT:momentum:long:2026-11-02T00:00:00+00:00",
+      "deviation_fraction": 0.0015,
+      "entry_policy": "NEXT_OPEN_MARKET",
+      "expires_at": "2026-11-02T00:05:00+00:00",
+      "fill_model": "NATIVE_NEXT_OPEN; ADVERSE_COSTS_SEPARATE",
+      "flow": {
+        "status": "UNKNOWN"
+      },
+      "invalidation": "2_COMPLETED_HOUR_ATR_STOP",
+      "leverage": 1.0,
+      "max_hold_hours": 24,
+      "methodology": "daily-relative-momentum",
+      "modeled_loss_per_notional": 0.02709827717043782,
+      "policy_id": "recovery-v1.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "momentum",
+      "reference": 7.213,
+      "risk_fraction": 0.02329827717043782,
+      "side": "long",
+      "signal_close": 7.213,
+      "stop": 7.045926228492462,
+      "structural_stop": 7.045926228492462,
+      "target": 7.881295086030151,
+      "target_origin": "4R_WITH_24H_TIMEOUT"
+    },
+    "state": {
+      "entry_amount": 3.0,
+      "exited_amount": 3.0,
+      "first_fill": 1793577600.0,
+      "partial_done": true,
+      "tight_stop": 7.045926228492462
+    }
+  }
+]

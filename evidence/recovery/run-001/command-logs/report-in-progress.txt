@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/lab/scripts/recovery_report.py", line 174, in <module>
+    if __name__=='__main__':report()
+                            ~~~~~~^^
+  File "/lab/scripts/recovery_report.py", line 134, in report
+    directory=path.parent;p,native,rows=reconcile(directory);key=p['window']+'/'+p['label']
+                                        ~~~~~~~~~^^^^^^^^^^^
+  File "/lab/scripts/recovery_report.py", line 51, in reconcile
+    if abs(fund-independent_funding)>D('.00000011'):raise ValueError('signed source funding differs')
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: signed source funding differs
