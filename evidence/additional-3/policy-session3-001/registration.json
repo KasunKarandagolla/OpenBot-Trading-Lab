@@ -1,0 +1,137 @@
+{
+  "image": "freqtradeorg/freqtrade:2026.10@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7",
+  "parent": "913eec38213052f979e67fd532febac809cbcabd",
+  "protocol": {
+    "ablations": {
+      "PolicyFixedV3": "Same signals, full exit at 3R, no partial/BE/trail",
+      "PolicyManagedV3": "Preselected candidate: 1/3 quantity at 1.5R, remainder 3R; cost breakeven after actual partial; confirmed swing / 2ATR monotone trail",
+      "PolicyObjectiveV3": "Fixed full exit; nearest qualified confirmed structure/prior-session objective between 2R and 3R that satisfies unchanged net RR; proxy profile stays shadow",
+      "PolicyRetraceV3": "Fixed full exit; 0.15ATR retracement; original stop and target unchanged to isolate entry effect"
+    },
+    "candidate": "PolicyManagedV3",
+    "classification": "CURRENT_SURVIVORS; AUGUST-OCTOBER ALREADY INSPECTED IN PARENT WORK; NOVEMBER1 NEW POLICY EVALUATION, NOT A FULL INDEPENDENT HOLDOUT",
+    "comparison_notional_cap": 25,
+    "continuation": {
+      "hour_adx_min": 20,
+      "hour_ema": [
+        20,
+        50
+      ],
+      "local_ema": [
+        20,
+        50
+      ],
+      "pullback": "prior 4 bars touch EMA20 or VWAP within 0.35ATR; deepest prior 6-bar extreme within 2.5ATR of reference",
+      "stop": "prior 6-bar and signal extreme plus 0.2ATR; never tighten to manufacture leverage",
+      "target": "3R; distance<=6ATR, gross risk 0.3%-2.5%; net RR>=1.25",
+      "trigger": "closed break of previous high/low, trend-colored body, close in outer 35% of bar, rvol>=1",
+      "vwap_acceptance": "at least 2 of prior 3 closes on trend side; valid UTC session, >=8 bars"
+    },
+    "cost": {
+      "adverse_funding": 0.0003,
+      "fees_round_trip": 0.0015,
+      "friction_round_trip": 0.002,
+      "total": 0.0038
+    },
+    "cost_stress_bps_per_side": [
+      1.5,
+      5,
+      10,
+      20
+    ],
+    "data": "Native Freqtrade public Gate downloads; preserve raw local only and compare old hashes; attempt bounded 1m detail; no interpolation, synthetic market prices, historical flow, news or membership reconstruction",
+    "detail_timeframe": "1m",
+    "detail_timerange": "20261026-20261102",
+    "download_timerange": "20260726-20261102",
+    "evaluation_timerange": "20260805-20261102",
+    "execution": "native engine only; limit candle-range fills are modeled; queue priority UNKNOWN; finer data does not establish real fills",
+    "fee_per_side": 0.00075,
+    "hypothesis": "A completed-hour trend with controlled multi-bar pullback and renewed participation offers more executable continuation economics than a thin signal-bar VWAP cross. Failed-boundary reversals require local rejection and contextual level significance or a genuine change of character. Logical pullback invalidation and bounded 3R objectives retain the same after-cost gate. Native partial harvesting plus delayed fee-aware stop tightening is an ablation, not an assumed economic improvement.",
+    "management": {
+      "breakeven_cost": "native fees + 0.002 friction + adverse funding 0.0003; funding paid increases reserve; never widen",
+      "expiry_seconds": 300,
+      "max_hold_hours": {
+        "continuation": 8,
+        "reversal": 4
+      },
+      "partial_fraction": 0.3333333333333333,
+      "partial_r": 1.5,
+      "scale_in": false,
+      "thesis": "two newly closed bars lose VWAP and EMA20 for continuation; reversal close reaccepts beyond reclaimed boundary",
+      "trail_atr": 2
+    },
+    "net_rr_floor": 1.25,
+    "orders_allowed": false,
+    "pairs": [
+      "BTC/USDT:USDT",
+      "ETH/USDT:USDT",
+      "SOL/USDT:USDT",
+      "XRP/USDT:USDT",
+      "DOGE/USDT:USDT"
+    ],
+    "periods": {
+      "newly_registered_completed_day": "20261101-20261102",
+      "october_development": "20261001-20261101",
+      "reused_development": "20260805-20261001"
+    },
+    "persistent_paper_allowed": false,
+    "policy_id": "controlled-pullback-failure-v3.0.0",
+    "promotion": "Functional/restart qualification separate from economic qualification. No persistent operation authorized by tests or positive development results.",
+    "ranking": "causal signed 4h return relative BTC + capped participation, continuation in its hourly direction; reversal ranked by actual reclaim/ATR; top3 per recipe/side in fixed five-market survivor cohort, no future performance selection",
+    "registered_parent": "913eec38213052f979e67fd532febac809cbcabd",
+    "reserved_holdout": "20261117-20261201 UNTOUCHED; no acquisition or outcome inspection",
+    "reversal": {
+      "danger": "opposing hourly EMA trend ADX>=25 requires local CHOCH; no universal hourly structure veto",
+      "failure": "parent raw failed prior20 boundary + rvol>=1.2 and ADX<=30; no parent geometry prefilter",
+      "qualification": "boundary within 0.5ATR of prior day/session/confirmed pivot OR local CHOCH in side direction",
+      "stop": "signal extreme plus 0.2ATR",
+      "target": "3R bounded by 6ATR and unchanged net RR"
+    },
+    "risk": {
+      "account_state": "persisted UTC baseline/peak; missing/stale marks inhibit entries and cancel pending entries, exits continue",
+      "cooldown_minutes": 60,
+      "correlated_notional_to_equity": 0.5,
+      "daily_mtm_loss": 0.01,
+      "gross_notional_to_equity": 1,
+      "liquidation_clearance": 0.01,
+      "loss_streak": 3,
+      "max_positions": 2,
+      "missing_tiers": "1x permitted only if full collateral covers notional plus costs; >1x rejected",
+      "notional_cap_per_trade": 250,
+      "peak_drawdown": 0.05,
+      "requested_leverage": 1,
+      "risk_per_trade": 0.0025,
+      "risk_portfolio": 0.005,
+      "scenarios": [
+        1,
+        10,
+        20
+      ],
+      "wallet": 1000
+    },
+    "schema_version": 3,
+    "variants": [
+      "TrendPullbackBaselineV1",
+      "IntelligenceRegimeV2",
+      "PolicyFixedV3",
+      "PolicyManagedV3",
+      "PolicyRetraceV3",
+      "PolicyObjectiveV3"
+    ],
+    "warmup_hours": 240
+  },
+  "registered_at": "2026-11-02T18:33:32.938978+00:00",
+  "run_id": "policy-session3-001",
+  "schema_version": 3,
+  "source_hashes": {
+    "research/policy/PolicyV3.py": "7e4507b6ee927f358ffde828c9dbedc5ec2cd170b33d90357cc026464b518ac9",
+    "research/policy/policy_features.py": "13f99f2c55a77b3c40764a64ba5d46f58f6b350b2f6c6fff8c54528ff921df95",
+    "research/policy/policy_risk.py": "24ea795b1f0eab979f3c79f1fff10d1716f75c993a5d59ffca3a38d159268a88",
+    "research/policy/policy_state.py": "01c6603c66f431dd96eedd5cf34950f4b98a2964a3c7c8fc01e35bf0b34cb45d",
+    "research/policy/protocol.json": "5501872ed618bbea10d3335e02540f9580b11ad77115af4d9677997b85339890",
+    "scripts/policy_common.py": "db692eb477f93e5f446edaf600ff3ea03dcf50b256cb21cc1d1108aa30f55940",
+    "scripts/policy_market.py": "ea7abe1c31fa44a408ac2209d6e5f6ff376f5155ecdfaec1771bca489528a028",
+    "scripts/policy_native.py": "921bac9cd74a4d358a3df89f143009e1f2a817d5a0168bdf93dde1e407db5fd1",
+    "scripts/policy_session.py": "03c1db108f1926ca6c8ee9a007c790cd54104a637977236aaa0613d8467fd378"
+  }
+}

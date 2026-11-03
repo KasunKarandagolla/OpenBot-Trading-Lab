@@ -20,7 +20,9 @@ else
   trap 'docker rm -f "$runner" >/dev/null' EXIT
 fi
 native() { docker exec "$runner" python scripts/foundation.py "$@"; }
-if [[ "$action" == run ]]; then
+if [[ ( "$action" == run || "$action" == resume ) && "$run_id" == policy-* ]]; then
+  docker exec "$runner" python scripts/policy_workflow.py "$run_id" "$action"
+elif [[ "$action" == run ]]; then
   steps=(register doctor preflight scan acquire assess schedule backtest events report export lookahead ui-smoke dryrun-smoke)
   test_pattern=test_foundation_session1.py
   if [[ "$run_id" == intelligence-* ]]; then

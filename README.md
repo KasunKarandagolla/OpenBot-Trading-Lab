@@ -1,16 +1,34 @@
 # OpenBot Trading Lab
 
-A real-market crypto futures research and paper-trading foundation using official **Freqtrade 2026.10** and FreqUI. **Additional Session 2 of 5** adds signed opportunity selection, conditional recipe matching, qualified genuine Order Flow, labeled Volume Profile and comparative native target/entry research. **Economic qualification remains blocked.** No strategy is approved by this research for persistent paper operation.
+A native Freqtrade 2026.10 crypto-futures research and paper-candidate foundation.
+**Additional Session 3 of5** delivers controlled-pullback/failed-breakout planning,
+complete native position mechanics, persisted account risk and independently
+reconciled chronological comparisons. **Economic qualification is blocked;
+persistent paper trading is not activated.**
 
-[Session 2 evidence and results](evidence/additional-2/README.md) · [Session 2 setup and rollback](docs/operations/intelligence-session2.md) · [Session 3 handoff](docs/operations/intelligence-session3-handoff.md)
+The selected integration reference is **PolicyFixedV3 v3.0.0**. In89 development
+calendar days it fills68 trades and produces+0.19192444 native USDT, but
+**−2.94951754 USDT after the declared10 bp/side friction stress**. Partial
+management worsens net. This is a working integration reference, not a profitable
+strategy approval.
+
+[Session 3 evidence](evidence/additional-3/README.md) · [Owner report](evidence/additional-3/owner-report.md) · [Setup/rollback](docs/operations/policy-session3.md) · [Session 4 contract](docs/operations/policy-session4-handoff.md) · [Exact release](research/policy/release.json)
 
 ```bash
-git checkout codex/additional-2-opportunity-intelligence
+git checkout codex/additional-3-integrated-policy
 docker compose -f deploy/freqtrade/compose.yaml pull
-./scripts/lab-foundation.sh run intelligence-owner-001
+./scripts/lab-foundation.sh run policy-owner-001
 ```
 
-[Executed milestone and limitations](evidence/additional-1/README.md) · [Beginner runbook](docs/operations/foundation.md) · [Session 2 handoff](docs/operations/foundation-session2-handoff.md) · [Original design](docs/design/README.md) · [Prior sessions](docs/operations/prior-sessions-readme.md)
+Use a fresh run ID; `resume` verifies and reuses completed sources after an
+interruption. Public history has rolling retention, so preserve the owner-private
+backup. The command uses one disposable pinned native container and no persistent
+paper service. Two additional sessions remain for actual isolated OpenBot
+coordination, owner-host operational acceptance and prospective evidence. The
+November 17–December 1 reserved holdout remains untouched.
+
+The following earlier instructions and results are retained as historical
+compatibility context. The Session 3 release and runbook above govern current work.
 
 ## Session 1 compatibility workflow
 

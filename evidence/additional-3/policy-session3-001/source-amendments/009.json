@@ -1,0 +1,12 @@
+{
+  "changes": {
+    "scripts/policy_common.py": {
+      "new_sha256": "26811f9ed451ac9aa941de3a01e4b872190addab8feb70ed704791a3a6bcf0b3",
+      "old_sha256": "780ed5fe68d1e3273bc7212029202a95c11e04f8b529283d2ad81af14572305b"
+    }
+  },
+  "policy_thresholds_changed": false,
+  "reason": "Correct invalid config inheritance, not a research retune: frozen baseline must use research.json and original 2% stop /3% ROI. V3 emergency must be explicit -0.99 so leverage does not inherit VWAP -0.03; frozen absolute logical stop remains unchanged. Retain every first-run result and re-run complete workflow under fresh ID002. Initial baseline comparison is invalid and cannot support promotion.",
+  "recorded_at": "2026-11-03T01:06:03.323633+00:00",
+  "registration_sha256": "175452f5b5bd47849ceb2a59882f05f19bdbb708041fccbdccf089bfd4148625"
+}

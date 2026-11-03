@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/lab/scripts/policy_session.py", line 31, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/lab/scripts/policy_session.py", line 9, in main
+    verify(run_id)
+    ~~~~~~^^^^^^^^
+  File "/lab/scripts/policy_common.py", line 40, in verify
+    if any(sha(ROOT/p)!=h for p,h in hashes.items()): raise ValueError('registered v3 source changed; record explicit amendment')
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: registered v3 source changed; record explicit amendment

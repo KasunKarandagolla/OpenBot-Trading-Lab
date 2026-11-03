@@ -11,8 +11,8 @@ from orderflow import normalize
 from intelligence_orderflow import normalize_gate_rest,qualified_flow
 
 
-async def capture(run_id,seconds=45):
-    out,data,spec=verify(run_id)
+async def capture(run_id,seconds=45,context=None):
+    out,data,spec=(context or verify)(run_id)
     if (out/'orderflow.json').exists(): raise ValueError('preserve flow observation')
     source_dir=data.parent/'flow'/('attempt-'+str(len(list((data.parent/'flow').glob('attempt-*')))+1).zfill(3))
     source_dir.mkdir(parents=True)
