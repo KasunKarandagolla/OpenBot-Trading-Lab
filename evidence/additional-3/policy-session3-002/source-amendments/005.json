@@ -1,0 +1,16 @@
+{
+  "changes": {
+    "research/policy/PolicyV3.py": {
+      "new_sha256": "fecf8de53e9cb97557c3699589e8072920059a33f79bcbb29771c60e9ebecb8c",
+      "old_sha256": "93a979888c99ab4816d767a1fa45d017c42e91235c8c99f7ed0e7fea36f212a3"
+    },
+    "research/policy/policy_risk.py": {
+      "new_sha256": "6910019f95cd5a8288fe7a410054ee8bb398291717dbfa6ba2c0b3238adc0739",
+      "old_sha256": "941e7ac480ac7d3709dfdb7fadfd6fe24acad2c8485c2f8b538eeb9d47cee7f0"
+    }
+  },
+  "policy_thresholds_changed": false,
+  "reason": "Native matched 1x/10x replay exposed five one-lot entry differences and a one-lot partial difference caused by binary margin conversion. Repair representation using native precision functions, with unchanged approved lots/risk limits. Preserve all pre-repair results and replay every affected V3 arm; no signal/cost/target threshold is retuned.",
+  "recorded_at": "2026-11-03T01:25:13.336340+00:00",
+  "registration_sha256": "7c1cbc875be6b4a71f23a2ea651acc0cebe0c6d6ac7f0d3bb5e8934fde6888f7"
+}

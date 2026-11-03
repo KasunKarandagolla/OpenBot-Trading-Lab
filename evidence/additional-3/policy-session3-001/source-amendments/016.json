@@ -1,0 +1,16 @@
+{
+  "changes": {
+    "research/policy/PolicyV3.py": {
+      "new_sha256": "750af82402a5dd8999caa54e87a27335447a48ff8327ecf0f03cee61551097a0",
+      "old_sha256": "fecf8de53e9cb97557c3699589e8072920059a33f79bcbb29771c60e9ebecb8c"
+    },
+    "scripts/policy_smoke.py": {
+      "new_sha256": "9d45e30179a9e925c498d90938d0b96fbf74e7b2beae749ff19e903befee2008",
+      "old_sha256": "ab4a7452aedc4165f332262242cb1f58f23d569d9b2eccc91264de62e900e91a"
+    }
+  },
+  "policy_thresholds_changed": false,
+  "reason": "Native stopped startup exposed deferred strategy-path import failure in new paper-only funding adapter. Import it at strategy module resolution time and persist installation receipt; smoke now requires that receipt. No backtest rule, quantity, stop or economic parameter change.",
+  "recorded_at": "2026-11-03T01:28:10.306508+00:00",
+  "registration_sha256": "175452f5b5bd47849ceb2a59882f05f19bdbb708041fccbdccf089bfd4148625"
+}

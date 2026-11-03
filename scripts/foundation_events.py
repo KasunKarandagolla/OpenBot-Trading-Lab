@@ -186,8 +186,8 @@ def replay(run_id):
     print('Reparsed events:', len(rows), 'official scheduled events', sum(e['verification_state'] == 'VERIFIED_OFFICIAL_SCHEDULE' for e in rows))
 
 
-def collect(run_id):
-    out, data, _ = verify(run_id)
+def collect(run_id, context=None):
+    out, data, _ = (context or verify)(run_id)
     if (out/'event-briefing.json').exists(): raise ValueError('preserve event briefing')
     sources = read(ROOT/'research/foundation/event-sources.json')['sources']
     rows, coverage = [], []

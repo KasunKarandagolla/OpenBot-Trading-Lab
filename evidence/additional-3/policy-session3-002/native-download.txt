@@ -1,0 +1,93 @@
+2026-11-03 01:06:52,012 - freqtrade - INFO - freqtrade 2026.10
+2026-11-03 01:06:52,345 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-11-03 01:06:53,436 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/policy-configs/policy-session3-002/TrendPullbackBaselineV1-all-1.json ...
+2026-11-03 01:06:53,437 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-11-03 01:06:53,437 - freqtrade.loggers - INFO - Logfile configured
+2026-11-03 01:06:53,438 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-11-03 01:06:53,438 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20260726-20261102 ...
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-11-03 01:06:53,441 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-11-03 01:06:53,441 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-11-03 01:06:53,442 - freqtrade.configuration.directory_operations - INFO - Created data directory: /lab/user_data/data/policy/policy-session3-002/gate
+2026-11-03 01:06:53,442 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/policy/policy-session3-002/gate ...
+2026-11-03 01:06:53,442 - freqtrade.configuration.configuration - INFO - timeframes --timeframes: ['15m', '1h']
+2026-11-03 01:06:53,443 - freqtrade.configuration.configuration - INFO - Detected --trading-mode: futures
+2026-11-03 01:06:53,443 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20260726-20261102
+2026-11-03 01:06:53,443 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-11-03 01:06:53,449 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-11-03 01:06:53,449 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-11-03 01:06:53,449 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-11-03 01:06:54,076 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-11-03 01:06:54,077 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-11-03 01:06:54,077 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': 
+'/run/research-ca.pem', 'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.5.237:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-11-03 01:06:54,081 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': 
+'/run/research-ca.pem', 'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.5.237:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-11-03 01:06:54,084 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-11-03 01:06:54,084 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-11-03 01:06:54,085 - freqtrade.exchange.exchange - INFO - Markets were not loaded. Loading them now..
+2026-11-03 01:07:09,548 - freqtrade.data.history.history_utils - INFO - About to download pairs: ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'SOL/USDT:USDT', 'XRP/USDT:USDT', 'DOGE/USDT:USDT'], intervals: 
+['15m', '1h'] to /lab/user_data/data/policy/policy-session3-002/gate
+2026-11-03 01:07:09,576 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 15m, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:11,101 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 15m, futures with length 9604.
+2026-11-03 01:07:11,128 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:12,467 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, futures with length 2401.
+2026-11-03 01:07:12,476 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:13,742 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, mark with length 2401.
+2026-11-03 01:07:13,747 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-002/gate. 
+From 2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:16,045 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, funding_rate with length 301.
+2026-11-03 01:07:16,050 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 15m, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:17,597 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 15m, futures with length 9604.
+2026-11-03 01:07:17,612 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:18,948 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, futures with length 2401.
+2026-11-03 01:07:18,955 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:20,007 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, mark with length 2401.
+2026-11-03 01:07:20,014 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-002/gate. 
+From 2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:22,227 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, funding_rate with length 301.
+2026-11-03 01:07:22,231 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 15m, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:23,704 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 15m, futures with length 9604.
+2026-11-03 01:07:23,746 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:25,068 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, futures with length 2401.
+2026-11-03 01:07:25,075 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:26,291 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, mark with length 2401.
+2026-11-03 01:07:26,296 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-002/gate. 
+From 2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:28,530 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, funding_rate with length 301.
+2026-11-03 01:07:28,534 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 15m, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:30,044 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 15m, futures with length 9604.
+2026-11-03 01:07:30,052 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 1h, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:31,421 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 1h, futures with length 2401.
+2026-11-03 01:07:31,426 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:32,620 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 1h, mark with length 2401.
+2026-11-03 01:07:32,627 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-002/gate. 
+From 2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:35,070 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 1h, funding_rate with length 301.
+2026-11-03 01:07:35,074 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 15m, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:36,579 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 15m, futures with length 9604.
+2026-11-03 01:07:36,590 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 1h, futures and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:37,932 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 1h, futures with length 2401.
+2026-11-03 01:07:37,939 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-002/gate. From 
+2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:38,248 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 1h, mark with length 2401.
+2026-11-03 01:07:38,253 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-002/gate. 
+From 2026-07-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-03 01:07:40,513 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 1h, funding_rate with length 301.
+Timeframe                  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4/4 100% • 0:00:06 • 0:00:00
+Downloading DOGE/USDT:USDT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5/5 100% • 0:00:30 • 0:00:00

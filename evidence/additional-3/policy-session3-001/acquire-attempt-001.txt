@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/lab/scripts/policy_session.py", line 24, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/lab/scripts/policy_session.py", line 15, in main
+    return dict(acquire=acquire,detail=detail,scan=scan)[action](run_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/lab/scripts/policy_market.py", line 57, in acquire
+    p=data/'futures'/Path(item['path']).name;f=pd.read_feather(p)
+                     ^^^^
+NameError: name 'Path' is not defined. Did you mean: 'math'?

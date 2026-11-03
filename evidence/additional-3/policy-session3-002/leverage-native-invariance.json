@@ -1,0 +1,41 @@
+{
+  "method": "Independent native filled-order, initial margin and Decimal reconciliation inputs; all entry and partial/final orders compared field-for-field",
+  "passed": true,
+  "repaired_preliminary_defect": "One-ULP stake representation repairs preserve approved native entry/partial lots; pre-repair results retained",
+  "scenarios": {
+    "1": {
+      "aggregate_initial_notional": 1570.27187,
+      "aggregate_initial_posted_margin": 1570.27187,
+      "differences": [],
+      "identical_native_orders_and_pnl": true,
+      "maximum_margin_times_leverage_minus_notional": 3.552713678800501e-15,
+      "minimum_stop_liquidation_clearance": 0.9687391378737767,
+      "native_net_usdt": -0.35922343,
+      "same_entry_keys": true,
+      "trades": 68
+    },
+    "10": {
+      "aggregate_initial_notional": 1570.27187,
+      "aggregate_initial_posted_margin": 157.027187,
+      "differences": [],
+      "identical_native_orders_and_pnl": true,
+      "maximum_margin_times_leverage_minus_notional": 7.105427357601002e-15,
+      "minimum_stop_liquidation_clearance": 0.07359351065796836,
+      "native_net_usdt": -0.35922343,
+      "same_entry_keys": true,
+      "trades": 68
+    },
+    "20": {
+      "aggregate_initial_notional": 1570.27187,
+      "aggregate_initial_posted_margin": 78.5135935,
+      "differences": [],
+      "identical_native_orders_and_pnl": true,
+      "maximum_margin_times_leverage_minus_notional": 7.105427357601002e-15,
+      "minimum_stop_liquidation_clearance": 0.023147924798067772,
+      "native_net_usdt": -0.35922343,
+      "same_entry_keys": true,
+      "trades": 68
+    }
+  },
+  "scope": "CURRENT_GATE_CONTRACT_SPEC_HISTORICAL_PRICE_SCENARIOS; real historical tiers and intrahour marks unknown; no real or testnet orders"
+}

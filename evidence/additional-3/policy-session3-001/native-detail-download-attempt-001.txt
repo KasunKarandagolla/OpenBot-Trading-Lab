@@ -1,0 +1,1379 @@
+2026-11-02 18:37:21,092 - freqtrade - INFO - freqtrade 2026.10
+2026-11-02 18:37:21,491 - numexpr.utils - INFO - NumExpr defaulting to 3 threads.
+2026-11-02 18:37:22,858 - freqtrade.configuration.load_config - INFO - Using config: /lab/work/policy-configs/policy-session3-001/PolicyManagedV3-all-1.json ...
+2026-11-02 18:37:22,860 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-11-02 18:37:22,860 - freqtrade.loggers - INFO - Logfile configured
+2026-11-02 18:37:22,860 - freqtrade.loggers - INFO - Verbosity set to 0
+2026-11-02 18:37:22,860 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20261026-20261102 ...
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+2026-11-02 18:37:22,864 - freqtrade.configuration.directory_operations - WARNING - Could not chown /lab/user_data
+2026-11-02 18:37:22,865 - freqtrade.configuration.configuration - INFO - Using user-data directory: /lab/user_data ...
+2026-11-02 18:37:22,865 - freqtrade.configuration.directory_operations - INFO - Created data directory: /lab/user_data/data/policy/policy-session3-001/detail
+2026-11-02 18:37:22,865 - freqtrade.configuration.configuration - INFO - Using data directory: /lab/user_data/data/policy/policy-session3-001/detail ...
+2026-11-02 18:37:22,865 - freqtrade.configuration.configuration - INFO - timeframes --timeframes: ['1m']
+2026-11-02 18:37:22,866 - freqtrade.configuration.configuration - INFO - Detected --trading-mode: futures
+2026-11-02 18:37:22,867 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20261026-20261102
+2026-11-02 18:37:22,868 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-11-02 18:37:22,874 - freqtrade.exchange.check_exchange - INFO - Exchange "gate" is officially supported by the Freqtrade development team.
+2026-11-02 18:37:22,875 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-11-02 18:37:22,875 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-11-02 18:37:23,739 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-11-02 18:37:23,740 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.90
+2026-11-02 18:37:23,741 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': 
+'/run/research-ca.pem', 'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.5.237:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-11-02 18:37:23,744 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'swap', 'fetchMarkets': {'types': ['swap']}}, 'cafile': 
+'/run/research-ca.pem', 'enableRateLimit': True, 'has': {'fetchCurrencies': False}, 'httpsProxy': 'http://172.31.5.237:8080', 'requests_trust_env': True, 'timeout': 30000}
+2026-11-02 18:37:23,747 - freqtrade.exchange.exchange - INFO - Using Exchange "Gate"
+2026-11-02 18:37:23,748 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange class 'Gate' ...
+2026-11-02 18:37:23,748 - freqtrade.exchange.exchange - INFO - Markets were not loaded. Loading them now..
+2026-11-02 18:37:40,309 - freqtrade.data.history.history_utils - INFO - About to download pairs: ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'SOL/USDT:USDT', 'XRP/USDT:USDT', 'DOGE/USDT:USDT'], intervals: 
+['1m'] to /lab/user_data/data/policy/policy-session3-001/detail
+2026-11-02 18:37:40,332 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1m, futures and store in /lab/user_data/data/policy/policy-session3-001/detail. From 
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:41,189 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 4 times.
+2026-11-02 18:37:41,417 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 3 times.
+2026-11-02 18:37:42,207 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 2 times.
+2026-11-02 18:37:43,022 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 1 times.
+2026-11-02 18:37:43,790 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Giving up.
+2026-11-02 18:37:43,791 - freqtrade.exchange.exchange - WARNING - Async code raised an exception: TemporaryError('Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}')
+2026-11-02 18:37:43,798 - freqtrade.data.history.history_utils - ERROR - Failed to download history data for pair: "BTC/USDT:USDT", timeframe: 1m.
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/data/history/history_utils.py", line 308, in _download_pair_history
+    new_dataframe = exchange.get_historic_ohlcv(
+        pair=pair,
+    ...<8 lines>...
+        until_ms=until_ms if until_ms else None,
+    )
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2743, in get_historic_ohlcv
+    pair, _, _, data, _ = self.loop.run_until_complete(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._async_get_historic_ohlcv(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        )
+        ^
+    )
+    ^
+  File "/usr/local/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2798, in _async_get_historic_ohlcv
+    raise res
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 1 more time]
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for BTC/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+2026-11-02 18:37:43,815 - freqtrade.data.history.history_utils - INFO - Downloading parallel candles for 1h for all pairs since 2026-10-26T00:00:00
+2026-11-02 18:37:45,072 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-001/detail. From 
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:45,996 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, mark with length 186.
+2026-11-02 18:37:46,002 - freqtrade.data.history.history_utils - INFO - Download history data for "BTC/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-001/detail. 
+From 2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:46,911 - freqtrade.data.history.history_utils - INFO - Downloaded data for BTC/USDT:USDT, 1h, funding_rate with length 24.
+2026-11-02 18:37:46,915 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1m, futures and store in /lab/user_data/data/policy/policy-session3-001/detail. From 
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:47,748 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 4 times.
+2026-11-02 18:37:48,523 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 3 times.
+2026-11-02 18:37:49,359 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 2 times.
+2026-11-02 18:37:50,096 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 1 times.
+2026-11-02 18:37:50,890 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Giving up.
+2026-11-02 18:37:50,891 - freqtrade.exchange.exchange - WARNING - Async code raised an exception: TemporaryError('Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}')
+2026-11-02 18:37:50,891 - freqtrade.data.history.history_utils - ERROR - Failed to download history data for pair: "ETH/USDT:USDT", timeframe: 1m.
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/data/history/history_utils.py", line 308, in _download_pair_history
+    new_dataframe = exchange.get_historic_ohlcv(
+        pair=pair,
+    ...<8 lines>...
+        until_ms=until_ms if until_ms else None,
+    )
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2743, in get_historic_ohlcv
+    pair, _, _, data, _ = self.loop.run_until_complete(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._async_get_historic_ohlcv(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        )
+        ^
+    )
+    ^
+  File "/usr/local/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2798, in _async_get_historic_ohlcv
+    raise res
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 1 more time]
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for ETH/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+2026-11-02 18:37:50,902 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-001/detail. From 
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:51,899 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, mark with length 186.
+2026-11-02 18:37:51,902 - freqtrade.data.history.history_utils - INFO - Download history data for "ETH/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-001/detail. 
+From 2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:52,683 - freqtrade.data.history.history_utils - INFO - Downloaded data for ETH/USDT:USDT, 1h, funding_rate with length 24.
+2026-11-02 18:37:52,686 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1m, futures and store in /lab/user_data/data/policy/policy-session3-001/detail. From 
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:53,467 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 4 times.
+2026-11-02 18:37:53,718 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 3 times.
+2026-11-02 18:37:54,522 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 2 times.
+2026-11-02 18:37:55,291 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 1 times.
+2026-11-02 18:37:56,098 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Giving up.
+2026-11-02 18:37:56,100 - freqtrade.exchange.exchange - WARNING - Async code raised an exception: TemporaryError('Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}')
+2026-11-02 18:37:56,100 - freqtrade.data.history.history_utils - ERROR - Failed to download history data for pair: "SOL/USDT:USDT", timeframe: 1m.
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/data/history/history_utils.py", line 308, in _download_pair_history
+    new_dataframe = exchange.get_historic_ohlcv(
+        pair=pair,
+    ...<8 lines>...
+        until_ms=until_ms if until_ms else None,
+    )
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2743, in get_historic_ohlcv
+    pair, _, _, data, _ = self.loop.run_until_complete(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._async_get_historic_ohlcv(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        )
+        ^
+    )
+    ^
+  File "/usr/local/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2798, in _async_get_historic_ohlcv
+    raise res
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 1 more time]
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for SOL/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+2026-11-02 18:37:56,120 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-001/detail. From 
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:57,028 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, mark with length 186.
+2026-11-02 18:37:57,034 - freqtrade.data.history.history_utils - INFO - Download history data for "SOL/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-001/detail. 
+From 2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:57,812 - freqtrade.data.history.history_utils - INFO - Downloaded data for SOL/USDT:USDT, 1h, funding_rate with length 24.
+2026-11-02 18:37:57,816 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 1m, futures and store in /lab/user_data/data/policy/policy-session3-001/detail. From 
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:37:58,637 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 4 times.
+2026-11-02 18:37:59,466 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 3 times.
+2026-11-02 18:38:00,316 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 2 times.
+2026-11-02 18:38:01,083 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 1 times.
+2026-11-02 18:38:01,876 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Giving up.
+2026-11-02 18:38:01,877 - freqtrade.exchange.exchange - WARNING - Async code raised an exception: TemporaryError('Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}')
+2026-11-02 18:38:01,877 - freqtrade.data.history.history_utils - ERROR - Failed to download history data for pair: "XRP/USDT:USDT", timeframe: 1m.
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/data/history/history_utils.py", line 308, in _download_pair_history
+    new_dataframe = exchange.get_historic_ohlcv(
+        pair=pair,
+    ...<8 lines>...
+        until_ms=until_ms if until_ms else None,
+    )
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2743, in get_historic_ohlcv
+    pair, _, _, data, _ = self.loop.run_until_complete(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._async_get_historic_ohlcv(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        )
+        ^
+    )
+    ^
+  File "/usr/local/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2798, in _async_get_historic_ohlcv
+    raise res
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 1 more time]
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for XRP/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+2026-11-02 18:38:01,890 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-001/detail. From 
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:38:02,833 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 1h, mark with length 186.
+2026-11-02 18:38:02,837 - freqtrade.data.history.history_utils - INFO - Download history data for "XRP/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-001/detail. 
+From 2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:38:03,595 - freqtrade.data.history.history_utils - INFO - Downloaded data for XRP/USDT:USDT, 1h, funding_rate with length 24.
+2026-11-02 18:38:03,599 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 1m, futures and store in /lab/user_data/data/policy/policy-session3-001/detail. From
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:38:04,374 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 4 times.
+2026-11-02 18:38:05,121 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 3 times.
+2026-11-02 18:38:05,354 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 2 times.
+2026-11-02 18:38:06,167 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Retrying still for 1 times.
+2026-11-02 18:38:06,960 - freqtrade.exchange.common - WARNING - _async_get_candle_history() returned exception: "Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}". Giving up.
+2026-11-02 18:38:06,961 - freqtrade.exchange.exchange - WARNING - Async code raised an exception: TemporaryError('Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to 
+BadRequest. Message: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}')
+2026-11-02 18:38:06,962 - freqtrade.data.history.history_utils - ERROR - Failed to download history data for pair: "DOGE/USDT:USDT", timeframe: 1m.
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3255, in _async_get_candle_history
+    data = await self._api_async.fetch_ohlcv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        pair, timeframe=timeframe, since=since_ms, limit=candle_limit, params=params
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 3427, in fetch_ohlcv
+    response = await self.publicFuturesGetSettleCandlesticks(self.extend(request, paramsContract))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1042, in request
+    return await self.fetch2(path, api, method, params, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1038, in fetch2
+    raise e
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 1019, in fetch2
+    response = await self.fetch(request['url'], request['method'], request['headers'], request['body'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/base/exchange.py", line 290, in fetch
+    self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/async_support/gate.py", line 8210, in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], label, feedback)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/ccxt/base/exchange.py", line 6429, in throw_exactly_matched_exception
+    raise exact[string](message)
+ccxt.base.errors.BadRequest: gate {"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/freqtrade/freqtrade/data/history/history_utils.py", line 308, in _download_pair_history
+    new_dataframe = exchange.get_historic_ohlcv(
+        pair=pair,
+    ...<8 lines>...
+        until_ms=until_ms if until_ms else None,
+    )
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2743, in get_historic_ohlcv
+    pair, _, _, data, _ = self.loop.run_until_complete(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._async_get_historic_ohlcv(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+        )
+        ^
+    )
+    ^
+  File "/usr/local/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 2798, in _async_get_historic_ohlcv
+    raise res
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/common.py", line 152, in wrapper
+    return await wrapper(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 1 more time]
+  File "/freqtrade/freqtrade/exchange/common.py", line 128, in wrapper
+    return await f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/freqtrade/freqtrade/exchange/exchange.py", line 3283, in _async_get_candle_history
+    raise TemporaryError(
+    ...<3 lines>...
+    ) from e
+freqtrade.exceptions.TemporaryError: Could not fetch historical candle (OHLCV) data for DOGE/USDT:USDT, 1m, futures due to BadRequest. Message: gate 
+{"label":"INVALID_PARAM_VALUE","message":"Candlestick too long ago. Maximum 10000 points recently are allowed"}
+2026-11-02 18:38:06,977 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 1h, mark and store in /lab/user_data/data/policy/policy-session3-001/detail. From 
+2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:38:07,872 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 1h, mark with length 186.
+2026-11-02 18:38:07,876 - freqtrade.data.history.history_utils - INFO - Download history data for "DOGE/USDT:USDT", 1h, funding_rate and store in /lab/user_data/data/policy/policy-session3-001/detail.
+From 2026-10-26T00:00:00 to 2026-11-02T00:00:00
+2026-11-02 18:38:08,656 - freqtrade.data.history.history_utils - INFO - Downloaded data for DOGE/USDT:USDT, 1h, funding_rate with length 24.
+Timeframe                  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3/3 100% • 0:00:06 • 0:00:00
+Downloading DOGE/USDT:USDT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5/5 100% • 0:00:28 • 0:00:00

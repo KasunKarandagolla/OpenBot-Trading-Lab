@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/lab/scripts/policy_session.py", line 31, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/lab/scripts/policy_session.py", line 12, in main
+    return native(run_id,args[0],args[1] if len(args)>1 else 'all',int(args[2]) if len(args)>2 else 1, None if action=='native' else action)
+  File "/lab/scripts/policy_native.py", line 32, in native
+    out,data,spec=verify(run_id);cfg_path=config(run_id,name,diagnostic or period,lev)
+                                          ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lab/scripts/policy_common.py", line 61, in config
+    stage.mkdir(parents=True,exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/pathlib/__init__.py", line 1011, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device: '/lab/work/policy-strategies/policy-session3-002/revision-3'

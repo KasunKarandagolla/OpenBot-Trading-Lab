@@ -1,0 +1,101 @@
+{
+  "baseline_scope": "Frozen strategy code on newly reacquired same-survivor data; original parent result remains unchanged. Source byte identity only5of20; no exact original-source replay claim.",
+  "comparisons": {
+    "PolicyManagedV3": {
+      "common_fills": 68,
+      "interpretation": "Whole chronological portfolios; occupancy and changed admissions are retained. Returns never additive.",
+      "only_challenger": 0,
+      "only_reference": 0,
+      "same_entry_keys": true,
+      "whole_portfolio_net_delta_usdt": -0.5511478700000001
+    },
+    "PolicyObjectiveV3": {
+      "common_fills": 68,
+      "interpretation": "Whole chronological portfolios; occupancy and changed admissions are retained. Returns never additive.",
+      "only_challenger": 0,
+      "only_reference": 0,
+      "same_entry_keys": true,
+      "whole_portfolio_net_delta_usdt": -0.0699475
+    },
+    "PolicyRetraceV3": {
+      "common_fills": 46,
+      "interpretation": "Whole chronological portfolios; occupancy and changed admissions are retained. Returns never additive.",
+      "only_challenger": 22,
+      "only_reference": 22,
+      "same_entry_keys": false,
+      "whole_portfolio_net_delta_usdt": -1.5990551600000003
+    }
+  },
+  "october_diagnostic_examples": [
+    {
+      "at": "2026-10-02 12:45:00+00:00",
+      "control_net": 0.50352528,
+      "new_decisions": [
+        {
+          "reason": "TARGET_EXCEEDS_6ATR_HORIZON_BOUND",
+          "recipe": "reversal"
+        }
+      ],
+      "side": "short",
+      "symbol": "XRP/USDT:USDT"
+    },
+    {
+      "at": "2026-10-29 21:00:00+00:00",
+      "control_net": -0.35070697,
+      "new_decisions": [
+        {
+          "reason": "WATCH_MINOR_BOUNDARY_WITHOUT_SHIFT",
+          "recipe": "reversal"
+        }
+      ],
+      "side": "long",
+      "symbol": "ETH/USDT:USDT"
+    },
+    {
+      "at": "2026-10-29 21:00:00+00:00",
+      "control_net": -0.38718715,
+      "new_decisions": [
+        {
+          "reason": "WATCH_MINOR_BOUNDARY_WITHOUT_SHIFT",
+          "recipe": "reversal"
+        }
+      ],
+      "side": "long",
+      "symbol": "XRP/USDT:USDT"
+    }
+  ],
+  "opportunity_coverage": {
+    "IntelligenceRegimeV2": {
+      "admitted": 9,
+      "by_recipe": {
+        "sweep": 96,
+        "vwap": 31
+      },
+      "by_side": {
+        "long": 70,
+        "short": 57
+      },
+      "raw_records": 127,
+      "regime": {
+        "TREND": 54,
+        "WEAK_TREND_OR_RANGE": 73
+      }
+    },
+    "PolicyFixedV3": {
+      "admitted": 78,
+      "by_recipe": {
+        "continuation": 265,
+        "reversal": 732
+      },
+      "by_side": {
+        "long": 488,
+        "short": 509
+      },
+      "raw_records": 997,
+      "regime": {
+        "TREND": 353,
+        "WEAK_TREND_OR_RANGE": 644
+      }
+    }
+  }
+}
