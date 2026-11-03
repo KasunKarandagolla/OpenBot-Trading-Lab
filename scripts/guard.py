@@ -17,6 +17,9 @@ def merge(a, b):
 
 
 def validate(config):
+    if config.get('strategy') == 'PaperPolicyV4':
+        from session4_safety import validate_paper
+        return validate_paper(config)
     def require(ok, message):
         if not ok:
             raise ValueError(message)
@@ -75,6 +78,9 @@ def main():
         effective = {}
         for filename in configs:
             merge(effective, json.loads(Path(filename).read_text()))
+        if effective.get('strategy') == 'PaperPolicyV4':
+            from session4_safety import launch
+            return launch(args,effective,parsed,configs)
         validate(effective)
         public_configs = {'research.json','scanner.json','paper.json','ui.json','research-vwap.json','research-sweep.json'}
         for filename in configs:
@@ -129,7 +135,11 @@ def main():
         for line in freeze:
             sha, filename = line.split(maxsplit=1)
             if hashlib.sha256((ROOT/filename).read_bytes()).hexdigest() != sha:
-                raise ValueError('frozen strategy/protocol changed')
+                if filename == 'scripts/guard.py':
+                    from session4_safety import verify_frozen
+                    verify_frozen()
+                else:
+                    raise ValueError('frozen strategy/protocol changed')
         if args[0] == 'trade' and str(parsed.get('datadir')) != '/lab/user_data/data/cache/gate':
             raise ValueError('paper must use separate cache data path')
         if args[0] in {'backtesting','lookahead-analysis','download-data'}:

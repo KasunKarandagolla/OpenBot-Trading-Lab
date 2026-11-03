@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-03T12:13:50.975793+00:00",
+  "hashes": {
+    "research/session4/PaperPolicyV4.py": "f0077f5046b1181b706d66646c92524e4b29ca859499d40366b8ce1dd1171a19",
+    "research/session4/guard-review.json": "47f7dc2ec858e48cb68fd28b73bc154b30cda208b4f2367be1fb7f7ad52474e8",
+    "research/session4/paper-release.json": "8ef0882b1ff00a8b0dcae11d8a4e30d40f9afe46e2ede500770352209630a35d",
+    "research/session4/protocol.json": "4102064a0ef3e0911098531415244d8af58ffb92442a8b3460f849e5ba20610f",
+    "research/session4/session4_features.py": "380a9f24237630fc49331c9ab5ce7b7c3128172e710dea974edd77330749c65a",
+    "scripts/session4_capture.py": "876ae09c9ad65e9fbddb351f19c5841b58d05944db5a799e09e799d48eabcc9f",
+    "scripts/session4_common.py": "e5003da74e0e7a80f3ffeeae56675c7d1c1b62863548f0b05c7ebc79910d89c6",
+    "scripts/session4_market.py": "12947bce901f12ab2b20e62a7d31c65a03309546c5b388e68825d4b44458a90a",
+    "scripts/session4_metadata.py": "a01a33cea588e769e7313eb0cbcc537a4b52ea9e925c1b3a957340a318924997",
+    "scripts/session4_report.py": "03ac21ba10db5bf748a1a7350bc7cb463a0e5cb3d9f35461d725f360cf946a21",
+    "scripts/session4_research.py": "0efc636f40d89160a2fd252f766232fed025c8f54d18a7228d63b7a3b7d5a7bb",
+    "scripts/session4_runtime.py": "41fc2cee5f6269d2b5ddb174e7b5e006c3dbb1a95b3d9d85f145b65df8a15c9a",
+    "scripts/session4_safety.py": "ea349188a36a88848b32723a859113daa87cbeeac1857f08fdd8f3079f603da4"
+  },
+  "reason": "First completed reference replay had zero fills because a failed native export had left its final account checkpoint. Isolate EVERY research attempt in a fresh native/risk state; retain contaminated zero result and original failed output. Only paper restart intentionally reuses state. This is an engineering repair, not policy tuning.",
+  "registration_sha256": "cf77ed366401ed7bdfe54491beedc13126c5246571dea5107a583573e396c3b6"
+}

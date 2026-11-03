@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-03T12:33:01.844650+00:00",
+  "hashes": {
+    "research/session4/PaperPolicyV4.py": "a7b986d2f1e51c0ac2301ff6f6a3d712936fef8e65249f69db4c9706d645134b",
+    "research/session4/guard-review.json": "11aa0d832244256bba714b6cee19f46b31adab798d351ae5fb0e875fd6d762ff",
+    "research/session4/paper-release.json": "7f3ca16b4e0d9607ca4668ccc52c87e1a6b87ad442748da069b320f3b024789b",
+    "research/session4/paper_state.py": "ebaa90246337729893130707fc04b6fd2eb6d7e63cd06dc5330986e0e4faf79b",
+    "research/session4/protocol.json": "4102064a0ef3e0911098531415244d8af58ffb92442a8b3460f849e5ba20610f",
+    "research/session4/session4_features.py": "380a9f24237630fc49331c9ab5ce7b7c3128172e710dea974edd77330749c65a",
+    "scripts/session4_archive.py": "271739490c87e679fe95dfa026298e1eec756de9835f7ffcf942ecc3c40b06dd",
+    "scripts/session4_capture.py": "876ae09c9ad65e9fbddb351f19c5841b58d05944db5a799e09e799d48eabcc9f",
+    "scripts/session4_common.py": "e27ef28dcfa1504d10a084d09f5b77ba5daba4f77801f073a97f46faad851787",
+    "scripts/session4_execution.py": "d5d2dc19615333d040e55f634a6f0aa65f66c5f7d2f20ac475f1ef27c829965a",
+    "scripts/session4_market.py": "05655c29c5951b95bb77a4b53c2e79ff3abcd1b423f577ca8cbdb34346d7a888",
+    "scripts/session4_metadata.py": "a01a33cea588e769e7313eb0cbcc537a4b52ea9e925c1b3a957340a318924997",
+    "scripts/session4_report.py": "da1191c4887ce99e6a3f69815ebe2079c939fcb6cde6f98e3ff535150295fa30",
+    "scripts/session4_research.py": "7c54ab83bedebdf0c4d0c0446aedabe7df1a4953ec2122fdd609df84959f2101",
+    "scripts/session4_runtime.py": "9adb5d56999da76172e67542c52309744d601b34cf2dc419108fbb4bbffe6e18",
+    "scripts/session4_safety.py": "862833f47ba21d138d63246fbd0b21afd8f28bae5fe2b01eb5137bce98692b32"
+  },
+  "reason": "Final evidence repair: raw funding_rate uses funding_rate column, not OHLC open; distinguish observed funding intervals from candle gaps and leave historical schedule completeness qualified. Runtime public_data_observed now requires actual source qualification, rather than a startup log line; initial records explicitly disqualified as fresh-price evidence. Runtime contract refresh writes separate mutable paths, preserving historical sources.",
+  "registration_sha256": "cf77ed366401ed7bdfe54491beedc13126c5246571dea5107a583573e396c3b6"
+}
