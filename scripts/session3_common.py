@@ -44,7 +44,11 @@ def frozen():
   if not f.exists():raise ValueError('missing source freeze: '+session)
   for line in f.read_text().splitlines():
    h,p=line.split(maxsplit=1)
-   if sha(ROOT/p)!=h:raise ValueError('frozen source/config/protocol changed: '+p)
+   if sha(ROOT/p)!=h:
+    if p=='scripts/guard.py':
+     from session4_safety import verify_frozen
+     verify_frozen()
+    else:raise ValueError('frozen source/config/protocol changed: '+p)
 def stage():
  frozen();STAGE.mkdir(parents=True,exist_ok=True)
  registry=read(ROOT/'research/session-3-registry.json')

@@ -1,5 +1,15 @@
 # OpenBot Trading Lab
 
+**Session 4:** [Native paper capability and broader economic evidence](evidence/session4/owner-report.md)
+· [Bounded commands / Session 5 handoff](docs/operations/policy-session4.md).
+Limit/market dry-run modes, initial protective bounds and restart controls are
+implemented. The 14-market structure challenger makes +0.943062 native USDT but
+loses 1.698115 USDT with another 10 bp/side. Economic status remains UNQUALIFIED.
+Gate 503s blocked fresh-price-to-observed-order acceptance; no persistent service
+or external exchange order was activated. Four additional sessions complete; one remains.
+
+The following Session 3 summary and its frozen evidence remain historical reference.
+
 A native Freqtrade 2026.10 crypto-futures research and paper-candidate foundation.
 **Additional Session 3 of5** delivers controlled-pullback/failed-breakout planning,
 complete native position mechanics, persisted account risk and independently

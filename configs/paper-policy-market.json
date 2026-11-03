@@ -1,0 +1,142 @@
+{
+  "$schema": "https://schema.freqtrade.io/schema.json",
+  "bot_name": "OpenBot Research PAPER ONLY",
+  "cancel_open_orders_on_exit": true,
+  "dataformat_ohlcv": "feather",
+  "db_url": "sqlite:////lab/work/session4/runtime-market-trades.sqlite",
+  "dry_run": true,
+  "dry_run_wallet": 1000,
+  "entry_pricing": {
+    "order_book_top": 1,
+    "price_side": "other",
+    "use_order_book": true
+  },
+  "exchange": {
+    "ccxt_async_config": {
+      "enableRateLimit": true,
+      "has": {
+        "fetchCurrencies": false
+      },
+      "options": {
+        "defaultType": "swap",
+        "fetchMarkets": {
+          "types": [
+            "swap"
+          ]
+        }
+      },
+      "timeout": 30000
+    },
+    "ccxt_config": {
+      "enableRateLimit": true,
+      "has": {
+        "fetchCurrencies": false
+      },
+      "options": {
+        "defaultType": "swap",
+        "fetchMarkets": {
+          "types": [
+            "swap"
+          ]
+        }
+      },
+      "timeout": 30000
+    },
+    "ccxt_sync_config": {
+      "has": {
+        "fetchCurrencies": false
+      },
+      "options": {
+        "defaultType": "swap",
+        "fetchMarkets": {
+          "types": [
+            "swap"
+          ]
+        }
+      }
+    },
+    "name": "gate",
+    "pair_blacklist": [],
+    "pair_whitelist": [
+      "BTC/USDT:USDT",
+      "ETH/USDT:USDT",
+      "SOL/USDT:USDT",
+      "XRP/USDT:USDT",
+      "DOGE/USDT:USDT",
+      "ZEC/USDT:USDT",
+      "HYPE/USDT:USDT",
+      "UNI/USDT:USDT",
+      "NEAR/USDT:USDT",
+      "LTC/USDT:USDT",
+      "BNB/USDT:USDT",
+      "AKE/USDT:USDT",
+      "PEPE/USDT:USDT",
+      "WLD/USDT:USDT",
+      "BTW/USDT:USDT",
+      "TRUMP/USDT:USDT",
+      "IDOL/USDT:USDT",
+      "ADA/USDT:USDT",
+      "SUI/USDT:USDT",
+      "ENA/USDT:USDT"
+    ]
+  },
+  "exit_pricing": {
+    "order_book_top": 1,
+    "price_side": "other",
+    "use_order_book": true
+  },
+  "fee": 0.00075,
+  "fiat_display_currency": "",
+  "force_entry_enable": false,
+  "initial_state": "running",
+  "internals": {
+    "process_throttle_secs": 5
+  },
+  "lab_audit": false,
+  "margin_mode": "isolated",
+  "max_open_trades": 2,
+  "minimal_roi": {
+    "0": 100.0
+  },
+  "order_types": {
+    "entry": "market",
+    "exit": "market",
+    "stoploss": "market",
+    "stoploss_on_exchange": false
+  },
+  "pairlists": [
+    {
+      "method": "StaticPairList"
+    }
+  ],
+  "policy_contracts": "/lab/user_data/runtime/session4/contracts.json",
+  "policy_events": "/lab/evidence/session4/run-001/events/runtime-market.jsonl",
+  "policy_leverage": 1,
+  "policy_marks": "/lab/user_data/data/session4/run-001/gate/futures",
+  "policy_notional_cap": 25.0,
+  "policy_state": "/lab/work/session4/runtime-market-account.sqlite",
+  "position_adjustment_enable": false,
+  "session4_metadata_snapshot": "/lab/user_data/runtime/session4/contract-source.json",
+  "session4_mode": "structure",
+  "session4_selection": "/lab/evidence/session4/run-001/cohort.json",
+  "stake_amount": "unlimited",
+  "stake_currency": "USDT",
+  "stoploss": -0.025,
+  "strategy": "PaperPolicyV4",
+  "strategy_path": "/lab/work/session4/strategies",
+  "telegram": {
+    "chat_id": "",
+    "enabled": false,
+    "token": ""
+  },
+  "timeframe": "15m",
+  "tradable_balance_ratio": 1.0,
+  "trading_mode": "futures",
+  "unfilledtimeout": {
+    "entry": 5,
+    "exit": 5,
+    "exit_timeout_count": 0,
+    "unit": "minutes"
+  },
+  "user_data_dir": "/lab/user_data"
+}

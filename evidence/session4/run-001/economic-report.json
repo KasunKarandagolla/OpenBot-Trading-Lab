@@ -1,0 +1,3421 @@
+{
+  "at": "2026-11-03T12:33:28.720429+00:00",
+  "benchmark": {
+    "block95_paired_usdt": [
+      -1.6087565347969692,
+      6.707949945719907
+    ],
+    "conditional_empirical_upper_tail_p": 0.2222222222222222,
+    "null_replicates": 8,
+    "null_total_net": [
+      -1.0398791936700005,
+      -3.989821064100001,
+      0.6979234234199998,
+      -1.2421278389600001,
+      -2.5212035308800003,
+      -3.6338968335500006,
+      1.0505495771499997,
+      -1.3412528215300008
+    ],
+    "reference_minus_mean_null_total": 2.425604860834999,
+    "reference_net": 0.9231413255699987,
+    "reference_rank_among_null": 8,
+    "uncertainty": "Eight fixed-seed conditional ranking nulls; 7day circular moving-block bootstrap on paired daily net,2000 draws. Descriptive development uncertainty, no omnibus alpha claim."
+  },
+  "comparisons": {
+    "hour": {
+      "basis": "Same chronological eligible source universe, costs, capacity, native risk/exit engine; complete alternative portfolios",
+      "block95_paired_usdt": [
+        -28.160782842341696,
+        0.8543365281781446
+      ],
+      "paired_net_difference": -13.451833690651998
+    },
+    "structure": {
+      "basis": "Same chronological eligible source universe, costs, capacity, native risk/exit engine; complete alternative portfolios",
+      "block95_paired_usdt": [
+        -3.6095623135124995,
+        3.3996815392804964
+      ],
+      "paired_net_difference": 0.019920515080000423
+    },
+    "systematic": {
+      "basis": "Same chronological eligible source universe, costs, capacity, native risk/exit engine; complete alternative portfolios",
+      "block95_paired_usdt": [
+        -7.501993561500249,
+        4.9939079625669995
+      ],
+      "paired_net_difference": -1.4575018236800004
+    }
+  },
+  "definitions": {
+    "bp": "net / entry notional * 10000",
+    "constant_risk": "0.25 USDT modeled stop+38bp cost risk, ceiling50 USDT, native lot rounding",
+    "cost_inclusive_R": "net / (initial logical stop risk + actual entry/exit fees + adverse actual funding)",
+    "fixed_notional": "native lot-rounded <=25 USDT per entry",
+    "net_stop_R": "net after actual fees/funding / initial logical stop price risk",
+    "pure_stop_R": "gross price PnL / initial logical stop price risk"
+  },
+  "economic_status": "UNQUALIFIED",
+  "portfolios": {
+    "hour": {
+      "average_entry_notional_exposure_fraction": 0.012750376916666667,
+      "block95_net_usdt": [
+        -23.529586706666148,
+        -0.5885080780104611
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -10.684294862822,
+            "stress10": -14.942465832822,
+            "trades": 94
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -9.326880529362,
+            "stress10": -11.982969159362,
+            "trades": 60
+          },
+          "force_exit": {
+            "net_usdt": 0.320759968,
+            "stress10": 0.277447968,
+            "trades": 1
+          },
+          "max_hold_12h": {
+            "net_usdt": 6.880034651752,
+            "stress10": 5.387210811752,
+            "trades": 33
+          },
+          "roi": {
+            "net_usdt": 10.80871569952,
+            "stress10": 10.11704053952,
+            "trades": 15
+          },
+          "stop_loss": {
+            "net_usdt": -8.1588993627,
+            "stress10": -9.2250054527,
+            "trades": 24
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -2.36812792947,
+            "stress10": -2.79081037947,
+            "trades": 9
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": -12.859612909842,
+            "stress10": -23.441286289842,
+            "trades": 235
+          },
+          "True": {
+            "net_usdt": 0.33092054476,
+            "stress10": 0.28173478476,
+            "trades": 1
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -6.764354667940999,
+            "stress10": -11.604365247941,
+            "trades": 107
+          },
+          "UP": {
+            "net_usdt": -5.764337697141,
+            "stress10": -11.555186257141001,
+            "trades": 129
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": -9.873835938022,
+            "stress10": -14.782682768022,
+            "trades": 109
+          },
+          "reversal": {
+            "net_usdt": -2.65485642706,
+            "stress10": -8.37686873706,
+            "trades": 127
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -6.11864584608,
+            "stress10": -12.66711850608,
+            "trades": 145
+          },
+          "TREND_ADX25": {
+            "net_usdt": -6.410046519002,
+            "stress10": -10.492432999002,
+            "trades": 91
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": -5.182677225872999,
+            "stress10": -10.117386165873,
+            "trades": 110
+          },
+          "short": {
+            "net_usdt": -7.346015139209,
+            "stress10": -13.042165339209,
+            "trades": 126
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 15.642681152557996,
+      "cost_inclusive_R": -36.255591012538304,
+      "excluding_top3_winners_usdt": -15.815905190081999,
+      "expectancy_usdt": -0.05308767951305932,
+      "fees_usdt": 7.973144355,
+      "funding_usdt": 0.0015319899180000016,
+      "gross_usdt": -4.55708,
+      "hourly_mark_mtm": {
+        "final_equity": 987.4713076349185,
+        "max_drawdown_usdt": 15.98355638571752,
+        "min_equity": 984.2863231224425,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 176,
+      "maker_fee_scenario_usdt": -6.6817198380819995,
+      "mean_loss": -0.1852783554796136,
+      "mean_win": 0.3346716366555,
+      "months": {
+        "2026-08": {
+          "net_usdt": -2.322488416477,
+          "stress10": -5.582686466477,
+          "trades": 72
+        },
+        "2026-09": {
+          "net_usdt": -8.451878456783,
+          "stress10": -11.937084726783,
+          "trades": 78
+        },
+        "2026-10": {
+          "net_usdt": -1.185128737962,
+          "stress10": -4.706867807962,
+          "trades": 78
+        },
+        "2026-11": {
+          "net_usdt": -0.56919675386,
+          "stress10": -0.93291250386,
+          "trades": 8
+        }
+      },
+      "native_max_drawdown_usdt": 15.644330439999997,
+      "native_rejected_signals": 40,
+      "native_timedout_entry_orders": 4,
+      "net_bp_weighted": -23.574317131389947,
+      "net_stop_R": -41.3457917676281,
+      "net_usdt": -12.528692365082,
+      "profit_factor": 0.6157902422543783,
+      "pure_stop_R": -8.14234035283892,
+      "stop_gap10bp_usdt": -13.272813665082,
+      "stress_usdt": {
+        "0": -12.528692365082,
+        "10": -23.159551505082,
+        "2": -14.654864193082,
+        "20": -33.790410645082,
+        "5": -17.844121935082
+      },
+      "top3_winners_fraction_of_positive": 0.16370338689042385,
+      "trades": 236,
+      "turnover_usdt": 10630.85914,
+      "win_loss_quantiles": {
+        "0": -0.6438828,
+        "0.1": -0.3021269,
+        "0.25": -0.206975687,
+        "0.5": -0.123125337,
+        "0.75": 0.004244729123,
+        "0.9": 0.3230085438,
+        "1": 1.361902075
+      },
+      "win_rate": 0.2542372881355932,
+      "wins": 60,
+      "zero_realization_days": 8
+    },
+    "random-107": {
+      "average_entry_notional_exposure_fraction": 0.002589978263888889,
+      "block95_net_usdt": [
+        -8.7281627320875,
+        6.509844702910249
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.91958748917,
+            "stress10": -1.27176707917,
+            "trades": 8
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -3.667895232,
+            "stress10": -4.904229152,
+            "trades": 28
+          },
+          "max_hold_4h": {
+            "net_usdt": 3.195144704,
+            "stress10": 2.6409982039999997,
+            "trades": 12
+          },
+          "max_hold_8h": {
+            "net_usdt": 0.07784362759999999,
+            "stress10": -0.012873772399999997,
+            "trades": 2
+          },
+          "roi": {
+            "net_usdt": 12.0935022499,
+            "stress10": 11.1623867499,
+            "trades": 21
+          },
+          "stop_loss": {
+            "net_usdt": -10.593912145,
+            "stress10": -12.583750134999999,
+            "trades": 44
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -1.224974909,
+            "stress10": -1.553617669,
+            "trades": 7
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 0.023869151129999842,
+            "stress10": -5.28498000887,
+            "trades": 118
+          },
+          "True": {
+            "net_usdt": -1.0637483448,
+            "stress10": -1.2378728448,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": 0.5832961652999998,
+            "stress10": -2.3928903747,
+            "trades": 66
+          },
+          "UP": {
+            "net_usdt": -1.62317535897,
+            "stress10": -4.12996247897,
+            "trades": 56
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 0.50218291033,
+            "stress10": -1.68276771967,
+            "trades": 49
+          },
+          "reversal": {
+            "net_usdt": -1.5420621040000002,
+            "stress10": -4.840085134,
+            "trades": 73
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -2.9461893651,
+            "stress10": -6.5111757151,
+            "trades": 79
+          },
+          "TREND_ADX25": {
+            "net_usdt": 1.90631017143,
+            "stress10": -0.01167713856999994,
+            "trades": 43
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 0.5219315020299999,
+            "stress10": -2.15012110797,
+            "trades": 60
+          },
+          "short": {
+            "net_usdt": -1.5618106957000002,
+            "stress10": -4.3727317456999995,
+            "trades": 62
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 3.3574699089000006,
+      "cost_inclusive_R": -12.290790075172277,
+      "excluding_top3_winners_usdt": -4.523673918170001,
+      "expectancy_usdt": -0.00852359994811476,
+      "fees_usdt": 4.112230245,
+      "funding_usdt": -0.01068894867,
+      "gross_usdt": 3.0830399999999996,
+      "hourly_mark_mtm": {
+        "final_equity": 998.9601208063299,
+        "max_drawdown_usdt": 3.4400998838998476,
+        "min_equity": 996.5599001161002,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 91,
+      "maker_fee_scenario_usdt": 1.97575631933,
+      "mean_loss": -0.18093810963263737,
+      "mean_win": 0.49759641235161284,
+      "months": {
+        "2026-08": {
+          "net_usdt": -2.1367202971,
+          "stress10": -3.3434050371,
+          "trades": 26
+        },
+        "2026-09": {
+          "net_usdt": 3.2679163486,
+          "stress10": 1.3378352186,
+          "trades": 44
+        },
+        "2026-10": {
+          "net_usdt": -1.23914224517,
+          "stress10": -3.38010603517,
+          "trades": 47
+        },
+        "2026-11": {
+          "net_usdt": -0.931933,
+          "stress10": -1.1371769999999999,
+          "trades": 5
+        }
+      },
+      "native_max_drawdown_usdt": 3.4416897700000004,
+      "native_rejected_signals": 1,
+      "native_timedout_entry_orders": 0,
+      "net_bp_weighted": -3.794499963386122,
+      "net_stop_R": -15.975153023517,
+      "net_usdt": -1.0398791936700007,
+      "profit_factor": 0.93684446074028,
+      "pure_stop_R": 7.498545724567884,
+      "stop_gap10bp_usdt": -2.1989035136700004,
+      "stress_usdt": {
+        "0": -1.03987919367,
+        "10": -6.52285285367,
+        "2": -2.13647392567,
+        "20": -12.00582651367,
+        "5": -3.78136602367
+      },
+      "top3_winners_fraction_of_positive": 0.22584663432914862,
+      "trades": 122,
+      "turnover_usdt": 5482.97366,
+      "win_loss_quantiles": {
+        "0": -0.555964,
+        "0.1": -0.28408701999999997,
+        "0.25": -0.200173942,
+        "0.5": -0.13457987500000002,
+        "0.75": 0.038234217,
+        "0.9": 0.4898354580000003,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2540983606557377,
+      "wins": 31,
+      "zero_realization_days": 28
+    },
+    "random-11": {
+      "average_entry_notional_exposure_fraction": 0.0023752569143518517,
+      "block95_net_usdt": [
+        -15.518581521084998,
+        10.295686850999974
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.4279287256,
+            "stress10": -0.5891799256,
+            "trades": 4
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -3.1765904525,
+            "stress10": -4.2446521225,
+            "trades": 24
+          },
+          "max_hold_4h": {
+            "net_usdt": 1.6141285587,
+            "stress10": 1.2146822487,
+            "trades": 9
+          },
+          "max_hold_8h": {
+            "net_usdt": 0.2989706764,
+            "stress10": 0.1166672764,
+            "trades": 4
+          },
+          "roi": {
+            "net_usdt": 13.3342607702,
+            "stress10": 12.5097072702,
+            "trades": 18
+          },
+          "stop_loss": {
+            "net_usdt": -13.4498387288,
+            "stress10": -15.938112628799999,
+            "trades": 56
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -2.1828231625,
+            "stress10": -2.7466072525,
+            "trades": 12
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": -3.0904557193000004,
+            "stress10": -8.6418492893,
+            "trades": 124
+          },
+          "True": {
+            "net_usdt": -0.8993653448,
+            "stress10": -1.0356458447999999,
+            "trades": 3
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -5.9600951131,
+            "stress10": -9.0601165531,
+            "trades": 69
+          },
+          "UP": {
+            "net_usdt": 1.9702740489999997,
+            "stress10": -0.6173785809999998,
+            "trades": 58
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 1.9244669924999998,
+            "stress10": -0.37108180749999964,
+            "trades": 51
+          },
+          "reversal": {
+            "net_usdt": -5.9142880566,
+            "stress10": -9.3064133266,
+            "trades": 76
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -6.9540022494,
+            "stress10": -10.7049442194,
+            "trades": 84
+          },
+          "TREND_ADX25": {
+            "net_usdt": 2.9641811852999997,
+            "stress10": 1.0274490853000002,
+            "trades": 43
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": -1.1253616837000002,
+            "stress10": -4.1631784537,
+            "trades": 68
+          },
+          "short": {
+            "net_usdt": -2.8644593804000005,
+            "stress10": -5.5143166804,
+            "trades": 59
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 5.9396586319999995,
+      "cost_inclusive_R": -30.01325835322844,
+      "excluding_top3_winners_usdt": -8.6184136505,
+      "expectancy_usdt": -0.03141591389055119,
+      "fees_usdt": 4.2657555525,
+      "funding_usdt": -0.013235511599999998,
+      "gross_usdt": 0.28916999999999976,
+      "hourly_mark_mtm": {
+        "final_equity": 996.0101789359001,
+        "max_drawdown_usdt": 6.291033544399625,
+        "min_equity": 994.1784621056004,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 98,
+      "maker_fee_scenario_usdt": -0.8616003255999999,
+      "mean_loss": -0.19659494993673465,
+      "mean_win": 0.5267753113689655,
+      "months": {
+        "2026-08": {
+          "net_usdt": -3.502258833,
+          "stress10": -4.843109753,
+          "trades": 29
+        },
+        "2026-09": {
+          "net_usdt": 2.7235599817,
+          "stress10": 0.6247810017000002,
+          "trades": 48
+        },
+        "2026-10": {
+          "net_usdt": -2.3196878353000003,
+          "stress10": -4.3507928353,
+          "trades": 45
+        },
+        "2026-11": {
+          "net_usdt": -0.8914343775,
+          "stress10": -1.1083735475,
+          "trades": 5
+        }
+      },
+      "native_max_drawdown_usdt": 6.291033549999999,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 2,
+      "net_bp_weighted": -14.03477351670019,
+      "net_stop_R": -37.25812736254563,
+      "net_usdt": -3.9898210641000014,
+      "profit_factor": 0.7929119753541148,
+      "pure_stop_R": -13.447366569764386,
+      "stop_gap10bp_usdt": -5.5151705241,
+      "stress_usdt": {
+        "0": -3.9898210641000005,
+        "10": -9.677495134099999,
+        "2": -5.1273558781,
+        "20": -15.3651692041,
+        "5": -6.8336580991
+      },
+      "top3_winners_fraction_of_positive": 0.30298808138058825,
+      "trades": 127,
+      "turnover_usdt": 5687.67407,
+      "win_loss_quantiles": {
+        "0": -0.5225131,
+        "0.1": -0.31123372,
+        "0.25": -0.212460105,
+        "0.5": -0.15357504,
+        "0.75": -0.058962725,
+        "0.9": 0.42361100000000007,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2283464566929134,
+      "wins": 29,
+      "zero_realization_days": 24
+    },
+    "random-131": {
+      "average_entry_notional_exposure_fraction": 0.0028999095717592593,
+      "block95_net_usdt": [
+        -10.12194165605975,
+        12.408609530619247
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.40965119287,
+            "stress10": -0.75815826287,
+            "trades": 8
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -4.0971967296,
+            "stress10": -5.4517718496,
+            "trades": 30
+          },
+          "max_hold_4h": {
+            "net_usdt": 2.5063067514,
+            "stress10": 1.9568988514,
+            "trades": 12
+          },
+          "max_hold_8h": {
+            "net_usdt": 2.1224645007,
+            "stress10": 1.8865042007000001,
+            "trades": 5
+          },
+          "roi": {
+            "net_usdt": 14.85970578539,
+            "stress10": 13.76530389539,
+            "trades": 24
+          },
+          "stop_loss": {
+            "net_usdt": -13.4892858066,
+            "stress10": -16.0611312066,
+            "trades": 57
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -0.794419885,
+            "stress10": -1.019500885,
+            "trades": 5
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 1.3537229234199994,
+            "stress10": -4.90098975658,
+            "trades": 138
+          },
+          "True": {
+            "net_usdt": -0.6557995,
+            "stress10": -0.7808655,
+            "trades": 3
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -1.2385219933,
+            "stress10": -4.3708980933,
+            "trades": 69
+          },
+          "UP": {
+            "net_usdt": 1.9364454167199996,
+            "stress10": -1.31095716328,
+            "trades": 72
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 5.02389685742,
+            "stress10": 2.7927302274200003,
+            "trades": 50
+          },
+          "reversal": {
+            "net_usdt": -4.325973434000001,
+            "stress10": -8.474585484,
+            "trades": 91
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -6.030394523,
+            "stress10": -10.128588732999999,
+            "trades": 90
+          },
+          "TREND_ADX25": {
+            "net_usdt": 6.72831794642,
+            "stress10": 4.44673347642,
+            "trades": 51
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 0.1414058743199998,
+            "stress10": -3.1425708756799997,
+            "trades": 73
+          },
+          "short": {
+            "net_usdt": 0.5565175490999997,
+            "stress10": -2.5392843809,
+            "trades": 68
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 3.0482672806,
+      "cost_inclusive_R": -9.29241861224681,
+      "excluding_top3_winners_usdt": -3.47935386298,
+      "expectancy_usdt": 0.00494981151361702,
+      "fees_usdt": 4.78483401,
+      "funding_usdt": -0.02326256658,
+      "gross_usdt": 5.5060199999999995,
+      "hourly_mark_mtm": {
+        "final_equity": 1000.6979234234202,
+        "max_drawdown_usdt": 3.2193972705998704,
+        "min_equity": 996.7806027294001,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 102,
+      "maker_fee_scenario_usdt": 4.20680169742,
+      "mean_loss": -0.18637411567519613,
+      "mean_win": 0.5053354672382052,
+      "months": {
+        "2026-08": {
+          "net_usdt": -2.4664830706000003,
+          "stress10": -4.0129393206,
+          "trades": 33
+        },
+        "2026-09": {
+          "net_usdt": 4.07767993659,
+          "stress10": 2.0447182765900003,
+          "trades": 46
+        },
+        "2026-10": {
+          "net_usdt": 0.021259932429999875,
+          "stress10": -2.51054553757,
+          "trades": 56
+        },
+        "2026-11": {
+          "net_usdt": -0.934533375,
+          "stress10": -1.203088675,
+          "trades": 6
+        }
+      },
+      "native_max_drawdown_usdt": 3.048267280000001,
+      "native_rejected_signals": 2,
+      "native_timedout_entry_orders": 2,
+      "net_bp_weighted": 2.1878410833537023,
+      "net_stop_R": -12.163840419393038,
+      "net_usdt": 0.6979234234199998,
+      "profit_factor": 1.0367131802575107,
+      "pure_stop_R": 14.23417912260865,
+      "stop_gap10bp_usdt": -0.6999715765800004,
+      "stress_usdt": {
+        "0": 0.6979234234199995,
+        "10": -5.68185525658,
+        "2": -0.5780323125800001,
+        "20": -12.06163393658,
+        "5": -2.49196591658
+      },
+      "top3_winners_fraction_of_positive": 0.21195756275655797,
+      "trades": 141,
+      "turnover_usdt": 6379.77868,
+      "win_loss_quantiles": {
+        "0": -0.48646337,
+        "0.1": -0.2830919484,
+        "0.25": -0.2135763,
+        "0.5": -0.13183425,
+        "0.75": 0.057885,
+        "0.9": 0.49428842,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2765957446808511,
+      "wins": 39,
+      "zero_realization_days": 22
+    },
+    "random-23": {
+      "average_entry_notional_exposure_fraction": 0.0025992156875,
+      "block95_net_usdt": [
+        -8.0068535749655,
+        6.898453478920992
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.42536092999999997,
+            "stress10": -0.60676881,
+            "trades": 4
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -2.8480369721,
+            "stress10": -3.8401120421,
+            "trades": 22
+          },
+          "max_hold_4h": {
+            "net_usdt": 1.0045344776,
+            "stress10": 0.6890334776,
+            "trades": 7
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.87212165765,
+            "stress10": 1.59430613765,
+            "trades": 6
+          },
+          "roi": {
+            "net_usdt": 12.83287840009,
+            "stress10": 11.810568130090001,
+            "trades": 23
+          },
+          "stop_loss": {
+            "net_usdt": -11.9710881307,
+            "stress10": -14.1689054007,
+            "trades": 49
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -1.7071763415,
+            "stress10": -2.1633885315,
+            "trades": 10
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": -0.5716493389600004,
+            "stress10": -5.926150538959999,
+            "trades": 119
+          },
+          "True": {
+            "net_usdt": -0.6704785,
+            "stress10": -0.7591165,
+            "trades": 2
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -2.6699459830000003,
+            "stress10": -5.155224863,
+            "trades": 55
+          },
+          "UP": {
+            "net_usdt": 1.4278181440399997,
+            "stress10": -1.5300421759599998,
+            "trades": 66
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 2.18744553664,
+            "stress10": 0.13637021664000037,
+            "trades": 45
+          },
+          "reversal": {
+            "net_usdt": -3.4295733756000004,
+            "stress10": -6.8216372556,
+            "trades": 76
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -5.6825357186000005,
+            "stress10": -9.0063651186,
+            "trades": 74
+          },
+          "TREND_ADX25": {
+            "net_usdt": 4.4404078796399995,
+            "stress10": 2.32109807964,
+            "trades": 47
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 1.4940996544399998,
+            "stress10": -1.5618511455599995,
+            "trades": 69
+          },
+          "short": {
+            "net_usdt": -2.7362274934,
+            "stress10": -5.1234158934,
+            "trades": 52
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 3.5939777264999995,
+      "cost_inclusive_R": -9.03390572062876,
+      "excluding_top3_winners_usdt": -5.34508652536,
+      "expectancy_usdt": -0.010265519330247937,
+      "fees_usdt": 4.0823544,
+      "funding_usdt": -0.03367343896,
+      "gross_usdt": 2.8738999999999995,
+      "hourly_mark_mtm": {
+        "final_equity": 998.75787216104,
+        "max_drawdown_usdt": 3.7997718265000913,
+        "min_equity": 998.7066878443003,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 87,
+      "maker_fee_scenario_usdt": 1.7515987210400001,
+      "mean_loss": -0.19528297965862065,
+      "mean_win": 0.46316151150999996,
+      "months": {
+        "2026-08": {
+          "net_usdt": -0.17652902910000018,
+          "stress10": -1.4383419790999998,
+          "trades": 27
+        },
+        "2026-09": {
+          "net_usdt": 1.39124930534,
+          "stress10": -0.7950555846599997,
+          "trades": 50
+        },
+        "2026-10": {
+          "net_usdt": -1.7848089877,
+          "stress10": -3.4858181777,
+          "trades": 37
+        },
+        "2026-11": {
+          "net_usdt": -0.6720391274999999,
+          "stress10": -0.9660512975,
+          "trades": 7
+        }
+      },
+      "native_max_drawdown_usdt": 3.79977182,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 1,
+      "net_bp_weighted": -4.568003617280575,
+      "net_stop_R": -10.656894358592613,
+      "net_usdt": -1.2421278389600003,
+      "profit_factor": 0.9268890125127268,
+      "pure_stop_R": 12.510874749578038,
+      "stop_gap10bp_usdt": -2.5682645089600005,
+      "stress_usdt": {
+        "0": -1.2421278389600003,
+        "10": -6.685267038959999,
+        "2": -2.3307556789599997,
+        "20": -12.12840623896,
+        "5": -3.9636974389599997
+      },
+      "top3_winners_fraction_of_positive": 0.2605468124692124,
+      "trades": 121,
+      "turnover_usdt": 5443.1392,
+      "win_loss_quantiles": {
+        "0": -0.555964,
+        "0.1": -0.2838892,
+        "0.25": -0.2047529,
+        "0.5": -0.1415155,
+        "0.75": 0.1121941182,
+        "0.9": 0.433145,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2809917355371901,
+      "wins": 34,
+      "zero_realization_days": 27
+    },
+    "random-37": {
+      "average_entry_notional_exposure_fraction": 0.002791585037037037,
+      "block95_net_usdt": [
+        -11.975533941518,
+        8.516717555039486
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -1.08854854177,
+            "stress10": -1.50051711177,
+            "trades": 9
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -3.8942232756,
+            "stress10": -5.0687177956,
+            "trades": 26
+          },
+          "max_hold_4h": {
+            "net_usdt": 1.9769726221,
+            "stress10": 1.5153652121,
+            "trades": 10
+          },
+          "max_hold_8h": {
+            "net_usdt": 2.0928251567,
+            "stress10": 1.8647906567,
+            "trades": 5
+          },
+          "roi": {
+            "net_usdt": 11.337312377689999,
+            "stress10": 10.37733731769,
+            "trades": 21
+          },
+          "stop_loss": {
+            "net_usdt": -11.2845283398,
+            "stress10": -13.4693280998,
+            "trades": 49
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -1.6610135302,
+            "stress10": -2.0291210502,
+            "trades": 8
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": -1.7003141860800002,
+            "stress10": -7.35898902608,
+            "trades": 125
+          },
+          "True": {
+            "net_usdt": -0.8208893448,
+            "stress10": -0.9512018447999999,
+            "trades": 3
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -3.8380018648000003,
+            "stress10": -6.8036150348,
+            "trades": 65
+          },
+          "UP": {
+            "net_usdt": 1.3167983339199998,
+            "stress10": -1.5065758360799997,
+            "trades": 63
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 1.82624603672,
+            "stress10": -0.5667548232799997,
+            "trades": 53
+          },
+          "reversal": {
+            "net_usdt": -4.3474495676,
+            "stress10": -7.7434360475999995,
+            "trades": 75
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -6.615873379,
+            "stress10": -10.027779219,
+            "trades": 75
+          },
+          "TREND_ADX25": {
+            "net_usdt": 4.09466984812,
+            "stress10": 1.7175883481200003,
+            "trades": 53
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": -1.32921658148,
+            "stress10": -4.406099891479999,
+            "trades": 68
+          },
+          "short": {
+            "net_usdt": -1.1919869494000002,
+            "stress10": -3.9040909794,
+            "trades": 60
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 4.3572011936,
+      "cost_inclusive_R": -16.761079442228453,
+      "excluding_top3_winners_usdt": -6.544255817280001,
+      "expectancy_usdt": -0.01969690258500001,
+      "fees_usdt": 4.341740505,
+      "funding_usdt": -0.02282302588,
+      "gross_usdt": 1.8433599999999997,
+      "hourly_mark_mtm": {
+        "final_equity": 997.4787964691201,
+        "max_drawdown_usdt": 4.3572011935996215,
+        "min_equity": 996.3921716440004,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 95,
+      "maker_fee_scenario_usdt": 0.6627395061200001,
+      "mean_loss": -0.18931308117652634,
+      "mean_win": 0.46859209639060606,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.8516649749,
+          "stress10": -3.2415815048999996,
+          "trades": 30
+        },
+        "2026-09": {
+          "net_usdt": 0.9873141256899999,
+          "stress10": -0.84201210431,
+          "trades": 41
+        },
+        "2026-10": {
+          "net_usdt": -1.10007329667,
+          "stress10": -3.45812357667,
+          "trades": 52
+        },
+        "2026-11": {
+          "net_usdt": -0.556779385,
+          "stress10": -0.768473685,
+          "trades": 5
+        }
+      },
+      "native_max_drawdown_usdt": 4.3572011999999996,
+      "native_rejected_signals": 1,
+      "native_timedout_entry_orders": 1,
+      "net_bp_weighted": -8.710597749457223,
+      "net_stop_R": -19.90430197807589,
+      "net_usdt": -2.521203530880001,
+      "profit_factor": 0.8598143119817879,
+      "pure_stop_R": 4.827663811494184,
+      "stop_gap10bp_usdt": -3.7969267808800002,
+      "stress_usdt": {
+        "0": -2.5212035308800003,
+        "10": -8.31019087088,
+        "2": -3.67900099888,
+        "20": -14.09917821088,
+        "5": -5.4156972008799995
+      },
+      "top3_winners_fraction_of_positive": 0.2601637464321058,
+      "trades": 128,
+      "turnover_usdt": 5788.98734,
+      "win_loss_quantiles": {
+        "0": -0.456648,
+        "0.1": -0.28923938499999996,
+        "0.25": -0.209840295,
+        "0.5": -0.1433985,
+        "0.75": 0.0296464844,
+        "0.9": 0.38417587999999997,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2578125,
+      "wins": 33,
+      "zero_realization_days": 23
+    },
+    "random-53": {
+      "average_entry_notional_exposure_fraction": 0.0024087754224537037,
+      "block95_net_usdt": [
+        -10.940110347065001,
+        5.206470186754988
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.3402526457,
+            "stress10": -0.5306377457,
+            "trades": 4
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -3.6200190501,
+            "stress10": -4.8638247201,
+            "trades": 28
+          },
+          "max_hold_4h": {
+            "net_usdt": 1.9486603543999999,
+            "stress10": 1.4860337544,
+            "trades": 10
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.0425441516,
+            "stress10": 0.9006827516,
+            "trades": 3
+          },
+          "roi": {
+            "net_usdt": 12.2267404718,
+            "stress10": 11.3269436818,
+            "trades": 20
+          },
+          "stop_loss": {
+            "net_usdt": -13.12559038685,
+            "stress10": -15.61432581685,
+            "trades": 56
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -1.7659797287,
+            "stress10": -2.1806690787,
+            "trades": 9
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": -2.5561763335500003,
+            "stress10": -8.22778267355,
+            "trades": 126
+          },
+          "True": {
+            "net_usdt": -1.0777204999999999,
+            "stress10": -1.2480145,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -5.2174085684,
+            "stress10": -8.031108958399999,
+            "trades": 63
+          },
+          "UP": {
+            "net_usdt": 1.5835117348499996,
+            "stress10": -1.4446882151499998,
+            "trades": 67
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": -0.6869947248500001,
+            "stress10": -2.8767206548499997,
+            "trades": 48
+          },
+          "reversal": {
+            "net_usdt": -2.9469021087000002,
+            "stress10": -6.5990765187000004,
+            "trades": 82
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -6.7610566349,
+            "stress10": -10.4671830449,
+            "trades": 83
+          },
+          "TREND_ADX25": {
+            "net_usdt": 3.1271598013499995,
+            "stress10": 0.9913858713500003,
+            "trades": 47
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": -0.3485050570500002,
+            "stress10": -2.9779894570499996,
+            "trades": 59
+          },
+          "short": {
+            "net_usdt": -3.2853917765000005,
+            "stress10": -6.4978077165,
+            "trades": 71
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 4.282065638800001,
+      "cost_inclusive_R": -25.243629910307302,
+      "excluding_top3_winners_usdt": -7.554335318349999,
+      "expectancy_usdt": -0.027953052565769226,
+      "fees_usdt": 4.381425255,
+      "funding_usdt": -0.01243157855,
+      "gross_usdt": 0.7599599999999999,
+      "hourly_mark_mtm": {
+        "final_equity": 996.3661031664506,
+        "max_drawdown_usdt": 4.41897376129964,
+        "min_equity": 996.2291950439505,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 101,
+      "maker_fee_scenario_usdt": -0.4208516465499999,
+      "mean_loss": -0.18742931679554456,
+      "mean_win": 0.5274642814758621,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.8852537527000002,
+          "stress10": -3.2319110627,
+          "trades": 29
+        },
+        "2026-09": {
+          "net_usdt": -0.3407184842500002,
+          "stress10": -2.3555619442499998,
+          "trades": 46
+        },
+        "2026-10": {
+          "net_usdt": -0.8597500841000002,
+          "stress10": -3.0366351841,
+          "trades": 48
+        },
+        "2026-11": {
+          "net_usdt": -0.5481745125,
+          "stress10": -0.8516889825,
+          "trades": 7
+        }
+      },
+      "native_max_drawdown_usdt": 4.418973769999999,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 1,
+      "net_bp_weighted": -12.446176792418415,
+      "net_stop_R": -31.30103992587113,
+      "net_usdt": -3.6338968335499993,
+      "profit_factor": 0.8080386932795071,
+      "pure_stop_R": -6.024592483833548,
+      "stop_gap10bp_usdt": -5.08550697355,
+      "stress_usdt": {
+        "0": -3.6338968335500006,
+        "10": -9.47579717355,
+        "2": -4.80227690155,
+        "20": -15.31769751355,
+        "5": -6.55484700355
+      },
+      "top3_winners_fraction_of_positive": 0.2562970398305675,
+      "trades": 130,
+      "turnover_usdt": 5841.90034,
+      "win_loss_quantiles": {
+        "0": -0.500034875,
+        "0.1": -0.29947107324,
+        "0.25": -0.208674925,
+        "0.5": -0.146539,
+        "0.75": -0.02046410605,
+        "0.9": 0.4600164625,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2230769230769231,
+      "wins": 29,
+      "zero_realization_days": 19
+    },
+    "random-71": {
+      "average_entry_notional_exposure_fraction": 0.0024099068275462965,
+      "block95_net_usdt": [
+        -8.043462993572499,
+        11.98325792060499
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.5566107267,
+            "stress10": -0.8143989267,
+            "trades": 6
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -3.89781065,
+            "stress10": -5.2338248499999995,
+            "trades": 30
+          },
+          "max_hold_4h": {
+            "net_usdt": 1.353337406,
+            "stress10": 0.952030806,
+            "trades": 9
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.18284595285,
+            "stress10": 0.91700983285,
+            "trades": 6
+          },
+          "roi": {
+            "net_usdt": 12.5641000722,
+            "stress10": 11.783597372200001,
+            "trades": 17
+          },
+          "stop_loss": {
+            "net_usdt": -7.5689372486,
+            "stress10": -9.2224114686,
+            "trades": 37
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -2.0263752286,
+            "stress10": -2.4807198486,
+            "trades": 10
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 1.7063490771499998,
+            "stress10": -3.31785158285,
+            "trades": 112
+          },
+          "True": {
+            "net_usdt": -0.6557995,
+            "stress10": -0.7808655,
+            "trades": 3
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -1.9720992272,
+            "stress10": -4.1855222272,
+            "trades": 49
+          },
+          "UP": {
+            "net_usdt": 3.02264880435,
+            "stress10": 0.08680514435000017,
+            "trades": 66
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 3.86070447865,
+            "stress10": 1.9592403986500002,
+            "trades": 42
+          },
+          "reversal": {
+            "net_usdt": -2.8101549015000002,
+            "stress10": -6.0579574815,
+            "trades": 73
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -3.7000667277,
+            "stress10": -6.9162035077,
+            "trades": 72
+          },
+          "TREND_ADX25": {
+            "net_usdt": 4.75061630485,
+            "stress10": 2.8174864248500002,
+            "trades": 43
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 5.22688322035,
+            "stress10": 2.55454867035,
+            "trades": 59
+          },
+          "short": {
+            "net_usdt": -4.1763336432000004,
+            "stress10": -6.6532657532,
+            "trades": 56
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 4.375184896899999,
+      "cost_inclusive_R": -16.903443944068567,
+      "excluding_top3_winners_usdt": -3.5780430092500004,
+      "expectancy_usdt": 0.009135213714347822,
+      "fees_usdt": 3.861949995,
+      "funding_usdt": -0.02182042785,
+      "gross_usdt": 4.93432,
+      "hourly_mark_mtm": {
+        "final_equity": 1001.0505495771499,
+        "max_drawdown_usdt": 4.472172946900173,
+        "min_equity": 998.5480782384,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 85,
+      "maker_fee_scenario_usdt": 3.88264624015,
+      "mean_loss": -0.1668750243611765,
+      "mean_win": 0.5078308882616667,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.0160489116000002,
+          "stress10": -2.3319406916,
+          "trades": 28
+        },
+        "2026-09": {
+          "net_usdt": 5.00458610095,
+          "stress10": 3.2494880209500003,
+          "trades": 41
+        },
+        "2026-10": {
+          "net_usdt": -2.1503538622,
+          "stress10": -4.0597856622,
+          "trades": 42
+        },
+        "2026-11": {
+          "net_usdt": -0.7876337499999999,
+          "stress10": -0.95647875,
+          "trades": 4
+        }
+      },
+      "native_max_drawdown_usdt": 4.47217293,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 4,
+      "net_bp_weighted": 4.0879768664582175,
+      "net_stop_R": -22.50364850973511,
+      "net_usdt": 1.0505495771499995,
+      "profit_factor": 1.0740638501016775,
+      "pure_stop_R": -0.24180899164595226,
+      "stop_gap10bp_usdt": -0.0035131628500000974,
+      "stress_usdt": {
+        "0": 1.05054957715,
+        "10": -4.0987170828499995,
+        "2": 0.020696245149999907,
+        "20": -9.24798374285,
+        "5": -1.52408375285
+      },
+      "top3_winners_fraction_of_positive": 0.3038145632984194,
+      "trades": 115,
+      "turnover_usdt": 5149.26666,
+      "win_loss_quantiles": {
+        "0": -0.4266975,
+        "0.1": -0.2462781,
+        "0.25": -0.18197542500000002,
+        "0.5": -0.13183425,
+        "0.75": 0.027431062225,
+        "0.9": 0.4454908400000001,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2608695652173913,
+      "wins": 30,
+      "zero_realization_days": 31
+    },
+    "random-89": {
+      "average_entry_notional_exposure_fraction": 0.002617320331018519,
+      "block95_net_usdt": [
+        -8.677793209715999,
+        8.302892069986235
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.47312370010000004,
+            "stress10": -0.7277268001,
+            "trades": 6
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -3.326638865,
+            "stress10": -4.464530685,
+            "trades": 25
+          },
+          "max_hold_4h": {
+            "net_usdt": 1.2287648200199999,
+            "stress10": 0.5948422400200001,
+            "trades": 14
+          },
+          "max_hold_8h": {
+            "net_usdt": 0.79623543995,
+            "stress10": 0.52694101995,
+            "trades": 6
+          },
+          "roi": {
+            "net_usdt": 11.3173530518,
+            "stress10": 10.5374130918,
+            "trades": 18
+          },
+          "stop_loss": {
+            "net_usdt": -8.5875365557,
+            "stress10": -10.3000720057,
+            "trades": 38
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -2.2963070125,
+            "stress10": -2.8604241825,
+            "trades": 12
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": -0.6764728215300003,
+            "stress10": -5.93973732153,
+            "trades": 117
+          },
+          "True": {
+            "net_usdt": -0.6647799999999999,
+            "stress10": -0.7538199999999999,
+            "trades": 2
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -0.6250418021800002,
+            "stress10": -3.28225143218,
+            "trades": 59
+          },
+          "UP": {
+            "net_usdt": -0.7162110193500002,
+            "stress10": -3.41130588935,
+            "trades": 60
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 1.06193529845,
+            "stress10": -0.9791426615499997,
+            "trades": 46
+          },
+          "reversal": {
+            "net_usdt": -2.4031881199800003,
+            "stress10": -5.71441465998,
+            "trades": 73
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -3.86604622318,
+            "stress10": -7.34482422318,
+            "trades": 77
+          },
+          "TREND_ADX25": {
+            "net_usdt": 2.5247934016499998,
+            "stress10": 0.6512669016500001,
+            "trades": 42
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": -0.33602490453000033,
+            "stress10": -2.8974653945299997,
+            "trades": 58
+          },
+          "short": {
+            "net_usdt": -1.005227917,
+            "stress10": -3.796091927,
+            "trades": 61
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 3.42339476138,
+      "cost_inclusive_R": -14.371185376748203,
+      "excluding_top3_winners_usdt": -5.4442115079299995,
+      "expectancy_usdt": -0.011271032113697479,
+      "fees_usdt": 4.014228375,
+      "funding_usdt": -0.02144444653,
+      "gross_usdt": 2.69442,
+      "hourly_mark_mtm": {
+        "final_equity": 998.6587471784695,
+        "max_drawdown_usdt": 3.4233947613803366,
+        "min_equity": 997.6744728314,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 87,
+      "maker_fee_scenario_usdt": 1.60251465347,
+      "mean_loss": -0.17201520456988503,
+      "mean_win": 0.42575218675156246,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.5562060720000002,
+          "stress10": -2.914621332,
+          "trades": 29
+        },
+        "2026-09": {
+          "net_usdt": 2.18809788977,
+          "stress10": 0.4016289297700002,
+          "trades": 41
+        },
+        "2026-10": {
+          "net_usdt": -1.1934633993,
+          "stress10": -3.2201196792999998,
+          "trades": 45
+        },
+        "2026-11": {
+          "net_usdt": -0.7796812399999999,
+          "stress10": -0.96044524,
+          "trades": 4
+        }
+      },
+      "native_max_drawdown_usdt": 3.42339477,
+      "native_rejected_signals": 3,
+      "native_timedout_entry_orders": 2,
+      "net_bp_weighted": -5.012353351994583,
+      "net_stop_R": -18.756978096227773,
+      "net_usdt": -1.34125282153,
+      "profit_factor": 0.9103759511457453,
+      "pure_stop_R": 4.751732746439868,
+      "stop_gap10bp_usdt": -2.47983814153,
+      "stress_usdt": {
+        "0": -1.3412528215300004,
+        "10": -6.693557321529999,
+        "2": -2.41171372153,
+        "20": -12.04586182153,
+        "5": -4.017405071530001
+      },
+      "top3_winners_fraction_of_positive": 0.30115513892784357,
+      "trades": 119,
+      "turnover_usdt": 5352.3045,
+      "win_loss_quantiles": {
+        "0": -0.4266975,
+        "0.1": -0.267148248,
+        "0.25": -0.17841040125000002,
+        "0.5": -0.13183425,
+        "0.75": 0.046289333625,
+        "0.9": 0.42162178000000006,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2689075630252101,
+      "wins": 32,
+      "zero_realization_days": 27
+    },
+    "reference": {
+      "average_entry_notional_exposure_fraction": 0.0024622748043981483,
+      "block95_net_usdt": [
+        -6.66590034782875,
+        9.09428626511299
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.4555027505,
+            "stress10": -0.6423262505,
+            "trades": 4
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.9753192749999999,
+            "stress10": -1.188144975,
+            "trades": 5
+          },
+          "max_hold_4h": {
+            "net_usdt": 1.31490761072,
+            "stress10": 1.04086354072,
+            "trades": 6
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.48385764075,
+            "stress10": 1.15810562075,
+            "trades": 7
+          },
+          "roi": {
+            "net_usdt": 10.9293672009,
+            "stress10": 10.2538651009,
+            "trades": 15
+          },
+          "stop_loss": {
+            "net_usdt": -9.3188804035,
+            "stress10": -10.9192521135,
+            "trades": 36
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -2.0552886978,
+            "stress10": -2.4835879978,
+            "trades": 9
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 2.24442767037,
+            "stress10": -1.27768222963,
+            "trades": 78
+          },
+          "True": {
+            "net_usdt": -1.3212863447999998,
+            "stress10": -1.5027948448,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": 0.27601738931999986,
+            "stress10": -1.44725558068,
+            "trades": 38
+          },
+          "UP": {
+            "net_usdt": 0.64712393625,
+            "stress10": -1.33322149375,
+            "trades": 44
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 0.50377207615,
+            "stress10": -1.93777585385,
+            "trades": 54
+          },
+          "reversal": {
+            "net_usdt": 0.4193692494199998,
+            "stress10": -0.84270122058,
+            "trades": 28
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -0.6866883073800001,
+            "stress10": -2.35302467738,
+            "trades": 37
+          },
+          "TREND_ADX25": {
+            "net_usdt": 1.60982963295,
+            "stress10": -0.4274523970500001,
+            "trades": 45
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 3.23116626747,
+            "stress10": 1.19989086747,
+            "trades": 45
+          },
+          "short": {
+            "net_usdt": -2.3080249419000003,
+            "stress10": -3.9803679419,
+            "trades": 37
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 2.9321517802000003,
+      "cost_inclusive_R": -4.550027900456969,
+      "excluding_top3_winners_usdt": -3.64476243923,
+      "expectancy_usdt": 0.011257821043536592,
+      "fees_usdt": 2.7777138,
+      "funding_usdt": -0.02104487443,
+      "gross_usdt": 3.7219,
+      "hourly_mark_mtm": {
+        "final_equity": 1000.9231413255699,
+        "max_drawdown_usdt": 2.9458099802000106,
+        "min_equity": 997.0678482198,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 58,
+      "maker_fee_scenario_usdt": 2.96013144557,
+      "mean_loss": -0.22407498900827588,
+      "mean_win": 0.57997877866875,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.8435796690000001,
+          "stress10": -2.7548706689999998,
+          "trades": 20
+        },
+        "2026-09": {
+          "net_usdt": 2.12996379877,
+          "stress10": 0.82150729877,
+          "trades": 29
+        },
+        "2026-10": {
+          "net_usdt": 1.5331616858,
+          "stress10": 0.22968578579999982,
+          "trades": 29
+        },
+        "2026-11": {
+          "net_usdt": -0.89640449,
+          "stress10": -1.07679949,
+          "trades": 4
+        }
+      },
+      "native_max_drawdown_usdt": 2.9321518000000006,
+      "native_rejected_signals": 2,
+      "native_timedout_entry_orders": 1,
+      "net_bp_weighted": 4.992926061298826,
+      "net_stop_R": -6.016801909490237,
+      "net_usdt": 0.9231413255700005,
+      "profit_factor": 1.07103081794916,
+      "pure_stop_R": 7.8039512571289364,
+      "stop_gap10bp_usdt": -0.09080453443000008,
+      "stress_usdt": {
+        "0": 0.9231413255699998,
+        "10": -2.7804770744300003,
+        "2": 0.18241764556999993,
+        "20": -6.48409547443,
+        "5": -0.9286678744300002
+      },
+      "top3_winners_fraction_of_positive": 0.32816601319483507,
+      "trades": 82,
+      "turnover_usdt": 3703.6184,
+      "win_loss_quantiles": {
+        "0": -0.555964,
+        "0.1": -0.35288815568,
+        "0.25": -0.2565139875,
+        "0.5": -0.14914969264,
+        "0.75": 0.12342845,
+        "0.9": 0.570686091,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2926829268292683,
+      "wins": 24,
+      "zero_realization_days": 40
+    },
+    "reference-reproduce": {
+      "average_entry_notional_exposure_fraction": 0.0024622748043981483,
+      "block95_net_usdt": [
+        -6.66590034782875,
+        9.09428626511299
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.4555027505,
+            "stress10": -0.6423262505,
+            "trades": 4
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.9753192749999999,
+            "stress10": -1.188144975,
+            "trades": 5
+          },
+          "max_hold_4h": {
+            "net_usdt": 1.31490761072,
+            "stress10": 1.04086354072,
+            "trades": 6
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.48385764075,
+            "stress10": 1.15810562075,
+            "trades": 7
+          },
+          "roi": {
+            "net_usdt": 10.9293672009,
+            "stress10": 10.2538651009,
+            "trades": 15
+          },
+          "stop_loss": {
+            "net_usdt": -9.3188804035,
+            "stress10": -10.9192521135,
+            "trades": 36
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -2.0552886978,
+            "stress10": -2.4835879978,
+            "trades": 9
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 2.24442767037,
+            "stress10": -1.27768222963,
+            "trades": 78
+          },
+          "True": {
+            "net_usdt": -1.3212863447999998,
+            "stress10": -1.5027948448,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": 0.27601738931999986,
+            "stress10": -1.44725558068,
+            "trades": 38
+          },
+          "UP": {
+            "net_usdt": 0.64712393625,
+            "stress10": -1.33322149375,
+            "trades": 44
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 0.50377207615,
+            "stress10": -1.93777585385,
+            "trades": 54
+          },
+          "reversal": {
+            "net_usdt": 0.4193692494199998,
+            "stress10": -0.84270122058,
+            "trades": 28
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -0.6866883073800001,
+            "stress10": -2.35302467738,
+            "trades": 37
+          },
+          "TREND_ADX25": {
+            "net_usdt": 1.60982963295,
+            "stress10": -0.4274523970500001,
+            "trades": 45
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 3.23116626747,
+            "stress10": 1.19989086747,
+            "trades": 45
+          },
+          "short": {
+            "net_usdt": -2.3080249419000003,
+            "stress10": -3.9803679419,
+            "trades": 37
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 2.9321517802000003,
+      "cost_inclusive_R": -4.550027900456969,
+      "excluding_top3_winners_usdt": -3.64476243923,
+      "expectancy_usdt": 0.011257821043536592,
+      "fees_usdt": 2.7777138,
+      "funding_usdt": -0.02104487443,
+      "gross_usdt": 3.7219,
+      "hourly_mark_mtm": {
+        "final_equity": 1000.9231413255699,
+        "max_drawdown_usdt": 2.9458099802000106,
+        "min_equity": 997.0678482198,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 58,
+      "maker_fee_scenario_usdt": 2.96013144557,
+      "mean_loss": -0.22407498900827588,
+      "mean_win": 0.57997877866875,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.8435796690000001,
+          "stress10": -2.7548706689999998,
+          "trades": 20
+        },
+        "2026-09": {
+          "net_usdt": 2.12996379877,
+          "stress10": 0.82150729877,
+          "trades": 29
+        },
+        "2026-10": {
+          "net_usdt": 1.5331616858,
+          "stress10": 0.22968578579999982,
+          "trades": 29
+        },
+        "2026-11": {
+          "net_usdt": -0.89640449,
+          "stress10": -1.07679949,
+          "trades": 4
+        }
+      },
+      "native_max_drawdown_usdt": 2.9321518000000006,
+      "native_rejected_signals": 2,
+      "native_timedout_entry_orders": 1,
+      "net_bp_weighted": 4.992926061298826,
+      "net_stop_R": -6.016801909490237,
+      "net_usdt": 0.9231413255700005,
+      "profit_factor": 1.07103081794916,
+      "pure_stop_R": 7.8039512571289364,
+      "stop_gap10bp_usdt": -0.09080453443000008,
+      "stress_usdt": {
+        "0": 0.9231413255699998,
+        "10": -2.7804770744300003,
+        "2": 0.18241764556999993,
+        "20": -6.48409547443,
+        "5": -0.9286678744300002
+      },
+      "top3_winners_fraction_of_positive": 0.32816601319483507,
+      "trades": 82,
+      "turnover_usdt": 3703.6184,
+      "win_loss_quantiles": {
+        "0": -0.555964,
+        "0.1": -0.35288815568,
+        "0.25": -0.2565139875,
+        "0.5": -0.14914969264,
+        "0.75": 0.12342845,
+        "0.9": 0.570686091,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2926829268292683,
+      "wins": 24,
+      "zero_realization_days": 40
+    },
+    "reference-risk": {
+      "average_entry_notional_exposure_fraction": 0.001580384107638889,
+      "block95_net_usdt": [
+        -4.5703363869355,
+        2.7030387673974903
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.176565129,
+            "stress10": -0.255405129,
+            "trades": 2
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.33897365,
+            "stress10": -0.42427185,
+            "trades": 3
+          },
+          "max_hold_4h": {
+            "net_usdt": 0.66682844872,
+            "stress10": 0.46875577872,
+            "trades": 6
+          },
+          "max_hold_8h": {
+            "net_usdt": 0.4819248362,
+            "stress10": 0.27288463620000003,
+            "trades": 6
+          },
+          "roi": {
+            "net_usdt": 5.0785710145,
+            "stress10": 4.6725657145,
+            "trades": 12
+          },
+          "stop_loss": {
+            "net_usdt": -4.9829771649,
+            "stress10": -5.9440836949,
+            "trades": 29
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -1.5726540718,
+            "stress10": -1.9284886718,
+            "trades": 9
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": -0.09092821308000013,
+            "stress10": -2.27858721308,
+            "trades": 63
+          },
+          "True": {
+            "net_usdt": -0.7529175032,
+            "stress10": -0.8594560032,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": 0.09045608762000001,
+            "stress10": -1.07772368238,
+            "trades": 33
+          },
+          "UP": {
+            "net_usdt": -0.9343018039000002,
+            "stress10": -2.0603195339,
+            "trades": 34
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": -1.2520296001,
+            "stress10": -2.7468708301,
+            "trades": 45
+          },
+          "reversal": {
+            "net_usdt": 0.40818388382,
+            "stress10": -0.39117238617999994,
+            "trades": 22
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -1.00829941248,
+            "stress10": -2.09357498248,
+            "trades": 31
+          },
+          "TREND_ADX25": {
+            "net_usdt": 0.16445369619999994,
+            "stress10": -1.0444682338,
+            "trades": 36
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 0.10420414991999996,
+            "stress10": -0.99720185008,
+            "trades": 34
+          },
+          "short": {
+            "net_usdt": -0.9480498662000001,
+            "stress10": -2.1408413662,
+            "trades": 33
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 2.4457167837,
+      "cost_inclusive_R": -5.29466636511382,
+      "excluding_top3_winners_usdt": -2.51308381628,
+      "expectancy_usdt": -0.012594712183283587,
+      "fees_usdt": 1.720648125,
+      "funding_usdt": -0.010117591280000001,
+      "gross_usdt": 0.8869199999999999,
+      "hourly_mark_mtm": {
+        "final_equity": 999.1561542837197,
+        "max_drawdown_usdt": 2.4457167837000497,
+        "min_equity": 997.5542832163,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 47,
+      "maker_fee_scenario_usdt": 0.4179629087200002,
+      "mean_loss": -0.1542387533719149,
+      "mean_win": 0.32026878460999997,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.7054167735,
+          "stress10": -2.3218721735,
+          "trades": 16
+        },
+        "2026-09": {
+          "net_usdt": -0.5821466750800001,
+          "stress10": -1.29216687508,
+          "trades": 22
+        },
+        "2026-10": {
+          "net_usdt": 1.9119942322999999,
+          "stress10": 1.0459743323,
+          "trades": 26
+        },
+        "2026-11": {
+          "net_usdt": -0.4682765,
+          "stress10": -0.5699785,
+          "trades": 3
+        }
+      },
+      "native_max_drawdown_usdt": 2.4888009599999994,
+      "native_rejected_signals": 1,
+      "native_timedout_entry_orders": 0,
+      "net_bp_weighted": -7.3595244567479545,
+      "net_stop_R": -6.777921294848523,
+      "net_usdt": -0.8438457162800004,
+      "profit_factor": 0.8835949864501468,
+      "pure_stop_R": 5.13165213363174,
+      "stop_gap10bp_usdt": -1.5023947962800002,
+      "stress_usdt": {
+        "0": -0.8438457162800002,
+        "10": -3.13804321628,
+        "2": -1.30268521628,
+        "20": -5.43224071628,
+        "5": -1.99094446628
+      },
+      "top3_winners_fraction_of_positive": 0.26059956202610823,
+      "trades": 67,
+      "turnover_usdt": 2294.1975,
+      "win_loss_quantiles": {
+        "0": -0.2143460032,
+        "0.1": -0.202669835,
+        "0.25": -0.1733038,
+        "0.5": -0.1406655,
+        "0.75": 0.0978885,
+        "0.9": 0.3686762508,
+        "1": 0.5888124
+      },
+      "win_rate": 0.29850746268656714,
+      "wins": 20,
+      "zero_realization_days": 46
+    },
+    "reference-through": {
+      "average_entry_notional_exposure_fraction": 0.00230141915625,
+      "block95_net_usdt": [
+        -6.57432864947675,
+        8.283774321144998
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.4555027505,
+            "stress10": -0.6423262505,
+            "trades": 4
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.885431775,
+            "stress10": -1.050407475,
+            "trades": 4
+          },
+          "max_hold_4h": {
+            "net_usdt": 0.94809714872,
+            "stress10": 0.71218307872,
+            "trades": 5
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.3732054407499998,
+            "stress10": 1.08937742075,
+            "trades": 6
+          },
+          "roi": {
+            "net_usdt": 10.9293672009,
+            "stress10": 10.2538651009,
+            "trades": 15
+          },
+          "stop_loss": {
+            "net_usdt": -9.1906718035,
+            "stress10": -10.7549021135,
+            "trades": 35
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -2.0552886978,
+            "stress10": -2.4835879978,
+            "trades": 9
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 1.9850611083699998,
+            "stress10": -1.3730033916300002,
+            "trades": 74
+          },
+          "True": {
+            "net_usdt": -1.3212863447999998,
+            "stress10": -1.5027948448,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": 0.2552526893199999,
+            "stress10": -1.37824628068,
+            "trades": 36
+          },
+          "UP": {
+            "net_usdt": 0.40852207425,
+            "stress10": -1.49755195575,
+            "trades": 42
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 0.52132847615,
+            "stress10": -1.84215405385,
+            "trades": 52
+          },
+          "reversal": {
+            "net_usdt": 0.14244628741999982,
+            "stress10": -1.03364418258,
+            "trades": 26
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -1.05349876938,
+            "stress10": -2.68170513938,
+            "trades": 36
+          },
+          "TREND_ADX25": {
+            "net_usdt": 1.71727353295,
+            "stress10": -0.19409309705000008,
+            "trades": 42
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 3.08245190547,
+            "stress10": 1.17329790547,
+            "trades": 42
+          },
+          "short": {
+            "net_usdt": -2.4186771419,
+            "stress10": -4.0490961419,
+            "trades": 36
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 2.9098989678000002,
+      "cost_inclusive_R": -5.051970125922016,
+      "excluding_top3_winners_usdt": -3.9041290012300003,
+      "expectancy_usdt": 0.00850993286628205,
+      "fees_usdt": 2.65467975,
+      "funding_usdt": -0.02164548643,
+      "gross_usdt": 3.3401,
+      "hourly_mark_mtm": {
+        "final_equity": 1000.6637747635699,
+        "max_drawdown_usdt": 2.973460266799975,
+        "min_equity": 997.1120914308,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 56,
+      "maker_fee_scenario_usdt": 2.6105399135700003,
+      "mean_loss": -0.22818309397285713,
+      "mean_win": 0.6110012739113636,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.753692169,
+          "stress10": -2.6171331689999997,
+          "trades": 19
+        },
+        "2026-09": {
+          "net_usdt": 1.65250113677,
+          "stress10": 0.4240986367699999,
+          "trades": 27
+        },
+        "2026-10": {
+          "net_usdt": 1.6613702858,
+          "stress10": 0.3940357857999998,
+          "trades": 28
+        },
+        "2026-11": {
+          "net_usdt": -0.89640449,
+          "stress10": -1.07679949,
+          "trades": 4
+        }
+      },
+      "native_max_drawdown_usdt": 2.90989898,
+      "native_rejected_signals": 2,
+      "native_timedout_entry_orders": 5,
+      "net_bp_weighted": 3.7566628109321916,
+      "net_stop_R": -6.449202364320503,
+      "net_usdt": 0.66377476357,
+      "profit_factor": 1.051945657198625,
+      "pure_stop_R": 6.63240850328199,
+      "stop_gap10bp_usdt": -0.3321504964300001,
+      "stress_usdt": {
+        "0": 0.6637747635699999,
+        "10": -2.87579823643,
+        "2": -0.044139836430000044,
+        "20": -6.41537123643,
+        "5": -1.1060117364300002
+      },
+      "top3_winners_fraction_of_positive": 0.3398225145750049,
+      "trades": 78,
+      "turnover_usdt": 3539.573,
+      "win_loss_quantiles": {
+        "0": -0.555964,
+        "0.1": -0.35893278914,
+        "0.25": -0.262937405,
+        "0.5": -0.15760960200000002,
+        "0.75": 0.1233841122,
+        "0.9": 0.5953109438799997,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.28205128205128205,
+      "wins": 22,
+      "zero_realization_days": 40
+    },
+    "structure": {
+      "average_entry_notional_exposure_fraction": 0.0019093855127314816,
+      "block95_net_usdt": [
+        -5.497751250104999,
+        8.39326246515499
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.3406469505,
+            "stress10": -0.48891845050000005,
+            "trades": 3
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.19616625,
+            "stress10": -0.24572125,
+            "trades": 1
+          },
+          "max_hold_4h": {
+            "net_usdt": 0.7017012315000001,
+            "stress10": 0.5102694015,
+            "trades": 4
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.48385764075,
+            "stress10": 1.15810562075,
+            "trades": 7
+          },
+          "roi": {
+            "net_usdt": 8.2148784408,
+            "stress10": 7.7762072408,
+            "trades": 10
+          },
+          "stop_loss": {
+            "net_usdt": -7.7814814641,
+            "stress10": -9.0333732741,
+            "trades": 28
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -1.1390808078,
+            "stress10": -1.3746847078,
+            "trades": 5
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 2.26434818545,
+            "stress10": -0.19532057455000007,
+            "trades": 54
+          },
+          "True": {
+            "net_usdt": -1.3212863447999998,
+            "stress10": -1.5027948448,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": 0.06430421149999999,
+            "stress10": -1.1297238885,
+            "trades": 26
+          },
+          "UP": {
+            "net_usdt": 0.8787576291500001,
+            "stress10": -0.56839153085,
+            "trades": 32
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 0.8087988311500001,
+            "stress10": -1.54337179885,
+            "trades": 52
+          },
+          "reversal": {
+            "net_usdt": 0.13426300950000003,
+            "stress10": -0.1547436205,
+            "trades": 6
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -1.4963998973,
+            "stress10": -2.4259462273,
+            "trades": 20
+          },
+          "TREND_ADX25": {
+            "net_usdt": 2.43946173795,
+            "stress10": 0.7278308079499999,
+            "trades": 38
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 0.5529335616500001,
+            "stress10": -0.9445043683500001,
+            "trades": 33
+          },
+          "short": {
+            "net_usdt": 0.39012827899999997,
+            "stress10": -0.753611051,
+            "trades": 25
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 2.5919598178,
+      "cost_inclusive_R": -2.5328338473124035,
+      "excluding_top3_winners_usdt": -3.62484192415,
+      "expectancy_usdt": 0.016259686907758628,
+      "fees_usdt": 1.980882945,
+      "funding_usdt": -0.01375521435,
+      "gross_usdt": 2.9377,
+      "hourly_mark_mtm": {
+        "final_equity": 1000.9430618406499,
+        "max_drawdown_usdt": 2.8215318677998766,
+        "min_equity": 997.5958614058001,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 40,
+      "maker_fee_scenario_usdt": 2.39570933365,
+      "mean_loss": -0.2379622721075,
+      "mean_win": 0.5811973736083332,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.668366669,
+          "stress10": -2.366517669,
+          "trades": 15
+        },
+        "2026-09": {
+          "net_usdt": 2.30925595055,
+          "stress10": 1.47353899055,
+          "trades": 18
+        },
+        "2026-10": {
+          "net_usdt": 0.7935890591,
+          "stress10": -0.22649824090000012,
+          "trades": 23
+        },
+        "2026-11": {
+          "net_usdt": -0.4914165,
+          "stress10": -0.5786385000000001,
+          "trades": 2
+        }
+      },
+      "native_max_drawdown_usdt": 2.6118182800000005,
+      "native_rejected_signals": 1,
+      "native_timedout_entry_orders": 1,
+      "net_bp_weighted": 7.142407089871503,
+      "net_stop_R": -3.731340483626864,
+      "net_usdt": 0.9430618406500004,
+      "profit_factor": 1.0990768234285442,
+      "pure_stop_R": 5.794647061494965,
+      "stop_gap10bp_usdt": 0.20093548065000003,
+      "stress_usdt": {
+        "0": 0.9430618406500001,
+        "10": -1.69811541935,
+        "2": 0.41482638865,
+        "20": -4.339292679350001,
+        "5": -0.3775267893500001
+      },
+      "top3_winners_fraction_of_positive": 0.4366372645530812,
+      "trades": 58,
+      "turnover_usdt": 2641.17726,
+      "win_loss_quantiles": {
+        "0": -0.555964,
+        "0.1": -0.380040765,
+        "0.25": -0.264080345,
+        "0.5": -0.14602747,
+        "0.75": 0.1106078622,
+        "0.9": 0.5953109438800003,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.3103448275862069,
+      "wins": 18,
+      "zero_realization_days": 51
+    },
+    "structure-market": {
+      "average_entry_notional_exposure_fraction": 0.0019854151828703702,
+      "block95_net_usdt": [
+        -5.00829920301125,
+        8.943192028743747
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.3434448505,
+            "stress10": -0.4917135505,
+            "trades": 3
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.19616625,
+            "stress10": -0.24572125,
+            "trades": 1
+          },
+          "max_hold_4h": {
+            "net_usdt": 0.699869904,
+            "stress10": 0.508436304,
+            "trades": 4
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.49856007325,
+            "stress10": 1.17279796325,
+            "trades": 7
+          },
+          "roi": {
+            "net_usdt": 8.8912038958,
+            "stress10": 8.4079595958,
+            "trades": 11
+          },
+          "stop_loss": {
+            "net_usdt": -7.7700150766,
+            "stress10": -9.0218850366,
+            "trades": 28
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -1.1432776578000001,
+            "stress10": -1.3788773578,
+            "trades": 5
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 2.25337705295,
+            "stress10": -0.2062932170500002,
+            "trades": 54
+          },
+          "True": {
+            "net_usdt": -0.6166470148,
+            "stress10": -0.8427101147999999,
+            "trades": 5
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": 0.7576421165000001,
+            "stress10": -0.48094248349999996,
+            "trades": 27
+          },
+          "UP": {
+            "net_usdt": 0.8790879216499999,
+            "stress10": -0.5680608483500001,
+            "trades": 32
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 1.5000952061500001,
+            "stress10": -0.89663396385,
+            "trades": 53
+          },
+          "reversal": {
+            "net_usdt": 0.13663483200000004,
+            "stress10": -0.15236936800000003,
+            "trades": 6
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -0.7964826697999999,
+            "stress10": -1.7705730698,
+            "trades": 21
+          },
+          "TREND_ADX25": {
+            "net_usdt": 2.43321270795,
+            "stress10": 0.7215697379499999,
+            "trades": 38
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 0.55569563165,
+            "stress10": -0.9417395383500001,
+            "trades": 33
+          },
+          "short": {
+            "net_usdt": 1.0810344065000002,
+            "stress10": -0.10726379349999995,
+            "trades": 26
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 2.6272508928000007,
+      "cost_inclusive_R": -0.24217104478700852,
+      "excluding_top3_winners_usdt": -2.9211662266500005,
+      "expectancy_usdt": 0.02774118708728813,
+      "fees_usdt": 2.0143000275,
+      "funding_usdt": -0.011499934349999998,
+      "gross_usdt": 3.6625300000000003,
+      "hourly_mark_mtm": {
+        "final_equity": 1001.6367300381503,
+        "max_drawdown_usdt": 2.856822942799795,
+        "min_equity": 997.5593694308002,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 40,
+      "maker_fee_scenario_usdt": 3.11388339165,
+      "mean_loss": -0.23786123810749998,
+      "mean_win": 0.5869041874973684,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.706459844,
+          "stress10": -2.404601744,
+          "trades": 15
+        },
+        "2026-09": {
+          "net_usdt": 2.32277349305,
+          "stress10": 1.48703992305,
+          "trades": 18
+        },
+        "2026-10": {
+          "net_usdt": 1.5028261391000002,
+          "stress10": 0.43818123909999995,
+          "trades": 24
+        },
+        "2026-11": {
+          "net_usdt": -0.48240974999999997,
+          "stress10": -0.56962275,
+          "trades": 2
+        }
+      },
+      "native_max_drawdown_usdt": 2.6471093600000004,
+      "native_rejected_signals": 1,
+      "native_timedout_entry_orders": 0,
+      "net_bp_weighted": 12.18705079848103,
+      "net_stop_R": -1.1671664063370453,
+      "net_usdt": 1.6367300381499996,
+      "profit_factor": 1.172025720875367,
+      "pure_stop_R": 8.474075638540157,
+      "stop_gap10bp_usdt": 0.8946036781500004,
+      "stress_usdt": {
+        "0": 1.63673003815,
+        "10": -1.04900333185,
+        "2": 1.09958336415,
+        "20": -3.7347367018499997,
+        "5": 0.2938633531499999
+      },
+      "top3_winners_fraction_of_positive": 0.40873669366315857,
+      "trades": 59,
+      "turnover_usdt": 2685.73337,
+      "win_loss_quantiles": {
+        "0": -0.555964,
+        "0.1": -0.380069145,
+        "0.25": -0.25931203,
+        "0.5": -0.148002155,
+        "0.75": 0.1878893279,
+        "0.9": 0.6574602415,
+        "1": 1.7820618148
+      },
+      "win_rate": 0.3220338983050847,
+      "wins": 19,
+      "zero_realization_days": 50
+    },
+    "structure-open": {
+      "average_entry_notional_exposure_fraction": 0.0011730390972222223,
+      "block95_net_usdt": [
+        -3.805018651715,
+        7.95817106144
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.43297765050000003,
+            "stress10": -0.5811567505,
+            "trades": 3
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.19616625,
+            "stress10": -0.24572125,
+            "trades": 1
+          },
+          "max_hold_4h": {
+            "net_usdt": 0.470436972,
+            "stress10": 0.372558972,
+            "trades": 2
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.4537635695,
+            "stress10": 1.2202830695,
+            "trades": 5
+          },
+          "roi": {
+            "net_usdt": 6.1755095208,
+            "stress10": 5.8580511208,
+            "trades": 7
+          },
+          "stop_loss": {
+            "net_usdt": -5.2156061134,
+            "stress10": -6.0257495134,
+            "trades": 18
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -0.6473697576,
+            "stress10": -0.7860076576,
+            "trades": 3
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 2.9288766356,
+            "stress10": 1.3150528356,
+            "trades": 35
+          },
+          "True": {
+            "net_usdt": -1.3212863447999998,
+            "stress10": -1.5027948448,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": 0.7733788347,
+            "stress10": -0.09704096530000005,
+            "trades": 19
+          },
+          "UP": {
+            "net_usdt": 0.8342114561,
+            "stress10": -0.09070104390000004,
+            "trades": 20
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 1.7045915408,
+            "stress10": 0.10471204079999995,
+            "trades": 35
+          },
+          "reversal": {
+            "net_usdt": -0.09700124999999997,
+            "stress10": -0.29245405,
+            "trades": 4
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -2.3187890406,
+            "stress10": -2.9189739406,
+            "trades": 13
+          },
+          "TREND_ADX25": {
+            "net_usdt": 3.9263793313999997,
+            "stress10": 2.7312319314,
+            "trades": 26
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 0.23022273410000005,
+            "stress10": -0.7429985659,
+            "trades": 21
+          },
+          "short": {
+            "net_usdt": 1.3773675566999999,
+            "stress10": 0.5552565567,
+            "trades": 18
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 1.7031360968,
+      "cost_inclusive_R": 0.6506868220803516,
+      "excluding_top3_winners_usdt": -2.245015974,
+      "expectancy_usdt": 0.041220263866666655,
+      "fees_usdt": 1.346499225,
+      "funding_usdt": -0.009910484199999998,
+      "gross_usdt": 2.964,
+      "hourly_mark_mtm": {
+        "final_equity": 1001.6075902908,
+        "max_drawdown_usdt": 1.9327081467998823,
+        "min_equity": 998.7108919268001,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 26,
+      "maker_fee_scenario_usdt": 2.5950230558,
+      "mean_loss": -0.2504607007653846,
+      "mean_win": 0.6245821931307692,
+      "months": {
+        "2026-08": {
+          "net_usdt": -0.553336148,
+          "stress10": -0.937433148,
+          "trades": 8
+        },
+        "2026-09": {
+          "net_usdt": 1.3621996185,
+          "stress10": 0.7620397185,
+          "trades": 13
+        },
+        "2026-10": {
+          "net_usdt": 1.2901433203,
+          "stress10": 0.5662899202999999,
+          "trades": 16
+        },
+        "2026-11": {
+          "net_usdt": -0.4914165,
+          "stress10": -0.5786385000000001,
+          "trades": 2
+        }
+      },
+      "native_max_drawdown_usdt": 1.7229945500000001,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 25,
+      "net_bp_weighted": 17.89825589260714,
+      "net_stop_R": 0.07022551953687577,
+      "net_usdt": 1.6075902907999995,
+      "profit_factor": 1.246866656569482,
+      "pure_stop_R": 6.047693487515237,
+      "stop_gap10bp_usdt": 1.1345009908,
+      "stress_usdt": {
+        "0": 1.6075902908,
+        "10": -0.1877420092000001,
+        "2": 1.2485238308,
+        "20": -1.9830743092,
+        "5": 0.7099241407999999
+      },
+      "top3_winners_fraction_of_positive": 0.47448411325343454,
+      "trades": 39,
+      "turnover_usdt": 1795.3323,
+      "win_loss_quantiles": {
+        "0": -0.555964,
+        "0.1": -0.38525816896,
+        "0.25": -0.25497987499999997,
+        "0.5": -0.1586835,
+        "0.75": 0.2431473502,
+        "0.9": 0.7113113332800004,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.3333333333333333,
+      "wins": 13,
+      "zero_realization_days": 62
+    },
+    "structure-risk": {
+      "average_entry_notional_exposure_fraction": 0.0012477892372685184,
+      "block95_net_usdt": [
+        -3.4678621438049997,
+        1.9007437001124996
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.176565129,
+            "stress10": -0.255405129,
+            "trades": 2
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.103635,
+            "stress10": -0.129815,
+            "trades": 1
+          },
+          "max_hold_4h": {
+            "net_usdt": 0.4029860765,
+            "stress10": 0.2475597465,
+            "trades": 4
+          },
+          "max_hold_8h": {
+            "net_usdt": 0.4819248362,
+            "stress10": 0.27288463620000003,
+            "trades": 6
+          },
+          "roi": {
+            "net_usdt": 3.5077880044,
+            "stress10": 3.2811614044,
+            "trades": 8
+          },
+          "stop_loss": {
+            "net_usdt": -4.0184990399,
+            "stress10": -4.7587728699,
+            "trades": 23
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -0.8826293668,
+            "stress10": -1.0778940667999999,
+            "trades": 5
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": -0.03571211540000005,
+            "stress10": -1.5608252754,
+            "trades": 45
+          },
+          "True": {
+            "net_usdt": -0.7529175032,
+            "stress10": -0.8594560032,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": 0.4435928708,
+            "stress10": -0.37982072920000004,
+            "trades": 24
+          },
+          "UP": {
+            "net_usdt": -1.2322224894,
+            "stress10": -2.0404605494,
+            "trades": 25
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": -1.0879806951,
+            "stress10": -2.5380260251,
+            "trades": 44
+          },
+          "reversal": {
+            "net_usdt": 0.29935107650000004,
+            "stress10": 0.1177447465,
+            "trades": 5
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -1.1379578198,
+            "stress10": -1.7369842497999999,
+            "trades": 18
+          },
+          "TREND_ADX25": {
+            "net_usdt": 0.34932820119999997,
+            "stress10": -0.6832970288,
+            "trades": 31
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": -1.1822810539,
+            "stress10": -1.9492679839,
+            "trades": 25
+          },
+          "short": {
+            "net_usdt": 0.3936514353,
+            "stress10": -0.47101329470000003,
+            "trades": 24
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 1.4214754904,
+      "cost_inclusive_R": -4.123823761281542,
+      "excluding_top3_winners_usdt": -2.4578677185999998,
+      "expectancy_usdt": -0.016094482012244896,
+      "fees_usdt": 1.223738745,
+      "funding_usdt": -0.0090108736,
+      "gross_usdt": 0.44411999999999996,
+      "hourly_mark_mtm": {
+        "final_equity": 999.2113703813994,
+        "max_drawdown_usdt": 1.7081522658003223,
+        "min_equity": 998.4644200541998,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 34,
+      "maker_fee_scenario_usdt": 0.10877879440000027,
+      "mean_loss": -0.1538662793735294,
+      "mean_win": 0.2961882586733333,
+      "months": {
+        "2026-08": {
+          "net_usdt": -0.9321398575000001,
+          "stress10": -1.4443304575,
+          "trades": 14
+        },
+        "2026-09": {
+          "net_usdt": -0.3837411963,
+          "stress10": -0.7998345563,
+          "trades": 13
+        },
+        "2026-10": {
+          "net_usdt": 0.8548624351999999,
+          "stress10": 0.20964273519999999,
+          "trades": 20
+        },
+        "2026-11": {
+          "net_usdt": -0.327611,
+          "stress10": -0.385759,
+          "trades": 2
+        }
+      },
+      "native_max_drawdown_usdt": 1.5828680700000002,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_bp_weighted": -9.6569210522842,
+      "net_stop_R": -5.551500869584752,
+      "net_usdt": -0.7886296185999999,
+      "profit_factor": 0.8492522931158669,
+      "pure_stop_R": 2.8326322535792503,
+      "stop_gap10bp_usdt": -1.2558566986000002,
+      "stress_usdt": {
+        "0": -0.7886296186,
+        "10": -2.4202812786,
+        "2": -1.1149599505999999,
+        "20": -4.0519329386,
+        "5": -1.6044554486000002
+      },
+      "top3_winners_fraction_of_positive": 0.37571556853215354,
+      "trades": 49,
+      "turnover_usdt": 1631.65166,
+      "win_loss_quantiles": {
+        "0": -0.2207132,
+        "0.1": -0.20956049999999998,
+        "0.25": -0.18279,
+        "0.5": -0.134592,
+        "0.75": 0.0588011292,
+        "0.9": 0.359307576,
+        "1": 0.5888124
+      },
+      "win_rate": 0.30612244897959184,
+      "wins": 15,
+      "zero_realization_days": 56
+    },
+    "structure-through": {
+      "average_entry_notional_exposure_fraction": 0.0018084187534722221,
+      "block95_net_usdt": [
+        -5.483229441374999,
+        8.419958717437499
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.3406469505,
+            "stress10": -0.48891845050000005,
+            "trades": 3
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.19616625,
+            "stress10": -0.24572125,
+            "trades": 1
+          },
+          "max_hold_4h": {
+            "net_usdt": 0.7017012315000001,
+            "stress10": 0.5102694015,
+            "trades": 4
+          },
+          "max_hold_8h": {
+            "net_usdt": 1.3732054407499998,
+            "stress10": 1.08937742075,
+            "trades": 6
+          },
+          "roi": {
+            "net_usdt": 8.2148784408,
+            "stress10": 7.7762072408,
+            "trades": 10
+          },
+          "stop_loss": {
+            "net_usdt": -7.6532728641,
+            "stress10": -8.8690232741,
+            "trades": 27
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -1.1390808078,
+            "stress10": -1.3746847078,
+            "trades": 5
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": 2.28190458545,
+            "stress10": -0.09969877455000008,
+            "trades": 52
+          },
+          "True": {
+            "net_usdt": -1.3212863447999998,
+            "stress10": -1.5027948448,
+            "trades": 4
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -0.04634798850000003,
+            "stress10": -1.1984520885,
+            "trades": 25
+          },
+          "UP": {
+            "net_usdt": 1.0069662291500001,
+            "stress10": -0.40404153085,
+            "trades": 31
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 0.82635523115,
+            "stress10": -1.44774999885,
+            "trades": 50
+          },
+          "reversal": {
+            "net_usdt": 0.13426300950000003,
+            "stress10": -0.1547436205,
+            "trades": 6
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -1.4963998973,
+            "stress10": -2.4259462273,
+            "trades": 20
+          },
+          "TREND_ADX25": {
+            "net_usdt": 2.45701813795,
+            "stress10": 0.8234526079499999,
+            "trades": 36
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 0.6811421616500001,
+            "stress10": -0.7801543683500001,
+            "trades": 32
+          },
+          "short": {
+            "net_usdt": 0.27947607899999993,
+            "stress10": -0.822339251,
+            "trades": 24
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 2.5919598178,
+      "cost_inclusive_R": -2.1470439021200565,
+      "excluding_top3_winners_usdt": -3.60728552415,
+      "expectancy_usdt": 0.017153897154464293,
+      "fees_usdt": 1.922333895,
+      "funding_usdt": -0.01494786435,
+      "gross_usdt": 2.8979,
+      "hourly_mark_mtm": {
+        "final_equity": 1000.9606182406499,
+        "max_drawdown_usdt": 2.8671761567999283,
+        "min_equity": 997.5502171168,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 39,
+      "maker_fee_scenario_usdt": 2.37032976365,
+      "mean_loss": -0.2407764688282051,
+      "mean_win": 0.6088765014676472,
+      "months": {
+        "2026-08": {
+          "net_usdt": -1.668366669,
+          "stress10": -2.366517669,
+          "trades": 15
+        },
+        "2026-09": {
+          "net_usdt": 2.1986037505500002,
+          "stress10": 1.40481079055,
+          "trades": 17
+        },
+        "2026-10": {
+          "net_usdt": 0.9217976591,
+          "stress10": -0.06214824090000012,
+          "trades": 22
+        },
+        "2026-11": {
+          "net_usdt": -0.4914165,
+          "stress10": -0.5786385000000001,
+          "trades": 2
+        }
+      },
+      "native_max_drawdown_usdt": 2.6118182800000005,
+      "native_rejected_signals": 1,
+      "native_timedout_entry_orders": 3,
+      "net_bp_weighted": 7.4977015067947494,
+      "net_stop_R": -3.1961169655140163,
+      "net_usdt": 0.9606182406500003,
+      "profit_factor": 1.1022991867088063,
+      "pure_stop_R": 5.8539914978274945,
+      "stop_gap10bp_usdt": 0.23651248065000002,
+      "stress_usdt": {
+        "0": 0.9606182406500001,
+        "10": -1.6024936193500001,
+        "2": 0.44799586864999996,
+        "20": -4.16560547935,
+        "5": -0.3209376893500001
+      },
+      "top3_winners_fraction_of_positive": 0.44130496219043375,
+      "trades": 56,
+      "turnover_usdt": 2563.11186,
+      "win_loss_quantiles": {
+        "0": -0.555964,
+        "0.1": -0.380344275,
+        "0.25": -0.268019199,
+        "0.5": -0.155203822,
+        "0.75": 0.14653475085,
+        "0.9": 0.6109540797999999,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.30357142857142855,
+      "wins": 17,
+      "zero_realization_days": 51
+    },
+    "systematic": {
+      "average_entry_notional_exposure_fraction": 0.001489944806712963,
+      "block95_net_usdt": [
+        -4.6928615541255,
+        4.474578114046742
+      ],
+      "breakdowns": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "net_usdt": -0.62620201407,
+            "stress10": -0.86825408407,
+            "trades": 5
+          },
+          "failed_boundary_reaccepted": {
+            "net_usdt": -0.4763895925,
+            "stress10": -0.6700423825,
+            "trades": 4
+          },
+          "max_hold_4h": {
+            "net_usdt": 0.10158132971999997,
+            "stress10": -0.04399204027999998,
+            "trades": 3
+          },
+          "max_hold_8h": {
+            "net_usdt": 0.12574446485000002,
+            "stress10": -0.012479255149999997,
+            "trades": 3
+          },
+          "roi": {
+            "net_usdt": 5.18442706249,
+            "stress10": 4.81366773249,
+            "trades": 8
+          },
+          "stop_loss": {
+            "net_usdt": -3.9216385086,
+            "stress10": -4.6926687086,
+            "trades": 17
+          },
+          "trailing_stop_loss": {
+            "net_usdt": -0.92188324,
+            "stress10": -1.20947538,
+            "trades": 6
+          }
+        },
+        "fvg_retest": {
+          "False": {
+            "net_usdt": -0.5343604981100001,
+            "stress10": -2.6832441181099997,
+            "trades": 46
+          }
+        },
+        "hour_structure": {
+          "DOWN": {
+            "net_usdt": -1.45343878878,
+            "stress10": -2.23842552878,
+            "trades": 17
+          },
+          "UP": {
+            "net_usdt": 0.9190782906699999,
+            "stress10": -0.44481858932999996,
+            "trades": 29
+          }
+        },
+        "recipe": {
+          "continuation": {
+            "net_usdt": 0.37195093466999996,
+            "stress10": -1.11996896533,
+            "trades": 32
+          },
+          "reversal": {
+            "net_usdt": -0.90631143278,
+            "stress10": -1.56327515278,
+            "trades": 14
+          }
+        },
+        "regime": {
+          "RANGE_OR_WEAK_TREND": {
+            "net_usdt": -2.62235385678,
+            "stress10": -3.6009695167799998,
+            "trades": 21
+          },
+          "TREND_ADX25": {
+            "net_usdt": 2.08799335867,
+            "stress10": 0.91772539867,
+            "trades": 25
+          }
+        },
+        "side": {
+          "long": {
+            "net_usdt": 0.34496017539,
+            "stress10": -0.86062557461,
+            "trades": 26
+          },
+          "short": {
+            "net_usdt": -0.8793206735000001,
+            "stress10": -1.8226185435,
+            "trades": 20
+          }
+        }
+      },
+      "caveat": "Closed-trade/daily equity drawdown understates intraday MTM. Native engine drawdown reported separately. Conditional current-survivor development, not independent holdout.",
+      "closed_daily_drawdown_usdt": 2.92756729935,
+      "cost_inclusive_R": -8.128580580983497,
+      "excluding_top3_winners_usdt": -3.9100593456099997,
+      "expectancy_usdt": -0.011616532567608695,
+      "fees_usdt": 1.611662715,
+      "funding_usdt": -0.01933778311,
+      "gross_usdt": 1.09664,
+      "hourly_mark_mtm": {
+        "final_equity": 999.4656395018901,
+        "max_drawdown_usdt": 3.173543109350021,
+        "min_equity": 999.3388986043901,
+        "resolution": "Hourly source mark OPEN + actual native held quantity, realized net and event-bounded funding; estimated close fee. Intrahour excursions/gaps UNKNOWN."
+      },
+      "losses": 35,
+      "maker_fee_scenario_usdt": 0.6475254928899999,
+      "mean_loss": -0.17510515711,
+      "mean_win": 0.5085745455218181,
+      "months": {
+        "2026-08": {
+          "net_usdt": 0.050608472799999964,
+          "stress10": -0.6926410772,
+          "trades": 16
+        },
+        "2026-09": {
+          "net_usdt": 1.48984141716,
+          "stress10": 0.87438677716,
+          "trades": 13
+        },
+        "2026-10": {
+          "net_usdt": -1.94488551057,
+          "stress10": -2.68547177057,
+          "trades": 16
+        },
+        "2026-11": {
+          "net_usdt": -0.1299248775,
+          "stress10": -0.1795180475,
+          "trades": 1
+        }
+      },
+      "native_max_drawdown_usdt": 3.184557,
+      "native_rejected_signals": 0,
+      "native_timedout_entry_orders": 0,
+      "net_bp_weighted": -4.976691159403857,
+      "net_stop_R": -10.431942631690026,
+      "net_usdt": -0.53436049811,
+      "profit_factor": 0.9128098620559078,
+      "pure_stop_R": -0.36267274762312063,
+      "stop_gap10bp_usdt": -1.0631254081100001,
+      "stress_usdt": {
+        "0": -0.5343604981100001,
+        "10": -2.6832441181099997,
+        "2": -0.9641372221099999,
+        "20": -4.83212773811,
+        "5": -1.60880230811
+      },
+      "top3_winners_fraction_of_positive": 0.6034154011664461,
+      "trades": 46,
+      "turnover_usdt": 2148.88362,
+      "win_loss_quantiles": {
+        "0": -0.3828022,
+        "0.1": -0.28302520625,
+        "0.25": -0.16847317750000002,
+        "0.5": -0.1380963275,
+        "0.75": -0.0186755496,
+        "0.9": 0.36047358375,
+        "1": 1.7794598648
+      },
+      "win_rate": 0.2391304347826087,
+      "wins": 11,
+      "zero_realization_days": 52
+    }
+  },
+  "untouched_holdout_used": false
+}
