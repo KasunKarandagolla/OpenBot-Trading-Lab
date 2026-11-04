@@ -1,0 +1,33 @@
+{
+  "contract_result": {
+    "reason": "AUTHENTIC_COMPLETE_TAPE_REQUIRED",
+    "status": "UNKNOWN"
+  },
+  "fidelity": "ACTUAL_EXECUTED_TRADE_SAMPLE",
+  "historical_comparison": "NOT_TESTED",
+  "implementation": "Reused intelligence_profile.volume_profile_v2 contiguous bins; existing Freqtrade trade-to-volume-profile support already present; no new profile engine/dependency",
+  "pair": "BTC/USDT:USDT",
+  "reason": "Latest1000 prints do not establish a complete prior-session profile or September/October tape coverage",
+  "rows": 1000,
+  "sample_profile": {
+    "bins": 2,
+    "empty_bins": 0,
+    "fidelity": "OBSERVED_TRADES",
+    "hvn": [
+      77691.41179982205
+    ],
+    "interpretation": "Observed volume concentration; passive resting liquidity UNKNOWN",
+    "lvn": [
+      77769.14207027953
+    ],
+    "poc": 77691.41179982205,
+    "total_base_volume": 96.47400000000052,
+    "vah": 77730.26721876726,
+    "val": 77652.5758037302,
+    "value_area_method": "CONTIGUOUS_PRICE_BINS_GREEDY_FROM_POC_LOWER_TIE",
+    "value_fraction_actual": 0.8924425233741742
+  },
+  "sha256": "b38f7157654796b20ba005a1dcef486745a3ef2826db02e47a61f50bea6d3bd6",
+  "source": "GATE_PUBLIC_FUTURES_TRADES_CCXT",
+  "volume_unit": "BASE_ASSET_FROM_CONTRACTS"
+}

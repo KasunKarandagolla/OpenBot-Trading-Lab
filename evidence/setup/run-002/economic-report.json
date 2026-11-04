@@ -1,0 +1,2808 @@
+{
+  "caveats": [
+    "DEVELOPMENT_ONLY",
+    "CURRENT_SURVIVOR_UNIVERSE",
+    "CURRENT_CONTRACT_SPEC_NOT_HISTORICAL_MEMBERSHIP",
+    "QUEUE_AND_OBSERVED_PARTIAL_FILLS_UNKNOWN",
+    "SOURCE_FUNDING_CLOCK_WITH_PRECEDING_HOURLY_MARK_OPEN_NOT_EXACT_SETTLEMENT_MARK",
+    "ADMISSION_ALLOWANCE_NOT_DOUBLE_CHARGED",
+    "BAR_PATH_EXTREMES_ARE_BOUNDS_NOT_TICK_PATH",
+    "PROFILE_ECONOMICS_NOT_TESTED",
+    "NO_RESERVED_HOLDOUT_ACCESS"
+  ],
+  "comparisons": {
+    "fixed-r-fixed-touch-750 minus setup-fixed-touch-750": {
+      "capacity_note": "Complete separate portfolios;changed holding periods/selection affect later capacity. Returns are not additive.",
+      "common_entries": 5,
+      "net_difference": 0.0,
+      "weekly_block95": [
+        0.0,
+        0.0
+      ]
+    },
+    "management-fixed-touch-750 minus setup-fixed-touch-750": {
+      "capacity_note": "Complete separate portfolios;changed holding periods/selection affect later capacity. Returns are not additive.",
+      "common_entries": 5,
+      "net_difference": 0.0,
+      "weekly_block95": [
+        0.0,
+        0.0
+      ]
+    },
+    "old-ranking-fixed-touch-750 minus setup-fixed-touch-750": {
+      "capacity_note": "Complete separate portfolios;changed holding periods/selection affect later capacity. Returns are not additive.",
+      "common_entries": 2,
+      "net_difference": 0.700242688,
+      "weekly_block95": [
+        -0.8217554209499998,
+        2.686870322749998
+      ]
+    },
+    "setup-fixed-touch-750 minus v4-reference-fixed-touch-750": {
+      "capacity_note": "Complete separate portfolios;changed holding periods/selection affect later capacity. Returns are not additive.",
+      "common_entries": 0,
+      "net_difference": -5.5125188822,
+      "weekly_block95": [
+        -11.57032042624,
+        0.007314535719999428
+      ]
+    },
+    "setup-fixed-touch-750 minus v4-structure-fixed-touch-750": {
+      "capacity_note": "Complete separate portfolios;changed holding periods/selection affect later capacity. Returns are not additive.",
+      "common_entries": 0,
+      "net_difference": -4.8250002427,
+      "weekly_block95": [
+        -10.404122053004999,
+        -0.18804662710750036
+      ]
+    },
+    "simple-trigger-fixed-touch-750 minus setup-fixed-touch-750": {
+      "capacity_note": "Complete separate portfolios;changed holding periods/selection affect later capacity. Returns are not additive.",
+      "common_entries": 3,
+      "net_difference": 1.8265722828599997,
+      "weekly_block95": [
+        -2.03424935663,
+        5.565650389006999
+      ]
+    }
+  },
+  "funnel": {
+    "distinct_setups": 4080,
+    "eligible_market_checks": 72741,
+    "profile": {
+      "reason": "NO_COMPLETE_VERIFIED_HISTORICAL_TAPE",
+      "status": "NOT_TESTED"
+    },
+    "raw_market_checks": 84672,
+    "reasons": {
+      "CAUSAL_SHORTLIST_OR_PLAYBOOK_CONFLICT": 12,
+      "CONFIRMATION_WINDOW_EXPIRED": 1466,
+      "DATA_GAP_OR_UNAVAILABLE_CONTEXT": 29,
+      "FIRST_OBJECTIVE_BEYOND_EXISTING_6ATR_BOUND": 21,
+      "FIRST_OBSTACLE_INSUFFICIENT_AFTER_COST_REWARD": 536,
+      "LOGICAL_STOP_OUTSIDE_0.3_2.5_PERCENT": 127,
+      "NO_PREEXISTING_OBJECTIVE": 120,
+      "REGISTERED_BOUNDARY_OR_EXTREME_FAILED": 1764,
+      "TRADE": 5,
+      "WAIT_COMPLETED_CONFIRMATION": 4079
+    },
+    "setup_count_note": "Distinct IDs include setups carried into evaluation from warmup; ARM events count events occurring inside evaluation.",
+    "states": {
+      "ADMITTED": 5,
+      "ARMED": 4079,
+      "EXPIRED": 1466,
+      "INVALIDATED": 1793,
+      "REJECTED": 816
+    }
+  },
+  "native_alternatives": 25,
+  "native_portfolios": 26,
+  "native_replay_records": 1,
+  "path_diagnostics": {
+    "avoided_stop_first": 5,
+    "fixed_r": {
+      "NEITHER": 5,
+      "STOP_FIRST": 9,
+      "TARGET_FIRST": 3
+    },
+    "missed_target_first": 3,
+    "n": 17,
+    "objective": {
+      "NEITHER": 5,
+      "STOP_FIRST": 9,
+      "TARGET_FIRST": 3
+    }
+  },
+  "portfolios": {
+    "breakout-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": -1.1807372117,
+        "20": -1.3662722117000001,
+        "5": -1.0879697117
+      },
+      "average_hold_minutes": 183.75,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.4393022,
+        "2026-10": -0.5559000117,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.9952022116999999,
+      "expectancy": -0.24880055292499997,
+      "fees": 0.13915125,
+      "funding": 0.0049490383,
+      "gross": -0.861,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.6309985627
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "SOL/USDT:USDT": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.4648230627
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -0.9952022117
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "short": {
+            "n": 3,
+            "net": -0.8290267117
+          }
+        }
+      },
+      "n": 4,
+      "native_max_drawdown": 0.99520221,
+      "net": -0.9952022116999999,
+      "net_R": -3.7772707336887055,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 4
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.23899644583756,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 185.535,
+      "wallet_time_exposure": 0.00016681617063492063,
+      "weekly_block95_total": [
+        -1.9248483371,
+        -0.182153898
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -0.9952022116999999
+    },
+    "continuation-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": 0,
+        "20": 0,
+        "5": 0
+      },
+      "average_hold_minutes": null,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 0.0,
+        "2026-10": 0.0,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.0,
+      "expectancy": null,
+      "fees": 0,
+      "funding": 0,
+      "gross": 0,
+      "groups": {
+        "exit_reason": {},
+        "pair": {},
+        "playbook": {},
+        "side": {}
+      },
+      "n": 0,
+      "native_max_drawdown": 0.0,
+      "net": 0.0,
+      "net_R": 0,
+      "partial_exits": 0,
+      "plan_execution_states": {},
+      "profit_factor": null,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": null,
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 0,
+      "wallet_time_exposure": 0.0,
+      "weekly_block95_total": [
+        0.0,
+        0.0
+      ],
+      "win_rate": null,
+      "without_top3_winners": 0.0
+    },
+    "fixed-r-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": -1.5779657117,
+        "20": -1.8042027117,
+        "5": -1.4648472117
+      },
+      "average_hold_minutes": 168.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.7958287,
+        "2026-10": -0.5559000117,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 1.3517287117,
+      "expectancy": -0.27034574234000003,
+      "fees": 0.16967775,
+      "funding": 0.0049490383,
+      "gross": -1.187,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.6309985627
+          },
+          "trailing_stop_loss": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "SOL/USDT:USDT": {
+            "n": 2,
+            "net": -0.522702
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.4648230627
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -0.9952022117
+          },
+          "reversal": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "short": {
+            "n": 4,
+            "net": -1.1855532117
+          }
+        }
+      },
+      "n": 5,
+      "native_max_drawdown": 1.3517287100000002,
+      "net": -1.3517287117,
+      "net_R": -4.854327216595833,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 5
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.304220519762264,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 226.237,
+      "wallet_time_exposure": 0.00019018191137566137,
+      "weekly_block95_total": [
+        -2.4462049744,
+        -0.4219499451750081
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -1.3517287117
+    },
+    "management-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": -1.5779657117,
+        "20": -1.8042027117,
+        "5": -1.4648472117
+      },
+      "average_hold_minutes": 168.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.7958287,
+        "2026-10": -0.5559000117,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 1.3517287117,
+      "expectancy": -0.27034574234000003,
+      "fees": 0.16967775,
+      "funding": 0.0049490383,
+      "gross": -1.187,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.6309985627
+          },
+          "trailing_stop_loss": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "SOL/USDT:USDT": {
+            "n": 2,
+            "net": -0.522702
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.4648230627
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -0.9952022117
+          },
+          "reversal": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "short": {
+            "n": 4,
+            "net": -1.1855532117
+          }
+        }
+      },
+      "n": 5,
+      "native_max_drawdown": 1.3517287100000002,
+      "net": -1.3517287117,
+      "net_R": -4.854327216595833,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 5
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.304220519762264,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 226.237,
+      "wallet_time_exposure": 0.00019018191137566137,
+      "weekly_block95_total": [
+        -2.4462049744,
+        -0.4219499451750081
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -1.3517287117
+    },
+    "null-ranking-1-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": -0.9442517109999999,
+        "20": -1.085464511,
+        "5": -0.873645311
+      },
+      "average_hold_minutes": 75.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.803038911,
+        "2026-10": 0.0,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.803038911,
+      "expectancy": -0.267679637,
+      "fees": 0.10590959999999999,
+      "funding": 7.0689e-05,
+      "gross": -0.6972,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.18835635
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.614682561
+          }
+        },
+        "pair": {
+          "NEAR/USDT:USDT": {
+            "n": 1,
+            "net": -0.448507061
+          },
+          "SOL/USDT:USDT": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "ZEC/USDT:USDT": {
+            "n": 1,
+            "net": -0.18835635
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 3,
+            "net": -0.803038911
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "short": {
+            "n": 2,
+            "net": -0.636863411
+          }
+        }
+      },
+      "n": 3,
+      "native_max_drawdown": 0.80303891,
+      "net": -0.803038911,
+      "net_R": -2.9422968242291403,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 3
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.320645687516628,
+        0.413885131329387
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 141.21280000000002,
+      "wallet_time_exposure": 5.80801917989418e-05,
+      "weekly_block95_total": [
+        -1.722233883,
+        -0.1661755
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -0.803038911
+    },
+    "null-ranking-2-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": 0.236898726,
+        "20": 0.19536372600000002,
+        "5": 0.257666226
+      },
+      "average_hold_minutes": 480.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 0.0,
+        "2026-10": 0.278433726,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.0,
+      "expectancy": 0.278433726,
+      "fees": 0.03115125,
+      "funding": 0.0005849760000000001,
+      "gross": 0.309,
+      "groups": {
+        "exit_reason": {
+          "max_hold_8h": {
+            "n": 1,
+            "net": 0.278433726
+          }
+        },
+        "pair": {
+          "UNI/USDT:USDT": {
+            "n": 1,
+            "net": 0.278433726
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 1,
+            "net": 0.278433726
+          }
+        },
+        "side": {
+          "short": {
+            "n": 1,
+            "net": 0.278433726
+          }
+        }
+      },
+      "n": 1,
+      "native_max_drawdown": 0.0,
+      "net": 0.278433726,
+      "net_R": 0.6988013928358376,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 1
+      },
+      "profit_factor": null,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.398444720995869,
+        0.398444720995869,
+        0.398444720995869
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": 1.0,
+      "turnover": 41.535,
+      "wallet_time_exposure": 0.00011069841269841269,
+      "weekly_block95_total": [
+        0.0,
+        0.8353011779999999
+      ],
+      "win_rate": 1.0,
+      "without_top3_winners": 0.0
+    },
+    "null-ranking-3-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": -0.7744288961999999,
+        "20": -0.9741610962,
+        "5": -0.6745627962
+      },
+      "average_hold_minutes": 153.75,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.2731267,
+        "2026-10": -0.30156999619999997,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 1.0266184627,
+      "expectancy": -0.14367417405000005,
+      "fees": 0.14979915,
+      "funding": 0.0037024538000000004,
+      "gross": -0.4286,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "roi": {
+            "n": 1,
+            "net": 0.4519217665
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.7534917627
+          }
+        },
+        "pair": {
+          "DOGE/USDT:USDT": {
+            "n": 1,
+            "net": 0.4519217665
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.4648230627
+          },
+          "XRP/USDT:USDT": {
+            "n": 1,
+            "net": -0.2886687
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -0.5746966962
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": 0.4519217665
+          },
+          "short": {
+            "n": 3,
+            "net": -1.0266184627000001
+          }
+        }
+      },
+      "n": 4,
+      "native_max_drawdown": 1.0266184600000001,
+      "net": -0.5746966962000002,
+      "net_R": -0.5728257442394933,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 4
+      },
+      "profit_factor": 0.440204207229479,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.1773227168828854,
+        0.2787779544211057,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": 1.0,
+      "turnover": 199.7322,
+      "wallet_time_exposure": 0.0001689329365079365,
+      "weekly_block95_total": [
+        -2.2604752881,
+        1.0541953033
+      ],
+      "win_rate": 0.25,
+      "without_top3_winners": -1.0266184627000001
+    },
+    "old-ranking-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": -0.8955950236999999,
+        "20": -1.1397040236999998,
+        "5": -0.7735405236999999
+      },
+      "average_hold_minutes": 120.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.1866629609999999,
+        "2026-10": -0.4648230627,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.9099901109999999,
+      "expectancy": -0.13029720474,
+      "fees": 0.18308175,
+      "funding": 0.0013957263,
+      "gross": -0.46979999999999994,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 2,
+            "net": -0.46148305
+          },
+          "max_hold_4h": {
+            "n": 1,
+            "net": 0.72332715
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.9133301237
+          }
+        },
+        "pair": {
+          "NEAR/USDT:USDT": {
+            "n": 1,
+            "net": -0.448507061
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "WLD/USDT:USDT": {
+            "n": 2,
+            "net": 0.2585040873
+          },
+          "ZEC/USDT:USDT": {
+            "n": 1,
+            "net": -0.18835635
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -1.3748131737
+          },
+          "reversal": {
+            "n": 1,
+            "net": 0.72332715
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": 0.72332715
+          },
+          "short": {
+            "n": 4,
+            "net": -1.3748131737
+          }
+        }
+      },
+      "n": 5,
+      "native_max_drawdown": 0.9099901100000001,
+      "net": -0.6514860237,
+      "net_R": -0.9345769154471092,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 5
+      },
+      "profit_factor": 0.526127595979698,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.2660817723554124,
+        0.320645687516628,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": 1.0,
+      "turnover": 244.109,
+      "wallet_time_exposure": 0.0001616878968253968,
+      "weekly_block95_total": [
+        -2.4767405468074997,
+        1.52014205
+      ],
+      "win_rate": 0.2,
+      "without_top3_winners": -1.3748131737
+    },
+    "reversal-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": -0.39722850000000004,
+        "20": -0.4379305,
+        "5": -0.37687750000000003
+      },
+      "average_hold_minutes": 105.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.3565265,
+        "2026-10": 0.0,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.3565265,
+      "expectancy": -0.3565265,
+      "fees": 0.0305265,
+      "funding": 0.0,
+      "gross": -0.326,
+      "groups": {
+        "exit_reason": {
+          "trailing_stop_loss": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "pair": {
+          "SOL/USDT:USDT": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "playbook": {
+          "reversal": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "side": {
+          "short": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        }
+      },
+      "n": 1,
+      "native_max_drawdown": 0.3565265,
+      "net": -0.3565265,
+      "net_R": -1.0770564829071283,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 1
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.331019315753696,
+        0.331019315753696,
+        0.331019315753696
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 40.702,
+      "wallet_time_exposure": 2.336574074074074e-05,
+      "weekly_block95_total": [
+        -1.0695795000000001,
+        0.0
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -0.3565265
+    },
+    "setup-fixed-drop25-750": {
+      "additional_friction_net": {
+        "10": -0.451177849,
+        "20": -0.538152049,
+        "5": -0.407690749
+      },
+      "average_hold_minutes": 277.5,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.2731267,
+        "2026-10": -0.091076949,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.364203649,
+      "expectancy": -0.1821018245,
+      "fees": 0.06523065,
+      "funding": 0.0036270010000000004,
+      "gross": -0.3026,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.091076949
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 2,
+            "net": -0.364203649
+          }
+        },
+        "side": {
+          "short": {
+            "n": 2,
+            "net": -0.364203649
+          }
+        }
+      },
+      "n": 2,
+      "native_max_drawdown": 0.36420365,
+      "net": -0.364203649,
+      "net_R": -1.4219082336557807,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 2,
+        "UNFILLED": 3
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.173772371912856,
+        0.23899644583756,
+        0.304220519762264
+      ],
+      "timedout_entry_orders": 3,
+      "top3_positive_share": null,
+      "turnover": 86.9742,
+      "wallet_time_exposure": 0.0001178211970899471,
+      "weekly_block95_total": [
+        -1.001533998,
+        0.0
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -0.364203649
+    },
+    "setup-fixed-through-750": {
+      "additional_friction_net": {
+        "10": -1.5779657117,
+        "20": -1.8042027117,
+        "5": -1.4648472117
+      },
+      "average_hold_minutes": 168.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.7958287,
+        "2026-10": -0.5559000117,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 1.3517287117,
+      "expectancy": -0.27034574234000003,
+      "fees": 0.16967775,
+      "funding": 0.0049490383,
+      "gross": -1.187,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.6309985627
+          },
+          "trailing_stop_loss": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "SOL/USDT:USDT": {
+            "n": 2,
+            "net": -0.522702
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.4648230627
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -0.9952022117
+          },
+          "reversal": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "short": {
+            "n": 4,
+            "net": -1.1855532117
+          }
+        }
+      },
+      "n": 5,
+      "native_max_drawdown": 1.3517287100000002,
+      "net": -1.3517287117,
+      "net_R": -4.854327216595833,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 5
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.304220519762264,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 226.237,
+      "wallet_time_exposure": 0.00019018191137566137,
+      "weekly_block95_total": [
+        -2.4462049744,
+        -0.4219499451750081
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -1.3517287117
+    },
+    "setup-fixed-touch-1750": {
+      "additional_friction_net": {
+        "10": -1.8042027117,
+        "20": -2.0304397117,
+        "5": -1.6910842116999998
+      },
+      "average_hold_minutes": 168.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.9349407,
+        "2026-10": -0.6430250116999999,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 1.5779657116999999,
+      "expectancy": -0.31559314233999997,
+      "fees": 0.39591475,
+      "funding": 0.0049490383,
+      "gross": -1.187,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.3233027
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.127875149
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.7295593627
+          },
+          "trailing_stop_loss": {
+            "n": 1,
+            "net": -0.3972285
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.127875149
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.3233027
+          },
+          "SOL/USDT:USDT": {
+            "n": 2,
+            "net": -0.611638
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.5151498627
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -1.1807372117
+          },
+          "reversal": {
+            "n": 1,
+            "net": -0.3972285
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.2144095
+          },
+          "short": {
+            "n": 4,
+            "net": -1.3635562117
+          }
+        }
+      },
+      "n": 5,
+      "native_max_drawdown": 1.57796571,
+      "net": -1.5779657116999999,
+      "net_R": -5.840344878453652,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 5
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.304220519762264,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 226.237,
+      "wallet_time_exposure": 0.00019018191137566137,
+      "weekly_block95_total": [
+        -2.8137362841074998,
+        -0.5150586310325005
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -1.5779657116999999
+    },
+    "setup-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": -1.5779657117,
+        "20": -1.8042027117,
+        "5": -1.4648472117
+      },
+      "average_hold_minutes": 168.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.7958287,
+        "2026-10": -0.5559000117,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 1.3517287117,
+      "expectancy": -0.27034574234000003,
+      "fees": 0.16967775,
+      "funding": 0.0049490383,
+      "gross": -1.187,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.6309985627
+          },
+          "trailing_stop_loss": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "SOL/USDT:USDT": {
+            "n": 2,
+            "net": -0.522702
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.4648230627
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -0.9952022117
+          },
+          "reversal": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "short": {
+            "n": 4,
+            "net": -1.1855532117
+          }
+        }
+      },
+      "n": 5,
+      "native_max_drawdown": 1.3517287100000002,
+      "net": -1.3517287117,
+      "net_R": -4.854327216595833,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 5
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.304220519762264,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 226.237,
+      "wallet_time_exposure": 0.00019018191137566137,
+      "weekly_block95_total": [
+        -2.4462049744,
+        -0.4219499451750081
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -1.3517287117
+    },
+    "setup-fixed-touch-750-1m": {
+      "additional_friction_net": {
+        "10": 0,
+        "20": 0,
+        "5": 0
+      },
+      "average_hold_minutes": null,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 0.0,
+        "2026-10": 0.0,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.0,
+      "expectancy": null,
+      "fees": 0,
+      "funding": 0,
+      "gross": 0,
+      "groups": {
+        "exit_reason": {},
+        "pair": {},
+        "playbook": {},
+        "side": {}
+      },
+      "n": 0,
+      "native_max_drawdown": 0.0,
+      "net": 0.0,
+      "net_R": 0,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "NOT_NATIVE_ADMITTED": 5
+      },
+      "profit_factor": null,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": null,
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 0,
+      "wallet_time_exposure": 0.0,
+      "weekly_block95_total": [
+        0.0,
+        0.0
+      ],
+      "win_rate": null,
+      "without_top3_winners": 0.0
+    },
+    "setup-fixed-touch-750-half": {
+      "additional_friction_net": {
+        "10": -0.39108274249999997,
+        "20": -0.4372567425,
+        "5": -0.3679957425
+      },
+      "average_hold_minutes": 97.5,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.1170543,
+        "2026-10": -0.2278544425,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.34490874250000003,
+      "expectancy": -0.17245437125000002,
+      "fees": 0.0346305,
+      "funding": 0.0017217575000000001,
+      "gross": -0.312,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.1170543
+          },
+          "stop_loss": {
+            "n": 1,
+            "net": -0.2278544425
+          }
+        },
+        "pair": {
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.1170543
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.2278544425
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 2,
+            "net": -0.34490874250000003
+          }
+        },
+        "side": {
+          "short": {
+            "n": 2,
+            "net": -0.34490874250000003
+          }
+        }
+      },
+      "n": 2,
+      "native_max_drawdown": 0.34490874,
+      "net": -0.34490874250000003,
+      "net_R": -1.981936870957902,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 2,
+        "NOT_NATIVE_ADMITTED": 3
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130380222755256,
+        0.17027496435082923,
+        0.2101697059464025
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 46.17400000000001,
+      "wallet_time_exposure": 2.502397486772487e-05,
+      "weekly_block95_total": [
+        -0.806871785,
+        0.0
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -0.34490874250000003
+    },
+    "setup-fixed-touch-750-replay-final-check": {
+      "additional_friction_net": {
+        "10": -1.5779657117,
+        "20": -1.8042027117,
+        "5": -1.4648472117
+      },
+      "average_hold_minutes": 168.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.7958287,
+        "2026-10": -0.5559000117,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 1.3517287117,
+      "expectancy": -0.27034574234000003,
+      "fees": 0.16967775,
+      "funding": 0.0049490383,
+      "gross": -1.187,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.6309985627
+          },
+          "trailing_stop_loss": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "SOL/USDT:USDT": {
+            "n": 2,
+            "net": -0.522702
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.4648230627
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -0.9952022117
+          },
+          "reversal": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "short": {
+            "n": 4,
+            "net": -1.1855532117
+          }
+        }
+      },
+      "n": 5,
+      "native_max_drawdown": 1.3517287100000002,
+      "net": -1.3517287117,
+      "net_R": -4.854327216595833,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 5
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.304220519762264,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 226.237,
+      "wallet_time_exposure": 0.00019018191137566137,
+      "weekly_block95_total": [
+        -2.4462049744,
+        -0.4219499451750081
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -1.3517287117
+    },
+    "setup-risk-touch-750": {
+      "additional_friction_net": {
+        "10": -0.7694525138,
+        "20": -0.9068399138000001,
+        "5": -0.7007588138
+      },
+      "average_hold_minutes": 183.75,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.32224790000000003,
+        "2026-10": -0.3098172138,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 0.6320651138000001,
+      "expectancy": -0.15801627845000002,
+      "fees": 0.10304055,
+      "funding": 0.0031754362000000003,
+      "gross": -0.5322,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.1560724
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.3849157648
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.1560724
+          },
+          "SOL/USDT:USDT": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.2187402648
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -0.6320651138
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "short": {
+            "n": 3,
+            "net": -0.4658896138
+          }
+        }
+      },
+      "n": 4,
+      "native_max_drawdown": 0.63206511,
+      "net": -0.6320651138000001,
+      "net_R": -3.7772707336887055,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 4,
+        "NOT_NATIVE_ADMITTED": 1
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.173806334459932,
+        0.2017629177085464
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 137.3874,
+      "wallet_time_exposure": 0.00014049801587301587,
+      "weekly_block95_total": [
+        -1.13063216116,
+        -0.1661755
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -0.6320651138000001
+    },
+    "simple-trigger-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": -1.86186730884,
+        "20": -4.19857818884,
+        "5": -0.6935118688399998
+      },
+      "average_hold_minutes": 129.23076923076923,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.44261400119999994,
+        "2026-10": 0.6881758223599999,
+        "2026-11": 0.22928175
+      },
+      "closed_day_drawdown": 1.978114475,
+      "expectancy": 0.009131607137692309,
+      "fees": 1.75253316,
+      "funding": 0.009196731159999999,
+      "gross": 2.21818,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 2,
+            "net": -0.4455365022
+          },
+          "force_exit": {
+            "n": 1,
+            "net": 0.22928175
+          },
+          "max_hold_4h": {
+            "n": 13,
+            "net": 2.12858027866
+          },
+          "max_hold_8h": {
+            "n": 2,
+            "net": 0.008771860999999992
+          },
+          "reversal_thesis_failed": {
+            "n": 1,
+            "net": -0.1059166942
+          },
+          "roi": {
+            "n": 9,
+            "net": 4.345464091
+          },
+          "stop_loss": {
+            "n": 20,
+            "net": -4.8362814931
+          },
+          "trailing_stop_loss": {
+            "n": 4,
+            "net": -0.84951972
+          }
+        },
+        "pair": {
+          "DOGE/USDT:USDT": {
+            "n": 2,
+            "net": -0.0900894
+          },
+          "ETH/USDT:USDT": {
+            "n": 1,
+            "net": 0.09611698266
+          },
+          "HYPE/USDT:USDT": {
+            "n": 5,
+            "net": 0.3691999768
+          },
+          "LTC/USDT:USDT": {
+            "n": 2,
+            "net": -0.356056862
+          },
+          "NEAR/USDT:USDT": {
+            "n": 10,
+            "net": -1.1185890234
+          },
+          "PEPE/USDT:USDT": {
+            "n": 7,
+            "net": 1.196987
+          },
+          "SOL/USDT:USDT": {
+            "n": 2,
+            "net": -0.26726
+          },
+          "UNI/USDT:USDT": {
+            "n": 9,
+            "net": 2.079308764
+          },
+          "WLD/USDT:USDT": {
+            "n": 7,
+            "net": -0.7165965247
+          },
+          "XRP/USDT:USDT": {
+            "n": 3,
+            "net": -0.1910899
+          },
+          "ZEC/USDT:USDT": {
+            "n": 4,
+            "net": -0.5270874422
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 8,
+            "net": -0.6431113969
+          },
+          "continuation": {
+            "n": 1,
+            "net": 0.622695
+          },
+          "reversal": {
+            "n": 43,
+            "net": 0.49525996806000006
+          }
+        },
+        "side": {
+          "long": {
+            "n": 26,
+            "net": 0.7196075223999998
+          },
+          "short": {
+            "n": 26,
+            "net": -0.24476395123999986
+          }
+        }
+      },
+      "n": 52,
+      "native_max_drawdown": 2.12543682,
+      "net": 0.4748435711600001,
+      "net_R": 3.692419420573017,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 52,
+        "NOT_NATIVE_ADMITTED": 10
+      },
+      "profit_factor": 1.0729979775533123,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.053525827747838,
+        0.2013031237631345,
+        0.5669844532083904
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": 0.256798075132158,
+      "turnover": 2336.71088,
+      "wallet_time_exposure": 0.0016274975992063494,
+      "weekly_block95_total": [
+        -3.1193043332960007,
+        4.124821623927998
+      ],
+      "win_rate": 0.4230769230769231,
+      "without_top3_winners": -1.31753771984
+    },
+    "v4-reference-fixed-touch-1750": {
+      "additional_friction_net": {
+        "10": -0.8371648295000002,
+        "20": -3.3361423295000003,
+        "5": 0.41232392049999966
+      },
+      "average_hold_minutes": 130.63636363636363,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 1.1115651133999995,
+        "2026-10": 1.3131055570999999,
+        "2026-11": -0.762858
+      },
+      "closed_day_drawdown": 1.9577002895,
+      "expectancy": 0.03021477582727271,
+      "fees": 4.373210625,
+      "funding": -0.0042767045,
+      "gross": 6.0393,
+      "groups": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "n": 7,
+            "net": -0.9083562817
+          },
+          "failed_boundary_reaccepted": {
+            "n": 2,
+            "net": -0.747748125
+          },
+          "max_hold_4h": {
+            "n": 3,
+            "net": 0.64452172
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": 0.52971424
+          },
+          "roi": {
+            "n": 15,
+            "net": 10.1428970978
+          },
+          "stop_loss": {
+            "n": 24,
+            "net": -7.263825043
+          },
+          "trailing_stop_loss": {
+            "n": 3,
+            "net": -0.7353909376000001
+          }
+        },
+        "pair": {
+          "DOGE/USDT:USDT": {
+            "n": 4,
+            "net": -0.7151406
+          },
+          "HYPE/USDT:USDT": {
+            "n": 6,
+            "net": 0.7677044552
+          },
+          "LTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.35223675
+          },
+          "NEAR/USDT:USDT": {
+            "n": 8,
+            "net": 1.70146821
+          },
+          "PEPE/USDT:USDT": {
+            "n": 9,
+            "net": -0.05654198000000005
+          },
+          "SOL/USDT:USDT": {
+            "n": 3,
+            "net": 0.05697014399999997
+          },
+          "UNI/USDT:USDT": {
+            "n": 9,
+            "net": -1.37563444
+          },
+          "WLD/USDT:USDT": {
+            "n": 5,
+            "net": 1.107558704
+          },
+          "XRP/USDT:USDT": {
+            "n": 5,
+            "net": -0.6491510071
+          },
+          "ZEC/USDT:USDT": {
+            "n": 5,
+            "net": 1.1768159344
+          }
+        },
+        "playbook": {
+          "continuation": {
+            "n": 41,
+            "net": 2.0447363684999997
+          },
+          "reversal": {
+            "n": 14,
+            "net": -0.3829236980000001
+          }
+        },
+        "side": {
+          "long": {
+            "n": 31,
+            "net": 2.7761319024
+          },
+          "short": {
+            "n": 24,
+            "net": -1.1143192319000002
+          }
+        }
+      },
+      "n": 55,
+      "native_max_drawdown": 1.9577002900000002,
+      "net": 1.6618126704999991,
+      "net_R": -1.685121249046612,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 55,
+        "NOT_NATIVE_ADMITTED": 14,
+        "UNFILLED": 1
+      },
+      "profit_factor": 1.1677813188436745,
+      "rejected_native_signals": 2,
+      "risk_min_median_max": [
+        0.100371296153994,
+        0.218726251917582,
+        0.604836688775048
+      ],
+      "timedout_entry_orders": 1,
+      "top3_positive_share": 0.38216449944062697,
+      "turnover": 2498.9775,
+      "wallet_time_exposure": 0.0018048557043650795,
+      "weekly_block95_total": [
+        -3.5070621042500005,
+        7.677798867652498
+      ],
+      "win_rate": 0.34545454545454546,
+      "without_top3_winners": -2.7584728943000005
+    },
+    "v4-reference-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": 1.6618126704999998,
+        "20": -0.8371648294999999,
+        "5": 2.9113014205
+      },
+      "average_hold_minutes": 130.63636363636363,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 2.2613633134000004,
+        "2026-10": 2.5315088571000004,
+        "2026-11": -0.632082
+      },
+      "closed_day_drawdown": 1.5069760895000002,
+      "expectancy": 0.07565073037272725,
+      "fees": 1.874233125,
+      "funding": -0.0042767045,
+      "gross": 6.0393,
+      "groups": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "n": 7,
+            "net": -0.5852649817
+          },
+          "failed_boundary_reaccepted": {
+            "n": 2,
+            "net": -0.657320625
+          },
+          "max_hold_4h": {
+            "n": 3,
+            "net": 0.78901612
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": 0.57184624
+          },
+          "roi": {
+            "n": 15,
+            "net": 10.8337195978
+          },
+          "stop_loss": {
+            "n": 24,
+            "net": -6.195454943
+          },
+          "trailing_stop_loss": {
+            "n": 3,
+            "net": -0.5957512376
+          }
+        },
+        "pair": {
+          "DOGE/USDT:USDT": {
+            "n": 4,
+            "net": -0.5195174
+          },
+          "HYPE/USDT:USDT": {
+            "n": 6,
+            "net": 1.0174905552
+          },
+          "LTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.31381575
+          },
+          "NEAR/USDT:USDT": {
+            "n": 8,
+            "net": 2.07938361
+          },
+          "PEPE/USDT:USDT": {
+            "n": 9,
+            "net": 0.35492902
+          },
+          "SOL/USDT:USDT": {
+            "n": 3,
+            "net": 0.194520144
+          },
+          "UNI/USDT:USDT": {
+            "n": 9,
+            "net": -1.01246544
+          },
+          "WLD/USDT:USDT": {
+            "n": 5,
+            "net": 1.3554488040000001
+          },
+          "XRP/USDT:USDT": {
+            "n": 5,
+            "net": -0.4052061071
+          },
+          "ZEC/USDT:USDT": {
+            "n": 5,
+            "net": 1.4100227344
+          }
+        },
+        "playbook": {
+          "continuation": {
+            "n": 41,
+            "net": 3.8951708685
+          },
+          "reversal": {
+            "n": 14,
+            "net": 0.26561930199999995
+          }
+        },
+        "side": {
+          "long": {
+            "n": 31,
+            "net": 4.1911783024
+          },
+          "short": {
+            "n": 24,
+            "net": -0.03038813190000007
+          }
+        }
+      },
+      "n": 55,
+      "native_max_drawdown": 1.5069760799999994,
+      "net": 4.1607901704999986,
+      "net_R": 10.308518738273758,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 55,
+        "NOT_NATIVE_ADMITTED": 14,
+        "UNFILLED": 1
+      },
+      "profit_factor": 1.502284832421618,
+      "rejected_native_signals": 2,
+      "risk_min_median_max": [
+        0.100371296153994,
+        0.218726251917582,
+        0.604836688775048
+      ],
+      "timedout_entry_orders": 1,
+      "top3_positive_share": 0.36706156537923235,
+      "turnover": 2498.9775,
+      "wallet_time_exposure": 0.0018048557043650795,
+      "weekly_block95_total": [
+        -0.9841454457275,
+        10.124571512099989
+      ],
+      "win_rate": 0.34545454545454546,
+      "without_top3_winners": -0.40711359430000105
+    },
+    "v4-reference-fixed-touch-750-1m": {
+      "additional_friction_net": {
+        "10": -0.75985275,
+        "20": -0.8906257499999999,
+        "5": -0.69446625
+      },
+      "average_hold_minutes": 47.666666666666664,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 0.0,
+        "2026-10": 0.0,
+        "2026-11": -0.6290797499999999
+      },
+      "closed_day_drawdown": 0.6290797499999999,
+      "expectancy": -0.20969324999999997,
+      "fees": 0.09807975,
+      "funding": 0.0,
+      "gross": -0.531,
+      "groups": {
+        "exit_reason": {
+          "stop_loss": {
+            "n": 2,
+            "net": -0.4914165
+          },
+          "trailing_stop_loss": {
+            "n": 1,
+            "net": -0.13766325
+          }
+        },
+        "pair": {
+          "UNI/USDT:USDT": {
+            "n": 3,
+            "net": -0.6290797499999999
+          }
+        },
+        "playbook": {
+          "continuation": {
+            "n": 2,
+            "net": -0.4914165
+          },
+          "reversal": {
+            "n": 1,
+            "net": -0.13766325
+          }
+        },
+        "side": {
+          "long": {
+            "n": 2,
+            "net": -0.4914165
+          },
+          "short": {
+            "n": 1,
+            "net": -0.13766325
+          }
+        }
+      },
+      "n": 3,
+      "native_max_drawdown": 0.6290797499999999,
+      "net": -0.6290797499999999,
+      "net_R": -3.5291917241628696,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 3,
+        "NOT_NATIVE_ADMITTED": 67
+      },
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.111147050252778,
+        0.210406552768284,
+        0.218726251917582
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 130.773,
+      "wallet_time_exposure": 3.440896164021164e-05,
+      "weekly_block95_total": [
+        -1.88723925,
+        0.0
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -0.6290797499999999
+    },
+    "v4-reference-risk-touch-750": {
+      "additional_friction_net": {
+        "10": -0.10965587140000016,
+        "20": -1.6951051713999998,
+        "5": 0.6830687786
+      },
+      "average_hold_minutes": 124.375,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.1880417405999998,
+        "2026-10": 2.1321116692,
+        "2026-11": -0.4682765
+      },
+      "closed_day_drawdown": 0.6896596294000001,
+      "expectancy": 0.030745696429166663,
+      "fees": 1.189086975,
+      "funding": -0.0036195964000000002,
+      "gross": 2.6685,
+      "groups": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "n": 5,
+            "net": -0.2604301474
+          },
+          "failed_boundary_reaccepted": {
+            "n": 2,
+            "net": -0.32016449999999996
+          },
+          "max_hold_4h": {
+            "n": 3,
+            "net": 0.320661468
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": 0.28592312
+          },
+          "roi": {
+            "n": 13,
+            "net": 5.6412584614
+          },
+          "stop_loss": {
+            "n": 21,
+            "net": -3.6893758814
+          },
+          "trailing_stop_loss": {
+            "n": 3,
+            "net": -0.502079092
+          }
+        },
+        "pair": {
+          "DOGE/USDT:USDT": {
+            "n": 4,
+            "net": -0.4688194
+          },
+          "HYPE/USDT:USDT": {
+            "n": 6,
+            "net": 0.8205157932
+          },
+          "LTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.2092105
+          },
+          "NEAR/USDT:USDT": {
+            "n": 9,
+            "net": 1.3870219129999999
+          },
+          "PEPE/USDT:USDT": {
+            "n": 9,
+            "net": 0.481557876
+          },
+          "SOL/USDT:USDT": {
+            "n": 1,
+            "net": -0.1586835
+          },
+          "UNI/USDT:USDT": {
+            "n": 8,
+            "net": -0.75236926
+          },
+          "WLD/USDT:USDT": {
+            "n": 5,
+            "net": 0.7225421524
+          },
+          "XRP/USDT:USDT": {
+            "n": 5,
+            "net": -0.346761646
+          }
+        },
+        "playbook": {
+          "continuation": {
+            "n": 34,
+            "net": 1.2713352536
+          },
+          "reversal": {
+            "n": 14,
+            "net": 0.20445817500000002
+          }
+        },
+        "side": {
+          "long": {
+            "n": 25,
+            "net": 1.0477297386
+          },
+          "short": {
+            "n": 23,
+            "net": 0.42806369
+          }
+        }
+      },
+      "n": 48,
+      "native_max_drawdown": 1.18756177,
+      "net": 1.4757934285999998,
+      "net_R": 8.747347547236162,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 48,
+        "NOT_NATIVE_ADMITTED": 22
+      },
+      "profit_factor": 1.2993540688857665,
+      "rejected_native_signals": 1,
+      "risk_min_median_max": [
+        0.100371296153994,
+        0.157270831089027,
+        0.1998094057567388
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": 0.2605855751498877,
+      "turnover": 1585.4493,
+      "wallet_time_exposure": 0.0010320647486772487,
+      "weekly_block95_total": [
+        -1.3856974222999996,
+        4.894045063674997
+      ],
+      "win_rate": 0.3541666666666667,
+      "without_top3_winners": -0.1934446714
+    },
+    "v4-structure-fixed-touch-1750": {
+      "additional_friction_net": {
+        "10": -0.6263005290000001,
+        "20": -2.6760865590000003,
+        "5": 0.39859248599999975
+      },
+      "average_hold_minutes": 136.33333333333334,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 1.6669433659000001,
+        "2026-10": 0.33518063509999985,
+        "2026-11": -0.5786385000000001
+      },
+      "closed_day_drawdown": 1.4224445720000003,
+      "expectancy": 0.031633011133333326,
+      "fees": 3.5871255525,
+      "funding": -0.0043789465,
+      "gross": 5.01499,
+      "groups": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "n": 6,
+            "net": -0.7549484817000001
+          },
+          "failed_boundary_reaccepted": {
+            "n": 1,
+            "net": -0.24572125
+          },
+          "max_hold_4h": {
+            "n": 2,
+            "net": 0.1377104295
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": 0.52971424
+          },
+          "roi": {
+            "n": 12,
+            "net": 8.9349619408
+          },
+          "stop_loss": {
+            "n": 21,
+            "net": -6.62705994
+          },
+          "trailing_stop_loss": {
+            "n": 2,
+            "net": -0.5511714376000001
+          }
+        },
+        "pair": {
+          "BTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.0692371275
+          },
+          "DOGE/USDT:USDT": {
+            "n": 2,
+            "net": -0.24523799999999998
+          },
+          "HYPE/USDT:USDT": {
+            "n": 7,
+            "net": -0.1837840168
+          },
+          "LTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.35223675
+          },
+          "NEAR/USDT:USDT": {
+            "n": 4,
+            "net": 1.29001329
+          },
+          "PEPE/USDT:USDT": {
+            "n": 6,
+            "net": 0.04220676999999998
+          },
+          "SOL/USDT:USDT": {
+            "n": 3,
+            "net": 0.05697014399999997
+          },
+          "UNI/USDT:USDT": {
+            "n": 5,
+            "net": -0.5499983900000001
+          },
+          "WLD/USDT:USDT": {
+            "n": 5,
+            "net": 1.207339054
+          },
+          "XRP/USDT:USDT": {
+            "n": 6,
+            "net": -0.9493654071
+          },
+          "ZEC/USDT:USDT": {
+            "n": 5,
+            "net": 1.1768159344
+          }
+        },
+        "playbook": {
+          "continuation": {
+            "n": 40,
+            "net": 2.2825201434999998
+          },
+          "reversal": {
+            "n": 5,
+            "net": -0.8590346425
+          }
+        },
+        "side": {
+          "long": {
+            "n": 26,
+            "net": 0.9850781353999999
+          },
+          "short": {
+            "n": 19,
+            "net": 0.43840736559999993
+          }
+        }
+      },
+      "n": 45,
+      "native_max_drawdown": 1.51130655,
+      "net": 1.4234855009999996,
+      "net_R": -1.835152568977307,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 45,
+        "NOT_NATIVE_ADMITTED": 10,
+        "UNFILLED": 1
+      },
+      "profit_factor": 1.1703374852224988,
+      "rejected_native_signals": 1,
+      "risk_min_median_max": [
+        0.100371296153994,
+        0.2350399143632281,
+        0.604836688775048
+      ],
+      "timedout_entry_orders": 1,
+      "top3_positive_share": 0.4519562483200152,
+      "turnover": 2049.7860299999998,
+      "wallet_time_exposure": 0.001545084914021164,
+      "weekly_block95_total": [
+        -3.3355218547275003,
+        7.3734804380400005
+      ],
+      "win_rate": 0.3333333333333333,
+      "without_top3_winners": -2.9968000638
+    },
+    "v4-structure-fixed-touch-750": {
+      "additional_friction_net": {
+        "10": 1.423485501,
+        "20": -0.6263005289999999,
+        "5": 2.448378516
+      },
+      "average_hold_minutes": 136.33333333333334,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 2.5591864959,
+        "2026-10": 1.4055015350999995,
+        "2026-11": -0.4914165
+      },
+      "closed_day_drawdown": 1.2318231720000004,
+      "expectancy": 0.07718381179999999,
+      "fees": 1.5373395225,
+      "funding": -0.0043789465,
+      "gross": 5.01499,
+      "groups": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "n": 6,
+            "net": -0.4704091817
+          },
+          "failed_boundary_reaccepted": {
+            "n": 1,
+            "net": -0.19616625
+          },
+          "max_hold_4h": {
+            "n": 2,
+            "net": 0.2312642595
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": 0.57184624
+          },
+          "roi": {
+            "n": 12,
+            "net": 9.4797247408
+          },
+          "stop_loss": {
+            "n": 21,
+            "net": -5.68790254
+          },
+          "trailing_stop_loss": {
+            "n": 2,
+            "net": -0.45508573760000004
+          }
+        },
+        "pair": {
+          "BTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.0234501975
+          },
+          "DOGE/USDT:USDT": {
+            "n": 2,
+            "net": -0.148302
+          },
+          "HYPE/USDT:USDT": {
+            "n": 7,
+            "net": 0.11367028320000003
+          },
+          "LTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.31381575
+          },
+          "NEAR/USDT:USDT": {
+            "n": 4,
+            "net": 1.47208869
+          },
+          "PEPE/USDT:USDT": {
+            "n": 6,
+            "net": 0.31439277
+          },
+          "SOL/USDT:USDT": {
+            "n": 3,
+            "net": 0.194520144
+          },
+          "UNI/USDT:USDT": {
+            "n": 5,
+            "net": -0.34494039
+          },
+          "WLD/USDT:USDT": {
+            "n": 5,
+            "net": 1.455468954
+          },
+          "XRP/USDT:USDT": {
+            "n": 6,
+            "net": -0.6563837071
+          },
+          "ZEC/USDT:USDT": {
+            "n": 5,
+            "net": 1.4100227344
+          }
+        },
+        "playbook": {
+          "continuation": {
+            "n": 40,
+            "net": 4.0942449435
+          },
+          "reversal": {
+            "n": 5,
+            "net": -0.6209734125
+          }
+        },
+        "side": {
+          "long": {
+            "n": 26,
+            "net": 2.1732968354
+          },
+          "short": {
+            "n": 19,
+            "net": 1.2999746956
+          }
+        }
+      },
+      "n": 45,
+      "native_max_drawdown": 1.2318231700000002,
+      "net": 3.4732715309999995,
+      "net_R": 7.599244972060308,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 45,
+        "NOT_NATIVE_ADMITTED": 10,
+        "UNFILLED": 1
+      },
+      "profit_factor": 1.4968422980067266,
+      "rejected_native_signals": 1,
+      "risk_min_median_max": [
+        0.100371296153994,
+        0.2350399143632281,
+        0.604836688775048
+      ],
+      "timedout_entry_orders": 1,
+      "top3_positive_share": 0.43653666267521374,
+      "turnover": 2049.7860299999998,
+      "wallet_time_exposure": 0.001545084914021164,
+      "weekly_block95_total": [
+        -1.2882345236075001,
+        9.309796008112498
+      ],
+      "win_rate": 0.3333333333333333,
+      "without_top3_winners": -1.0946322338
+    },
+    "v4-structure-risk-touch-1750": {
+      "additional_friction_net": {
+        "10": -1.3154807408999998,
+        "20": -2.5417449709,
+        "5": -0.7023486258999999
+      },
+      "average_hold_minutes": 134.60526315789474,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.26871498609999994,
+        "2026-10": 0.5652574751999999,
+        "2026-11": -0.385759
+      },
+      "closed_day_drawdown": 0.9767393659000001,
+      "expectancy": -0.002347802918421048,
+      "fees": 2.1459624025,
+      "funding": -0.0034441084,
+      "gross": 2.06019,
+      "groups": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "n": 5,
+            "net": -0.4239133474
+          },
+          "failed_boundary_reaccepted": {
+            "n": 1,
+            "net": -0.129815
+          },
+          "max_hold_4h": {
+            "n": 2,
+            "net": 0.06872791050000002
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": 0.26485712
+          },
+          "roi": {
+            "n": 10,
+            "net": 4.0906253544
+          },
+          "stop_loss": {
+            "n": 17,
+            "net": -3.5215234564
+          },
+          "trailing_stop_loss": {
+            "n": 2,
+            "net": -0.438175092
+          }
+        },
+        "pair": {
+          "BTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.0692371275
+          },
+          "DOGE/USDT:USDT": {
+            "n": 2,
+            "net": -0.17255165
+          },
+          "HYPE/USDT:USDT": {
+            "n": 6,
+            "net": 0.13907802419999998
+          },
+          "LTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.2348245
+          },
+          "NEAR/USDT:USDT": {
+            "n": 5,
+            "net": 0.8769020200000001
+          },
+          "PEPE/USDT:USDT": {
+            "n": 6,
+            "net": 0.12037312600000005
+          },
+          "SOL/USDT:USDT": {
+            "n": 1,
+            "net": -0.2022615
+          },
+          "UNI/USDT:USDT": {
+            "n": 5,
+            "net": -0.42334826000000003
+          },
+          "WLD/USDT:USDT": {
+            "n": 5,
+            "net": 0.6784212023999999
+          },
+          "XRP/USDT:USDT": {
+            "n": 6,
+            "net": -0.801767846
+          }
+        },
+        "playbook": {
+          "continuation": {
+            "n": 34,
+            "net": 0.1930252786000001
+          },
+          "reversal": {
+            "n": 4,
+            "net": -0.2822417895
+          }
+        },
+        "side": {
+          "long": {
+            "n": 20,
+            "net": -0.9211727484
+          },
+          "short": {
+            "n": 18,
+            "net": 0.8319562375
+          }
+        }
+      },
+      "n": 38,
+      "native_max_drawdown": 1.18910582,
+      "net": -0.08921651089999982,
+      "net_R": -1.4518163660295087,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 38,
+        "NOT_NATIVE_ADMITTED": 18
+      },
+      "profit_factor": 0.9807974721294803,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.100371296153994,
+        0.1592922090183022,
+        0.1998094057567388
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": 0.35052363371030865,
+      "turnover": 1226.26423,
+      "wallet_time_exposure": 0.0008954042592592593,
+      "weekly_block95_total": [
+        -2.1746547661800006,
+        2.433829426917497
+      ],
+      "win_rate": 0.34210526315789475,
+      "without_top3_winners": -1.6865054109
+    },
+    "v4-structure-risk-touch-750": {
+      "additional_friction_net": {
+        "10": -0.08921651090000016,
+        "20": -1.3154807409,
+        "5": 0.5239156041
+      },
+      "average_hold_minutes": 134.60526315789474,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 0.23112114390000005,
+        "2026-10": 1.2335375752000002,
+        "2026-11": -0.327611
+      },
+      "closed_day_drawdown": 0.5048419399999999,
+      "expectancy": 0.029922308397368418,
+      "fees": 0.9196981725,
+      "funding": -0.0034441084,
+      "gross": 2.06019,
+      "groups": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "n": 5,
+            "net": -0.2604301474
+          },
+          "failed_boundary_reaccepted": {
+            "n": 1,
+            "net": -0.103635
+          },
+          "max_hold_4h": {
+            "n": 2,
+            "net": 0.14635944050000002
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": 0.28592312
+          },
+          "roi": {
+            "n": 10,
+            "net": 4.3993125544
+          },
+          "stop_loss": {
+            "n": 17,
+            "net": -2.9690686564
+          },
+          "trailing_stop_loss": {
+            "n": 2,
+            "net": -0.361413592
+          }
+        },
+        "pair": {
+          "BTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.0234501975
+          },
+          "DOGE/USDT:USDT": {
+            "n": 2,
+            "net": -0.11200784999999999
+          },
+          "HYPE/USDT:USDT": {
+            "n": 6,
+            "net": 0.34055822420000004
+          },
+          "LTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.2092105
+          },
+          "NEAR/USDT:USDT": {
+            "n": 5,
+            "net": 0.98708522
+          },
+          "PEPE/USDT:USDT": {
+            "n": 6,
+            "net": 0.30019012599999995
+          },
+          "SOL/USDT:USDT": {
+            "n": 1,
+            "net": -0.1586835
+          },
+          "UNI/USDT:USDT": {
+            "n": 5,
+            "net": -0.27482426
+          },
+          "WLD/USDT:USDT": {
+            "n": 5,
+            "net": 0.8225353024
+          },
+          "XRP/USDT:USDT": {
+            "n": 6,
+            "net": -0.535144846
+          }
+        },
+        "playbook": {
+          "continuation": {
+            "n": 34,
+            "net": 1.2841895786
+          },
+          "reversal": {
+            "n": 4,
+            "net": -0.14714185949999997
+          }
+        },
+        "side": {
+          "long": {
+            "n": 20,
+            "net": -0.31953794840000005
+          },
+          "short": {
+            "n": 18,
+            "net": 1.4565856675
+          }
+        }
+      },
+      "n": 38,
+      "native_max_drawdown": 0.80851129,
+      "net": 1.1370477191,
+      "net_R": 6.757866496911224,
+      "partial_exits": 0,
+      "plan_execution_states": {
+        "EXITED": 38,
+        "NOT_NATIVE_ADMITTED": 18
+      },
+      "profit_factor": 1.298439558925775,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.100371296153994,
+        0.1592922090183022,
+        0.1998094057567388
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": 0.3374226628899098,
+      "turnover": 1226.26423,
+      "wallet_time_exposure": 0.0008954042592592593,
+      "weekly_block95_total": [
+        -1.015220025775,
+        3.6485095853674983
+      ],
+      "win_rate": 0.34210526315789475,
+      "without_top3_winners": -0.5321903808999999
+    }
+  },
+  "ranking_null": {
+    "conditional_empirical_upper_p": 1.0,
+    "mean_net": -0.36643396040000004,
+    "note": "Three seeded equal-slot nulls are a coarse diagnostic, not a well-powered significance test. Turnover and capacity differ.",
+    "replicates": 3,
+    "resolution": 0.25
+  },
+  "reconciled_trade_records": 435
+}

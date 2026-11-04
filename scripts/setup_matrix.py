@@ -1,0 +1,39 @@
+"""Finite preregistered alternatives, never a parameter search."""
+from concurrent.futures import ProcessPoolExecutor
+from setup_common import *
+def job(spec):
+    import subprocess
+    v=spec[0];risk='--risk' in spec;half='--half' in spec
+    fee=float(spec[spec.index('--fee')+1]) if '--fee' in spec else .00075
+    execution=spec[spec.index('--execution')+1] if '--execution' in spec else 'touch'
+    key=v+('-risk' if risk else '-fixed')+'-'+execution+'-'+str(round(fee*1e6))+('-half' if half else '')
+    if (OUT/'native'/key/'result.json').exists():
+        provenance=read(OUT/'native'/key/'provenance.json')
+        seals={sha(OUT/'freeze.json')}
+        if (OUT/'freeze-primary.json').exists():seals.add(sha(OUT/'freeze-primary.json'))
+        if (provenance['freeze_sha256'] not in seals
+            or provenance['plans_sha256']!=sha(WORK/'plans'/(v+'.json'))
+            or provenance['feature_sha256']!=sha(OUT/'features.json')
+            or provenance['source_sha256']!=sha(OUT/'data-development.json')
+            or any(provenance['staged_source_hashes'][name]!=sha(ROOT/'research/setup'/name) for name in ['SetupPolicyV1.py','setup_features.py','setup_profile.py'])):
+            raise ValueError('existing result has incompatible frozen inputs')
+        return dict(args=spec,exit_code=0,reused_immutable_result=key)
+    label='-'.join(spec).replace('/','_');log=WORK/'matrix-logs'/(label+'.txt');log.parent.mkdir(parents=True,exist_ok=True)
+    with log.open('w') as f:
+        p=subprocess.run([sys.executable,str(ROOT/'scripts/setup_native.py'),*spec],stdout=f,stderr=subprocess.STDOUT)
+    return dict(args=spec,exit_code=p.returncode,log=str(log.relative_to(ROOT)))
+def run():
+    specs=[[v] for v in protocol()['variants']]
+    specs += [[v,'--risk'] for v in ['setup','v4-reference']]
+    specs += [[v,'--fee','0.00175'] for v in ['setup','v4-reference']]
+    specs += [['setup','--execution',x] for x in ['through','drop25']]
+    specs += [['setup','--half']]
+    if 'v4-structure' in read(OUT/'plans.json'):
+        specs += [['v4-structure'],['v4-structure','--risk'],['v4-structure','--fee','0.00175'],['v4-structure','--risk','--fee','0.00175']]
+    command_record=OUT/'matrix-commands.json'
+    if command_record.exists():command_record=OUT/'matrix-invocations'/('check-'+str(__import__('time').time_ns())+'.json')
+    with ProcessPoolExecutor(max_workers=3) as pool:
+        results=[]
+        for r in pool.map(job,specs):results.append(r);write(command_record,results);print(r,flush=True)
+    if any(r['exit_code'] for r in results):raise RuntimeError('matrix failure; inspect logs')
+if __name__=='__main__':run()
