@@ -1,0 +1,1004 @@
+[
+  {
+    "funding": [],
+    "id": 2,
+    "open_date": "2026-03-04T08:30:00+00:00",
+    "pair": "XRP/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.6907396241975536,
+      "approved_notional": 24.9431,
+      "approved_risk": 0.2712374835221984,
+      "atr_at_signal": 0.006476292176428163,
+      "available_at": "2026-03-04T08:30:00+00:00",
+      "boundary": 1.3765,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 0.5764705882352931,
+      "decision_id": "XRP/USDT:USDT:structure::reversal:short:2026-03-04T08:30:00+00:00",
+      "deviation_fraction": 0.0011822366149010885,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-04T08:35:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "UP",
+      "invalidation": "FAILED_BOUNDARY_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 4,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.010874249131912168,
+      "obstacles": [
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 1.3613815095475938,
+          "source": "vp2_poc"
+        },
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 1.3498588075760032,
+          "source": "vp2_val"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.3494,
+          "source": "prior_swing_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.3443,
+          "source": "prior_session_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.3352,
+          "source": "prior_day_low"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "reversal",
+      "reference": 1.3704714438264642,
+      "risk_fraction": 0.007074249131912167,
+      "side": "short",
+      "signal_close": 1.3695,
+      "stop": 1.3801952584352857,
+      "structural_stop": 1.3801952584352857,
+      "structure_confirmation_at": "2026-03-04 08:30:00+00:00",
+      "target": 1.3374142246941427,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 18.2,
+      "exited_amount": 18.2,
+      "first_fill": 1772613000.0,
+      "partial_done": true,
+      "tight_stop": 1.3801952584352857
+    }
+  },
+  {
+    "funding": [],
+    "id": 3,
+    "open_date": "2026-03-08T08:15:00+00:00",
+    "pair": "DOGE/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.337775326769003,
+      "approved_notional": 24.962,
+      "approved_risk": 0.2170019454955951,
+      "atr_at_signal": 0.0002811847409927138,
+      "available_at": "2026-03-08T08:15:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 0.0,
+      "decision_id": "DOGE/USDT:USDT:structure::continuation:short:2026-03-08T08:15:00+00:00",
+      "deviation_fraction": 0.000788869770487919,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-08T08:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "DOWN",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.008693291623090902,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 0.08866,
+          "source": "prior_swing_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 0.08862,
+          "source": "prior_session_low"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 0.0891521777111489,
+      "risk_fraction": 0.004893291623090903,
+      "side": "short",
+      "signal_close": 0.08911,
+      "stop": 0.08958623694819855,
+      "structural_stop": 0.08958623694819855,
+      "structure_confirmation_at": "2026-03-08 08:15:00+00:00",
+      "target": 0.08768128915540434,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 280.0,
+      "exited_amount": 280.0,
+      "first_fill": 1772957700.0,
+      "partial_done": true,
+      "tight_stop": 0.08958623694819855
+    }
+  },
+  {
+    "funding": [
+      {
+        "at": "2026-03-09T00:00:00+00:00",
+        "mark": 1.33934561,
+        "quantity": 18.6,
+        "rate": -0.00014421
+      }
+    ],
+    "id": 4,
+    "open_date": "2026-03-09T00:00:00+00:00",
+    "pair": "XRP/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.7913733587398948,
+      "approved_notional": 24.92958,
+      "approved_risk": 0.29288125806565,
+      "atr_at_signal": 0.007265820985390215,
+      "available_at": "2026-03-09T00:00:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": -0.223776223776221,
+      "decision_id": "XRP/USDT:USDT:structure::continuation:short:2026-03-09T00:00:00+00:00",
+      "deviation_fraction": 0.0013563733918365844,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-09T00:05:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "DOWN",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.011748343055344293,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.3207,
+          "source": "prior_swing_low"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 1.3402898731478086,
+      "risk_fraction": 0.007948343055344293,
+      "side": "short",
+      "signal_close": 1.3392,
+      "stop": 1.350953164197078,
+      "structural_stop": 1.350953164197078,
+      "structure_confirmation_at": "2026-03-09 00:00:00+00:00",
+      "target": 1.3039405074087658,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 18.6,
+      "exited_amount": 18.6,
+      "first_fill": 1773014400.0,
+      "partial_done": true,
+      "tight_stop": 1.350953164197078
+    }
+  },
+  {
+    "funding": [],
+    "id": 5,
+    "open_date": "2026-03-11T14:00:00+00:00",
+    "pair": "XRP/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.5264609323167098,
+      "approved_notional": 24.92933,
+      "approved_risk": 0.2373352729950163,
+      "atr_at_signal": 0.007333468993021387,
+      "available_at": "2026-03-11T14:00:00+00:00",
+      "boundary": 1.3954,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 0.3859223300970879,
+      "decision_id": "XRP/USDT:USDT:structure::reversal:short:2026-03-11T14:00:00+00:00",
+      "deviation_fraction": 0.0013174527509739484,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-11T14:05:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "UP",
+      "invalidation": "FAILED_BOUNDARY_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 4,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.009520322968768768,
+      "obstacles": [
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 1.3874950512979722,
+          "source": "vp2_poc"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.3727,
+          "source": "prior_session_low"
+        },
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 1.3716302556260427,
+          "source": "vp2_val"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.3692,
+          "source": "prior_swing_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.3598,
+          "source": "prior_day_low"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "reversal",
+      "reference": 1.3927000203489532,
+      "risk_fraction": 0.005720322968768767,
+      "side": "short",
+      "signal_close": 1.3916,
+      "stop": 1.4006666937986043,
+      "structural_stop": 1.4006666937986043,
+      "structure_confirmation_at": "2026-03-11 14:00:00+00:00",
+      "target": 1.3643999186041869,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 17.9,
+      "exited_amount": 17.9,
+      "first_fill": 1773237600.0,
+      "partial_done": true,
+      "tight_stop": 1.4006666937986043
+    }
+  },
+  {
+    "funding": [],
+    "id": 6,
+    "open_date": "2026-03-11T22:15:00+00:00",
+    "pair": "ETH/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.8043832269871753,
+      "approved_notional": 24.92904,
+      "approved_risk": 0.29956162780487594,
+      "atr_at_signal": 9.746364918699092,
+      "available_at": "2026-03-11T22:15:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 0.906719852715558,
+      "decision_id": "ETH/USDT:USDT:structure::continuation:long:2026-03-11T22:15:00+00:00",
+      "deviation_fraction": 0.0011720692053773054,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-11T22:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "UP",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.012016572952864448,
+      "obstacles": [
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 2079.74381657137,
+          "source": "vp2_vah"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 2081.68,
+          "source": "prior_session_high"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 2088.0,
+          "source": "prior_day_high"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 2077.4180452621954,
+      "risk_fraction": 0.008216572952864449,
+      "side": "long",
+      "signal_close": 2078.88,
+      "stop": 2060.3507270162604,
+      "structural_stop": 2060.3507270162604,
+      "structure_confirmation_at": "2026-03-11 22:15:00+00:00",
+      "target": 2134.467818951219,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 0.012,
+      "exited_amount": 0.012,
+      "first_fill": 1773267300.0,
+      "partial_done": true,
+      "tight_stop": 2060.3507270162604
+    }
+  },
+  {
+    "funding": [],
+    "id": 7,
+    "open_date": "2026-03-13T07:30:00+00:00",
+    "pair": "XRP/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.5045499208076067,
+      "approved_notional": 24.9568,
+      "approved_risk": 0.23792581883212913,
+      "atr_at_signal": 0.00615056216821921,
+      "available_at": "2026-03-13T07:30:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 1.8847457627118624,
+      "decision_id": "XRP/USDT:USDT:structure::continuation:long:2026-03-13T07:30:00+00:00",
+      "deviation_fraction": 0.001083684926390022,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-13T07:35:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "UP",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.00953350665278117,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.4265,
+          "source": "prior_swing_high"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 1.417977415674767,
+      "risk_fraction": 0.0057335066527811705,
+      "side": "long",
+      "signal_close": 1.4189,
+      "stop": 1.4098698875663562,
+      "structural_stop": 1.4098698875663562,
+      "structure_confirmation_at": "2026-03-13 07:30:00+00:00",
+      "target": 1.4459903373009315,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 17.6,
+      "exited_amount": 17.6,
+      "first_fill": 1773387000.0,
+      "partial_done": true,
+      "tight_stop": 1.4098698875663562
+    }
+  },
+  {
+    "funding": [],
+    "id": 8,
+    "open_date": "2026-03-13T12:15:00+00:00",
+    "pair": "ETH/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.6934413022877328,
+      "approved_notional": 23.43528,
+      "approved_risk": 0.2571393704943667,
+      "atr_at_signal": 9.452412042895695,
+      "available_at": "2026-03-13T12:15:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 1.476147959183672,
+      "decision_id": "ETH/USDT:USDT:structure::continuation:long:2026-03-13T12:15:00+00:00",
+      "deviation_fraction": 0.0011084492756339057,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-13T12:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "UP",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.01097231910582535,
+      "obstacles": [
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 2132.392781947809,
+          "source": "vp2_vah"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 2133.0,
+          "source": "prior_swing_high"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 2148.0,
+          "source": "prior_session_high"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 2130.482138193566,
+      "risk_fraction": 0.00717231910582535,
+      "side": "long",
+      "signal_close": 2131.9,
+      "stop": 2115.199517591421,
+      "structural_stop": 2115.199517591421,
+      "structure_confirmation_at": "2026-03-13 12:15:00+00:00",
+      "target": 2182.0014472257367,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 0.011,
+      "exited_amount": 0.011,
+      "first_fill": 1773404100.0,
+      "partial_done": true,
+      "tight_stop": 2115.199517591421
+    }
+  },
+  {
+    "funding": [
+      {
+        "at": "2026-03-17T00:00:00+00:00",
+        "mark": 1.54213789,
+        "quantity": 16.2,
+        "rate": 3.052e-05
+      }
+    ],
+    "id": 9,
+    "open_date": "2026-03-16T22:15:00+00:00",
+    "pair": "XRP/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 2.078598476705304,
+      "approved_notional": 24.930179999999996,
+      "approved_risk": 0.38727194143475424,
+      "atr_at_signal": 0.009789276986035338,
+      "available_at": "2026-03-16T22:15:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 2.194006309148268,
+      "decision_id": "XRP/USDT:USDT:structure::continuation:long:2026-03-16T22:15:00+00:00",
+      "deviation_fraction": 0.0015,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-16T22:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "UP",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.015534261743587664,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.5423,
+          "source": "prior_swing_high"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 1.5389316084520948,
+      "risk_fraction": 0.011734261743587665,
+      "side": "long",
+      "signal_close": 1.5404,
+      "stop": 1.5208421446027929,
+      "structural_stop": 1.5208421446027929,
+      "structure_confirmation_at": "2026-03-16 22:15:00+00:00",
+      "target": 1.5990735661916213,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 16.2,
+      "exited_amount": 16.2,
+      "first_fill": 1773699300.0,
+      "partial_done": true,
+      "tight_stop": 1.5208421446027929
+    }
+  },
+  {
+    "funding": [],
+    "id": 11,
+    "open_date": "2026-03-18T05:15:00+00:00",
+    "pair": "XRP/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.729983956782849,
+      "approved_notional": 24.98627,
+      "approved_risk": 0.2828776373499828,
+      "atr_at_signal": 0.006647181395699774,
+      "available_at": "2026-03-18T05:15:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 0.35897435897435875,
+      "decision_id": "XRP/USDT:USDT:structure::continuation:long:2026-03-18T05:15:00+00:00",
+      "deviation_fraction": 0.0010833791961177024,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-18T05:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "UP",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.011321323164681355,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.5403,
+          "source": "prior_session_high"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.5407,
+          "source": "prior_swing_high"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.6064,
+          "source": "prior_day_high"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 1.532902922790645,
+      "risk_fraction": 0.007521323164681355,
+      "side": "long",
+      "signal_close": 1.5339,
+      "stop": 1.5213705637208599,
+      "structural_stop": 1.5213705637208599,
+      "structure_confirmation_at": "2026-03-18 05:15:00+00:00",
+      "target": 1.5714883088374205,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 16.3,
+      "exited_amount": 16.3,
+      "first_fill": 1773810900.0,
+      "partial_done": true,
+      "tight_stop": 1.5213705637208599
+    }
+  },
+  {
+    "funding": [
+      {
+        "at": "2026-03-19T08:00:00.003000+00:00",
+        "mark": 0.09433,
+        "quantity": 265.0,
+        "rate": 3.931e-05
+      }
+    ],
+    "id": 12,
+    "open_date": "2026-03-19T07:15:00+00:00",
+    "pair": "DOGE/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.6361969378443468,
+      "approved_notional": 24.992150000000002,
+      "approved_risk": 0.26252832408721755,
+      "atr_at_signal": 0.00041147460541921633,
+      "available_at": "2026-03-19T07:15:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 0.1216685979142521,
+      "decision_id": "DOGE/USDT:USDT:structure::continuation:short:2026-03-19T07:15:00+00:00",
+      "deviation_fraction": 0.0010914445767087966,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-19T07:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "DOWN",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.01050443135493415,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 0.09419,
+          "source": "prior_swing_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 0.0932,
+          "source": "prior_day_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 0.0932,
+          "source": "prior_session_low"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 0.09431172119081288,
+      "risk_fraction": 0.006704431354934149,
+      "side": "short",
+      "signal_close": 0.09425,
+      "stop": 0.09494229492108384,
+      "structural_stop": 0.09494229492108384,
+      "structure_confirmation_at": "2026-03-19 07:15:00+00:00",
+      "target": 0.09217311523674847,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 265.0,
+      "exited_amount": 265.0,
+      "first_fill": 1773904500.0,
+      "partial_done": true,
+      "tight_stop": 0.09494229492108384
+    }
+  },
+  {
+    "funding": [],
+    "id": 13,
+    "open_date": "2026-03-22T09:30:00+00:00",
+    "pair": "DOGE/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.7107613040744643,
+      "approved_notional": 24.95318,
+      "approved_risk": 0.27762423381330736,
+      "atr_at_signal": 0.0003858056535274679,
+      "available_at": "2026-03-22T09:30:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 0.11486486486486411,
+      "decision_id": "DOGE/USDT:USDT:structure::continuation:short:2026-03-22T09:30:00+00:00",
+      "deviation_fraction": 0.0010597891812093943,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-22T09:35:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "DOWN",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.01112580576156255,
+      "obstacles": [
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 0.09071795328941251,
+          "source": "vp2_val"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 0.09067,
+          "source": "prior_swing_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 0.0905,
+          "source": "prior_day_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 0.0899,
+          "source": "prior_session_low"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 0.09106787084802911,
+      "risk_fraction": 0.00732580576156255,
+      "side": "short",
+      "signal_close": 0.09101,
+      "stop": 0.0917371611307055,
+      "structural_stop": 0.0917371611307055,
+      "structure_confirmation_at": "2026-03-22 09:30:00+00:00",
+      "target": 0.08882851660788348,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 274.0,
+      "exited_amount": 274.0,
+      "first_fill": 1774171800.0,
+      "partial_done": true,
+      "tight_stop": 0.0917371611307055
+    }
+  },
+  {
+    "funding": [],
+    "id": 14,
+    "open_date": "2026-03-22T21:00:00+00:00",
+    "pair": "ETH/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.6515781600380952,
+      "approved_notional": 24.705360000000002,
+      "approved_risk": 0.2637402132828119,
+      "atr_at_signal": 8.12493553450668,
+      "available_at": "2026-03-22T21:00:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": -0.113082039911311,
+      "decision_id": "ETH/USDT:USDT:structure::continuation:short:2026-03-22T21:00:00+00:00",
+      "deviation_fraction": 0.0009872051768243307,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-22T21:05:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "DOWN",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.010675424818048061,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 2053.01,
+          "source": "prior_swing_low"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 2058.778740330176,
+      "risk_fraction": 0.006875424818048061,
+      "side": "short",
+      "signal_close": 2057.56,
+      "stop": 2072.934987106901,
+      "structural_stop": 2072.934987106901,
+      "structure_confirmation_at": "2026-03-22 21:00:00+00:00",
+      "target": 2011.4350386792962,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 0.012,
+      "exited_amount": 0.012,
+      "first_fill": 1774213200.0,
+      "partial_done": true,
+      "tight_stop": 2072.934987106901
+    }
+  },
+  {
+    "funding": [],
+    "id": 15,
+    "open_date": "2026-03-26T13:30:00+00:00",
+    "pair": "DOGE/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.3850614766387654,
+      "approved_notional": 24.96312,
+      "approved_risk": 0.22122935012642128,
+      "atr_at_signal": 0.0003144595993849716,
+      "available_at": "2026-03-26T13:30:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": -0.8121546961325966,
+      "decision_id": "DOGE/USDT:USDT:structure::continuation:short:2026-03-26T13:30:00+00:00",
+      "deviation_fraction": 0.0008602133695835749,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-26T13:35:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "DOWN",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.00886224759270561,
+      "obstacles": [
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 0.09117267892259785,
+          "source": "vp2_val"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 0.09108,
+          "source": "prior_swing_low"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 0.09143716893990775,
+      "risk_fraction": 0.00506224759270561,
+      "side": "short",
+      "signal_close": 0.09139,
+      "stop": 0.091902891919877,
+      "structural_stop": 0.091902891919877,
+      "structure_confirmation_at": "2026-03-26 13:30:00+00:00",
+      "target": 0.08985132424036901,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 273.0,
+      "exited_amount": 273.0,
+      "first_fill": 1774531800.0,
+      "partial_done": true,
+      "tight_stop": 0.091902891919877
+    }
+  },
+  {
+    "funding": [
+      {
+        "at": "2026-03-27T08:00:00+00:00",
+        "mark": 1.35828487,
+        "quantity": 18.4,
+        "rate": -5.512e-05
+      }
+    ],
+    "id": 16,
+    "open_date": "2026-03-27T07:45:00+00:00",
+    "pair": "XRP/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.315960536922484,
+      "approved_notional": 24.99272,
+      "approved_risk": 0.21448451599292984,
+      "atr_at_signal": 0.003976135867644269,
+      "available_at": "2026-03-27T07:45:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 0.2814814814814808,
+      "decision_id": "XRP/USDT:USDT:structure::continuation:short:2026-03-27T07:45:00+00:00",
+      "deviation_fraction": 0.000732145515880583,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-03-27T07:50:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "DOWN",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.008581879683080907,
+      "obstacles": [
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 1.3437980897844,
+          "source": "vp2_poc"
+        },
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 1.3391030176392937,
+          "source": "vp2_val"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.3349,
+          "source": "prior_day_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 1.3349,
+          "source": "prior_session_low"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 1.3582964203801466,
+      "risk_fraction": 0.004781879683080906,
+      "side": "short",
+      "signal_close": 1.3577,
+      "stop": 1.3647952271735289,
+      "structural_stop": 1.3647952271735289,
+      "structure_confirmation_at": "2026-03-27 07:45:00+00:00",
+      "target": 1.336414318479413,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 18.4,
+      "exited_amount": 18.4,
+      "first_fill": 1774597500.0,
+      "partial_done": true,
+      "tight_stop": 1.3647952271735289
+    }
+  }
+]

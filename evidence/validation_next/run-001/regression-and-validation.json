@@ -1,0 +1,95 @@
+{
+  "at": "2026-11-04T18:26:13.015916+00:00",
+  "errors": [
+    {
+      "classification": "INHERITED_REGISTRATION",
+      "test": "test_policy.ConfigTests.test_baseline_and_native_emergency_settings_do_not_inherit_vwap_overrides",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_policy.py\", line 228, in test_baseline_and_native_emergency_settings_do_not_inherit_vwap_overrides\n    b=read(config('policy-session3-001','TrendPullbackBaselineV1','config-test'))\n           ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/lab/scripts/policy_common.py\", line 59, in config\n    out,data,spec=verify(run_id)\n                  ~~~~~~^^^^^^^^\n  File \"/lab/scripts/policy_common.py\", line 42, in verify\n    if any(sha(ROOT/p)!=h for p,h in hashes.items()): raise ValueError('registered v3 source changed; record explicit amendment')\n                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: registered v3 source changed; record explicit amendment\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_session4.NativeDryOrderLifecycle.test_after_fill_and_restart_cannot_widen_native_stop",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_session4.py\", line 86, in setUp\n    m=json.loads((DATA.parent/'contract-source.json').read_text())[PAIR]['market']\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/session4/run-001/contract-source.json'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_session4.NativeDryOrderLifecycle.test_missing_account_and_stale_source_fail_closed",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_session4.py\", line 86, in setUp\n    m=json.loads((DATA.parent/'contract-source.json').read_text())[PAIR]['market']\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/session4/run-001/contract-source.json'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_session4.NativeDryOrderLifecycle.test_native_cancel_pending_limit",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_session4.py\", line 86, in setUp\n    m=json.loads((DATA.parent/'contract-source.json').read_text())[PAIR]['market']\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/session4/run-001/contract-source.json'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_session4.NativeDryOrderLifecycle.test_native_initial_stop_exists_when_callback_raises_at_1_10_20x_both_sides",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_session4.py\", line 86, in setUp\n    m=json.loads((DATA.parent/'contract-source.json').read_text())[PAIR]['market']\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/session4/run-001/contract-source.json'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_session4.NativeDryOrderLifecycle.test_native_limit_open_cross_fill_and_sqlite_restart_recovery",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_session4.py\", line 86, in setUp\n    m=json.loads((DATA.parent/'contract-source.json').read_text())[PAIR]['market']\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/session4/run-001/contract-source.json'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_session4.NativeDryOrderLifecycle.test_native_market_long_short_entries_and_exits_reconcile_fees",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_session4.py\", line 86, in setUp\n    m=json.loads((DATA.parent/'contract-source.json').read_text())[PAIR]['market']\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/session4/run-001/contract-source.json'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_session4.NativeDryOrderLifecycle.test_outage_and_store_failure_keep_native_stop_and_exit_paths",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_session4.py\", line 86, in setUp\n    m=json.loads((DATA.parent/'contract-source.json').read_text())[PAIR]['market']\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/session4/run-001/contract-source.json'\n"
+    },
+    {
+      "classification": "INHERITED_REGISTRATION",
+      "test": "test_session4.ReviewedGuard.test_exact_modes_and_credentials_exposure_and_override_rejection",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_session4.py\", line 137, in test_exact_modes_and_credentials_exposure_and_override_rejection\n    verify_frozen()\n    ~~~~~~~~~~~~~^^\n  File \"/lab/scripts/session4_safety.py\", line 22, in verify_frozen\n    if digest(ROOT/name)!=expected:raise ValueError('frozen strategy/config/protocol changed: '+name)\n                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: frozen strategy/config/protocol changed: research/session3/causal_structure.py\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_diagnosis.NativeResultIntegrity.test_corrected_expiry_reaches_native_config_and_terminal_lifecycle",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_diagnosis.py\", line 108, in test_corrected_expiry_reaches_native_config_and_terminal_lifecycle\n    p=read(path);cfg=read((ROOT/p['archive']).parent/'config.json')\n                     ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/lab/scripts/integrated_common.py\", line 19, in read\n    return json.loads(Path(path).read_text())\n                      ~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 787, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/work/diagnosis/native/development-passive-30m-oct5-detail5m-touch-750-expiry-corrected/attempt-1/config.json'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_diagnosis.NativeResultIntegrity.test_every_new_plan_uses_available_closed_candles_and_preserves_stop_target",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_diagnosis.py\", line 131, in test_every_new_plan_uses_available_closed_candles_and_preserves_stop_target\n    verify(cohort)\n    ~~~~~~^^^^^^^^\n  File \"/lab/scripts/diagnosis_native.py\", line 22, in verify\n    verify_parent();seal=read(OUT/('plan-seal-'+cohort+'.json'))\n    ~~~~~~~~~~~~~^^\n  File \"/lab/scripts/diagnosis_common.py\", line 20, in verify_parent\n    verify()\n    ~~~~~~^^\n  File \"/lab/scripts/integrated_native.py\", line 16, in verify\n    if sha(DATA/'contract-source.json')!=read(OUT/'data.json')['metadata_sha256']: raise ValueError('contract metadata changed')\n       ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/lab/scripts/integrated_common.py\", line 27, in sha\n    return hashlib.sha256(Path(path).read_bytes()).hexdigest()\n                          ~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 777, in read_bytes\n    with self.open(mode='rb', buffering=0) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/integrated/contract-source.json'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_diagnosis.NativeResultIntegrity.test_new_sources_are_complete_hash_sealed_and_never_future_holdout",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_diagnosis.py\", line 124, in test_new_sources_are_complete_hash_sealed_and_never_future_holdout\n    self.assertEqual(sha(ROOT/row['path']),row['sha256'])\n                     ~~~^^^^^^^^^^^^^^^^^^\n  File \"/lab/scripts/integrated_common.py\", line 27, in sha\n    return hashlib.sha256(Path(path).read_bytes()).hexdigest()\n                          ~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 777, in read_bytes\n    with self.open(mode='rb', buffering=0) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/diagnosis/earlier/gate/futures/AKE_USDT_USDT-15m-futures.feather'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_diagnosis.RealSourceIsolation.test_every_parent_tracked_file_and_market_seal_remains_unchanged",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_diagnosis.py\", line 94, in test_every_parent_tracked_file_and_market_seal_remains_unchanged\n    self.assertEqual(verify_parent()['changed'],[])\n                     ~~~~~~~~~~~~~^^\n  File \"/lab/scripts/diagnosis_common.py\", line 20, in verify_parent\n    verify()\n    ~~~~~~^^\n  File \"/lab/scripts/integrated_native.py\", line 16, in verify\n    if sha(DATA/'contract-source.json')!=read(OUT/'data.json')['metadata_sha256']: raise ValueError('contract metadata changed')\n       ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/lab/scripts/integrated_common.py\", line 27, in sha\n    return hashlib.sha256(Path(path).read_bytes()).hexdigest()\n                          ~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 777, in read_bytes\n    with self.open(mode='rb', buffering=0) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/user_data/data/integrated/contract-source.json'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_diagnosis.RealSourceIsolation.test_putting_only_three_ema_predicates_back_recovers_frozen_continuation_candidates",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_diagnosis.py\", line 76, in test_putting_only_three_ema_predicates_back_recovers_frozen_continuation_candidates\n    f=pd.read_pickle(PWORK/'features/v4'/(slug(pair)+'.pkl'))\n  File \"/home/ftuser/.local/lib/python3.14/site-packages/pandas/io/pickle.py\", line 220, in read_pickle\n    with get_handle(\n         ~~~~~~~~~~^\n        filepath_or_buffer,\n        ^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n        storage_options=storage_options,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ) as handles:\n    ^\n  File \"/home/ftuser/.local/lib/python3.14/site-packages/pandas/io/common.py\", line 939, in get_handle\n    handle = open(handle, ioargs.mode)\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/work/integrated/features/v4/BTC_USDT_USDT.pkl'\n"
+    },
+    {
+      "classification": "MISSING_PRIOR_PRIVATE_INPUT",
+      "test": "test_diagnosis.RealSourceIsolation.test_relaxed_signal_prefix_does_not_change_after_future_rows_append",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_diagnosis.py\", line 87, in test_relaxed_signal_prefix_does_not_change_after_future_rows_append\n    f=pd.read_pickle(PWORK/'features/v4'/(slug(pair)+'.pkl')).iloc[:1400]\n      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/ftuser/.local/lib/python3.14/site-packages/pandas/io/pickle.py\", line 220, in read_pickle\n    with get_handle(\n         ~~~~~~~~~~^\n        filepath_or_buffer,\n        ^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n        storage_options=storage_options,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ) as handles:\n    ^\n  File \"/home/ftuser/.local/lib/python3.14/site-packages/pandas/io/common.py\", line 939, in get_handle\n    handle = open(handle, ioargs.mode)\nFileNotFoundError: [Errno 2] No such file or directory: '/lab/work/integrated/features/v4/BTC_USDT_USDT.pkl'\n"
+    }
+  ],
+  "exit_code": 1,
+  "failures": [],
+  "passed": 136,
+  "prior_private_inputs": "NOT_PROVIDED; seals source-verified, do not relabel missing input tests as passes",
+  "run": 153,
+  "skipped": [
+    {
+      "reason": "owner must restore source archive",
+      "test": "test_setup.RealSourceCausality.test_future_append_preserves_every_earlier_feature_and_decision"
+    },
+    {
+      "reason": "optional verified tape sample not restored",
+      "test": "test_setup.RealSourceCausality.test_real_executed_profile_sample_reconciles_complete_session"
+    }
+  ]
+}
