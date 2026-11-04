@@ -1,0 +1,537 @@
+{
+  "opportunity": {
+    "confirmed_plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.3129882465089466,
+      "atr_at_signal": 11.217653256349683,
+      "available_at": "2026-10-14T13:15:00+00:00",
+      "boundary": 2478.17,
+      "boundary_source": "PRIOR20_COMPLETE_1H_RANGE",
+      "confirmation": "TWO_CLOSE_ACCEPTANCE_AND_DEFENDED_RETEST",
+      "confirmation_at": "2026-10-14T13:15:00+00:00",
+      "decision_id": "ETH/USDT:USDT:c3aaf2c1a982dba699c3e763",
+      "deviation_fraction": 0.0011379700187012743,
+      "expires_at": "2026-10-14T13:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_QUEUE_UNKNOWN",
+      "first_objective": {
+        "fidelity": "CONFIRMED_CLOSED_BARS",
+        "known_at": "2026-10-14T00:00:00+00:00",
+        "price": 2407.77,
+        "source": "prior_day_low",
+        "timeframe": "1d"
+      },
+      "flow": {
+        "reason": "NO_HISTORICAL_EXECUTED_TAPE",
+        "status": "UNKNOWN"
+      },
+      "invalidation": "TWO_COMPLETED_ADVERSE_CLOSES_AT_FROZEN_BOUNDARY",
+      "management": "FULL_FIRST_OBJECTIVE",
+      "max_hold_hours": 8,
+      "modeled_loss_per_notional": 0.014607308331143347,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "known_at": "2026-10-14T00:00:00+00:00",
+          "price": 2407.77,
+          "source": "prior_day_low",
+          "timeframe": "1d"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "known_at": "2026-10-13T12:00:00+00:00",
+          "price": 2407.77,
+          "source": "swing_low_4h",
+          "timeframe": "4h"
+        }
+      ],
+      "pair": "ETH/USDT:USDT",
+      "playbook_version": "1.2.0",
+      "policy_id": "setup-v1.2.0",
+      "profile_fidelity": "NOT_USED",
+      "profile_reference": null,
+      "recipe": "breakout",
+      "reference": 2464.4,
+      "reference_known_at": "2026-10-14 12:00:00+00:00",
+      "regime": "BALANCE",
+      "risk_fraction": 0.010807308331143347,
+      "schema_version": "setup.plan.v1",
+      "second_objective": null,
+      "setup_armed_at": "2026-10-14T13:00:00+00:00",
+      "setup_id": "ETH/USDT:USDT:breakout:short:PRIOR20_COMPLETE_1H_RANGE:2026-10-14 12:00:00+00:00:2478.17:BREAK_AT:2026-10-14T13:00:00+00:00",
+      "side": "short",
+      "signal_close": 2464.4,
+      "source_data_refs": [
+        {
+          "path": "user_data/data/setup/development/gate/futures/ETH_USDT_USDT-15m-futures.feather",
+          "sha256": "0f7ed49ef6be34700f7b85c3e6318c3546574501c81e3ba9653f5e0b2ee35f7f"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/ETH_USDT_USDT-1h-funding_rate.feather",
+          "sha256": "933767384a878ff309c8c6abe6afa28e21b935472b4b59ff853988855db4d8ed"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/ETH_USDT_USDT-1h-futures.feather",
+          "sha256": "5c0031c03cf399eb15949eb9ea75b9801584ccded5c548617bec90d411c98479"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/ETH_USDT_USDT-1h-mark.feather",
+          "sha256": "2423614feebfe574b65c11ec46ccc6abddb130d1f06af7047cd8302b7d415f4b"
+        }
+      ],
+      "state": "READY",
+      "stop": 2491.0335306512698,
+      "structural_stop": 2491.0335306512698,
+      "target": 2407.77,
+      "target_origin": "prior_day_low",
+      "timeframes": [
+        "1d",
+        "4h",
+        "1h",
+        "15m"
+      ],
+      "venue": "gate"
+    },
+    "eligibility_and_shortlist": {
+      "at": "2026-10-14T13:00:00+00:00",
+      "new_lanes": [
+        "breakout:short"
+      ],
+      "pair": "ETH/USDT:USDT",
+      "position_or_reservation": false,
+      "retained_setup": false,
+      "shortlist": [
+        {
+          "condition": "DEVELOPING",
+          "historical_market_status": "UNKNOWN",
+          "historical_spread": "UNKNOWN",
+          "location_atr": 0.2696449351557108,
+          "location_price": 2478.17,
+          "location_source": "range_low_1h",
+          "playbook": "breakout",
+          "prior7_quote": 4623202667.576303,
+          "prior_day_quote": 5690308524.5751705,
+          "proxy_requires_deep_verification": false,
+          "side": "short",
+          "source_cutoff": "2026-10-14T13:00:00+00:00"
+        }
+      ]
+    },
+    "native_risk_and_result": {
+      "admission": {
+        "at": "2026-10-14T13:15:00+00:00",
+        "decision_id": "ETH/USDT:USDT:c3aaf2c1a982dba699c3e763",
+        "event": "ADMITTED",
+        "event_id": "admit:ETH/USDT:USDT:c3aaf2c1a982dba699c3e763",
+        "plan": {
+          "admission_cost_allowance": 0.0038,
+          "after_cost_rr": 1.3129882465089466,
+          "approved_notional": 24.644000000000002,
+          "approved_risk": 0.35998250651269664,
+          "atr_at_signal": 11.217653256349683,
+          "available_at": "2026-10-14T13:15:00+00:00",
+          "boundary": 2478.17,
+          "boundary_source": "PRIOR20_COMPLETE_1H_RANGE",
+          "confirmation": "TWO_CLOSE_ACCEPTANCE_AND_DEFENDED_RETEST",
+          "confirmation_at": "2026-10-14T13:15:00+00:00",
+          "decision_id": "ETH/USDT:USDT:c3aaf2c1a982dba699c3e763",
+          "deviation_fraction": 0.0011379700187012743,
+          "expires_at": "2026-10-14T13:20:00+00:00",
+          "fill_model": "NATIVE_LIMIT_RANGE_QUEUE_UNKNOWN",
+          "first_objective": {
+            "fidelity": "CONFIRMED_CLOSED_BARS",
+            "known_at": "2026-10-14T00:00:00+00:00",
+            "price": 2407.77,
+            "source": "prior_day_low",
+            "timeframe": "1d"
+          },
+          "flow": {
+            "reason": "NO_HISTORICAL_EXECUTED_TAPE",
+            "status": "UNKNOWN"
+          },
+          "invalidation": "TWO_COMPLETED_ADVERSE_CLOSES_AT_FROZEN_BOUNDARY",
+          "leverage": 1.0,
+          "management": "FULL_FIRST_OBJECTIVE",
+          "max_hold_hours": 8,
+          "modeled_loss_per_notional": 0.014607308331143347,
+          "obstacles": [
+            {
+              "fidelity": "CONFIRMED_CLOSED_BARS",
+              "known_at": "2026-10-14T00:00:00+00:00",
+              "price": 2407.77,
+              "source": "prior_day_low",
+              "timeframe": "1d"
+            },
+            {
+              "fidelity": "CONFIRMED_CLOSED_BARS",
+              "known_at": "2026-10-13T12:00:00+00:00",
+              "price": 2407.77,
+              "source": "swing_low_4h",
+              "timeframe": "4h"
+            }
+          ],
+          "pair": "ETH/USDT:USDT",
+          "playbook_version": "1.2.0",
+          "policy_id": "setup-v1.2.0",
+          "profile_fidelity": "NOT_USED",
+          "profile_reference": null,
+          "recipe": "breakout",
+          "reference": 2464.4,
+          "reference_known_at": "2026-10-14 12:00:00+00:00",
+          "regime": "BALANCE",
+          "risk_fraction": 0.010807308331143347,
+          "schema_version": "setup.plan.v1",
+          "second_objective": null,
+          "setup_armed_at": "2026-10-14T13:00:00+00:00",
+          "setup_id": "ETH/USDT:USDT:breakout:short:PRIOR20_COMPLETE_1H_RANGE:2026-10-14 12:00:00+00:00:2478.17:BREAK_AT:2026-10-14T13:00:00+00:00",
+          "side": "short",
+          "signal_close": 2464.4,
+          "source_data_refs": [
+            {
+              "path": "user_data/data/setup/development/gate/futures/ETH_USDT_USDT-15m-futures.feather",
+              "sha256": "0f7ed49ef6be34700f7b85c3e6318c3546574501c81e3ba9653f5e0b2ee35f7f"
+            },
+            {
+              "path": "user_data/data/setup/development/gate/futures/ETH_USDT_USDT-1h-funding_rate.feather",
+              "sha256": "933767384a878ff309c8c6abe6afa28e21b935472b4b59ff853988855db4d8ed"
+            },
+            {
+              "path": "user_data/data/setup/development/gate/futures/ETH_USDT_USDT-1h-futures.feather",
+              "sha256": "5c0031c03cf399eb15949eb9ea75b9801584ccded5c548617bec90d411c98479"
+            },
+            {
+              "path": "user_data/data/setup/development/gate/futures/ETH_USDT_USDT-1h-mark.feather",
+              "sha256": "2423614feebfe574b65c11ec46ccc6abddb130d1f06af7047cd8302b7d415f4b"
+            }
+          ],
+          "state": "READY",
+          "stop": 2491.0335306512698,
+          "structural_stop": 2491.0335306512698,
+          "target": 2407.77,
+          "target_origin": "prior_day_low",
+          "timeframes": [
+            "1d",
+            "4h",
+            "1h",
+            "15m"
+          ],
+          "venue": "gate"
+        },
+        "policy_id": "setup-v1.2.0",
+        "risk": {
+          "amount": 0.01,
+          "contracts": 1.0,
+          "equity": 999.54362279,
+          "free_collateral_after_reserves": 974.80597559,
+          "leverage": 1.0,
+          "liquidation_price": 4911.609367214748,
+          "margin": 24.644000000000002,
+          "native_stop_ratio": -0.010807308331143347,
+          "notional": 24.644000000000002,
+          "planned_loss": 0.35998250651269664,
+          "reason": "CURRENT_PUBLIC_GATE_TIER_NOT_HISTORICAL_TIER",
+          "risk_budget": 2.4988590569749998,
+          "status": "PASS",
+          "stop_clearance": 0.9822171062179347,
+          "tier": {
+            "maintenance_deduction": 0,
+            "maintenance_rate": 0.003,
+            "max_leverage": 200.0,
+            "max_notional": 300000.0,
+            "min_notional": 0
+          }
+        }
+      },
+      "at": "2026-10-14T13:15:00+00:00",
+      "decision_id": "ETH/USDT:USDT:c3aaf2c1a982dba699c3e763",
+      "pair": "ETH/USDT:USDT",
+      "result": {
+        "decision_id": "ETH/USDT:USDT:c3aaf2c1a982dba699c3e763",
+        "entry": "2026-10-14T13:15:00+00:00",
+        "entry_notional": 24.644,
+        "exit": "2026-10-14T20:45:00+00:00",
+        "exit_reason": "roi",
+        "fees": 0.036541275,
+        "funding": 0.0005344416000000001,
+        "gross": 0.5663,
+        "hold_minutes": 450.0,
+        "independent_quantity_fee_funding_net_verified": true,
+        "mae_bp_bar_lower_bound": -89.3118000324611,
+        "mfe_bp_bar_upper_bound": 196.35611102093776,
+        "modeled_risk": 0.3599825065126966,
+        "net": 0.5302931666,
+        "net_R": 1.9910734838105941,
+        "pair": "ETH/USDT:USDT",
+        "partial_exits": 0,
+        "playbook": "breakout",
+        "quantity": 0.01,
+        "risk": 0.266335306512698,
+        "setup_id": "ETH/USDT:USDT:breakout:short:PRIOR20_COMPLETE_1H_RANGE:2026-10-14 12:00:00+00:00:2478.17:BREAK_AT:2026-10-14T13:00:00+00:00",
+        "side": "short",
+        "stress": {
+          "10": 0.48157146660000005,
+          "20": 0.4328497666,
+          "5": 0.5059323166
+        },
+        "turnover": 48.7217
+      },
+      "setup_id": "ETH/USDT:USDT:breakout:short:PRIOR20_COMPLETE_1H_RANGE:2026-10-14 12:00:00+00:00:2478.17:BREAK_AT:2026-10-14T13:00:00+00:00",
+      "state": "EXITED",
+      "unobserved_veto_reason": null
+    },
+    "registered_setup": {
+      "armed_at": "2026-10-14T13:00:00+00:00",
+      "at": "2026-10-14T13:00:00+00:00",
+      "atr": 10.64362658376121,
+      "boundary": 2478.17,
+      "boundary_source": "PRIOR20_COMPLETE_1H_RANGE",
+      "entry_close": 2475.3,
+      "flow_status": "UNKNOWN",
+      "location_atr": 0.2696449351557108,
+      "map4h": {
+        "known_at": "2026-10-14 12:00:00+00:00",
+        "ready": true,
+        "reason": "READY"
+      },
+      "old_ema_would_veto": false,
+      "pair": "ETH/USDT:USDT",
+      "plan": null,
+      "playbook": "breakout",
+      "profile_status": "NOT_USED",
+      "reason": "WAIT_COMPLETED_CONFIRMATION",
+      "reference_known_at": "2026-10-14 12:00:00+00:00",
+      "regime": "BALANCE",
+      "registered_extreme": 2488.79,
+      "rvol": 1.904458213459651,
+      "setup_id": "ETH/USDT:USDT:breakout:short:PRIOR20_COMPLETE_1H_RANGE:2026-10-14 12:00:00+00:00:2478.17:BREAK_AT:2026-10-14T13:00:00+00:00",
+      "shortlist_at_event": [
+        {
+          "condition": "DEVELOPING",
+          "historical_market_status": "UNKNOWN",
+          "historical_spread": "UNKNOWN",
+          "location_atr": 0.2696449351557108,
+          "location_price": 2478.17,
+          "location_source": "range_low_1h",
+          "playbook": "breakout",
+          "prior7_quote": 4623202667.576303,
+          "prior_day_quote": 5690308524.5751705,
+          "proxy_requires_deep_verification": false,
+          "side": "short",
+          "source_cutoff": "2026-10-14T13:00:00+00:00"
+        }
+      ],
+      "side": "short",
+      "state": "ARMED"
+    },
+    "selection_rule": "FIRST_CHRONOLOGICAL_READY_PLAN;NOT_CHOSEN_BY_RETURN"
+  },
+  "rejected_frozen_opportunity": {
+    "at": "2026-09-06T15:15:00+00:00",
+    "corrected_events_at_cutoff": [],
+    "corrected_pipeline_ready": false,
+    "corrected_previous_events": [
+      {
+        "armed_at": "2026-09-06T14:30:00+00:00",
+        "at": "2026-09-06T14:30:00+00:00",
+        "atr": 1.9691952086499342e-08,
+        "boundary": 3.576e-06,
+        "boundary_source": "PRIOR20_COMPLETE_1H_RANGE",
+        "entry_close": 3.574e-06,
+        "flow_status": "UNKNOWN",
+        "location_atr": 0.10156433405966571,
+        "map4h": {
+          "known_at": "2026-09-06 12:00:00+00:00",
+          "ready": true,
+          "reason": "READY"
+        },
+        "old_ema_would_veto": false,
+        "pair": "PEPE/USDT:USDT",
+        "plan": null,
+        "playbook": "breakout",
+        "profile_status": "NOT_USED",
+        "reason": "WAIT_COMPLETED_CONFIRMATION",
+        "reference_known_at": "2026-09-06 13:00:00+00:00",
+        "regime": "BALANCE",
+        "registered_extreme": 3.606e-06,
+        "rvol": 1.6401720219202047,
+        "setup_id": "PEPE/USDT:USDT:breakout:short:PRIOR20_COMPLETE_1H_RANGE:2026-09-06 13:00:00+00:00:3.576e-06:BREAK_AT:2026-09-06T14:30:00+00:00",
+        "shortlist_at_event": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 6.906374716056752,
+            "location_price": 3.71e-06,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 18386233.77252381,
+            "prior_day_quote": 15813385.324666666,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-06T14:30:00+00:00"
+          },
+          {
+            "condition": "DEVELOPING",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.10156433405966571,
+            "location_price": 3.576e-06,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 18386233.77252381,
+            "prior_day_quote": 15813385.324666666,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-06T14:30:00+00:00"
+          }
+        ],
+        "side": "short",
+        "state": "ARMED"
+      },
+      {
+        "armed_at": "2026-09-06T14:30:00+00:00",
+        "at": "2026-09-06T14:45:00+00:00",
+        "atr": 2.1928241223177962e-08,
+        "boundary": 3.576e-06,
+        "boundary_source": "PRIOR20_COMPLETE_1H_RANGE",
+        "entry_close": 3.577e-06,
+        "flow_status": "UNKNOWN",
+        "location_atr": 0.04560329256788092,
+        "map4h": {
+          "known_at": "2026-09-06 12:00:00+00:00",
+          "ready": true,
+          "reason": "READY"
+        },
+        "old_ema_would_veto": false,
+        "pair": "PEPE/USDT:USDT",
+        "plan": null,
+        "playbook": "breakout",
+        "profile_status": "NOT_USED",
+        "reason": "BREAKOUT_CLOSE_BACK_INSIDE",
+        "reference_known_at": "2026-09-06 13:00:00+00:00",
+        "regime": "BALANCE",
+        "registered_extreme": 3.606e-06,
+        "rvol": 7.009059825108178,
+        "setup_id": "PEPE/USDT:USDT:breakout:short:PRIOR20_COMPLETE_1H_RANGE:2026-09-06 13:00:00+00:00:3.576e-06:BREAK_AT:2026-09-06T14:30:00+00:00",
+        "shortlist_at_event": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 6.0652379115302875,
+            "location_price": 3.71e-06,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 18386233.77252381,
+            "prior_day_quote": 15813385.324666666,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-06T14:45:00+00:00"
+          },
+          {
+            "condition": "DEVELOPING",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.04560329256788092,
+            "location_price": 3.576e-06,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 18386233.77252381,
+            "prior_day_quote": 15813385.324666666,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-06T14:45:00+00:00"
+          }
+        ],
+        "side": "short",
+        "state": "INVALIDATED"
+      }
+    ],
+    "frozen_plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 2.0423759589650143,
+      "atr_at_signal": 2.230037125876058e-08,
+      "available_at": "2026-09-06T15:15:00+00:00",
+      "boundary": 3.576e-06,
+      "boundary_source": "PRIOR20_COMPLETE_1H_RANGE",
+      "confirmation": "TWO_CLOSE_ACCEPTANCE_AND_DEFENDED_RETEST",
+      "confirmation_at": "2026-09-06T15:15:00+00:00",
+      "decision_id": "PEPE/USDT:USDT:b816252fd525bea5298b9575",
+      "deviation_fraction": 0.0015,
+      "expires_at": "2026-09-06T15:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_QUEUE_UNKNOWN",
+      "first_objective": {
+        "fidelity": "CONFIRMED_CLOSED_BARS",
+        "known_at": "2026-09-06T00:00:00+00:00",
+        "price": 3.437e-06,
+        "source": "prior_day_low"
+      },
+      "flow": {
+        "reason": "NO_HISTORICAL_EXECUTED_TAPE",
+        "status": "UNKNOWN"
+      },
+      "invalidation": "TWO_COMPLETED_ADVERSE_CLOSES_AT_FROZEN_BOUNDARY",
+      "management": "FULL_FIRST_OBJECTIVE",
+      "max_hold_hours": 8,
+      "modeled_loss_per_notional": 0.015983928862279805,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "known_at": "2026-09-06T00:00:00+00:00",
+          "price": 3.437e-06,
+          "source": "prior_day_low"
+        }
+      ],
+      "pair": "PEPE/USDT:USDT",
+      "playbook_version": "1.1.0",
+      "policy_id": "setup-v1.1.0",
+      "profile_fidelity": "NOT_USED",
+      "recipe": "breakout",
+      "reference": 3.567e-06,
+      "reference_known_at": "2026-09-06 13:00:00+00:00",
+      "regime": "BALANCE",
+      "risk_fraction": 0.012183928862279803,
+      "schema_version": "setup.plan.v1",
+      "second_objective": null,
+      "setup_armed_at": "2026-09-06T14:30:00+00:00",
+      "setup_id": "PEPE/USDT:USDT:breakout:short:PRIOR20_COMPLETE_1H_RANGE:2026-09-06 13:00:00+00:00:3.576e-06",
+      "side": "short",
+      "signal_close": 3.567e-06,
+      "source_data_refs": [
+        {
+          "path": "user_data/data/setup/development/gate/futures/PEPE_USDT_USDT-15m-futures.feather",
+          "sha256": "aa0d084bd3dd2a5204b633c0b5b71e0d41581861081457d17ea16a660fa1b7f2"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/PEPE_USDT_USDT-1h-funding_rate.feather",
+          "sha256": "1073503d4941f1eff8e873db5e666e164745daae5ed4e60a39062947ab498501"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/PEPE_USDT_USDT-1h-futures.feather",
+          "sha256": "cf337ca603f3e6c5fa0c529cd38502e1d50f62e93a55f9123007f3bb16efb607"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/PEPE_USDT_USDT-1h-mark.feather",
+          "sha256": "ccf21703b69c16edd6840a526b2fd9a09b0bb6750c449b5fdd1bd5ffe9b08392"
+        }
+      ],
+      "state": "ADMITTED",
+      "stop": 3.610460074251752e-06,
+      "structural_stop": 3.610460074251752e-06,
+      "target": 3.437e-06,
+      "target_origin": "prior_day_low",
+      "timeframes": [
+        "1d",
+        "4h",
+        "1h",
+        "15m"
+      ],
+      "venue": "gate"
+    },
+    "map4h": {
+      "known_at": "2026-09-06 12:00:00+00:00",
+      "opposing_swing": 3.437e-06,
+      "ready": true
+    },
+    "pair": "PEPE/USDT:USDT"
+  }
+}

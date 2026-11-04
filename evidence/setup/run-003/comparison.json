@@ -1,0 +1,2086 @@
+{
+  "additional10bp_per_side_ledger_sensitivity": -0.8713689016,
+  "attribution": "Bundled changes only. No individual fix receives causal PnL attribution.",
+  "candidate_classification": "ONE_NEW_MATCHED_NATIVE_LIMIT_TOUCH_SIMULATION;INSPECTED_DEVELOPMENT_BUNDLED_FIXES",
+  "candidate_plan_execution": {
+    "EXITED": 14
+  },
+  "continuation": {
+    "armed": 902,
+    "completed_confirmations": 209,
+    "filled": 3,
+    "native_admitted": 3,
+    "old_ema_would_veto_armed": 516,
+    "old_ema_would_veto_ready": 3,
+    "ready": 3,
+    "rejected_geometry": 206,
+    "shortlisted_pair_times": 29987
+  },
+  "control_native_replays": 0,
+  "control_provenance": {
+    "Frozen PR11 setup-v1.1": {
+      "archive_sha256": "b205b8a670324ac2133e26e7de690a3c8e23d58c59b5f7e8e6b6ab5b55d614f2",
+      "classification": "ARCHIVED_NATIVE_RESULT;LEDGER_INDEPENDENTLY_RECOMPUTED;NOT_A_FRESH_REPLAY",
+      "native_record": "evidence/setup/run-002/native/setup-fixed-touch-750",
+      "plans": 5,
+      "provenance_sha256": "986cc62744a918968bf108144e900c5c53764518d3e788899242bead2e55fd26"
+    },
+    "Frozen V4 structure": {
+      "archive_sha256": "5461b3e66a77f9940223aecf6938252aa8729b7b50b2418132829c98d0520ed7",
+      "classification": "ARCHIVED_NATIVE_RESULT;LEDGER_INDEPENDENTLY_RECOMPUTED;NOT_A_FRESH_REPLAY",
+      "native_record": "evidence/setup/run-002/native/v4-structure-fixed-touch-750",
+      "plans": 56,
+      "provenance_sha256": "cab2102aa6b75451be4e464280c9e26d39dad08357e8baa8e2caf83369e79a55"
+    }
+  },
+  "funnel": {
+    "deduplicated_lane_slots": 44595,
+    "deep_pair_updates": 55517,
+    "distinct_market_observations": 6901,
+    "distinct_setups": 3679,
+    "eligible_pair_checks": 74867,
+    "event_ARMED": 3679,
+    "event_EXPIRED": 1269,
+    "event_INVALIDATED": 1661,
+    "event_READY": 14,
+    "event_REJECTED": 735,
+    "gate_ELIGIBLE_NOT_SHORTLISTED": 17248,
+    "gate_ILLIQUID_OR_NOT_WARM": 9805,
+    "gate_REQUIRED_CLOSED_BAR_DATA_UNAVAILABLE": 2126,
+    "gate_RETAINED_SETUP_OR_POSITION": 1667,
+    "gate_SHORTLISTED": 53826,
+    "management_updates_outside_shortlist": 95,
+    "profile_unknown_pair_times": 74867,
+    "raw_pair_checks": 84672,
+    "reasons": {
+      "BREAKOUT_CLOSE_BACK_INSIDE": 315,
+      "CONFIRMATION_WINDOW_EXPIRED": 1269,
+      "DATA_GAP_OR_UNAVAILABLE_CONTEXT": 15,
+      "FIRST_OBJECTIVE_BEYOND_EXISTING_6ATR_BOUND": 25,
+      "FIRST_OBSTACLE_INSUFFICIENT_AFTER_COST_REWARD": 522,
+      "LOGICAL_STOP_OUTSIDE_0.3_2.5_PERCENT": 109,
+      "NO_PREEXISTING_OBJECTIVE": 79,
+      "REGISTERED_BOUNDARY_OR_EXTREME_FAILED": 1331,
+      "TRADE": 14,
+      "WAIT_COMPLETED_CONFIRMATION": 3679
+    },
+    "retained_setup_updates": 1599,
+    "shortlisted_lane_slots": 98421,
+    "states": {
+      "ARMED": 3679,
+      "EXPIRED": 1269,
+      "INVALIDATED": 1661,
+      "READY": 14,
+      "REJECTED": 735
+    },
+    "unique_shortlisted_pairs": 53826
+  },
+  "management_coverage": {
+    "checked_trade_records": 14,
+    "hold_violations": [],
+    "missing_updates": []
+  },
+  "new_native_portfolios": 1,
+  "portfolios": {
+    "Corrected setup-v1.2": {
+      "additional_friction_net": {
+        "10": -0.8713689016,
+        "20": -1.4957838015999998,
+        "5": -0.5591614516
+      },
+      "average_hold_minutes": 187.5,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.03615446099999994,
+        "2026-10": -0.21079954059999995,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 1.034361111,
+      "expectancy": -0.01763957154285714,
+      "fees": 0.46831117499999997,
+      "funding": 0.0040571734,
+      "gross": 0.21730000000000005,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 2,
+            "net": -0.4598803342
+          },
+          "continuation_thesis_failed": {
+            "n": 1,
+            "net": -0.3291458
+          },
+          "max_hold_4h": {
+            "n": 1,
+            "net": 0.72332715
+          },
+          "max_hold_8h": {
+            "n": 3,
+            "net": 0.148245777
+          },
+          "roi": {
+            "n": 2,
+            "net": 0.9713481666
+          },
+          "stop_loss": {
+            "n": 5,
+            "net": -1.300848961
+          }
+        },
+        "pair": {
+          "ETH/USDT:USDT": {
+            "n": 1,
+            "net": 0.5302931666
+          },
+          "HYPE/USDT:USDT": {
+            "n": 2,
+            "net": -0.224194899
+          },
+          "NEAR/USDT:USDT": {
+            "n": 3,
+            "net": -1.042032611
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.039111
+          },
+          "SOL/USDT:USDT": {
+            "n": 2,
+            "net": 0.27487949999999994
+          },
+          "UNI/USDT:USDT": {
+            "n": 1,
+            "net": 0.278433726
+          },
+          "WLD/USDT:USDT": {
+            "n": 2,
+            "net": 0.4518031658
+          },
+          "XRP/USDT:USDT": {
+            "n": 1,
+            "net": -0.2886687
+          },
+          "ZEC/USDT:USDT": {
+            "n": 1,
+            "net": -0.18835635
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 10,
+            "net": -0.33764460160000004
+          },
+          "continuation": {
+            "n": 3,
+            "net": -0.63263655
+          },
+          "reversal": {
+            "n": 1,
+            "net": 0.72332715
+          }
+        },
+        "side": {
+          "long": {
+            "n": 7,
+            "net": 0.22530791579999998
+          },
+          "short": {
+            "n": 7,
+            "net": -0.4722619174
+          }
+        }
+      },
+      "n": 14,
+      "native_max_drawdown": 1.18610091,
+      "net": -0.24695400159999997,
+      "net_R": -1.0835423441921002,
+      "partial_exits": 0,
+      "profit_factor": 0.8887626176899902,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.10748913476655,
+        0.2662085394340552,
+        0.4870268947547402
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": 0.8588857888801203,
+      "turnover": 624.4149,
+      "wallet_time_exposure": 0.0006348678406084657,
+      "weekly_block95_total": [
+        -2.2299648895749997,
+        1.792580981379999
+      ],
+      "win_rate": 0.2857142857142857,
+      "without_top3_winners": -1.9416293182000002
+    },
+    "Frozen PR11 setup-v1.1": {
+      "additional_friction_net": {
+        "10": -1.5779657117,
+        "20": -1.8042027117,
+        "5": -1.4648472117
+      },
+      "average_hold_minutes": 168.0,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": -0.7958287,
+        "2026-10": -0.5559000117,
+        "2026-11": 0.0
+      },
+      "closed_day_drawdown": 1.3517287117,
+      "expectancy": -0.27034574234000003,
+      "fees": 0.16967775,
+      "funding": 0.0049490383,
+      "gross": -1.187,
+      "groups": {
+        "exit_reason": {
+          "breakout_thesis_failed": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "stop_loss": {
+            "n": 2,
+            "net": -0.6309985627
+          },
+          "trailing_stop_loss": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "pair": {
+          "HYPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.091076949
+          },
+          "PEPE/USDT:USDT": {
+            "n": 1,
+            "net": -0.2731267
+          },
+          "SOL/USDT:USDT": {
+            "n": 2,
+            "net": -0.522702
+          },
+          "WLD/USDT:USDT": {
+            "n": 1,
+            "net": -0.4648230627
+          }
+        },
+        "playbook": {
+          "breakout": {
+            "n": 4,
+            "net": -0.9952022117
+          },
+          "reversal": {
+            "n": 1,
+            "net": -0.3565265
+          }
+        },
+        "side": {
+          "long": {
+            "n": 1,
+            "net": -0.1661755
+          },
+          "short": {
+            "n": 4,
+            "net": -1.1855532117
+          }
+        }
+      },
+      "n": 5,
+      "native_max_drawdown": 1.3517287100000002,
+      "net": -1.3517287117,
+      "net_R": -4.854327216595833,
+      "partial_exits": 0,
+      "profit_factor": 0.0,
+      "rejected_native_signals": 0,
+      "risk_min_median_max": [
+        0.130721535952612,
+        0.304220519762264,
+        0.4287462001306611
+      ],
+      "timedout_entry_orders": 0,
+      "top3_positive_share": null,
+      "turnover": 226.237,
+      "wallet_time_exposure": 0.00019018191137566137,
+      "weekly_block95_total": [
+        -2.4462049744,
+        -0.4219499451750081
+      ],
+      "win_rate": 0.0,
+      "without_top3_winners": -1.3517287117
+    },
+    "Frozen V4 structure": {
+      "additional_friction_net": {
+        "10": 1.423485501,
+        "20": -0.6263005289999999,
+        "5": 2.448378516
+      },
+      "average_hold_minutes": 136.33333333333334,
+      "calendar_days": 63,
+      "chronological_months": {
+        "2026-09": 2.5591864959,
+        "2026-10": 1.4055015350999995,
+        "2026-11": -0.4914165
+      },
+      "closed_day_drawdown": 1.2318231720000004,
+      "expectancy": 0.07718381179999999,
+      "fees": 1.5373395225,
+      "funding": -0.0043789465,
+      "gross": 5.01499,
+      "groups": {
+        "exit_reason": {
+          "closed_pullback_thesis_lost": {
+            "n": 6,
+            "net": -0.4704091817
+          },
+          "failed_boundary_reaccepted": {
+            "n": 1,
+            "net": -0.19616625
+          },
+          "max_hold_4h": {
+            "n": 2,
+            "net": 0.2312642595
+          },
+          "max_hold_8h": {
+            "n": 1,
+            "net": 0.57184624
+          },
+          "roi": {
+            "n": 12,
+            "net": 9.4797247408
+          },
+          "stop_loss": {
+            "n": 21,
+            "net": -5.68790254
+          },
+          "trailing_stop_loss": {
+            "n": 2,
+            "net": -0.45508573760000004
+          }
+        },
+        "pair": {
+          "BTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.0234501975
+          },
+          "DOGE/USDT:USDT": {
+            "n": 2,
+            "net": -0.148302
+          },
+          "HYPE/USDT:USDT": {
+            "n": 7,
+            "net": 0.11367028320000003
+          },
+          "LTC/USDT:USDT": {
+            "n": 1,
+            "net": -0.31381575
+          },
+          "NEAR/USDT:USDT": {
+            "n": 4,
+            "net": 1.47208869
+          },
+          "PEPE/USDT:USDT": {
+            "n": 6,
+            "net": 0.31439277
+          },
+          "SOL/USDT:USDT": {
+            "n": 3,
+            "net": 0.194520144
+          },
+          "UNI/USDT:USDT": {
+            "n": 5,
+            "net": -0.34494039
+          },
+          "WLD/USDT:USDT": {
+            "n": 5,
+            "net": 1.455468954
+          },
+          "XRP/USDT:USDT": {
+            "n": 6,
+            "net": -0.6563837071
+          },
+          "ZEC/USDT:USDT": {
+            "n": 5,
+            "net": 1.4100227344
+          }
+        },
+        "playbook": {
+          "continuation": {
+            "n": 40,
+            "net": 4.0942449435
+          },
+          "reversal": {
+            "n": 5,
+            "net": -0.6209734125
+          }
+        },
+        "side": {
+          "long": {
+            "n": 26,
+            "net": 2.1732968354
+          },
+          "short": {
+            "n": 19,
+            "net": 1.2999746956
+          }
+        }
+      },
+      "n": 45,
+      "native_max_drawdown": 1.2318231700000002,
+      "net": 3.4732715309999995,
+      "net_R": 7.599244972060308,
+      "partial_exits": 0,
+      "profit_factor": 1.4968422980067266,
+      "rejected_native_signals": 1,
+      "risk_min_median_max": [
+        0.100371296153994,
+        0.2350399143632281,
+        0.604836688775048
+      ],
+      "timedout_entry_orders": 1,
+      "top3_positive_share": 0.43653666267521374,
+      "turnover": 2049.7860299999998,
+      "wallet_time_exposure": 0.001545084914021164,
+      "weekly_block95_total": [
+        -1.2882345236075001,
+        9.309796008112498
+      ],
+      "win_rate": 0.3333333333333333,
+      "without_top3_winners": -1.0946322338
+    }
+  },
+  "profile": {
+    "economic_status": "NOT_TESTED_UNLESS_TIMESTAMP_VALID_HISTORICAL_REFERENCES_EXIST",
+    "historical_coverage": "NOT_TESTED",
+    "input_hashes": {
+      "user_data/data/setup/verified-profile-sample-receipt.json": "29349fc227c4430dff1a65fbbd600a045a9d2411439b68890927927ae3addac8",
+      "user_data/data/setup/verified-profile-sample-trades.json": "05214e1983c032b3df940e87a9d2269648eff5541c35cd01e7efecb76a3032b1"
+    },
+    "receipt_not_backdated": true,
+    "references": 1,
+    "status": "VERIFIED_LATER_ASSEMBLY"
+  },
+  "reserved_holdout_inspected": false,
+  "screening_work": {
+    "cached_source_bytes": 3787304,
+    "cached_source_files": 28,
+    "cached_source_rows": 122640,
+    "cheap_elapsed_seconds": 22.954818457999863,
+    "classification": "MEASURED_OFFLINE_ARCHIVE_COMPUTE;NOT_NETWORK_LATENCY_OR_API_COST",
+    "coverage": {
+      "caveat": "Same cutoffs and3-per-lane budget; full-universe audit recognizes all setups before old confirmation-time filtering. Candidate lifecycles begin only on eligible shortlist observation and survive later shortlist drops.",
+      "full_universe_qualified": 16,
+      "missed_by_new": 2,
+      "missed_by_old_filter": 13,
+      "new_ready_matched": 14,
+      "new_ready_outside_reference_lifecycle": 0,
+      "old_filter_selected": 3
+    },
+    "full_universe_audit": {
+      "deduplicated_lane_slots": 44595,
+      "deep_calls": 74880,
+      "deep_checkpoint_hits": 32,
+      "deep_decision_rows": 74880,
+      "deep_elapsed_seconds": 16.858422889883514,
+      "deep_pair_updates": 74880,
+      "deep_state_cache_hits": 74848,
+      "deep_warmup_rows": 128,
+      "eligible_pair_checks": 74867,
+      "event_ARMED": 4091,
+      "event_EXPIRED": 1459,
+      "event_INVALIDATED": 1804,
+      "event_READY": 16,
+      "event_REJECTED": 812,
+      "gate_ELIGIBLE_NOT_SHORTLISTED": 16641,
+      "gate_ILLIQUID_OR_NOT_WARM": 9805,
+      "gate_REQUIRED_CLOSED_BAR_DATA_UNAVAILABLE": 2126,
+      "gate_RETAINED_SETUP_OR_POSITION": 2274,
+      "gate_SHORTLISTED": 53826,
+      "management_updates_outside_shortlist": 118,
+      "profile_unknown_pair_times": 74867,
+      "raw_pair_checks": 84672,
+      "retained_setup_updates": 2208,
+      "shortlisted_lane_slots": 98421,
+      "total_elapsed_seconds": 89.0097067630013,
+      "unique_shortlisted_pairs": 53826
+    },
+    "gate_samples": [
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "BTC/USDT:USDT",
+        "prior7_quote": 3715604081.3552465,
+        "prior_day_quote": 3196114633.6048536,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "ETH/USDT:USDT",
+        "prior7_quote": 4081255866.992572,
+        "prior_day_quote": 4683884022.389604,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "SOL/USDT:USDT",
+        "prior7_quote": 436903719.32147616,
+        "prior_day_quote": 400918400.745,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "XRP/USDT:USDT",
+        "prior7_quote": 125784782.36210953,
+        "prior_day_quote": 69734432.89033334,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "DOGE/USDT:USDT",
+        "prior7_quote": 58512968.861114286,
+        "prior_day_quote": 48080542.5204,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "ZEC/USDT:USDT",
+        "prior7_quote": 83745450.25292382,
+        "prior_day_quote": 98348222.74700001,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "HYPE/USDT:USDT",
+        "prior7_quote": 59995039.98787619,
+        "prior_day_quote": 39700526.19256667,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "UNI/USDT:USDT",
+        "prior7_quote": 15748014.928904762,
+        "prior_day_quote": 36638092.524,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 6596940.873699999,
+        "prior_day_quote": 4081005.0804333333,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 9881364.497809526,
+        "prior_day_quote": 4536632.557666667,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "BNB/USDT:USDT",
+        "prior7_quote": 33213638.238109525,
+        "prior_day_quote": 22693934.51085,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "AKE/USDT:USDT",
+        "prior7_quote": 13873061.102042856,
+        "prior_day_quote": 7533616.768666667,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "PEPE/USDT:USDT",
+        "prior7_quote": 23658816.935904764,
+        "prior_day_quote": 23436059.609,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:00:00+00:00",
+        "pair": "WLD/USDT:USDT",
+        "prior7_quote": 13413591.15989524,
+        "prior_day_quote": 12208745.374466667,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "pair": "XRP/USDT:USDT",
+        "prior7_quote": 106034933.00514285,
+        "prior_day_quote": 65091267.537766665,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 5606450.431476191,
+        "prior_day_quote": 4264957.1398,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 8263877.035571428,
+        "prior_day_quote": 3300746.325,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "pair": "AKE/USDT:USDT",
+        "prior7_quote": 13831746.286366668,
+        "prior_day_quote": 4045790.1965333335,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "pair": "WLD/USDT:USDT",
+        "prior7_quote": 12656584.557252381,
+        "prior_day_quote": 8857379.132433333,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "pair": "BTC/USDT:USDT",
+        "prior7_quote": 3732709744.5585337,
+        "prior_day_quote": 4497969906.785621,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "pair": "ETH/USDT:USDT",
+        "prior7_quote": 4086096438.3939514,
+        "prior_day_quote": 4918077500.18872,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 5606450.431476191,
+        "prior_day_quote": 4264957.1398,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 8263877.035571428,
+        "prior_day_quote": 3300746.325,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "pair": "AKE/USDT:USDT",
+        "prior7_quote": 13831746.286366668,
+        "prior_day_quote": 4045790.1965333335,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "pair": "WLD/USDT:USDT",
+        "prior7_quote": 12656584.557252381,
+        "prior_day_quote": 8857379.132433333,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "pair": "ZEC/USDT:USDT",
+        "prior7_quote": 81501620.45863333,
+        "prior_day_quote": 88205114.6606,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 5606450.431476191,
+        "prior_day_quote": 4264957.1398,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 8263877.035571428,
+        "prior_day_quote": 3300746.325,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "pair": "AKE/USDT:USDT",
+        "prior7_quote": 13831746.286366668,
+        "prior_day_quote": 4045790.1965333335,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "pair": "WLD/USDT:USDT",
+        "prior7_quote": 12656584.557252381,
+        "prior_day_quote": 8857379.132433333,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "pair": "ETH/USDT:USDT",
+        "prior7_quote": 4086096438.3939514,
+        "prior_day_quote": 4918077500.18872,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "pair": "ZEC/USDT:USDT",
+        "prior7_quote": 81501620.45863333,
+        "prior_day_quote": 88205114.6606,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 5606450.431476191,
+        "prior_day_quote": 4264957.1398,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 8263877.035571428,
+        "prior_day_quote": 3300746.325,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "pair": "AKE/USDT:USDT",
+        "prior7_quote": 13831746.286366668,
+        "prior_day_quote": 4045790.1965333335,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "pair": "WLD/USDT:USDT",
+        "prior7_quote": 12656584.557252381,
+        "prior_day_quote": 8857379.132433333,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:15:00+00:00",
+        "pair": "ETH/USDT:USDT",
+        "prior7_quote": 4086096438.3939514,
+        "prior_day_quote": 4918077500.18872,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T01:15:00+00:00",
+        "pair": "XRP/USDT:USDT",
+        "prior7_quote": 106034933.00514285,
+        "prior_day_quote": 65091267.537766665,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T01:15:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 5606450.431476191,
+        "prior_day_quote": 4264957.1398,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:15:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 8263877.035571428,
+        "prior_day_quote": 3300746.325,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:15:00+00:00",
+        "pair": "AKE/USDT:USDT",
+        "prior7_quote": 13831746.286366668,
+        "prior_day_quote": 4045790.1965333335,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:15:00+00:00",
+        "pair": "WLD/USDT:USDT",
+        "prior7_quote": 12656584.557252381,
+        "prior_day_quote": 8857379.132433333,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:30:00+00:00",
+        "pair": "XRP/USDT:USDT",
+        "prior7_quote": 106034933.00514285,
+        "prior_day_quote": 65091267.537766665,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T01:30:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 5606450.431476191,
+        "prior_day_quote": 4264957.1398,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:30:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 8263877.035571428,
+        "prior_day_quote": 3300746.325,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:30:00+00:00",
+        "pair": "AKE/USDT:USDT",
+        "prior7_quote": 13831746.286366668,
+        "prior_day_quote": 4045790.1965333335,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:30:00+00:00",
+        "pair": "WLD/USDT:USDT",
+        "prior7_quote": 12656584.557252381,
+        "prior_day_quote": 8857379.132433333,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:45:00+00:00",
+        "pair": "XRP/USDT:USDT",
+        "prior7_quote": 106034933.00514285,
+        "prior_day_quote": 65091267.537766665,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T01:45:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 5606450.431476191,
+        "prior_day_quote": 4264957.1398,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:45:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 8263877.035571428,
+        "prior_day_quote": 3300746.325,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:45:00+00:00",
+        "pair": "AKE/USDT:USDT",
+        "prior7_quote": 13831746.286366668,
+        "prior_day_quote": 4045790.1965333335,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T01:45:00+00:00",
+        "pair": "WLD/USDT:USDT",
+        "prior7_quote": 12656584.557252381,
+        "prior_day_quote": 8857379.132433333,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T02:00:00+00:00",
+        "pair": "XRP/USDT:USDT",
+        "prior7_quote": 106034933.00514285,
+        "prior_day_quote": 65091267.537766665,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T02:00:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 5606450.431476191,
+        "prior_day_quote": 4264957.1398,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T02:00:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 8263877.035571428,
+        "prior_day_quote": 3300746.325,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T02:00:00+00:00",
+        "pair": "AKE/USDT:USDT",
+        "prior7_quote": 13831746.286366668,
+        "prior_day_quote": 4045790.1965333335,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T02:00:00+00:00",
+        "pair": "WLD/USDT:USDT",
+        "prior7_quote": 12656584.557252381,
+        "prior_day_quote": 8857379.132433333,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T02:15:00+00:00",
+        "pair": "XRP/USDT:USDT",
+        "prior7_quote": 106034933.00514285,
+        "prior_day_quote": 65091267.537766665,
+        "reason": "ELIGIBLE_NOT_SHORTLISTED"
+      },
+      {
+        "at": "2026-09-01T02:15:00+00:00",
+        "pair": "NEAR/USDT:USDT",
+        "prior7_quote": 5606450.431476191,
+        "prior_day_quote": 4264957.1398,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      },
+      {
+        "at": "2026-09-01T02:15:00+00:00",
+        "pair": "LTC/USDT:USDT",
+        "prior7_quote": 8263877.035571428,
+        "prior_day_quote": 3300746.325,
+        "reason": "ILLIQUID_OR_NOT_WARM"
+      }
+    ],
+    "management_reservation": "Conservative max-hold data reservation for every ready plan; actual fills are only known during later native replay",
+    "new_market_downloads": 0,
+    "primary": {
+      "deduplicated_lane_slots": 44595,
+      "deep_calls": 55517,
+      "deep_checkpoint_hits": 4737,
+      "deep_decision_rows": 55517,
+      "deep_elapsed_seconds": 51.406037757999,
+      "deep_pair_updates": 55517,
+      "deep_state_cache_hits": 50780,
+      "deep_warmup_rows": 18948,
+      "eligible_pair_checks": 74867,
+      "event_ARMED": 3679,
+      "event_EXPIRED": 1269,
+      "event_INVALIDATED": 1661,
+      "event_READY": 14,
+      "event_REJECTED": 735,
+      "gate_ELIGIBLE_NOT_SHORTLISTED": 17248,
+      "gate_ILLIQUID_OR_NOT_WARM": 9805,
+      "gate_REQUIRED_CLOSED_BAR_DATA_UNAVAILABLE": 2126,
+      "gate_RETAINED_SETUP_OR_POSITION": 1667,
+      "gate_SHORTLISTED": 53826,
+      "management_updates_outside_shortlist": 95,
+      "profile_unknown_pair_times": 74867,
+      "raw_pair_checks": 84672,
+      "retained_setup_updates": 1599,
+      "shortlisted_lane_slots": 98421,
+      "total_elapsed_seconds": 133.7378275230003,
+      "unique_shortlisted_pairs": 53826
+    },
+    "provider_requests": 0,
+    "sealed_checkpoint_transport": {
+      "causal_checkpoint_hits": 4769,
+      "checkpoint_bytes_read": 79366967,
+      "checkpoint_file_cache_hits": 4755,
+      "checkpoint_files_loaded": 14,
+      "checkpoint_rows_read": 98112
+    },
+    "trace_path": "work/setup/run-003/compute-trace.jsonl.gz",
+    "trace_sample": [
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "reversal:short"
+        ],
+        "pair": "BNB/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.5096722662458595,
+            "location_price": 694.25,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 32355960.754300002,
+            "prior_day_quote": 18141518.96855,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.5096722662458595,
+            "location_price": 694.25,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 32355960.754300002,
+            "prior_day_quote": 18141518.96855,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "new_lanes": [
+          "breakout:short"
+        ],
+        "pair": "BTC/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 7.850244536307398,
+            "location_price": 77354.4,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 3732709744.5585337,
+            "prior_day_quote": 4497969906.785621,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "new_lanes": [
+          "reversal:long"
+        ],
+        "pair": "DOGE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.201159500824004,
+            "location_price": 0.08261,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 49851270.85233333,
+            "prior_day_quote": 34661359.45696667,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "reversal:long"
+        ],
+        "pair": "ETH/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.7401243085319018,
+            "location_price": 2459.38,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 4086096438.3939514,
+            "prior_day_quote": 4918077500.18872,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 2.5658474557718245,
+            "location_price": 2489.0,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 4086096438.3939514,
+            "prior_day_quote": 4918077500.18872,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "new_lanes": [
+          "continuation:long",
+          "reversal:short"
+        ],
+        "pair": "HYPE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 2.0639570471786133,
+            "location_price": 83.341,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 57743895.2808762,
+            "prior_day_quote": 48192311.0693,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 2.129312173289491,
+            "location_price": 85.33,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 57743895.2808762,
+            "prior_day_quote": 48192311.0693,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "new_lanes": [
+          "continuation:long",
+          "reversal:long"
+        ],
+        "pair": "PEPE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 3.0538726014708195,
+            "location_price": 3.509e-06,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 22517297.970857143,
+            "prior_day_quote": 17506226.735666666,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.7531490860295622,
+            "location_price": 3.532e-06,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 22517297.970857143,
+            "prior_day_quote": 17506226.735666666,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "new_lanes": [
+          "breakout:short",
+          "continuation:long"
+        ],
+        "pair": "SOL/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 2.956772601358931,
+            "location_price": 102.12,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 436251091.2112381,
+            "prior_day_quote": 395296720.227,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 6.549113145066098,
+            "location_price": 100.82,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 436251091.2112381,
+            "prior_day_quote": 395296720.227,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "continuation:short",
+          "reversal:short"
+        ],
+        "pair": "UNI/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.7069351875382859,
+            "location_price": 5.291,
+            "location_source": "swing_high_1h",
+            "playbook": "continuation",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.7069351875382859,
+            "location_price": 5.291,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          },
+          {
+            "condition": "DEVELOPING",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.7069351875382859,
+            "location_price": 5.291,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:15:00+00:00",
+        "new_lanes": [
+          "breakout:short"
+        ],
+        "pair": "ZEC/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 7.62914866141864,
+            "location_price": 807.13,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 81501620.45863333,
+            "prior_day_quote": 88205114.6606,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:15:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "reversal:short"
+        ],
+        "pair": "BNB/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.501271863819521,
+            "location_price": 694.25,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 32355960.754300002,
+            "prior_day_quote": 18141518.96855,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.501271863819521,
+            "location_price": 694.25,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 32355960.754300002,
+            "prior_day_quote": 18141518.96855,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "new_lanes": [
+          "reversal:long"
+        ],
+        "pair": "DOGE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.8692153033657124,
+            "location_price": 0.08261,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 49851270.85233333,
+            "prior_day_quote": 34661359.45696667,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "new_lanes": [
+          "continuation:long",
+          "reversal:long"
+        ],
+        "pair": "HYPE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.908802860934039,
+            "location_price": 83.341,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 57743895.2808762,
+            "prior_day_quote": 48192311.0693,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.908802860934039,
+            "location_price": 83.341,
+            "location_source": "swing_low_1h",
+            "playbook": "reversal",
+            "prior7_quote": 57743895.2808762,
+            "prior_day_quote": 48192311.0693,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "new_lanes": [
+          "continuation:long",
+          "reversal:long"
+        ],
+        "pair": "PEPE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 3.1385955908952776,
+            "location_price": 3.509e-06,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 22517297.970857143,
+            "prior_day_quote": 17506226.735666666,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.801786357736196,
+            "location_price": 3.532e-06,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 22517297.970857143,
+            "prior_day_quote": 17506226.735666666,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "new_lanes": [
+          "breakout:short",
+          "continuation:long"
+        ],
+        "pair": "SOL/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 3.4829656744043764,
+            "location_price": 102.12,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 436251091.2112381,
+            "prior_day_quote": 395296720.227,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 7.105249975784959,
+            "location_price": 100.82,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 436251091.2112381,
+            "prior_day_quote": 395296720.227,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "breakout:short",
+          "continuation:short",
+          "reversal:short"
+        ],
+        "pair": "UNI/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": true,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.9121420835468715,
+            "location_price": 5.291,
+            "location_source": "swing_high_1h",
+            "playbook": "continuation",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.9121420835468715,
+            "location_price": 5.291,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          },
+          {
+            "condition": "DEVELOPING",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.9121420835468715,
+            "location_price": 5.291,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 7.964557705116679,
+            "location_price": 4.974,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "reversal:short"
+        ],
+        "pair": "XRP/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.7424090431874104,
+            "location_price": 1.3952,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 106034933.00514285,
+            "prior_day_quote": 65091267.537766665,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.7424090431874104,
+            "location_price": 1.3952,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 106034933.00514285,
+            "prior_day_quote": 65091267.537766665,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:30:00+00:00",
+        "new_lanes": [
+          "breakout:short"
+        ],
+        "pair": "ZEC/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 8.212150709105956,
+            "location_price": 807.13,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 81501620.45863333,
+            "prior_day_quote": 88205114.6606,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:30:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "reversal:short"
+        ],
+        "pair": "BNB/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.1948438145214233,
+            "location_price": 694.25,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 32355960.754300002,
+            "prior_day_quote": 18141518.96855,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.1948438145214233,
+            "location_price": 694.25,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 32355960.754300002,
+            "prior_day_quote": 18141518.96855,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "new_lanes": [
+          "breakout:short",
+          "reversal:long"
+        ],
+        "pair": "BTC/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.7360921420593705,
+            "location_price": 78359.4,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 3732709744.5585337,
+            "prior_day_quote": 4497969906.785621,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 7.471702276081726,
+            "location_price": 77354.4,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 3732709744.5585337,
+            "prior_day_quote": 4497969906.785621,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "new_lanes": [
+          "reversal:long"
+        ],
+        "pair": "DOGE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.6073042791578738,
+            "location_price": 0.08261,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 49851270.85233333,
+            "prior_day_quote": 34661359.45696667,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "new_lanes": [
+          "reversal:long"
+        ],
+        "pair": "ETH/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.6685504022457767,
+            "location_price": 2459.38,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 4086096438.3939514,
+            "prior_day_quote": 4918077500.18872,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "new_lanes": [
+          "continuation:long"
+        ],
+        "pair": "HYPE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.7866623753787625,
+            "location_price": 83.341,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 57743895.2808762,
+            "prior_day_quote": 48192311.0693,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "new_lanes": [
+          "continuation:long"
+        ],
+        "pair": "PEPE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 3.207917382459148,
+            "location_price": 3.509e-06,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 22517297.970857143,
+            "prior_day_quote": 17506226.735666666,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "new_lanes": [
+          "breakout:short",
+          "continuation:long"
+        ],
+        "pair": "SOL/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 3.205307300732168,
+            "location_price": 102.12,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 436251091.2112381,
+            "prior_day_quote": 395296720.227,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 6.892828974140904,
+            "location_price": 100.82,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 436251091.2112381,
+            "prior_day_quote": 395296720.227,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "breakout:short",
+          "continuation:short",
+          "reversal:short"
+        ],
+        "pair": "UNI/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": true,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.5114425864846881,
+            "location_price": 5.291,
+            "location_source": "swing_high_1h",
+            "playbook": "continuation",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          },
+          {
+            "condition": "DEVELOPING",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.5114425864846881,
+            "location_price": 5.291,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          },
+          {
+            "condition": "DEVELOPING",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 0.5114425864846881,
+            "location_price": 5.291,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 5.973649410141069,
+            "location_price": 4.974,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 16691964.561809523,
+            "prior_day_quote": 21800982.096,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T00:45:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "reversal:short"
+        ],
+        "pair": "XRP/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 2.2155043707936133,
+            "location_price": 1.3952,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 106034933.00514285,
+            "prior_day_quote": 65091267.537766665,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 2.2155043707936133,
+            "location_price": 1.3952,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 106034933.00514285,
+            "prior_day_quote": 65091267.537766665,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T00:45:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "new_lanes": [
+          "breakout:long",
+          "reversal:short"
+        ],
+        "pair": "BNB/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.1075870943829018,
+            "location_price": 694.25,
+            "location_source": "prior_day_high",
+            "playbook": "reversal",
+            "prior7_quote": 32355960.754300002,
+            "prior_day_quote": 18141518.96855,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T01:00:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.1075870943829018,
+            "location_price": 694.25,
+            "location_source": "range_high_1h",
+            "playbook": "breakout",
+            "prior7_quote": 32355960.754300002,
+            "prior_day_quote": 18141518.96855,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T01:00:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "new_lanes": [
+          "reversal:long"
+        ],
+        "pair": "BTC/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.4376565133807087,
+            "location_price": 78359.4,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 3732709744.5585337,
+            "prior_day_quote": 4497969906.785621,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T01:00:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "new_lanes": [
+          "breakout:short",
+          "reversal:long"
+        ],
+        "pair": "DOGE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.544259386777789,
+            "location_price": 0.08261,
+            "location_source": "prior_session_low",
+            "playbook": "reversal",
+            "prior7_quote": 49851270.85233333,
+            "prior_day_quote": 34661359.45696667,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T01:00:00+00:00"
+          },
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 4.406788981780552,
+            "location_price": 0.08185,
+            "location_source": "range_low_1h",
+            "playbook": "breakout",
+            "prior7_quote": 49851270.85233333,
+            "prior_day_quote": 34661359.45696667,
+            "proxy_requires_deep_verification": false,
+            "side": "short",
+            "source_cutoff": "2026-09-01T01:00:00+00:00"
+          }
+        ]
+      },
+      {
+        "at": "2026-09-01T01:00:00+00:00",
+        "new_lanes": [
+          "continuation:long"
+        ],
+        "pair": "HYPE/USDT:USDT",
+        "position_or_reservation": false,
+        "retained_setup": false,
+        "shortlist": [
+          {
+            "condition": "WATCH_LOCATION",
+            "historical_market_status": "UNKNOWN",
+            "historical_spread": "UNKNOWN",
+            "location_atr": 1.5943282224043593,
+            "location_price": 83.341,
+            "location_source": "swing_low_1h",
+            "playbook": "continuation",
+            "prior7_quote": 57743895.2808762,
+            "prior_day_quote": 48192311.0693,
+            "proxy_requires_deep_verification": false,
+            "side": "long",
+            "source_cutoff": "2026-09-01T01:00:00+00:00"
+          }
+        ]
+      }
+    ],
+    "trace_sha256": "77f05212615da0d14d9eba5a537400faeb94ef4262f88dabee97278682f99362"
+  },
+  "verdict": "MECHANICAL_FIXES_VERIFIED;NO_PROMOTION_FROM_ONE_INSPECTED_DEVELOPMENT_RUN"
+}

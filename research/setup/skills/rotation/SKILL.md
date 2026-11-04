@@ -9,6 +9,10 @@ Balanced acceptance may rotate inward after an edge excursion is rejected; susta
 
 Require a complete verified reference-session executed-trade profile and completed1h balance. Missing tape is INSUFFICIENT DATA; an OHLCV approximate profile cannot substitute.
 
+Select the latest eligible completed anchor for the exact Gate pair and venue,
+using its actual availability and receipt time. Preserve multiple sessions and
+their receipts. A profile assembled later cannot authorize a historical decision.
+
 Freeze VAL/VAH/POC before the excursion. Require an outside excursion and completed reclaim, followed by a separate inward directional close. Check intervening VWAP, POC and structure before the opposite value edge.
 
 Partial latest-print samples establish only observed traded concentrations. They do not prove whole-session value, resting orders or absorption. Two completed adverse outside closes invalidate rotation. Historical economics here are NOT TESTED.

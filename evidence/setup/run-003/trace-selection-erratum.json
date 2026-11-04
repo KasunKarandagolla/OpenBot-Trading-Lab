@@ -1,0 +1,10 @@
+{
+  "artifact": "traced-opportunities.json",
+  "field": "opportunity.selection_rule",
+  "original": "FIRST_CHRONOLOGICAL_READY_PLAN;NOT_CHOSEN_BY_RETURN",
+  "correct": "FIRST_SERIALIZED_PAIR_THEN_TIMESTAMP_READY_PLAN;NOT_CHOSEN_BY_RETURN",
+  "reason": "The report iterates sorted-key plan JSON by pair and timestamp, not global time. The chosen ETH trace remains a real pre-registered native opportunity. This metadata correction changes no decision, result or sealed source.",
+  "chosen_decision_id": "ETH/USDT:USDT:c3aaf2c1a982dba699c3e763",
+  "earliest_ready_at": "2026-09-03T13:45:00+00:00",
+  "completed_artifact_preserved": true
+}

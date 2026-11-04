@@ -1,29 +1,30 @@
-# Setup research v1: four trading mechanisms
+# Setup research v1.2: four trading mechanisms
 
-These are frozen, unqualified research rules. The executable definitions are
-`setup_features.py`, `SetupPolicyV1.py` and `protocol.json`. Completed15m bars
-confirm entries, completed1h bars interpret the market, completed4h bars supply
-broad directional bias, and complete prior UTC days/8h sessions supply external
+These are unqualified historical research rules. The v1.2 candidate uses
+`setup_features.py`, `SetupPolicyV1.py` and `candidate-protocol.json`; see
+[the runbook](../../docs/operations/pr11-fixes.md). Frozen PR11 v1.1 remains
+reproducible at `f0ef4453144869ca013ad156fdd46c81b767af2c` with `protocol.json`.
+Completed15m bars confirm entries, completed1h bars interpret the market,
+completed4h bars supply the causal map and major obstacles, and complete prior UTC days/8h sessions supply external
 levels. A pivot is available only after its two right-side bars close. A source
 gap invalidates active setups. Genuine executed flow remains UNKNOWN.
 
 ## A: defended VWAP/structural continuation
 
 The hypothesis is resumption after an orderly correction of a prior impulse.
-Require directional confirmed1h structure, hourly ADX>=20 and aligned completed4h
-EMA20-minus-EMA50 bias. Indicators support the structural condition; they cannot
-create the setup. Identify the previous completed15m session VWAP (UTC midnight,
+Require directional confirmed1h structure and hourly ADX>=20. EMA direction and
+EMA warmup have no admission veto. Identify the previous completed15m session VWAP (UTC midnight,
 HLC3 weighted by base volume, at least8 session bars) or a confirmed1h protected
-swing. The previous close must be on the trend side. A pullback extreme must
+swing. The swing branch works independently of VWAP anchor/readiness. The previous close must be on the trend side. A pullback extreme must
 touch within0.5ATR, close no worse than0.25ATR through the zone, and follow an
 impulse of at least1ATR measured against the prior six-bar extreme.
 
 Freeze that location and protected pullback extreme. Within four later bars,
 require a directional candle closing through the preceding bar's high/low,
 relative volume>=1 and a close back beyond the zone. Refuse entries farther
-than2.5ATR from it, or when hourly structure/4h alignment no longer supports it.
+than2.5ATR from it, or when hourly structure no longer supports it.
 Stop beyond the protected extreme plus0.2ATR. Use the nearest favorable confirmed
-local/hourly swing or prior day/session extreme. Refuse a poor first objective;
+local/hourly/4h swing or prior day/session extreme. Refuse a poor first objective;
 never bypass it for an attractive distant3R. Two closes at least0.15 signalATR
 adverse to the frozen zone plus opposing local structure invalidate the thesis.
 Preferred holding limit8h; the global limit remains15h. A VWAP session/side gets
@@ -38,6 +39,10 @@ unique IDs, event/receipt timestamps, exact pair/venue, a bounded complete
 reference-session coverage receipt and its hash. The source window ends before
 the setup. `setup_profile.verified_profile` reuses the existing contiguous-bin
 profile implementation; OHLCV proxies cannot satisfy this contract.
+
+The normal runner selects the latest eligible completed reference by exact
+pair/venue, anchor and actual availability/receipt time. Preserve multiple
+sessions and source receipts. A later assembly cannot authorize past decisions.
 
 Freeze VAL/VAH/POC before an edge excursion. Require at least0.1ATR outside an
 edge, close reacceptance and a later directional/inward completed close within
@@ -80,8 +85,11 @@ volume>=1.2. The preceding close must be inside. Within eight later bars require
 at least two consecutive completed closes outside, a retest within0.35ATR, a
 directional completed candle and relative volume>=1. Refuse extension>2.5ATR.
 
-The stop lies beyond the protected breakout/retest extreme plus0.2ATR. A return
-more than0.5ATR into the former range invalidates the developing setup; two
+The stop lies beyond the protected breakout/retest extreme plus0.2ATR. Any completed
+close strictly inside the frozen boundary invalidates and consumes the developing
+break ID. A qualifying later break receives a new timestamped ID and must pass
+its own full sequence. An exact boundary close cannot advance outside acceptance;
+a wick retest with an outside close can remain valid. Two
 adverse completed closes beyond the frozen boundary invalidate an open thesis.
 Use the nearest confirmed structural/day/session objective. No projected range
 extension can displace an intervening obstacle. Hold<=8h. A failed breakout
@@ -95,9 +103,18 @@ actual fee. Actual native fees/funding and separate slippage stresses are
 reported independently. Entry is a five-minute, price-window-bounded limit;
 no repricing/chasing. Current survivor-universe eligibility uses complete prior
 daily/7day quote-volume estimates>=10M and10days of warmup. Historical membership,
-spread and contract-spec changes remain unknown. Stage-specific top3 shortlists
-use distance to defended zones/external levels/consolidation boundaries and
-participation; old-ranking and equal-slot deterministic nulls are controls.
+spread and contract-spec changes remain unknown. Up to3 new candidates per
+playbook/side rank developing state, ATR-normalized distance to relevant locations,
+activity and stable pair before deep local setup work. Active setups and positions
+retain updates outside the shortlist; lanes share one deep pair update. No setup
+lifecycle begins before its first eligible shortlist observation. The old PR11
+ranking is an offline coverage comparator, not another native candidate.
+
+Only complete consecutive UTC4h groups enter the map. Two-right-bar confirmed
+4h obstacles must be known by the opening timestamp of the15m confirmation
+candle. Missing required map data blocks admission; a ready map can legitimately
+have no directional pivot. All playbooks take the nearest credible favorable
+obstacle within the existing6ATR bound, without skipping a poor first target.
 
 Simultaneous competing confirmed playbooks on one pair/time abstain. Native
 Freqtrade enforces portfolio capacity, legal lots, risk, margin, cooldown and

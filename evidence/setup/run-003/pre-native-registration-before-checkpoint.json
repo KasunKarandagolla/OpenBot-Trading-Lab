@@ -1,0 +1,113 @@
+{
+  "at": "2026-11-04T07:24:32.574502+00:00",
+  "audit_requested": true,
+  "evaluation": "INSPECTED_DEVELOPMENT",
+  "protocol": {
+    "amendment": "Owner-directed PR11 corrections; one bundled matched native replay, archived controls, no parameter tuning",
+    "breakout": "Any completed inside close invalidates developing break; new break timestamp creates fresh event ID; open-trade two-close thesis rule unchanged",
+    "cheap_source": "Sealed Gate OHLCV and public contract snapshot; offline cached-bar summaries, zero new provider requests",
+    "classification": "INSPECTED_DEVELOPMENT_NOT_HOLDOUT",
+    "constant_risk_target": 0.25,
+    "constraints": [
+      "NO_HOLDOUT_ACCESS",
+      "NO_LIVE_OR_DRY_RUN_ACTIVATION",
+      "NO_PRODUCTION_OR_FROZEN_FILE_CHANGES",
+      "NO_SPEND"
+    ],
+    "continuation": "Confirmed1h structure+ADX>=20; defended VWAP OR1h swing, existing impulse/touch/confirmation tolerances; EMA telemetry only",
+    "controls": "Archived frozen setup-v1.1 and V4 structure, same sealed cohort. Corrected full-universe offline audit and same-cutoff selectors measure coverage only; no extra native sweep.",
+    "cost_admission": 0.0038,
+    "deep_warmup_bars": 960,
+    "end_exclusive": "2026-11-03",
+    "evaluation_class": "INSPECTED_DEVELOPMENT_BUNDLED_FIX_VALIDATION_NOT_INDEPENDENT",
+    "evaluation_start": "2026-09-01",
+    "expiry_minutes": 5,
+    "fee_per_side": 0.00075,
+    "hard_hold_hours": 15,
+    "hold_hours": {
+      "breakout": 8,
+      "continuation": 8,
+      "reversal": 4,
+      "rotation": 6
+    },
+    "id": "setup-v1.2",
+    "leverage": 1,
+    "logical_stop_bounds": [
+      0.003,
+      0.025
+    ],
+    "management": "Full objective exit control; challenger one-third at first objective, remainder second objective only if present, new confirmed postfill swing beyond cost breakeven required to tighten; never widen",
+    "map4h": "Four exact consecutive UTC1h bars; 2left/2right confirmed pivots; five complete4h bars readiness; join at15m OPEN",
+    "max_new_candidates_per_lane": 3,
+    "max_open": 2,
+    "metrics": [
+      "funnel",
+      "gross",
+      "fees",
+      "funding",
+      "net",
+      "profit_factor",
+      "expectancy",
+      "net_R",
+      "drawdown",
+      "turnover",
+      "exposure",
+      "holding",
+      "MFE_MAE",
+      "first_passage",
+      "missed_winners_avoided_losers",
+      "concentration",
+      "weekly_block_CI"
+    ],
+    "min_net_rr": 1.25,
+    "notional_cap": 25,
+    "objective_distance_max_atr": 6,
+    "pairs": [
+      "BTC/USDT:USDT",
+      "ETH/USDT:USDT",
+      "SOL/USDT:USDT",
+      "XRP/USDT:USDT",
+      "DOGE/USDT:USDT",
+      "ZEC/USDT:USDT",
+      "HYPE/USDT:USDT",
+      "UNI/USDT:USDT",
+      "NEAR/USDT:USDT",
+      "LTC/USDT:USDT",
+      "BNB/USDT:USDT",
+      "AKE/USDT:USDT",
+      "PEPE/USDT:USDT",
+      "WLD/USDT:USDT"
+    ],
+    "parent_research_commit": "f0ef4453144869ca013ad156fdd46c81b767af2c",
+    "profile": "Verified tape/receipt index; latest completed eligible anchor; real receipt time retained; missing historical input=>UNKNOWN/NOT_TESTED",
+    "profile_input_index": "user_data/data/setup/profile-index.json",
+    "regimes": "4h reliable confirmed map and barriers;1h confirmed structure/ADX; registered balance definition; EMA telemetry only",
+    "reversal": "Prior completed day/session or confirmed1h swing boundary; excursion 0.1..1ATR and close reclaim; later bar <=4 bars confirms frozen pre-sweep local swing break OR >=0.8ATR displacement with rvol>=1.2",
+    "rotation": "Authentic trade-derived contiguous profile only; frozen prior-session complete coverage; balanced context; edge excursion/rejection followed by inward confirmation; two adverse closes outside invalidates; unavailable history=>NOT_TESTED",
+    "run_id": "run-003",
+    "selection": "Top3 per playbook/side BEFORE deep work; developing condition, nearest relevant ATR-normalized location, activity, stable pair; existing setups and potential positions retained",
+    "sensitivity": [
+      "Additional10bp/side turnover ledger sensitivity;not fresh replay or observed slippage"
+    ],
+    "source_archive_sha256": "abde1f5b151b4bec77eb166e285abc57b0538dd1a3fe4467f2a324df6d6beb7a",
+    "source_start": "2026-08-22",
+    "starting_commit": "542c0d804185ca28c08453711e421de42a793edc",
+    "targets": "Nearest favorable confirmed15m/1h swing, prior complete day/session and completed4h swing; reversal additionally frozen sessionVWAP/range midpoint. Reject insufficient first obstacle; no fallback3R except registered comparator",
+    "timeframes": [
+      "15m",
+      "1h",
+      "4h",
+      "1d"
+    ],
+    "tuning": "All rule changes after outcomes must be separately disclosed; no selecting winning periods/playbooks",
+    "variants": [
+      "setup"
+    ],
+    "venue": "gate",
+    "wallet": 1000
+  },
+  "protocol_sha256": "4e60514c3e698b80e81052e6de4480b1e5e2aa955b8b8bcdf4e4c2a3923239b1",
+  "source_archive_sha256": "abde1f5b151b4bec77eb166e285abc57b0538dd1a3fe4467f2a324df6d6beb7a",
+  "source_manifest_sha256": "b756719ec4f74525509319d5d08bb57139a5c2edf4f4c885f132bf407dedf69a",
+  "starting_commit": "f0ef4453144869ca013ad156fdd46c81b767af2c"
+}

@@ -11,7 +11,7 @@ Require completed1h ADX<25 and prior20-hour range<=8 hourlyATR. Register the pri
 
 Break>=0.1ATR with rvol>=1.2, then at least two completed outside closes plus a retest within0.35ATR and a directional candle/rvol>=1, within eight bars. Refuse extension>2.5ATR.
 
-Return into the former range invalidates the developing setup. Two adverse completed boundary closes invalidate an open trade. Opposing close barriers cannot be ignored in favor of a projected range extension.
+Any completed close strictly inside the frozen boundary invalidates and consumes the developing break ID. A new qualifying break needs its own timestamped ID and full confirmation sequence. An exact boundary close cannot advance outside acceptance; a wick retest with an outside close can remain valid. Two adverse completed boundary closes invalidate an open trade. Opposing close barriers cannot be ignored in favor of a projected range extension.
 
 Read the deterministic plan and entry-time evidence before opening subsequent
 outcomes. Cite setup_id, pair/venue, policy version, decision/availability times,
