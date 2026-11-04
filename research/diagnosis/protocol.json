@@ -1,0 +1,47 @@
+{
+  "id": "deep-diagnosis-r1",
+  "base_sha": "ade410ec625be51f8dbcb7194b98965d8286daf7",
+  "registered_before_new_native_results": true,
+  "diagnosis_basis": "201 overlapping fill records, 83 unique opportunities; passive shared-fill gain +0.787935 offset by nine missed V4 fills +3.003323; structural-only buffered VWAP failure lies beyond original stop for32/40 continuation fills; relaxed eligibility/ranking confounded; no rule below selected by a new native PnL search.",
+  "maximum_correction_hypotheses": 3,
+  "hypotheses": {
+    "H1_ENTRY_ACCESS": {
+      "mechanism": "Waiting for a retracement can improve price but miss directional expansion. Expiry and entry choice must be separated.",
+      "conditional_rule": "Continuation only: immediate original reference if directional signal body >=0.8 original ATR AND original15m rvol>=1.2; otherwise passive0.15 original ATR with original5min configured expiry. Reversals retain immediate original V4 reference. Reuse existing displacement and volume constants; no fitted threshold.",
+      "expiry_ablation": "Unconditional original passive0.15ATR reference, same trigger/stop/target; extend expiry to30minutes, exactly two15m bars. No chasing; native pending-order invalidation and legal risk remain.",
+      "price_depth": "0.15ATR locked; no depth sweep",
+      "control": "Frozen V4 and PR13 passive plans",
+      "variants": ["conditional-entry", "passive-30m"],
+      "falsification": "Does not improve net expectancy per original56 opportunities, loses under native extra10bp/side, relies on one winner, or finer-resolution fills reverse the apparent gain. Full-development gains alone are insufficient."
+    },
+    "H2_SELECTION_AUTHORITY": {
+      "mechanism": "Separate raw EMA eligibility from hourly EMA shortlist authority and test whether rank slots should be occupied by presently qualified signals.",
+      "eligibility_rule": "Remove only three EMA alignment/slope predicates from frozen continuation raw mask. Retain all non-EMA predicates, original structure_reason (including its local FVG alternative), geometry and liquidity. Do not add PR13's mandatory hourly-structure condition.",
+      "ranking_rule": "Same V4 score, stable pair tie-break, three per playbook/side. Relaxed-rank arm removes only hourly EMA pool veto. Qualified-rank arm keeps strict signals and ranks only currently qualified, liquid signal candidates.",
+      "variants": ["ema-eligibility-only", "rank-only", "ema-both", "rank-qualified-only"],
+      "control": "Frozen V4 strict eligibility/strict ranking; compare original PR13 relaxed separately to disclose its additional structure requirement",
+      "diagnostic_ablation": "Continuation-only V4 is explicitly selected after the known playbook results; test natively but do not call it independently discovered or validated.",
+      "falsification": "Ranking/eligibility correction lowers opportunity expectancy, excludes higher-quality signals, has unstable market/chronological effects, or survives only optimistic costs. Additional fills are not success."
+    },
+    "H3_THESIS_COMPATIBILITY": {
+      "mechanism": "A buffered frozen-zone thesis boundary beyond the original protective stop cannot provide earlier failure detection.",
+      "rule": "Use original structural-only exit only if directional distance from buffered boundary (boundary - side*0.15 signalATR) to original stop is strictly greater than one native price tick. Otherwise retain frozen V4 fast EMA/VWAP thesis exit. Classify compatibility once from immutable entry geometry. Same entries, stop, target and hold. No stop widening, trailing addition or reverse position.",
+      "variant": "thesis-compatible",
+      "control": "Frozen V4 and PR13 structural-only portfolio",
+      "falsification": "Compatible fallback fails to recover structural-only loss or underperforms V4; compatibility repair does not by itself imply economic superiority."
+    }
+  },
+  "obstacles": "Diagnostic model only: consumed swings, local15m versus parent/session levels, pre-entry reaction amplitude>=1 signalATR, and prior completed closes through level; preserve all nearest-obstacle records. No obstacle veto is removed and no untested target model becomes executable authority this session.",
+  "five_minute": "Reconstruct full307->235->trigger->geometry->shortlist funnel; show both qualified excluded cases. Full-universe cases remain diagnostic only. Compare native15m execution with genuine5m DETAIL on fixed October5-November3 cohort for V4/passive/conditional/expiry variants. Detail5m is execution fidelity, never claimed as a new5m entry signal.",
+  "source_windows": {
+    "development": ["2026-08-22", "2026-09-01", "2026-11-03"],
+    "detail_cohort": ["2026-08-22", "2026-10-05", "2026-11-03"],
+    "earlier": ["2026-07-26", "2026-08-05", "2026-08-22"],
+    "later": ["2026-10-24", "2026-11-03", "2026-11-04"]
+  },
+  "validation_policy": "Probe a June15m historical request; do not fabricate unavailable history. Earlier August robustness overlaps previously inspected broader project research and is NOT independent validation. November3 is a new fixed one-day chronological extension after this freeze; sample too short to establish reliability. Reserved November17-December1 is forbidden.",
+  "execution": {"wallet":1000,"leverage":1,"notional_cap":25,"max_positions":2,"fee_per_side":0.00075,"admission_allowance":0.0038,"max_new_parameter_search_trials":0},
+  "cost_stress": "Extra5/10/20bp per side post-hoc turnover sensitivity; native extra10bp per side for three primary corrections and V4. One-tick entry trade-through stress for same three corrections and V4. No assumption of real queue priority.",
+  "decision": "PRESERVE_FOR_RESEARCH / REJECT_SPECIFIC_RULE / NEEDS_MORE_EVIDENCE / PROMISING_RESEARCH_ONLY. No automatic promotion from development PnL.",
+  "restrictions": ["BACKTEST_ONLY", "NO_REAL_OR_TESTNET_ORDERS", "NO_PERSISTENT_PAPER", "NO_PAID_DATA", "NO_MERGE", "NO_STOP_WIDENING", "NO_DCA", "NO_FUTURE_HOLDOUT"]
+}

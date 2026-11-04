@@ -1,0 +1,36 @@
+| Cohort / native variant | Plans | Fills | Net USDT | Net/common raw opportunity | Extra10bp/side ledger |
+|---|---:|---:|---:|---:|---:|
+| development / conditional-entry | 56 | 42 | +1.953465 | +0.006162 | +0.031837 |
+| development / continuation-only | 51 | 40 | +4.094245 | +0.012916 | +2.282520 |
+| development / ema-both | 74 | 61 | -0.730953 | -0.002306 | -3.549154 |
+| development / ema-eligibility-only | 64 | 52 | +1.663262 | +0.005247 | -0.730741 |
+| development / passive-30m | 56 | 38 | +1.661944 | +0.005243 | -0.083502 |
+| development / passive | 56 | 36 | +1.257884 | +0.003968 | -0.396053 |
+| development / pr12 | 14 | 14 | -0.246954 | -0.000779 | -0.871369 |
+| development / rank-only | 47 | 39 | +3.411028 | +0.010760 | +1.628326 |
+| development / rank-qualified-only | 162 | 129 | -0.866186 | -0.002732 | -6.743090 |
+| development / structural | 56 | 45 | +2.668069 | +0.008417 | +0.617939 |
+| development / thesis-compatible | 56 | 45 | +3.100606 | +0.009781 | +1.051192 |
+| development / v4 | 56 | 45 | +3.473272 | +0.010957 | +1.423486 |
+| earlier / conditional-entry | 9 | 7 | -0.809279 | -0.011901 | -1.130498 |
+| earlier / continuation-only | 8 | 7 | -1.407744 | -0.020702 | -1.729466 |
+| earlier / ema-both | 14 | 13 | -2.759096 | -0.040575 | -3.358913 |
+| earlier / ema-eligibility-only | 14 | 12 | -1.078992 | -0.015868 | -1.639717 |
+| earlier / passive-30m | 9 | 7 | -0.744876 | -0.010954 | -1.066090 |
+| earlier / passive | 9 | 7 | -0.744876 | -0.010954 | -1.066090 |
+| earlier / rank-only | 8 | 8 | -0.973857 | -0.014321 | -1.344192 |
+| earlier / rank-qualified-only | 25 | 20 | +1.935014 | +0.028456 | +1.021500 |
+| earlier / structural | 9 | 8 | -0.988268 | -0.014533 | -1.358617 |
+| earlier / thesis-compatible | 9 | 8 | -0.988268 | -0.014533 | -1.358617 |
+| earlier / v4 | 9 | 8 | -0.973857 | -0.014321 | -1.344192 |
+| later / conditional-entry | 2 | 1 | -0.233794 | -0.038966 | -0.277519 |
+| later / continuation-only | 2 | 2 | -0.496148 | -0.082691 | -0.585507 |
+| later / ema-both | 1 | 1 | -0.235334 | -0.039222 | -0.280941 |
+| later / ema-eligibility-only | 3 | 3 | -0.681587 | -0.113598 | -0.814196 |
+| later / passive-30m | 2 | 1 | -0.233794 | -0.038966 | -0.277519 |
+| later / passive | 2 | 1 | -0.233794 | -0.038966 | -0.277519 |
+| later / rank-only | 1 | 1 | -0.235334 | -0.039222 | -0.280941 |
+| later / rank-qualified-only | 2 | 2 | -0.496148 | -0.082691 | -0.585507 |
+| later / structural | 2 | 2 | -0.496148 | -0.082691 | -0.585507 |
+| later / thesis-compatible | 2 | 2 | -0.496148 | -0.082691 | -0.585507 |
+| later / v4 | 2 | 2 | -0.496148 | -0.082691 | -0.585507 |

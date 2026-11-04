@@ -1,0 +1,71 @@
+[
+  {
+    "funding": [
+      {
+        "at": "2026-11-03T08:00:01+00:00",
+        "mark": 3.7841,
+        "quantity": 6.0,
+        "rate": 0.0001
+      }
+    ],
+    "id": 1,
+    "open_date": "2026-11-03T08:00:00+00:00",
+    "pair": "NEAR/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.8154570324707953,
+      "approved_notional": 22.7016,
+      "approved_risk": 0.29130587024610605,
+      "atr_at_signal": 0.02736649187175498,
+      "available_at": "2026-11-03T08:00:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "decision_id": "NEAR/USDT:USDT:structure::continuation:short:2026-11-03T08:00:00+00:00",
+      "deviation_fraction": 0.0015,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-11-03T08:05:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.012831953265237079,
+      "obstacles": [
+        {
+          "fidelity": "OHLCV_PROXY",
+          "price": 3.765949422074776,
+          "source": "vp2_val"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 3.7536,
+          "source": "prior_swing_low"
+        }
+      ],
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 3.7836,
+      "risk_fraction": 0.00903195326523708,
+      "side": "short",
+      "signal_close": 3.7836,
+      "stop": 3.817773298374351,
+      "structural_stop": 3.817773298374351,
+      "target": 3.681080104876947,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 6.0,
+      "exited_amount": 6.0,
+      "first_fill": 1793692800.0,
+      "partial_done": true,
+      "tight_stop": 3.817773298374351
+    }
+  }
+]
