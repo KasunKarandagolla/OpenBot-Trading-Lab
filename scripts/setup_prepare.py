@@ -129,4 +129,9 @@ def prepare():
     write(OUT/'funnel.json',dict(**funnel,states=dict(Counter(x['state'] for x in ledger)),reasons=dict(Counter(x['reason'] for x in ledger)),distinct_setups=len({x['setup_id'] for x in ledger}),profile={'status':'NOT_TESTED','reason':'NO_COMPLETE_VERIFIED_HISTORICAL_TAPE'}))
     write(OUT/'features.json',{kind:{p:sha(WORK/'features'/kind/(slug(p)+'.pkl')) for p in pairs()} for kind in ['new','v4']})
     print(summary,flush=True)
-if __name__=='__main__':prepare()
+if __name__=='__main__':
+    if RUN_ID=='run-003':
+        import argparse
+        from setup_candidate import prepare as corrected_prepare
+        p=argparse.ArgumentParser();p.add_argument('--audit',action='store_true');corrected_prepare(p.parse_args().audit)
+    else:prepare()

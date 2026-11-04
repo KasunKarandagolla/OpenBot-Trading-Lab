@@ -9,14 +9,24 @@ import numpy as np
 import pandas as pd
 
 
-def structure(frame, timeframe='15m', left=2, right=2):
-    if timeframe not in ('15m', '1h') or left < 1 or right < 1:
+def structure(frame, timeframe='15m', left=2, right=2, state=None, records_only=False):
+    if timeframe not in ('15m', '1h', '4h') or left < 1 or right < 1:
         raise ValueError('unsupported structure window/timeframe')
-    step = pd.Timedelta(minutes=15) if timeframe == '15m' else pd.Timedelta(hours=1)
-    d = frame.copy().reset_index(drop=True)
-    state = 'UNKNOWN'; levels = {}; consumed = set(); history = []; records = []
-    last_bos = last_choch = None; previous = None
-    for i, row in d.iterrows():
+    step = pd.Timedelta(timeframe)
+    if records_only and isinstance(frame, list):
+        rows = enumerate(frame)
+    else:
+        d = frame.copy().reset_index(drop=True)
+        rows = d.iterrows()
+    saved = state if state is not None else {}
+    state_direction = saved.get('direction', 'UNKNOWN')
+    levels = saved.get('levels', {}); consumed = saved.get('consumed', set())
+    history = saved.get('history', []); records = []
+    last_bos = saved.get('last_bos'); last_choch = saved.get('last_choch')
+    previous = saved.get('previous'); state_direction_local = state_direction
+    checkpoint = state
+    state = state_direction_local
+    for i, row in rows:
         at = pd.Timestamp(row.date); known = at + step
         vals = np.array([row.open, row.high, row.low, row.close, row.volume], dtype=float)
         clean = (not pd.isna(at) and np.isfinite(vals).all() and (vals[:4] > 0).all()
@@ -66,6 +76,9 @@ def structure(frame, timeframe='15m', left=2, right=2):
                 r[prefix+'_known_at'] = None if value is None else value['known_at']
                 r[prefix+'_active'] = value is not None and side not in consumed
         records.append(r); previous = at
+    if checkpoint is not None:
+        checkpoint.update(direction=state, levels=levels, consumed=consumed, history=history, last_bos=last_bos, last_choch=last_choch, previous=previous)
+    if records_only:return records
     features = pd.DataFrame(records, index=d.index)
     for col in features:
         if col.endswith('_at'):

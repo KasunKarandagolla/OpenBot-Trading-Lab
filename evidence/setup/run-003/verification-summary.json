@@ -1,0 +1,28 @@
+{
+  "broad_pass": {
+    "run": 94,
+    "passed": 93,
+    "known_parent_registration_errors": 1,
+    "new_failures": 0,
+    "unexpected_errors": 0
+  },
+  "final_setup_regressions": {
+    "run": 39,
+    "passed": 39,
+    "new_focused_cases": 16
+  },
+  "original_structure_regressions": {
+    "run": 5,
+    "passed": 5
+  },
+  "note": "Suites overlap; do not sum these counts. Broad pass ran once; targeted followups fixed specific new fixture and implementation failures. No new native sweep.",
+  "decision_sources_unchanged_after_seal": true,
+  "backup_restore": {
+    "verified_files": 689,
+    "overwrites": 0,
+    "hydrate_copies": 0
+  },
+  "backup_writer_fix": "Archive restore first rejected tar hardlinks from local deduplicated caches. Writer now materializes regular files; rebuilt bundle passes actual restore and hydration. No decision source changed.",
+  "known_parent_error_actual_evidence": "evidence/setup/run-001/parent-regression-policy.txt",
+  "known_parent_error_report_link_erratum": "verification.json names run-002 incorrectly; original parent proof is preserved in run-001."
+}

@@ -19,7 +19,7 @@ CLOCK=pd.Timestamp('2026-10-01T00:00:00Z');PAIR='ETH/USDT:USDT'
 
 def row(i=0,**kw):
     at=CLOCK+pd.Timedelta(minutes=15*i)
-    d=dict(date=at,open=100.2,high=100.8,low=99.9,close=100.4,volume=10.,atr14=1.,rvol=1.5,
+    d=dict(date=at,map4h_ready=True,map4h_reason='READY',hour_context_known_at=CLOCK-pd.Timedelta(hours=1),open=100.2,high=100.8,low=99.9,close=100.4,volume=10.,atr14=1.,rvol=1.5,
         setup_valid=True,eligible=True,regime='TREND_UP',struct_direction='UP',struct_direction_1h='UP',
         adx_1h=25.,bias4h=1.,session_bars=49+i,vwap_valid=True,same_session=True,prior_vwap=100.,
         previous_close=101.,previous_high=100.8,previous_low=99.5,pull_low=99.5,pull_high=103.,

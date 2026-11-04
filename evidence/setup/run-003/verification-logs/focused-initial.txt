@@ -1,0 +1,36 @@
+test_50_pair_fixture_stops_illiquid_and_nonshortlisted_deep_work (test_setup_fixes.RoutingAndExport.test_50_pair_fixture_stops_illiquid_and_nonshortlisted_deep_work) ... ok
+test_dropped_watch_can_finish_and_position_updates_survive_ineligibility (test_setup_fixes.RoutingAndExport.test_dropped_watch_can_finish_and_position_updates_survive_ineligibility) ... ok
+test_late_shortlist_warmup_cannot_retroactively_trade (test_setup_fixes.RoutingAndExport.test_late_shortlist_warmup_cannot_retroactively_trade) ... ok
+test_profile_missing_late_stale_wrong_pair_proxy_and_multiple_sessions (test_setup_fixes.RoutingAndExport.test_profile_missing_late_stale_wrong_pair_proxy_and_multiple_sessions) ... ok
+test_validated_profile_changes_normal_runner_plan_and_native_geometry (test_setup_fixes.RoutingAndExport.test_validated_profile_changes_normal_runner_plan_and_native_geometry) ... ERROR
+test_watch_export_never_inherits_later_plan (test_setup_fixes.RoutingAndExport.test_watch_export_never_inherits_later_plan) ... ok
+test_4h_complete_alignment_confirmation_duplicates_gaps_and_prefix (test_setup_fixes.SetupCorrections.test_4h_complete_alignment_confirmation_duplicates_gaps_and_prefix) ... ok
+test_4h_nearest_barrier_blocks_both_sides_and_late_level_has_no_effect (test_setup_fixes.SetupCorrections.test_4h_nearest_barrier_blocks_both_sides_and_late_level_has_no_effect) ... ok
+test_ema_cross_without_a_defended_location_cannot_enter (test_setup_fixes.SetupCorrections.test_ema_cross_without_a_defended_location_cannot_enter) ... ok
+test_ema_sign_and_nan_telemetry_cannot_veto_structural_swing_continuation (test_setup_fixes.SetupCorrections.test_ema_sign_and_nan_telemetry_cannot_veto_structural_swing_continuation) ... ok
+test_missing_map_blocks_admission_independently_of_pivot_existence (test_setup_fixes.SetupCorrections.test_missing_map_blocks_admission_independently_of_pivot_existence) ... ok
+test_outside_close_with_wick_retest_remains_valid (test_setup_fixes.SetupCorrections.test_outside_close_with_wick_retest_remains_valid) ... ok
+test_shallow_inside_close_consumes_break_and_fresh_event_must_reconfirm (test_setup_fixes.SetupCorrections.test_shallow_inside_close_consumes_break_and_fresh_event_must_reconfirm) ... ok
+
+======================================================================
+ERROR: test_validated_profile_changes_normal_runner_plan_and_native_geometry (test_setup_fixes.RoutingAndExport.test_validated_profile_changes_normal_runner_plan_and_native_geometry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/lab/tests/test_setup_fixes.py", line 163, in test_validated_profile_changes_normal_runner_plan_and_native_geometry
+    wf,_,_=execute(frames,profiles);missing,_,_=execute(frames,[])
+           ~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/lab/scripts/setup_candidate.py", line 24, in execute
+    old,_,_=shortlist(rows,profiles,old=True)
+            ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lab/research/setup/setup_screen.py", line 57, in shortlist
+    if book=='continuation' and s*(r.ema20_1h-r.ema50_1h)<=0:continue
+                                   ^^^^^^^^^^
+  File "/home/ftuser/.local/lib/python3.14/site-packages/pandas/core/generic.py", line 6194, in __getattr__
+    return object.__getattribute__(self, name)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AttributeError: 'Series' object has no attribute 'ema20_1h'
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.353s
+
+FAILED (errors=1)

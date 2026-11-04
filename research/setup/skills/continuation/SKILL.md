@@ -7,7 +7,7 @@ description: Read-only review of setup-v1 continuation evidence. No execution au
 
 A directional market may resume after correcting a measurable prior impulse into a defended zone.
 
-Require confirmed1h directional structure, ADX>=20, aligned completed4h bias, a preceding1ATR impulse and a controlled touch of prior completed VWAP or confirmed hourly support/resistance.
+Require confirmed1h directional structure, ADX>=20, a preceding1ATR impulse and a controlled touch of prior completed VWAP or confirmed hourly support/resistance. In v1.2 EMA sign is telemetry only. A confirmed hourly swing works independently of VWAP readiness. The complete causal4h map supplies obstacles; missing required map data blocks admission.
 
 Register zone/known time, protected six-bar pullback extreme and exact UTC HLC3 VWAP anchor. Later completed15m candle must break the preceding high/low in the trend direction with rvol>=1, inside2.5ATR of the zone.
 

@@ -26,7 +26,9 @@ def create(target):
         scope='Actual public sources,raw contract-volume quarantine,CCXT snapshot,causal feature/plan stages,all native ZIPs/configs/simulated states and retained attempts',
         credentials_included=False,external_orders=False,parent_session4_archive_available=False)
     target.parent.mkdir(parents=True,exist_ok=True)
-    with tarfile.open(target,'x:gz') as t:
+    # Safe restore accepts regular files only. Deduplicated local caches may be
+    # hardlinked, so materialize their bytes rather than emitting tar link members.
+    with tarfile.open(target,'x:gz',dereference=True) as t:
         raw=(json.dumps(manifest,indent=2,sort_keys=True)+'\n').encode();info=tarfile.TarInfo(MANIFEST);info.size=len(raw);t.addfile(info,io.BytesIO(raw))
         for name,(p,compressed,size,digest) in entries.items():
             if compressed:
