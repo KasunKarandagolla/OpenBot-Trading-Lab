@@ -24,6 +24,9 @@ def native(variant,risk=False,fee=.00075,execution='touch',half=False,detail=Fal
     from recovery_funding import EventClockFunding,install as funding_install
     from session4_metadata import install
     if not (OUT/'freeze.json').exists():raise ValueError('freeze required')
+    if variant not in read(OUT/'plans.json'):raise ValueError('unregistered native plan variant')
+    if RUN_ID=='run-003' and (variant!='setup' or risk or fee!=.00075 or execution!='touch' or half or detail):
+        raise ValueError('run-003 permits only the registered matched primary simulation')
     from setup_verify import verify
     verify()
     for file,digest in read(OUT/'freeze.json')['decision_source_hashes'].items():

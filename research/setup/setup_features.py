@@ -11,6 +11,8 @@ import talib.abstract as ta
 from PlaybookRiskV1 import session_features
 from causal_structure import structure, closed_merge
 from session4_features import hourly, liquidity
+from setup_map import four_hour_map
+from setup_profile import select_profile
 
 COST=.0038
 HOLDS={'continuation':8,'reversal':4,'breakout':8,'rotation':6}
@@ -23,23 +25,22 @@ def finite(x):
     try:return math.isfinite(float(x))
     except (ValueError,TypeError):return False
 
-def features(base, hours):
-    d=structure(session_features(base))
+def features(base, hours, deep=True):
+    d=session_features(base)
+    if deep:d=structure(d)
     h=hourly(hours)
     h['range_high']=h.high.shift().rolling(20).max()
     h['range_low']=h.low.shift().rolling(20).min()
     h['balance']=(h.adx<25)&((h.range_high-h.range_low)<=8*h.atr)
     d=closed_merge(d,h)
-    # Resampling may produce a partial last4h bar. Its actual close timestamp
-    # is used for the backward join, so it cannot affect an earlier decision.
-    h4=hours.set_index('date').resample('4h').agg(
-        open=('open','first'),high=('high','max'),low=('low','min'),
-        close=('close','last'),volume=('volume','sum'),count=('close','count')).reset_index()
-    h4['bias4h']=ta.EMA(h4,timeperiod=20)-ta.EMA(h4,timeperiod=50)
-    h4['known4h']=h4.date+pd.Timedelta(hours=4)
-    h4.loc[h4['count'].ne(4),'bias4h']=np.nan
+    d['hour_context_known_at']=d.date_1h # prior20-hour range excludes that hour
+    h4=four_hour_map(hours)
     d['_at']=d.date+pd.Timedelta(minutes=15)
-    d=pd.merge_asof(d,h4[['known4h','bias4h']],left_on='_at',right_on='known4h',direction='backward')
+    columns=['known4h','bias4h','map4h_ready','map4h_reason']+[c for c in h4 if c.startswith(('swing_','prior_swing_'))]
+    # Obstacles must be known at the OPEN of the15m confirmation candle.
+    d=pd.merge_asof(d,h4[columns],left_on='date',right_on='known4h',direction='backward')
+    stale=~(d.date-d.known4h).between(pd.Timedelta(0),pd.Timedelta(hours=4)-pd.Timedelta(seconds=1))
+    d.loc[stale,'map4h_ready']=False;d.loc[stale,'map4h_reason']='MISSING_OR_STALE_MAP'
     for label,freq,n in [('day','D',96),('session','8h',32)]:
         group=d.date.dt.floor(freq)
         v=d.groupby(group).agg(high=('high','max'),low=('low','min'),count=('close','count'))
@@ -53,10 +54,9 @@ def features(base, hours):
     d['previous_close']=d.close.shift();d['previous_high']=d.high.shift();d['previous_low']=d.low.shift()
     d['pull_low']=d.low.shift().rolling(6).min();d['pull_high']=d.high.shift().rolling(6).max()
     age=d._at-(d.date_1h+pd.Timedelta(hours=1))
-    numeric=['open','high','low','close','volume','atr14','rvol','ema20_1h','ema50_1h','adx_1h','atr_1h','bias4h']
+    numeric=['open','high','low','close','volume','atr14','rvol','adx_1h','atr_1h']
     clean=np.isfinite(d[numeric]).all(axis=1)&d.volume.gt(0)&d.atr_ratio.between(.001,.025)
     d['setup_valid']=clean&d.contiguous&d.context_valid_1h.eq(True)&age.between(pd.Timedelta(0),pd.Timedelta(minutes=45))
-    d['setup_valid'] &= (d._at-d.known4h).between(pd.Timedelta(0),pd.Timedelta(hours=4)-pd.Timedelta(minutes=1))
     d['regime']=np.select([d.balance_1h.eq(True),d.adx_1h.ge(20)&d.struct_direction_1h.eq('UP'),d.adx_1h.ge(20)&d.struct_direction_1h.eq('DOWN')],['BALANCE','TREND_UP','TREND_DOWN'],default='TRANSITION')
     return d.drop(columns=['_at'])
 
@@ -68,16 +68,21 @@ def levels(r, side, include_inward=False):
         key='swing_'+edge+'_1h' if stem=='swing_1h' else stem+'_'+edge
         stamp=clock.format(edge=edge)
         if finite(r.get(key)) and pd.notna(r.get(stamp)) and pd.Timestamp(r[stamp])<=pd.Timestamp(r.date):
-            result.append(dict(price=float(r[key]),source=key,known_at=pd.Timestamp(r[stamp]).isoformat(),fidelity='CONFIRMED_CLOSED_BARS'))
+            result.append(dict(price=float(r[key]),source=key,timeframe={'prior_swing':'15m','swing_1h':'1h','prior_day':'1d','prior_session':'8h'}[stem],known_at=pd.Timestamp(r[stamp]).isoformat(),fidelity='CONFIRMED_CLOSED_BARS'))
+    edge='high' if s==1 else 'low'
+    key='swing_'+edge+'_4h';stamp='swing_'+edge+'_known_at_4h'
+    if finite(r.get(key)) and pd.notna(r.get(stamp)) and pd.Timestamp(r[stamp])<=pd.Timestamp(r.date):
+        result.append(dict(price=float(r[key]),source=key,timeframe='4h',known_at=pd.Timestamp(r[stamp]).isoformat(),fidelity='CONFIRMED_CLOSED_BARS'))
     if include_inward:
         if finite(r.get('prior_vwap')) and bool(r.get('same_session',False)):
-            result.append(dict(price=float(r.prior_vwap),source='SESSION_VWAP_FROZEN',known_at=r.date.isoformat(),fidelity='OHLCV_TYPICAL_PRICE_VWAP'))
+            result.append(dict(price=float(r.prior_vwap),source='SESSION_VWAP_FROZEN',timeframe='15m',known_at=r.date.isoformat(),fidelity='OHLCV_TYPICAL_PRICE_VWAP'))
         if finite(r.get('range_high_1h')) and finite(r.get('range_low_1h')) and bool(r.get('balance_1h',False)):
-            result.append(dict(price=float((r.range_high_1h+r.range_low_1h)/2),source='COMPLETED_HOURLY_RANGE_MID',known_at=(r.date_1h+pd.Timedelta(hours=1)).isoformat(),fidelity='CONFIRMED_CLOSED_BARS'))
+            result.append(dict(price=float((r.range_high_1h+r.range_low_1h)/2),source='COMPLETED_HOURLY_RANGE_MID',timeframe='1h',known_at=r.date_1h.isoformat(),fidelity='CONFIRMED_CLOSED_BARS'))
     return sorted([x for x in result if s*(x['price']-r.close)>0],key=lambda x:s*(x['price']-r.close))
 
 def make_plan(r, armed, target_mode='objective'):
     side=armed['side'];s=1 if side=='long' else -1
+    if pd.isna(r.get('map4h_ready')) or not bool(r.get('map4h_ready',False)):return None,'MAP4H_UNAVAILABLE:'+str(r.get('map4h_reason','MISSING'))
     entry=float(r.close);atr=float(r.atr14)
     extreme=min(armed['extreme'],r.low) if s==1 else max(armed['extreme'],r.high)
     stop=float(extreme-s*.2*atr);risk=s*(entry-stop)/entry
@@ -98,8 +103,8 @@ def make_plan(r, armed, target_mode='objective'):
     at=r.date+pd.Timedelta(minutes=15)
     second=next((x for x in obstacles if s*(x['price']-first['price'])>.1*atr),None)
     ident=hashlib.sha256((armed['id']+':'+at.isoformat()).encode()).hexdigest()[:24]
-    return dict(schema_version='setup.plan.v1',policy_id='setup-v1.1.0',decision_id=ident,setup_id=armed['id'],
-        recipe=armed['playbook'],playbook_version='1.1.0',side=side,venue='gate',reference=entry,signal_close=entry,
+    return dict(schema_version='setup.plan.v1',policy_id='setup-v1.2.0',decision_id=ident,setup_id=armed['id'],
+        recipe=armed['playbook'],playbook_version='1.2.0',side=side,venue='gate',reference=entry,signal_close=entry,
         stop=stop,structural_stop=stop,target=target,first_objective=first,second_objective=second,
         target_origin=origin,obstacles=obstacles,risk_fraction=risk,modeled_loss_per_notional=risk+COST,
         after_cost_rr=rr,admission_cost_allowance=COST,available_at=at.isoformat(),
@@ -111,40 +116,58 @@ def make_plan(r, armed, target_mode='objective'):
         invalidation='TWO_COMPLETED_ADVERSE_CLOSES_AT_FROZEN_BOUNDARY',
         management='FULL_FIRST_OBJECTIVE',flow={'status':'UNKNOWN','reason':'NO_HISTORICAL_EXECUTED_TAPE'},
         profile_fidelity='NOT_USED' if armed['playbook']!='rotation' else 'VERIFIED_TRADE_DERIVED',
+        profile_reference=armed.get('profile_reference'),
         fill_model='NATIVE_LIMIT_RANGE_QUEUE_UNKNOWN'), 'TRADE'
 
 def _arm(pair,r,playbook,side,boundary,source,stamp,extreme):
     ref=str(stamp);ident=':'.join([pair,playbook,side,source,ref,str(round(float(boundary),10))])
+    if playbook=='breakout':ident+=':BREAK_AT:'+(r.date+pd.Timedelta(minutes=15)).isoformat()
     return dict(id=ident,pair=pair,playbook=playbook,side=side,boundary=float(boundary),source=source,
                 reference_known_at=ref,at=(r.date+pd.Timedelta(minutes=15)).isoformat(),extreme=float(extreme),bars=0)
 
-def scan_pair(d,pair,mode='confirmed',profiles=None):
+def scan_pair(d,pair,mode='confirmed',profiles=None,state=None,allow_new=None):
     """One attempt per immutable reference. Sequence state is local to this replay.
 
     All armed snapshots are frozen before confirmation. Missing authentic profile
     history emits UNKNOWN, never a candle proxy. Ranking is a separate stage.
     """
-    active={};used=set();records=[]
+    saved=state if state is not None else {}
+    active=saved.setdefault('active',{});used=saved.setdefault('used',set());records=[]
     def record(r,a,state,reason,plan=None):
         records.append(dict(pair=pair,at=(r.date+pd.Timedelta(minutes=15)).isoformat(),setup_id=a['id'],
             playbook=a['playbook'],side=a['side'],state=state,reason=reason,plan=plan,
             boundary=a['boundary'],boundary_source=a['source'],reference_known_at=a['reference_known_at'],
             armed_at=a['at'],regime=r.regime,rvol=float(r.rvol),location_atr=abs(r.close-a['boundary'])/r.atr14))
         records[-1].update(entry_close=float(r.close),registered_extreme=a['extreme'],atr=float(r.atr14),
-                           flow_status='UNKNOWN',profile_status='NOT_USED' if a['playbook']!='rotation' else 'VERIFIED_TRADE_DERIVED')
+                           old_ema_would_veto=bool(a['playbook']=='continuation' and (not finite(r.get('bias4h')) or (1 if a['side']=='long' else -1)*r.get('bias4h',0)<=0 or not finite(r.get('ema20_1h')) or not finite(r.get('ema50_1h')) or (1 if a['side']=='long' else -1)*(r.get('ema20_1h',0)-r.get('ema50_1h',0))<=0)),flow_status='UNKNOWN',profile_status='NOT_USED' if a['playbook']!='rotation' else 'VERIFIED_TRADE_DERIVED')
+        records[-1]['map4h']=dict(ready=bool(r.get('map4h_ready',False)),reason=str(r.get('map4h_reason','MISSING')),
+            known_at=str(r.get('known4h')) if pd.notna(r.get('known4h')) else None)
+        if state=='REJECTED' and plan is None:
+            sign=1 if a['side']=='long' else -1
+            obstacles=levels(r,a['side'],a['playbook'] in ('reversal','rotation'))
+            if a['playbook']=='rotation':obstacles+=a['profile_objectives']
+            obstacles=sorted([x for x in obstacles if sign*(x['price']-r.close)>0],key=lambda x:sign*(x['price']-r.close))
+            records[-1]['candidate_geometry']=dict(available_at=(r.date+pd.Timedelta(minutes=15)).isoformat(),
+                confirmation_at=(r.date+pd.Timedelta(minutes=15)).isoformat(),confirmation=a.get('confirmation'),
+                reference=float(r.close),stop=float(a['extreme']-sign*.2*r.atr14),
+                first_objective=obstacles[0] if obstacles else None,obstacles=obstacles,status='REJECTED_NOT_EXECUTABLE')
     def add(r,a):
         key=(a['playbook'],a['side'])
+        if allow_new is not None and key not in allow_new:return
         # A VWAP anchor is one opportunity per session and side, rather than one
         # new trade for every small change of its cumulative numeric value.
         if a['source']=='SESSION_VWAP':a['id']=':'.join([pair,a['playbook'],a['side'],'VWAP',str(r.date.floor('D'))])
         if key not in active and a['id'] not in used:
             active[key]=a;record(r,a,'ARMED','WAIT_COMPLETED_CONFIRMATION')
-    for _,r in d.iterrows():
+    rows=enumerate(d) if isinstance(d,list) else d.iterrows()
+    for _,r in rows:
         at=r.date+pd.Timedelta(minutes=15)
+        if saved.get('last_at') is not None and at<=saved['last_at']:continue
+        saved['last_at']=at
         if not bool(r.setup_valid):
             for a in active.values():
                 record(r,a,'INVALIDATED','DATA_GAP_OR_UNAVAILABLE_CONTEXT');used.add(a['id'])
-            active={};continue
+            active.clear();continue
         # First process earlier setups; a sweep/retest may not confirm on its
         # own formation candle. This is deliberately an ordered event sequence.
         for key,a in list(active.items()):
@@ -153,12 +176,14 @@ def scan_pair(d,pair,mode='confirmed',profiles=None):
             if a['bars']>limit:
                 record(r,a,'EXPIRED','CONFIRMATION_WINDOW_EXPIRED');used.add(a['id']);del active[key];continue
             extreme=r.low if s==1 else r.high
+            if a['playbook']=='breakout' and s*(r.close-a['boundary'])<0:
+                record(r,a,'INVALIDATED','BREAKOUT_CLOSE_BACK_INSIDE');used.add(a['id']);del active[key];continue
             if s*(r.close-a['boundary'])<-.5*r.atr14 or s*(extreme-a['extreme'])<-.2*r.atr14:
                 record(r,a,'INVALIDATED','REGISTERED_BOUNDARY_OR_EXTREME_FAILED');used.add(a['id']);del active[key];continue
             a['extreme']=min(a['extreme'],r.low) if s==1 else max(a['extreme'],r.high)
             directional=s*(r.close-r.open)>0
             if a['playbook']=='continuation':
-                aligned=r.struct_direction_1h==('UP' if s==1 else 'DOWN') and s*r.bias4h>0
+                aligned=r.struct_direction_1h==('UP' if s==1 else 'DOWN')
                 confirmed=aligned and directional and s*(r.close-(r.previous_high if s==1 else r.previous_low))>0 and r.rvol>=1 and s*(r.close-a['boundary'])>0 and abs(r.close-a['boundary'])<=2.5*r.atr14
                 a['confirmation']='DEFENDED_ZONE_COMPLETED_PREVIOUS_BAR_BREAK'
             elif a['playbook']=='reversal':
@@ -183,9 +208,9 @@ def scan_pair(d,pair,mode='confirmed',profiles=None):
             direction='UP' if s==1 else 'DOWN'
             # Trend interpretation: coherent hourly structure and completed4h
             # bias, plus a real impulse preceding a controlled defended pullback.
-            if r.struct_direction_1h==direction and r.adx_1h>=20 and s*r.bias4h>0 and r.session_bars>=8 and r.vwap_valid:
+            if r.struct_direction_1h==direction and r.adx_1h>=20:
                 zones=[]
-                if bool(r.same_session) and finite(r.prior_vwap):zones.append((r.prior_vwap,'SESSION_VWAP',r.date))
+                if r.session_bars>=8 and r.vwap_valid and bool(r.same_session) and finite(r.prior_vwap):zones.append((r.prior_vwap,'SESSION_VWAP',r.date))
                 k='swing_'+edge+'_1h';stamp='swing_'+edge+'_known_at_1h'
                 if finite(r.get(k)) and pd.notna(r.get(stamp)) and r[stamp]<=r.date:zones.append((r[k],k,r[stamp]))
                 for boundary,source,known in zones:
@@ -211,12 +236,15 @@ def scan_pair(d,pair,mode='confirmed',profiles=None):
             if r.balance_1h and finite(b) and s*(r.previous_close-b)<=0 and s*(r.close-b)>=.1*r.atr14 and r.rvol>=1.2:
                 a=_arm(pair,r,'breakout',side,b,'PRIOR20_COMPLETE_1H_RANGE',r.date_1h,extreme);a['accepted']=1;add(r,a)
             if profiles:
-                profile=profiles.get(r.date.floor('D').isoformat())
+                profile=select_profile(profiles,pair,r.date)
                 if profile and profile.get('status')=='READY' and profile.get('fidelity')=='OBSERVED_TRADES' and profile.get('pair')==pair and profile.get('venue')=='gate' and r.balance_1h and pd.Timestamp(profile['known_at'])<=r.date and r.date-pd.Timestamp(profile['anchor_end'])<pd.Timedelta(seconds=profile['anchor_seconds']):
                     b=profile['val' if s==1 else 'vah']
                     if s*(extreme-b)<-.1*r.atr14 and s*(r.close-b)>0:
                         a=_arm(pair,r,'rotation',side,b,'VERIFIED_TRADE_PROFILE_EDGE',profile['known_at'],extreme)
-                        a['profile_objectives']=[dict(price=profile[k],source='VERIFIED_TRADE_PROFILE_'+k.upper(),known_at=profile['known_at'],fidelity='VERIFIED_TRADE_DERIVED') for k in ['poc','vah' if s==1 else 'val']];add(r,a)
+                        a['profile_reference']={k:profile[k] for k in ['venue','pair','anchor_start','anchor_end','anchor_seconds','known_at','source','source_sha256','fidelity']}
+                        a['profile_reference']['coverage']='COMPLETE_VERIFIED'
+                        a['profile_reference']['receipt']=profile.get('source_receipt')
+                        a['profile_objectives']=[dict(price=profile[k],source='VERIFIED_TRADE_PROFILE_'+k.upper(),timeframe='8h' if profile['anchor_seconds']==28800 else '1d',known_at=profile['known_at'],fidelity='VERIFIED_TRADE_DERIVED') for k in ['poc','vah' if s==1 else 'val']];add(r,a)
     return records
 
 def thesis_failed(g, rows):
