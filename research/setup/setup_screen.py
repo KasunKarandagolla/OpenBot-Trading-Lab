@@ -10,6 +10,11 @@ from setup_profile import select_profile
 BOOKS=('continuation','reversal','breakout','rotation')
 LANES=[(b,s) for b in BOOKS for s in ('long','short')]
 
+class Snapshot(dict):
+    """Scalar cached-bar transport; avoids pandas attribute/index overhead per gate."""
+    __getattr__=dict.__getitem__
+    def to_dict(self):return dict(self)
+
 def locations(r,book,side,profiles,pair):
     s=1 if side=='long' else -1;edge='low' if s==1 else 'high';at=r.date
     levels=[]
@@ -36,6 +41,7 @@ def locations(r,book,side,profiles,pair):
 
 def shortlist(rows,profiles=(),budget=3,old=False):
     """Same cutoff/budget. Rank developing state, nearest location, activity, pair."""
+    rows={p:Snapshot(r.to_dict()) if isinstance(r,pd.Series) else r for p,r in rows.items()}
     selected={};reasons={};counts=Counter(raw_pair_checks=len(rows))
     btc=rows.get('BTC/USDT:USDT');btc_return=btc.get('return4h',0) if btc is not None else 0
     for lane in LANES:
@@ -43,6 +49,28 @@ def shortlist(rows,profiles=(),budget=3,old=False):
         for pair,r in rows.items():
             if not bool(r.get('eligible',False)):continue
             if not bool(r.get('setup_valid',False)):continue
+            if old:
+                # The frozen PR11 selector ranked the entire eligible pool,
+                # before setup suitability. Do not prefilter its pool using
+                # the corrected structure/balance conditions.
+                if book=='rotation' and select_profile(profiles,pair,r.date) is None:continue
+                if book=='continuation':
+                    if not all(finite(r.get(k)) for k in ['ema20_1h','ema50_1h','vwap']) or s*(r.ema20_1h-r.ema50_1h)<=0:continue
+                    distance=abs(r.close-r.vwap)/r.atr14;source='SESSION_VWAP';level=r.vwap
+                elif book=='reversal':
+                    edge='low' if s==1 else 'high'
+                    keys=['prior_day_'+edge,'prior_session_'+edge,'swing_'+edge+'_1h']
+                    refs=[(float(r[k]),k,False) for k in keys if finite(r.get(k))]
+                    if not refs:continue
+                    level,source,_=min(refs,key=lambda z:abs(r.close-z[0]));distance=abs(r.close-level)/r.atr14
+                else:
+                    level=r.get('range_high_1h' if s==1 else 'range_low_1h');source='PRIOR20_COMPLETE_1H_RANGE'
+                    if not finite(level):continue
+                    distance=abs(r.close-level)/r.atr14
+                score=-distance+.1*min(float(r.rvol),3)
+                if not finite(score):continue
+                ranked.append(((-score,pair),pair,dict(playbook=book,side=side,condition='FROZEN_PR11_SELECTOR',location_source=source,location_price=level,location_atr=distance)))
+                continue
             refs=locations(r,book,side,profiles,pair)
             if not refs:continue
             closest=min(refs,key=lambda z:(abs(r.close-z[0]),z[1]))
@@ -53,18 +81,6 @@ def shortlist(rows,profiles=(),budget=3,old=False):
                 s*(r.close-level)>0 or s*(r.previous_close-level)>0)
             activity=float(r.get('activity',0));activity=activity if math.isfinite(activity) else 0
             key=(0 if developing else 1,distance,-activity,pair)
-            if old:
-                if book=='continuation' and (not finite(r.get('ema20_1h')) or not finite(r.get('ema50_1h')) or s*(r.ema20_1h-r.ema50_1h)<=0):continue
-                # Exact PR11 setup selector, now evaluated at the same cutoff
-                # as the corrected selector (not the older momentum ablation).
-                if book=='continuation':
-                    if not finite(r.get('vwap')):continue
-                    old_distance=abs(r.close-r.vwap)/r.atr14
-                elif book=='reversal':old_distance=min(abs(r.close-x[0])/r.atr14 for x in refs)
-                else:old_distance=abs(r.close-(r.range_high_1h if s==1 else r.range_low_1h))/r.atr14
-                score=-old_distance+.1*min(float(r.rvol),3)
-                if not finite(score):continue
-                key=(-score,pair)
             ranked.append((key,pair,dict(playbook=book,side=side,condition='DEVELOPING' if developing else 'WATCH_LOCATION',
                 location_source=source,location_price=level,location_atr=distance,proxy_requires_deep_verification=proxy,
                 prior_day_quote=float(r.get('prior_day_quote',0)),prior7_quote=float(r.get('prior7_quote',0)),
@@ -89,12 +105,12 @@ class DeepProvider:
         if previous is None or at-previous!=pd.Timedelta(minutes=15):
             self.states[pair]={};f=self.frames[pair]
             warm=f.loc[f.date<at].tail(self.warmup)
-            structure([x for _,x in warm.iterrows()],state=self.states[pair],records_only=True)
+            structure([Snapshot(x) for x in warm.to_dict('records')],state=self.states[pair],records_only=True)
             self.counts['deep_warmup_rows']+=len(warm);self.counts['deep_cache_misses']+=1
         else:self.counts['deep_state_cache_hits']+=1
-        values=structure([r],state=self.states[pair],records_only=True)[0]
-        out=r.copy()
-        for k,v in values.items():out[k]=v
+        raw=Snapshot(r.to_dict())
+        values=structure([raw],state=self.states[pair],records_only=True)[0]
+        out=Snapshot({**raw,**values})
         self.last[pair]=at;self.cache[pair]=(at,out);self.materialized[pair][at]=values
         self.counts['deep_decision_rows']+=1;self.elapsed+=time.perf_counter()-begin
         return out
@@ -103,7 +119,7 @@ class DeepProvider:
         for pair,f in self.frames.items():
             d=f.copy();values=self.materialized[pair]
             keys={k for row in values.values() for k in row}
-            for k in keys:
+            for k in sorted(keys):
                 d[k]=d.date.map({at:row.get(k) for at,row in values.items()})
                 if k.endswith('_at'):d[k]=pd.to_datetime(d[k],utc=True)
             needed=['date','open','high','low','close','volume','atr14','rvol','eligible','setup_valid','regime',
