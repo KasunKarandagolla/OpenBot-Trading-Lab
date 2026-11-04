@@ -45,10 +45,10 @@ Tests/backtesting run in the exact pinned official Freqtrade2026.10 / CCXT4.5.90
 image. The wrapper creates a disposable local container and removes it on exit.
 It binds no ports. It does not require editing configurations or exchange keys.
 
-The already completed `matrix` action is a finite registered comparison, not
-hyperoptimization. Reusing earlier complete records requires their same freeze;
-the V4-control extension changed the final registration seal, so use named
-`native ... --replay-id ...` commands to verify specific portfolios. To recreate
+The already completed `matrix` action is a finite registered comparison. It
+verifies and reuses immutable completed jobs, including the recorded compatible
+primary/control-extension seals, exact plans, features and source identities.
+Use named `native ... --replay-id ...` commands for fresh portfolios. To recreate
 the *initial* v1 matrix exactly, use an isolated checkout of commit `5f582a0`
 and its private input namespace. Do not change the final checkout's frozen
 source just to satisfy an old seal.
