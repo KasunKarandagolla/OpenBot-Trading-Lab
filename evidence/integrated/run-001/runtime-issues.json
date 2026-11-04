@@ -1,0 +1,13 @@
+{
+  "docker_storage_driver": "vfs",
+  "concurrent_workers_failed_before_engine_start": 3,
+  "affected_runs": [
+    "control-pr12",
+    "entry-passive",
+    "ema-context"
+  ],
+  "subsequent_thesis_start_also_failed": true,
+  "root_cause": "8GiB filesystem filled by Docker VFS copies; failed creations left unreferenced directories",
+  "recovery": "Compressed temporary feature caches, pruned this session unused image, removed only six explicitly verified unreferenced failed-worker directories, restored exact caches and same pinned image; sequential workers from this point",
+  "strategy_rule_change": false
+}
