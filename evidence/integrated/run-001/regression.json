@@ -1,0 +1,36 @@
+{
+  "failures": [],
+  "fixture_bindings": {
+    "candles": "56 byte-identical sealed source files; test module DATA bound to isolated hardlink tree",
+    "native_contract_metadata": "Current public snapshot bound to test_session4.DATA; controlled mock books; no old snapshot restoration claimed"
+  },
+  "known_parent_errors": [
+    {
+      "test": "test_policy.ConfigTests.test_baseline_and_native_emergency_settings_do_not_inherit_vwap_overrides",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_policy.py\", line 228, in test_baseline_and_native_emergency_settings_do_not_inherit_vwap_overrides\n    b=read(config('policy-session3-001','TrendPullbackBaselineV1','config-test'))\n           ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/lab/scripts/policy_common.py\", line 59, in config\n    out,data,spec=verify(run_id)\n                  ~~~~~~^^^^^^^^\n  File \"/lab/scripts/policy_common.py\", line 42, in verify\n    if any(sha(ROOT/p)!=h for p,h in hashes.items()): raise ValueError('registered v3 source changed; record explicit amendment')\n                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: registered v3 source changed; record explicit amendment\n"
+    },
+    {
+      "test": "test_session4.ReviewedGuard.test_exact_modes_and_credentials_exposure_and_override_rejection",
+      "traceback": "Traceback (most recent call last):\n  File \"/lab/tests/test_session4.py\", line 137, in test_exact_modes_and_credentials_exposure_and_override_rejection\n    verify_frozen()\n    ~~~~~~~~~~~~~^^\n  File \"/lab/scripts/session4_safety.py\", line 22, in verify_frozen\n    if digest(ROOT/name)!=expected:raise ValueError('frozen strategy/config/protocol changed: '+name)\n                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: frozen strategy/config/protocol changed: research/session3/causal_structure.py\n"
+    }
+  ],
+  "modules": [
+    "test_setup",
+    "test_setup_fixes",
+    "test_policy",
+    "test_session3_structure",
+    "test_intelligence",
+    "test_session4",
+    "test_integrated"
+  ],
+  "native_lifecycle_fixtures": "SYNTHETIC_MECHANICS_ONLY",
+  "passed": 119,
+  "run": 122,
+  "skipped": [
+    {
+      "reason": "optional verified tape sample not restored",
+      "test": "test_setup.RealSourceCausality.test_real_executed_profile_sample_reconciles_complete_session"
+    }
+  ],
+  "unexpected_errors": []
+}

@@ -1,0 +1,61 @@
+{
+  "controls": {
+    "PR12": {
+      "auxiliary_mfe_below_realized": 2,
+      "exit_reasons": {
+        "breakout_thesis_failed": 2,
+        "continuation_thesis_failed": 1,
+        "max_hold_4h": 1,
+        "max_hold_8h": 3,
+        "roi": 2,
+        "stop_loss": 5
+      },
+      "fees": 0.46831117499999997,
+      "fills": 14,
+      "funding": 0.0040571734,
+      "gross": 0.21730000000000005,
+      "loss_contributors": {
+        "MANAGEMENT": 3,
+        "STOP_GEOMETRY": 5,
+        "UNKNOWN": 2
+      },
+      "net": -0.2469540016
+    },
+    "V4": {
+      "auxiliary_mfe_below_realized": 12,
+      "exit_reasons": {
+        "closed_pullback_thesis_lost": 6,
+        "failed_boundary_reaccepted": 1,
+        "max_hold_4h": 2,
+        "max_hold_8h": 1,
+        "roi": 12,
+        "stop_loss": 21,
+        "trailing_stop_loss": 2
+      },
+      "fees": 1.5373395225,
+      "fills": 45,
+      "funding": -0.0043789465,
+      "gross": 5.01499,
+      "loss_contributors": {
+        "EXECUTION_COST": 2,
+        "MANAGEMENT": 5,
+        "STOP_GEOMETRY": 23,
+        "TARGET_GEOMETRY": 30
+      },
+      "net": 3.473271531
+    }
+  },
+  "funding_check": "Recomputed from archived event quantities/rates/marks; source-event completeness awaits recovered market files",
+  "interpretation": "Exit-candle exclusion explains why auxiliary MFE can be below realized return. Native extreme can include post-exit path in exit candle. Neither is accessible peak profit. Full-candle remeasurement, if available, is only a bound.",
+  "rejected_reasons": {
+    "BREAKOUT_CLOSE_BACK_INSIDE": 315,
+    "CONFIRMATION_WINDOW_EXPIRED": 1269,
+    "DATA_GAP_OR_UNAVAILABLE_CONTEXT": 15,
+    "FIRST_OBJECTIVE_BEYOND_EXISTING_6ATR_BOUND": 25,
+    "FIRST_OBSTACLE_INSUFFICIENT_AFTER_COST_REWARD": 522,
+    "LOGICAL_STOP_OUTSIDE_0.3_2.5_PERCENT": 109,
+    "NO_PREEXISTING_OBJECTIVE": 79,
+    "REGISTERED_BOUNDARY_OR_EXTREME_FAILED": 1331
+  },
+  "rejected_records": 3665
+}

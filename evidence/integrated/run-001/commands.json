@@ -1,0 +1,25 @@
+{
+  "commands_actually_executed": [
+    "git fetch origin +refs/heads/*:refs/remotes/origin/* +refs/pull/11/head:refs/remotes/origin/pr11 +refs/pull/12/head:refs/remotes/origin/pr12",
+    "git switch -c codex/integrated-market-entry-research origin/codex/pr11-causal-fixes",
+    "python scripts/integrated_forensics.py",
+    "./scripts/lab-integrated.sh acquire",
+    "./scripts/lab-integrated.sh prepare",
+    "./scripts/lab-integrated.sh tests",
+    "./scripts/lab-integrated.sh native control-v4",
+    "./scripts/lab-integrated.sh matrix",
+    "./scripts/lab-integrated.sh finalize",
+    "./scripts/lab-integrated.sh verify",
+    "python -m unittest discover -s tests -p test_integrated_archive.py -v",
+    "python scripts/integrated_archive.py create /codex/browser/projectless/0008-files-mentioned-by-the-user-uploaded-file-pointe/output/OpenBot-Integrated-Private-Inputs.tar.gz",
+    "python scripts/integrated_archive.py restore /codex/browser/projectless/0008-files-mentioned-by-the-user-uploaded-file-pointe/output/OpenBot-Integrated-Private-Inputs.tar.gz work/integrated/restore-check --sha256 5a82c65ebbe06cf4ecbef8e11c02ab090b3687676cd5a31cbad4a105ef16b5f6",
+    "python scripts/integrated_archive.py restore /codex/browser/projectless/0008-files-mentioned-by-the-user-uploaded-file-pointe/output/OpenBot-Integrated-Private-Inputs.tar.gz . --sha256 5a82c65ebbe06cf4ecbef8e11c02ab090b3687676cd5a31cbad4a105ef16b5f6",
+    "./scripts/lab-integrated.sh checks"
+  ],
+  "output_redirection_omitted": true,
+  "failed_docker_startups": "runtime-issues.json",
+  "first_regression_attempt": "attempts/regression-001.json",
+  "native_commands": "Each native/*/provenance.json gives actual engine args; matrix/finalize shell loops define all worker calls",
+  "logs": "work/integrated/*.log plus retained new evidence/native attempts in the private archive",
+  "read_operations": "Downloaded all four user attachments; read three research reports and pasted request, all 17 design chapters and core source/runbooks; no instruction in the research reports was treated as separate authorization"
+}
