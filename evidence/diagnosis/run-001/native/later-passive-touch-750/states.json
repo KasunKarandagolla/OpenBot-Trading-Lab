@@ -1,0 +1,73 @@
+[
+  {
+    "funding": [],
+    "id": 2,
+    "open_date": "2026-11-03T17:00:00+00:00",
+    "pair": "UNI/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.9318159946719622,
+      "approved_notional": 21.963,
+      "approved_risk": 0.28580978057562173,
+      "atr_at_signal": 0.05725063429270457,
+      "available_at": "2026-11-03T17:00:00+00:00",
+      "boundary": null,
+      "cautions": [
+        "NEAR_OBSTACLES_ARE_CONTEXT_NOT_AUTOMATIC_VETO"
+      ],
+      "dealing_location": 0.9595959595959596,
+      "decision_id": "UNI/USDT:USDT:structure::continuation:long:2026-11-03T17:00:00+00:00",
+      "deviation_fraction": 0.0015,
+      "entry_policy": "SIGNAL_CLOSE_LIMIT",
+      "expires_at": "2026-11-03T17:05:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_SCENARIO_QUEUE_UNKNOWN",
+      "flow": {
+        "reason": "NO_GENUINE_HISTORICAL_FLOW",
+        "status": "UNKNOWN"
+      },
+      "hour_structure": "UP",
+      "invalidation": "PRIOR6_PULLBACK_AND_SIGNAL_EXTREME_PLUS_0.2ATR",
+      "leverage": 1.0,
+      "max_hold_hours": 8,
+      "methodology": "structure",
+      "modeled_loss_per_notional": 0.013013239565433762,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 7.346,
+          "source": "prior_day_high"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 7.395,
+          "source": "prior_swing_high"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "price": 7.404,
+          "source": "prior_session_high"
+        }
+      ],
+      "orderflow_fidelity": "UNKNOWN_HISTORICAL",
+      "policy_id": "controlled-pullback-failure-v3.0.0",
+      "profile_fidelity": "OHLCV_PROXY",
+      "recipe": "continuation",
+      "reference": 7.321412404856094,
+      "risk_fraction": 0.009213239565433762,
+      "side": "long",
+      "signal_close": 7.33,
+      "stop": 7.253549873141459,
+      "structural_stop": 7.253549873141459,
+      "structure_confirmation_at": "2026-11-03 17:00:00+00:00",
+      "target": 7.559350380575623,
+      "target_origin": "FIXED_3R_FROM_SIGNAL_CLOSE"
+    },
+    "state": {
+      "entry_amount": 3.0,
+      "exited_amount": 3.0,
+      "first_fill": 1793725200.0,
+      "partial_done": true,
+      "tight_stop": 7.253549873141459
+    }
+  }
+]

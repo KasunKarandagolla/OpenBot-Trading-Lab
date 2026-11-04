@@ -1,0 +1,29 @@
+{
+  "adapter_sha256": "ca350dc1a5fb182dc5453fdb76e0be301bc9aa2e7690e02ad80badf9a7e22492",
+  "addendum_sha256": "afb437579b36518f0c4264ee0c530cef021a722f3abf768cd49c8269a2c41a4e",
+  "configured_entry_timeout_minutes": 30,
+  "custom_callback_events": [
+    {
+      "at": "2026-08-07T17:00:00+00:00",
+      "cancel": false,
+      "order_id": "9",
+      "pair": "XRP/USDT:USDT",
+      "trade_id": 5
+    }
+  ],
+  "interpretation": "Observed native removal supplies terminal time; the retained original native Order object can still say open after it is removed from the simulated trade.",
+  "terminal_events": [
+    {
+      "age_minutes": 30.0,
+      "classification": "NATIVE_REMOVAL_OBSERVED;ORIGINAL_ORDER_OBJECT_STATUS_MAY_REMAIN_OPEN",
+      "created_at": "2026-08-07T16:45:00+00:00",
+      "custom_timeout_callbacks": [],
+      "native_entry_timeout_minutes": 30,
+      "native_terminal": "REMOVED_UNFILLED_ENTRY",
+      "order_id": "9",
+      "pair": "XRP/USDT:USDT",
+      "terminal_at": "2026-08-07T17:15:00+00:00",
+      "trade_id": 5
+    }
+  ]
+}
