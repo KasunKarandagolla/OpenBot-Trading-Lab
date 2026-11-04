@@ -1,0 +1,212 @@
+[
+  {
+    "funding": [
+      {
+        "at": "2026-09-21T00:00:02+00:00",
+        "mark": 0.08725,
+        "quantity": 280.0,
+        "rate": 4.8e-05
+      }
+    ],
+    "id": 1,
+    "open_date": "2026-09-20T16:15:00+00:00",
+    "pair": "DOGE/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 2.2949388110813884,
+      "approved_notional": 24.1808,
+      "approved_risk": 0.5638986772768052,
+      "atr_at_signal": 0.0003787792370857912,
+      "available_at": "2026-09-20T16:15:00+00:00",
+      "boundary": 0.08546974828954496,
+      "boundary_source": "SESSION_VWAP",
+      "confirmation": "DEFENDED_ZONE_COMPLETED_PREVIOUS_BAR_BREAK",
+      "confirmation_at": "2026-09-20T16:15:00+00:00",
+      "decision_id": "DOGE/USDT:USDT:423a78e8bea372e340d1d66a",
+      "deviation_fraction": 0.0010965123815591454,
+      "expires_at": "2026-09-20T16:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_QUEUE_UNKNOWN",
+      "first_objective": {
+        "fidelity": "CONFIRMED_CLOSED_BARS",
+        "known_at": "2026-09-20T00:00:00+00:00",
+        "price": 0.09131,
+        "source": "prior_day_high"
+      },
+      "flow": {
+        "reason": "NO_HISTORICAL_EXECUTED_TAPE",
+        "status": "UNKNOWN"
+      },
+      "invalidation": "TWO_COMPLETED_ADVERSE_CLOSES_AT_FROZEN_BOUNDARY",
+      "leverage": 1.0,
+      "management": "FULL_FIRST_OBJECTIVE",
+      "max_hold_hours": 8,
+      "modeled_loss_per_notional": 0.023320100132204275,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "known_at": "2026-09-20T00:00:00+00:00",
+          "price": 0.09131,
+          "source": "prior_day_high"
+        }
+      ],
+      "pair": "DOGE/USDT:USDT",
+      "playbook_version": "1.0.0",
+      "policy_id": "setup-v1.0.0",
+      "profile_fidelity": "NOT_USED",
+      "recipe": "continuation",
+      "reference": 0.08636,
+      "reference_known_at": "2026-09-20 15:45:00+00:00",
+      "regime": "TREND_UP",
+      "risk_fraction": 0.019520100132204274,
+      "schema_version": "setup.plan.v1",
+      "second_objective": null,
+      "setup_armed_at": "2026-09-20T16:00:00+00:00",
+      "setup_id": "DOGE/USDT:USDT:continuation:long:VWAP:2026-09-20 00:00:00+00:00",
+      "side": "long",
+      "signal_close": 0.08636,
+      "source_data_refs": [
+        {
+          "path": "user_data/data/setup/development/gate/futures/DOGE_USDT_USDT-15m-futures.feather",
+          "sha256": "2b9c23bef7bbc65625de3daf9a77e9e6b91b76b67531e0db07cb9caebc857a7e"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/DOGE_USDT_USDT-1h-funding_rate.feather",
+          "sha256": "c72634be58d9235c8fe049397cd6743674dd133683cf77845dcc1b405113b2c1"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/DOGE_USDT_USDT-1h-futures.feather",
+          "sha256": "51f9806a5899f4b71eb0870391236fcdca4c504d9ac84c350b352e7b6b9b6a3a"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/DOGE_USDT_USDT-1h-mark.feather",
+          "sha256": "0bd03d5a011656591ea7cf2cd8f411cf9c5c3877104165e5442be5b2ea232d43"
+        }
+      ],
+      "state": "ADMITTED",
+      "stop": 0.08467424415258284,
+      "structural_stop": 0.08467424415258284,
+      "target": 0.09131,
+      "target_origin": "prior_day_high",
+      "timeframes": [
+        "1d",
+        "4h",
+        "1h",
+        "15m"
+      ],
+      "venue": "gate"
+    },
+    "state": {
+      "entry_amount": 280.0,
+      "exited_amount": 280.0,
+      "first_fill": 1789920900.0,
+      "lifecycle": "MANAGED",
+      "partial_done": true,
+      "tight_stop": 0.08467424415258284
+    }
+  },
+  {
+    "funding": [
+      {
+        "at": "2026-10-15T08:00:00+00:00",
+        "mark": 6.964,
+        "quantity": 3.0,
+        "rate": 2.8e-05
+      }
+    ],
+    "id": 2,
+    "open_date": "2026-10-15T03:15:00+00:00",
+    "pair": "UNI/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.465632097086194,
+      "approved_notional": 20.922,
+      "approved_risk": 0.477948320995868,
+      "atr_at_signal": 0.07907453499311437,
+      "available_at": "2026-10-15T03:15:00+00:00",
+      "boundary": 7.054,
+      "boundary_source": "PRIOR20_COMPLETE_1H_RANGE",
+      "confirmation": "TWO_CLOSE_ACCEPTANCE_AND_DEFENDED_RETEST",
+      "confirmation_at": "2026-10-15T03:15:00+00:00",
+      "decision_id": "UNI/USDT:USDT:78d689894a016207f9266962",
+      "deviation_fraction": 0.0015,
+      "expires_at": "2026-10-15T03:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_QUEUE_UNKNOWN",
+      "first_objective": {
+        "fidelity": "CONFIRMED_CLOSED_BARS",
+        "known_at": "2026-10-15T03:00:00+00:00",
+        "price": 6.714,
+        "source": "prior_swing_low"
+      },
+      "flow": {
+        "reason": "NO_HISTORICAL_EXECUTED_TAPE",
+        "status": "UNKNOWN"
+      },
+      "invalidation": "TWO_COMPLETED_ADVERSE_CLOSES_AT_FROZEN_BOUNDARY",
+      "leverage": 1.0,
+      "management": "FULL_FIRST_OBJECTIVE",
+      "max_hold_hours": 8,
+      "modeled_loss_per_notional": 0.02284429409214549,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "known_at": "2026-10-15T03:00:00+00:00",
+          "price": 6.714,
+          "source": "prior_swing_low"
+        }
+      ],
+      "pair": "UNI/USDT:USDT",
+      "playbook_version": "1.0.0",
+      "policy_id": "setup-v1.0.0",
+      "profile_fidelity": "NOT_USED",
+      "recipe": "breakout",
+      "reference": 6.974,
+      "reference_known_at": "2026-10-15 01:00:00+00:00",
+      "regime": "TREND_DOWN",
+      "risk_fraction": 0.01904429409214549,
+      "schema_version": "setup.plan.v1",
+      "second_objective": null,
+      "setup_armed_at": "2026-10-15T02:15:00+00:00",
+      "setup_id": "UNI/USDT:USDT:breakout:short:PRIOR20_COMPLETE_1H_RANGE:2026-10-15 01:00:00+00:00:7.054",
+      "side": "short",
+      "signal_close": 6.974,
+      "source_data_refs": [
+        {
+          "path": "user_data/data/setup/development/gate/futures/UNI_USDT_USDT-15m-futures.feather",
+          "sha256": "e5bca862cb949eb9305902c386fa21c2bce13f435132b38428beb38608cb28bc"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/UNI_USDT_USDT-1h-funding_rate.feather",
+          "sha256": "8e5147c15286c423ba2bd08ff8faa7aca175ce7aebb98b6ae39d8a1d0a566009"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/UNI_USDT_USDT-1h-futures.feather",
+          "sha256": "4e4f6e1e5926837746217c7858e44b1922566c92ebe36a41c8b19d885e79138c"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/UNI_USDT_USDT-1h-mark.feather",
+          "sha256": "1d24d70314ffe765cba01c2cef8bfadb0643dc7bd706b6fb8fa1982a755caa71"
+        }
+      ],
+      "state": "ADMITTED",
+      "stop": 7.106814906998623,
+      "structural_stop": 7.106814906998623,
+      "target": 6.714,
+      "target_origin": "prior_swing_low",
+      "timeframes": [
+        "1d",
+        "4h",
+        "1h",
+        "15m"
+      ],
+      "venue": "gate"
+    },
+    "state": {
+      "entry_amount": 3.0,
+      "exited_amount": 3.0,
+      "first_fill": 1792034100.0,
+      "lifecycle": "MANAGED",
+      "partial_done": true,
+      "tight_stop": 7.106814906998623
+    }
+  }
+]
