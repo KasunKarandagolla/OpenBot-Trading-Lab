@@ -9,11 +9,11 @@ from setup_features import features
 from setup_profile import load_profiles
 from setup_screen import DeepProvider,Workflow,shortlist
 
-def execute(frames,profiles=(),mode='new',start=None,end=None):
+def execute(frames,profiles=(),mode='new',start=None,end=None,checkpoint_loader=None):
     """Shared by real preparation and the normal-runner synthetic fixtures."""
     start=pd.Timestamp(start or protocol()['evaluation_start'],tz='UTC') if not isinstance(start,pd.Timestamp) else start
     end=pd.Timestamp(end or protocol()['end_exclusive'],tz='UTC') if not isinstance(end,pd.Timestamp) else end
-    provider=DeepProvider(frames,protocol()['deep_warmup_bars']);workflow=Workflow(provider,profiles,mode)
+    provider=DeepProvider(frames,protocol()['deep_warmup_bars'],checkpoint_loader);workflow=Workflow(provider,profiles,mode)
     indexed={p:f.set_index('date',drop=False) for p,f in frames.items()}
     dates=sorted({at for f in frames.values() for at in f.date if start<=at+pd.Timedelta(minutes=15)<end})
     old_selections={};begin=time.perf_counter()
@@ -70,7 +70,9 @@ def prepare(audit=False):
                 if p.is_relative_to(DATA.resolve()) and p.exists():profile_files.append(p)
     else:profile_files=[p for p in [DATA/'verified-profile-sample-trades.json',DATA/'verified-profile-sample-receipt.json'] if p.exists()]
     profile_status['input_hashes']={str(p.relative_to(ROOT)):sha(p) for p in profile_files}
-    workflow,provider,timing=execute(frames,profiles)
+    from setup_checkpoint import ArchiveCheckpoints
+    checkpoints=ArchiveCheckpoints(ROOT/'work/setup/run-002/features/new',read(ROOT/'evidence/setup/run-002/features.json')['new'])
+    workflow,provider,timing=execute(frames,profiles,checkpoint_loader=checkpoints)
     source_refs={p:[x for x in manifest['files'] if slug(p)+'-' in Path(x['path']).name] for p in pairs()}
     for pair,z in workflow.plans.items():
         for g in z.values():g['source_data_refs']=[{'path':x['path'],'sha256':x['sha256']} for x in source_refs[pair]]
@@ -93,7 +95,7 @@ def prepare(audit=False):
         trace_sha256=sha(trace),trace_path=str(trace.relative_to(ROOT)),trace_sample=workflow.trace[:30],gate_samples=workflow.gate_samples,
         management_reservation='Conservative max-hold data reservation for every ready plan; actual fills are only known during later native replay')
     if audit:
-        reference,audit_provider,audit_timing=execute(frames,profiles,'audit')
+        reference,audit_provider,audit_timing=execute(frames,profiles,'audit',checkpoint_loader=checkpoints)
         qualified=[e for e in reference.events if e.get('plan') and e['reason'] in ('TRADE','CONFLICTING_COMPLETE_PLANS')]
         def key(e):return (e['pair'],e['playbook'],e['side'],e['at'])
         ready={key(e) for e in workflow.events if e['state']=='READY'}
@@ -125,6 +127,8 @@ def prepare(audit=False):
             missed_by_old_filter=sum(not x['old_PR11_filter_at_confirmation'] for x in coverage),
             new_ready_outside_reference_lifecycle=len(ready-{key(e) for e in qualified}),
             caveat='Same cutoffs and3-per-lane budget; full-universe audit recognizes all setups before old confirmation-time filtering. Candidate lifecycles begin only on eligible shortlist observation and survive later shortlist drops.')
+    stats['sealed_checkpoint_transport']=dict(checkpoints.counts)
+    write(OUT/'checkpoint-inputs.json',{str(Path(p).relative_to(ROOT)):h for p,h in checkpoints.inputs.items()})
     write(OUT/'compute-work.json',stats)
     print('Candidate plans',sum(map(len,workflow.plans.values())),'deep calls',provider.counts['deep_calls'],flush=True)
 

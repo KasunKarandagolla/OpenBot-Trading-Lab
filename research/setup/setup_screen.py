@@ -94,8 +94,9 @@ def shortlist(rows,profiles=(),budget=3,old=False):
 
 class DeepProvider:
     """Cached archive transport; local pivot work occurs only on explicit demand."""
-    def __init__(self,frames,warmup=960):
+    def __init__(self,frames,warmup=960,checkpoint_loader=None):
         self.frames=frames;self.warmup=warmup;self.states={};self.last={};self.cache={};self.materialized={p:{} for p in frames}
+        self.checkpoint_loader=checkpoint_loader
         self.counts=Counter();self.elapsed=0.
     def get(self,pair,r):
         at=r.date;key=(pair,at)
@@ -104,9 +105,18 @@ class DeepProvider:
         previous=self.last.get(pair)
         if previous is None or at-previous!=pd.Timedelta(minutes=15):
             self.states[pair]={};f=self.frames[pair]
-            warm=f.loc[f.date<at].tail(self.warmup)
-            structure([Snapshot(x) for x in warm.to_dict('records')],state=self.states[pair],records_only=True)
-            self.counts['deep_warmup_rows']+=len(warm);self.counts['deep_cache_misses']+=1
+            cached=self.checkpoint_loader(pair,at) if self.checkpoint_loader else None
+            if cached:
+                if cached['previous']!=at-pd.Timedelta(minutes=15):raise ValueError('checkpoint clock mismatch')
+                self.states[pair]=cached
+                warm=f.loc[f.date<at].tail(4)
+                self.states[pair]['history']=[(i,Snapshot(x)) for i,x in enumerate(warm.to_dict('records'))]
+                self.counts['deep_checkpoint_hits']+=1
+            else:
+                warm=f.loc[f.date<at].tail(self.warmup)
+                structure([Snapshot(x) for x in warm.to_dict('records')],state=self.states[pair],records_only=True)
+                self.counts['deep_cache_misses']+=1
+            self.counts['deep_warmup_rows']+=len(warm)
         else:self.counts['deep_state_cache_hits']+=1
         raw=Snapshot(r.to_dict())
         values=structure([raw],state=self.states[pair],records_only=True)[0]

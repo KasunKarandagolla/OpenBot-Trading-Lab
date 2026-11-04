@@ -16,6 +16,7 @@ def seal():
         features_manifest=sha(OUT/'features.json'),source_manifest=sha(OUT/'data-development.json'),
         before_new_native_outcomes=True,classification='OWNER_DIRECTED_BUNDLED_DEVELOPMENT_FIXES',
         profile_source_hashes=read(OUT/'profile-inputs.json').get('input_hashes',{}),
+        causal_checkpoint_hashes=read(OUT/'checkpoint-inputs.json'),
         profile_input_index_sha256=sha(DATA/'profile-index.json') if (DATA/'profile-index.json').exists() else None))
     print('Candidate source, feature, plan and market-input seal written',flush=True)
 if __name__=='__main__':seal()

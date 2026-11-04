@@ -11,6 +11,7 @@ from setup_features import features,scan_pair,make_plan,_arm
 from setup_map import four_hour_map
 from setup_profile import verified_profile,select_profile,load_profiles
 from setup_screen import DeepProvider,Workflow,shortlist
+from setup_checkpoint import ArchiveCheckpoints
 from setup_candidate import execute
 from setup_export import export_event
 from SetupPolicyV1 import SetupPolicyV1
@@ -116,6 +117,26 @@ class SetupCorrections(unittest.TestCase):
         self.assertFalse([e for e in scan_pair(pd.DataFrame([a,b]),PAIR) if e['playbook']=='breakout' and e['plan']])
 
 class RoutingAndExport(unittest.TestCase):
+    def test_sealed_prior_close_checkpoint_matches_warmup_and_rejects_future_state(self):
+        from causal_structure import structure
+        bars=[]
+        for i in range(24):
+            price=100+np.sin(i/2)
+            bars.append(row(i,open=price,close=price,high=price+.5,low=price-.5))
+        f=pd.DataFrame(bars);cached=structure(f[['date','open','high','low','close','volume']])
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/(slug(PAIR)+'.pkl');cached.to_pickle(path)
+            loader=ArchiveCheckpoints(tmp,{PAIR:sha(path)})
+            a=DeepProvider({PAIR:f});b=DeepProvider({PAIR:f},checkpoint_loader=loader)
+            x=a.get(PAIR,f.iloc[16]);y=b.get(PAIR,f.iloc[16])
+            for key in ['struct_direction','swing_high','swing_low','swing_high_known_at','swing_low_known_at','prior_swing_high','prior_swing_low']:
+                if pd.isna(x[key]):self.assertTrue(pd.isna(y[key]))
+                else:self.assertEqual(x[key],y[key])
+            self.assertEqual(b.counts['deep_warmup_rows'],4)
+            self.assertEqual(b.counts['deep_checkpoint_hits'],1)
+            loader.frames[PAIR].loc[f.date.iloc[15],'struct_known_at']=f.date.iloc[17]
+            with self.assertRaisesRegex(ValueError,'future causal checkpoint'):loader(PAIR,f.date.iloc[16])
+
     def test_first_fill_hold_clock_and_order_expiry_remain_separate(self):
         s=SetupPolicyV1(dict(runmode=RunMode.BACKTEST,dry_run=True,candle_type_def=CandleType.FUTURES));s.dp=Mock()
         s.dp.get_analyzed_dataframe.return_value=(pd.DataFrame(),None)

@@ -16,5 +16,9 @@ def verify():
         if sha(ROOT/item['path'])!=item['sha256']:raise ValueError('market source differs')
     for path,h in f.get('profile_source_hashes',{}).items():
         if sha(ROOT/path)!=h:raise ValueError('profile source differs '+path)
+    for path,h in f.get('causal_checkpoint_hashes',{}).items():
+        p=ROOT/path
+        actual=sha(p) if p.exists() else __import__('hashlib').sha256(__import__('gzip').decompress(Path(str(p)+'.gz').read_bytes())).hexdigest()
+        if actual!=h:raise ValueError('causal checkpoint differs '+path)
     print('Exact frozen decision sources, plans, features and market sources verified',flush=True)
 if __name__=='__main__':verify()
