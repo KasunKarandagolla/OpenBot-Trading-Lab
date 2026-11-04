@@ -1,0 +1,19 @@
+[
+  {
+    "attempt": "development-v4-transfer-detail5m-touch-fee500/attempt-1",
+    "log": "work/validation_next/native-development-v4.log",
+    "reason": "Pinned native Binance loads funding event files under1h label. Original converter used8h nominal settlement interval. Rename file only; preserve exact millisecond event times/rates. No source prices or rule thresholds changed.",
+    "status": "INVALID_INPUT_PLUMBING_BEFORE_ANY_PORTFOLIO"
+  },
+  {
+    "attempt": "development-v4-transfer-detail5m-touch-fee500/attempt-2",
+    "log": "work/validation_next/native-development-v4-002.log",
+    "reason": "Freqtrade retains end-boundary candle for dataframe validation. Feature cache deliberately excludes that unscored row. Preserve native OHLCV in adapter while missing feature columns remainNaN; no boundary plan or future decision introduced.",
+    "status": "INVALID_ADAPTER_BEFORE_PORTFOLIO"
+  },
+  {
+    "attempt": "all original development and any in-flight validation labels without-exactclock",
+    "reason": "Independent audit discovered pinned IDataHandler floors funding dates to seconds. New explicitly labeled exactclock adapter reinstates validated real archive millisecond times after native load. Preserve original portfolios, no rule threshold or opportunity changes. Full corrected matrix before holdout. Reporting also fixes raw rejected candidates erroneously classified as missing trades, with no native effects.",
+    "status": "INVALID_NATIVE_FUNDING_CLOCK;PRESERVED"
+  }
+]
