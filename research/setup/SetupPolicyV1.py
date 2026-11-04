@@ -7,7 +7,7 @@ from policy_risk import native_exit_reduction
 from setup_features import thesis_failed
 
 class SetupPolicyV1(RecoveryPolicyR1):
-    def version(self):return 'setup-v1.0.0'
+    def version(self):return 'setup-v1.1.0'
 
     def bot_start(self,**kwargs):
         mode=getattr(self.config.get('runmode'),'value',self.config.get('runmode'))

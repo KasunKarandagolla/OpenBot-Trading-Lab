@@ -24,6 +24,8 @@ def native(variant,risk=False,fee=.00075,execution='touch',half=False,detail=Fal
     from recovery_funding import EventClockFunding,install as funding_install
     from session4_metadata import install
     if not (OUT/'freeze.json').exists():raise ValueError('freeze required')
+    from setup_verify import verify
+    verify()
     for file,digest in read(OUT/'freeze.json')['decision_source_hashes'].items():
         if sha(ROOT/file)!=digest:raise ValueError('frozen decision source changed: '+file)
     label=variant+('-risk' if risk else '-fixed')+'-'+execution+'-'+str(round(fee*1e6))+('-half' if half else '')+('-1m' if detail else '')
@@ -35,13 +37,13 @@ def native(variant,risk=False,fee=.00075,execution='touch',half=False,detail=Fal
     if (dest/'result.json').exists():raise ValueError('completed native result exists')
     attempt=WORK/'native'/label/('attempt-'+str(len(list((WORK/'native'/label).glob('attempt-*')))+1))
     attempt.mkdir(parents=True)
-    name='RecoveryPolicyR1' if variant=='v4-reference' else 'SetupPolicyV1'
+    name='RecoveryPolicyR1' if variant.startswith('v4-') else 'SetupPolicyV1'
     cfg=read(ROOT/'configs/research-vwap.json');data=DATA/'development/gate'
     cfg.update(strategy=name,strategy_path=str(stage()),dry_run=True,dry_run_wallet=1000,stake_amount='unlimited',max_open_trades=2,
         tradable_balance_ratio=1.,stoploss=-.025,minimal_roi={'0':100.},fee=fee,db_url='sqlite://',
         policy_state=str(attempt/'account.sqlite'),policy_events=str(attempt/'events.jsonl'),policy_contracts=str(OUT/'contracts.json'),
         policy_marks=str(data/'futures'),policy_notional_cap=25.,policy_leverage=1,
-        session4_features=str(WORK/'features'/('v4' if variant=='v4-reference' else 'new')),
+        session4_features=str(WORK/'features'/('v4' if variant.startswith('v4-') else 'new')),
         session4_plans=str(WORK/'plans'/(variant+'.json')),session4_constant_risk=False,recovery_risk=risk,
         recovery_allocation_fraction=.5 if half else 1.,setup_management=variant=='management',position_adjustment_enable=variant=='management',lab_audit=False)
     cfg['exchange']['pair_whitelist']=pairs()

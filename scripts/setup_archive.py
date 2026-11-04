@@ -2,7 +2,7 @@
 import sys,json
 from setup_common import *
 import recovery_archive as adapter
-adapter.WORK=WORK;adapter.DATA=DATA;adapter.OUT=OUT
+adapter.WORK=ROOT/'work/setup';adapter.DATA=DATA;adapter.OUT=OUT
 adapter.PREFIXES=('user_data/data/setup/','work/setup/')
 adapter.MANIFEST='SETUP-BACKUP-MANIFEST.json'
 if __name__=='__main__':

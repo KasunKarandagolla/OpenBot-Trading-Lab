@@ -89,13 +89,17 @@ def make_plan(r, armed, target_mode='objective'):
     if not obstacles:return None,'NO_PREEXISTING_OBJECTIVE'
     first=obstacles[0];target=first['price'];origin=first['source']
     if target_mode=='fixed-r':target=entry+s*3*(s*(entry-stop));origin='REGISTERED_FIXED_3R_COMPARATOR'
+    # Restore the existing parent horizon safeguard. A structural level can be
+    # real yet too distant for a bounded intraday hypothesis. Never move it
+    # nearer merely to manufacture acceptable geometry.
+    if s*(target-entry)>6*atr:return None,'FIRST_OBJECTIVE_BEYOND_EXISTING_6ATR_BOUND'
     reward=s*(target-entry)/entry;rr=(reward-COST)/(risk+COST)
     if rr<1.25:return None,'FIRST_OBSTACLE_INSUFFICIENT_AFTER_COST_REWARD'
     at=r.date+pd.Timedelta(minutes=15)
     second=next((x for x in obstacles if s*(x['price']-first['price'])>.1*atr),None)
     ident=hashlib.sha256((armed['id']+':'+at.isoformat()).encode()).hexdigest()[:24]
-    return dict(schema_version='setup.plan.v1',policy_id='setup-v1.0.0',decision_id=ident,setup_id=armed['id'],
-        recipe=armed['playbook'],playbook_version='1.0.0',side=side,venue='gate',reference=entry,signal_close=entry,
+    return dict(schema_version='setup.plan.v1',policy_id='setup-v1.1.0',decision_id=ident,setup_id=armed['id'],
+        recipe=armed['playbook'],playbook_version='1.1.0',side=side,venue='gate',reference=entry,signal_close=entry,
         stop=stop,structural_stop=stop,target=target,first_objective=first,second_objective=second,
         target_origin=origin,obstacles=obstacles,risk_fraction=risk,modeled_loss_per_notional=risk+COST,
         after_cost_rr=rr,admission_cost_allowance=COST,available_at=at.isoformat(),

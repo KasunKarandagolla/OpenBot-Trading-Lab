@@ -97,8 +97,21 @@ def report():
     portfolios={};ledgers={}
     for p in sorted((OUT/'native').glob('*/result.json')):
         native,rows=reconcile(p.parent);ledgers[p.parent.name]=rows;portfolios[p.parent.name]=summary(native,rows)
+        provenance=read(p.parent/'provenance.json');attempt=ROOT/Path(provenance['archive']).parent
+        cfg=read(attempt/'config.json');plans=read(cfg['session4_plans'])
+        event_path=attempt/'events.jsonl'
+        events=[__import__('json').loads(x) for x in event_path.read_text().splitlines()] if event_path.exists() else []
+        admitted_ids={e['decision_id'] for e in events if e.get('event')=='ADMITTED'}
+        filled_ids={x['decision_id'] for x in rows};execution=[]
+        for pair,z in plans.items():
+            for at,g in z.items():
+                state='EXITED' if g['decision_id'] in filled_ids else ('UNFILLED' if g['decision_id'] in admitted_ids else 'NOT_NATIVE_ADMITTED')
+                execution.append(dict(pair=pair,available_at=at,decision_id=g['decision_id'],state=state,
+                    reason='NATIVE_FILL_AND_FINAL_EXIT' if state=='EXITED' else ('NATIVE_ADMISSION_WITH_NO_FILLED_TRADE_BY_END' if state=='UNFILLED' else 'NATIVE_RISK_CAPACITY_COOLDOWN_OR_LEGAL_SIZE; individual veto reason not instrumented')))
+        write(p.parent/'execution-funnel.json',execution)
+        portfolios[p.parent.name]['plan_execution_states']=dict(Counter(e['state'] for e in execution))
     comparisons={};baseline='v4-reference-fixed-touch-750';primary='setup-fixed-touch-750'
-    for a,b in [(primary,baseline),('old-ranking-fixed-touch-750',primary),('simple-trigger-fixed-touch-750',primary),('fixed-r-fixed-touch-750',primary),('management-fixed-touch-750',primary)]:
+    for a,b in [(primary,baseline),(primary,'v4-structure-fixed-touch-750'),('old-ranking-fixed-touch-750',primary),('simple-trigger-fixed-touch-750',primary),('fixed-r-fixed-touch-750',primary),('management-fixed-touch-750',primary)]:
         if a in ledgers and b in ledgers:
             diff=daily(ledgers[a])-daily(ledgers[b]);comparisons[a+' minus '+b]=dict(net_difference=float(diff.sum()),weekly_block95=interval(diff),
                 common_entries=len({(x['pair'],x['entry']) for x in ledgers[a]}&{(x['pair'],x['entry']) for x in ledgers[b]}),
@@ -123,6 +136,12 @@ def report():
         for book in ['continuation','reversal','breakout']:
             x=next((z for z in decisions if z['playbook']==book and predicate(z)),None)
             if x:casebook.append(dict(category=category,entry_time_evidence=x,future_outcome_separate=passage(x['pair'],x['plan']) if x['plan'] else {'status':'NO_ADMITTED_TRADE'}))
+    for book in ['continuation','reversal','breakout']:
+        native_case=next((r for r in ledgers.get(primary,[]) if r['playbook']==book),None)
+        if native_case:
+            plan=next(g for z in admitted.values() for g in z.values() if g['decision_id']==native_case['decision_id'])
+            casebook.append(dict(category='actual_native_trade_and_management',entry_time_evidence=plan,
+                                 future_outcome_separate=native_case))
     write(OUT/'casebook.json',casebook)
     funnel=read(OUT/'funnel.json');raw=eligible=0
     for pair in pairs():
@@ -133,7 +152,7 @@ def report():
         setup_count_note='Distinct IDs include setups carried into evaluation from warmup; ARM events count events occurring inside evaluation.')
     write(OUT/'funnel.json',funnel)
     write(OUT/'economic-report.json',dict(portfolios=portfolios,comparisons=comparisons,ranking_null=null,funnel=funnel,
-        native_portfolios=len(portfolios),reconciled_trade_records=sum(map(len,ledgers.values())),
+        native_portfolios=len(portfolios),native_alternatives=sum('-replay-' not in k for k in portfolios),native_replay_records=sum('-replay-' in k for k in portfolios),reconciled_trade_records=sum(map(len,ledgers.values())),
         path_diagnostics=dict(n=len(paths),objective=dict(Counter(x['objective']['outcome'] for x in paths)),fixed_r=dict(Counter(x['fixed_r']['outcome'] for x in paths)),
             missed_target_first=sum(not x['selected'] and x['objective']['outcome']=='TARGET_FIRST' for x in paths),avoided_stop_first=sum(not x['selected'] and x['objective']['outcome']=='STOP_FIRST' for x in paths)),
         caveats=['DEVELOPMENT_ONLY','CURRENT_SURVIVOR_UNIVERSE','CURRENT_CONTRACT_SPEC_NOT_HISTORICAL_MEMBERSHIP','QUEUE_AND_OBSERVED_PARTIAL_FILLS_UNKNOWN',

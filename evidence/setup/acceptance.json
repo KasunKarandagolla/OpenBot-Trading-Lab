@@ -1,0 +1,166 @@
+{
+  "cases": [
+    {
+      "id": 1,
+      "case": "valid_defended_continuation",
+      "evidence": "SetupBehavior.test_defended_continuation_requires_later_confirmation",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 2,
+      "case": "failed_continuation",
+      "evidence": "SetupBehavior.test_failed_hourly_structure_cannot_be_continuation",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 3,
+      "case": "authentic_rotation_contract",
+      "evidence": "SetupBehavior.test_verified_profile_contract_and_rotation_sequence; RealSourceCausality.test_real_executed_profile_sample_reconciles_complete_session",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 4,
+      "case": "failed_rotation_acceptance",
+      "evidence": "SetupBehavior.test_verified_profile_contract_and_rotation_sequence",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 5,
+      "case": "external_sweep",
+      "evidence": "SetupBehavior.test_external_sweep_then_shift_is_a_reversal",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 6,
+      "case": "misleading_wick",
+      "evidence": "SetupBehavior.test_arbitrary_wick_without_external_reference_is_not_sweep",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 7,
+      "case": "accepted_breakout",
+      "evidence": "SetupBehavior.test_breakout_acceptance_retest_and_failed_break",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 8,
+      "case": "failed_breakout",
+      "evidence": "SetupBehavior.test_breakout_acceptance_retest_and_failed_break",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 9,
+      "case": "competing_playbooks",
+      "evidence": "SetupBehavior.test_competing_playbooks_abstain_even_when_direction_agrees",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 10,
+      "case": "nearest_obstacle",
+      "evidence": "SetupBehavior.test_nearest_obstacle_veto_cannot_skip_to_farther_target",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 11,
+      "case": "account_risk",
+      "evidence": "SetupBehavior.test_bad_logical_stop_not_compressed_to_force_trade",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 12,
+      "case": "pivot_known_at",
+      "evidence": "SetupBehavior.test_pivot_and_hour_availability",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 13,
+      "case": "informative_completed_bars",
+      "evidence": "SetupBehavior.test_pivot_and_hour_availability; RealSourceCausality.test_future_append_preserves_every_earlier_feature_and_decision",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 14,
+      "case": "missing_profile_flow",
+      "evidence": "SetupBehavior.test_profile_missing_is_unknown_and_proxy_cannot_activate_rotation",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 15,
+      "case": "setup_identity",
+      "evidence": "SetupBehavior.test_repeated_reclaim_does_not_retrade_same_unresolved_anchor; SetupBehavior.test_gap_invalidation_consumes_the_old_reference",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 16,
+      "case": "partial_quantity",
+      "evidence": "SetupNativeLifecycle.test_native_objective_partial_cancel_restart_final_both_sides",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 17,
+      "case": "monotone_stop",
+      "evidence": "SetupNativeLifecycle.test_native_stop_persists_never_widens_and_no_premature_breakeven; SetupNativeLifecycle.test_stop_advances_only_when_new_confirmed_structure_supports_cost_breakeven",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 18,
+      "case": "long_short",
+      "evidence": "SetupBehavior.test_long_short_geometry_symmetry_and_expiry; SetupNativeLifecycle.test_native_objective_partial_cancel_restart_final_both_sides",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 19,
+      "case": "pending_expiry",
+      "evidence": "SetupNativeLifecycle.test_pending_partial_entry_and_exit_expiry; native through/drop25 portfolios",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 20,
+      "case": "full_exit_restart",
+      "evidence": "SetupNativeLifecycle.test_native_objective_partial_cancel_restart_final_both_sides; SetupNativeLifecycle.test_consumed_setup_persists_across_reopen",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 21,
+      "case": "future_append",
+      "evidence": "RealSourceCausality.test_future_append_preserves_every_earlier_feature_and_decision",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 22,
+      "case": "hard15h",
+      "evidence": "SetupBehavior.test_mode_refusal_and_hard_hold_without_store; holding-audit.json",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 23,
+      "case": "activation_refused",
+      "evidence": "SetupBehavior.test_mode_refusal_and_hard_hold_without_store",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 24,
+      "case": "production_unchanged",
+      "evidence": "parent-preservation.json",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    },
+    {
+      "id": 25,
+      "case": "native_reconciliation",
+      "evidence": "47 official portfolios;772 order/fee/funding/net records; exact-replay.json",
+      "status": "PASS_MECHANICS_OR_RECONCILIATION"
+    }
+  ],
+  "new_tests_passed": 23,
+  "regression_structure_passed": 5,
+  "regression_intelligence_passed": 20,
+  "regression_policy_passed": 31,
+  "known_parent_errors": 1,
+  "qualifications": [
+    "Fixtures demonstrate mechanics, not profits or real exchange behavior.",
+    "Full-profile economic portfolio NOT_TESTED despite valid authentic sample.",
+    "Strict continuation has zero selected historical fills.",
+    "Real pending queue/partial-fill frequency and persistent owner-host restart are untested.",
+    "Individual native veto reasons beyond recorded admissions are not instrumented; execution funnels label this uncertainty."
+  ]
+}

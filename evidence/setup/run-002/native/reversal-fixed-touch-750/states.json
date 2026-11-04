@@ -1,0 +1,117 @@
+[
+  {
+    "funding": [],
+    "id": 1,
+    "open_date": "2026-09-11T18:15:00+00:00",
+    "pair": "SOL/USDT:USDT",
+    "plan": {
+      "admission_cost_allowance": 0.0038,
+      "after_cost_rr": 1.3030210146294057,
+      "approved_notional": 20.188000000000002,
+      "approved_risk": 0.4077337157536958,
+      "atr_at_signal": 0.8254828938423299,
+      "available_at": "2026-09-11T18:15:00+00:00",
+      "boundary": 102.29,
+      "boundary_source": "prior_day_high",
+      "confirmation": "FROZEN_PRE_SWEEP_STRUCTURE_BREAK",
+      "confirmation_at": "2026-09-11T18:15:00+00:00",
+      "decision_id": "SOL/USDT:USDT:9a04313b0e111cec85116c19",
+      "deviation_fraction": 0.0015,
+      "expires_at": "2026-09-11T18:20:00+00:00",
+      "fill_model": "NATIVE_LIMIT_RANGE_QUEUE_UNKNOWN",
+      "first_objective": {
+        "fidelity": "CONFIRMED_CLOSED_BARS",
+        "known_at": "2026-09-11T15:00:00+00:00",
+        "price": 97.9,
+        "source": "swing_low_1h"
+      },
+      "flow": {
+        "reason": "NO_HISTORICAL_EXECUTED_TAPE",
+        "status": "UNKNOWN"
+      },
+      "invalidation": "TWO_COMPLETED_ADVERSE_CLOSES_AT_FROZEN_BOUNDARY",
+      "leverage": 1.0,
+      "management": "FULL_FIRST_OBJECTIVE",
+      "max_hold_hours": 4,
+      "modeled_loss_per_notional": 0.020196835533668307,
+      "obstacles": [
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "known_at": "2026-09-11T15:00:00+00:00",
+          "price": 97.9,
+          "source": "swing_low_1h"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "known_at": "2026-09-11T16:00:00+00:00",
+          "price": 97.9,
+          "source": "prior_session_low"
+        },
+        {
+          "fidelity": "CONFIRMED_CLOSED_BARS",
+          "known_at": "2026-09-11T00:00:00+00:00",
+          "price": 97.13,
+          "source": "prior_day_low"
+        }
+      ],
+      "pair": "SOL/USDT:USDT",
+      "playbook_version": "1.1.0",
+      "policy_id": "setup-v1.1.0",
+      "profile_fidelity": "NOT_USED",
+      "recipe": "reversal",
+      "reference": 100.94,
+      "reference_known_at": "2026-09-11 00:00:00+00:00",
+      "regime": "TREND_UP",
+      "risk_fraction": 0.016396835533668306,
+      "schema_version": "setup.plan.v1",
+      "second_objective": {
+        "fidelity": "CONFIRMED_CLOSED_BARS",
+        "known_at": "2026-09-11T00:00:00+00:00",
+        "price": 97.13,
+        "source": "prior_day_low"
+      },
+      "setup_armed_at": "2026-09-11T17:15:00+00:00",
+      "setup_id": "SOL/USDT:USDT:reversal:short:prior_day_high:2026-09-11 00:00:00+00:00:102.29",
+      "side": "short",
+      "signal_close": 100.94,
+      "source_data_refs": [
+        {
+          "path": "user_data/data/setup/development/gate/futures/SOL_USDT_USDT-15m-futures.feather",
+          "sha256": "8ff93edb51969bbadb5880941ed877abbeb7d3ab08f90fce53428448ae951699"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/SOL_USDT_USDT-1h-funding_rate.feather",
+          "sha256": "168982cdf265a6687562b19146ed26e9bf108409ebc5e174f18606264de780e8"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/SOL_USDT_USDT-1h-futures.feather",
+          "sha256": "1ac5391539515bfad1d9a91d3de595c6675dcf4c37e87b2d365c7895f01244af"
+        },
+        {
+          "path": "user_data/data/setup/development/gate/futures/SOL_USDT_USDT-1h-mark.feather",
+          "sha256": "30413f9dc833f7140f51ae7c54b25432038fd01bddc2752359098a36a5948f13"
+        }
+      ],
+      "state": "ADMITTED",
+      "stop": 102.59509657876848,
+      "structural_stop": 102.59509657876848,
+      "target": 97.9,
+      "target_origin": "swing_low_1h",
+      "timeframes": [
+        "1d",
+        "4h",
+        "1h",
+        "15m"
+      ],
+      "venue": "gate"
+    },
+    "state": {
+      "entry_amount": 0.2,
+      "exited_amount": 0.2,
+      "first_fill": 1789150500.0,
+      "lifecycle": "MANAGED",
+      "partial_done": true,
+      "tight_stop": 102.59509657876848
+    }
+  }
+]

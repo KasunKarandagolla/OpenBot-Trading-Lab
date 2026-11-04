@@ -14,8 +14,10 @@ case "$action" in
   tests) docker exec "$runner" python -m unittest discover -s tests -p test_setup.py -v ;;
   acquire) docker exec "$runner" python scripts/setup_data.py ;;
   prepare) docker exec "$runner" python scripts/setup_prepare.py ;;
-  native) docker exec "$runner" python scripts/setup_native.py "$@" ;;
-  matrix) docker exec "$runner" python scripts/setup_matrix.py ;;
+  native) docker exec "$runner" python scripts/setup_verify.py
+          docker exec "$runner" python scripts/setup_native.py "$@" ;;
+  matrix) docker exec "$runner" python scripts/setup_verify.py
+          docker exec "$runner" python scripts/setup_matrix.py ;;
   report) docker exec "$runner" python scripts/setup_report.py ;;
   export) docker exec "$runner" python scripts/setup_export.py ;;
   *) echo 'Unknown historical-only action' >&2;exit 2 ;;

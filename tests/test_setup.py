@@ -24,9 +24,9 @@ def row(i=0,**kw):
         adx_1h=25.,bias4h=1.,session_bars=49+i,vwap_valid=True,same_session=True,prior_vwap=100.,
         previous_close=101.,previous_high=100.8,previous_low=99.5,pull_low=99.5,pull_high=103.,
         swing_low_1h=95.,swing_low_known_at_1h=CLOCK-pd.Timedelta(hours=2),
-        swing_high_1h=110.,swing_high_known_at_1h=CLOCK-pd.Timedelta(hours=2),
+        swing_high_1h=106.5,swing_high_known_at_1h=CLOCK-pd.Timedelta(hours=2),
         prior_swing_low=95.,prior_swing_low_known_at=CLOCK-pd.Timedelta(hours=1),
-        prior_swing_high=110.,prior_swing_high_known_at=CLOCK-pd.Timedelta(hours=1),
+        prior_swing_high=106.5,prior_swing_high_known_at=CLOCK-pd.Timedelta(hours=1),
         prior_day_low=90.,prior_day_high=115.,prior_day_known_at=CLOCK.floor('D'),
         prior_session_low=92.,prior_session_high=112.,prior_session_known_at=CLOCK.floor('8h'),
         range_low_1h=90.,range_high_1h=110.,balance_1h=False,date_1h=CLOCK.floor('h')-pd.Timedelta(hours=1))
@@ -48,7 +48,7 @@ class SetupBehavior(unittest.TestCase):
         events=scan_pair(d,PAIR);plans=[x['plan'] for x in events if x['plan']]
         self.assertEqual(len(plans),1);g=plans[0]
         self.assertEqual(g['recipe'],'continuation');self.assertLess(g['setup_armed_at'],g['confirmation_at'])
-        self.assertEqual(g['target'],110.);self.assertLess(g['stop'],99.5)
+        self.assertEqual(g['target'],106.5);self.assertLess(g['stop'],99.5)
         self.assertFalse([x for x in scan_pair(d.iloc[:1],PAIR) if x['plan']])
 
     def test_failed_hourly_structure_cannot_be_continuation(self):
@@ -114,12 +114,17 @@ class SetupBehavior(unittest.TestCase):
 
     def test_long_short_geometry_symmetry_and_expiry(self):
         for side,s in [('long',1),('short',-1)]:
-            r=row(close=100.,low=99.5,high=100.5,prior_swing_high=110.,prior_swing_low=90.,prior_vwap=95.)
+            r=row(close=100.,low=99.5,high=100.5,prior_swing_high=106.,prior_swing_low=94.,swing_high_1h=106.,swing_low_1h=94.,prior_vwap=95.)
             a=_arm(PAIR,r,'continuation',side,100.,'fixture',r.date,99.5 if s==1 else 100.5);a['confirmation']='fixture'
             p,_=make_plan(r,a);self.assertIsNotNone(p)
             self.assertAlmostEqual(abs(p['stop']-100),.7)
             self.assertIsNotNone(execution_plan(p,100,pd.Timestamp(p['available_at'])))
             self.assertIsNone(execution_plan(p,100,pd.Timestamp(p['expires_at'])))
+
+    def test_distant_real_objective_rejected_without_manufactured_nearer_target(self):
+        r=row(close=100.,prior_swing_high=110.,swing_high_1h=110.)
+        a=_arm(PAIR,r,'continuation','long',100.,'fixture',r.date,99.5);a['confirmation']='fixture'
+        self.assertEqual(make_plan(r,a)[1],'FIRST_OBJECTIVE_BEYOND_EXISTING_6ATR_BOUND')
 
     def test_pivot_and_hour_availability(self):
         f=pd.DataFrame(dict(date=pd.date_range(CLOCK,periods=7,freq='15min'),high=[11,12,16,13,12,11,12],low=[8]*7,open=[9]*7,close=[10]*7,volume=[1]*7))
@@ -211,6 +216,14 @@ class SetupNativeLifecycle(NativeLifecycleFixture):
             self.assertGreater((tight-100)*(-1 if short else 1),0)
 
 class RealSourceCausality(unittest.TestCase):
+    def test_real_executed_profile_sample_reconciles_complete_session(self):
+        p=DATA/'verified-profile-sample-trades.json';receipt=DATA/'verified-profile-sample-receipt.json'
+        if not p.exists():self.skipTest('optional verified tape sample not restored')
+        data=read(p);r=read(receipt);profile=verified_profile(data,r,r['known_at'])
+        self.assertEqual(profile['status'],'READY')
+        self.assertAlmostEqual(profile['total_base_volume'],sum(t['amount'] for t in data),places=6)
+        self.assertLessEqual(pd.Timestamp(profile['anchor_end']),pd.Timestamp(profile['known_at']))
+
     def test_future_append_preserves_every_earlier_feature_and_decision(self):
         root=DATA/'development/gate/futures'
         if not root.exists():self.skipTest('owner must restore source archive')
