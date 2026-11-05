@@ -1,0 +1,51 @@
+{
+  "retrieved_at_utc": "2026-11-05T04:12:53.846378+00:00",
+  "rest": [
+    {
+      "dataset": "exchange_info",
+      "url": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+      "status": "BLOCKED",
+      "http_status": 451,
+      "retrieved_at_utc": "2026-11-05T04:12:53.846394+00:00",
+      "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/exchangeInfo: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}"
+    },
+    {
+      "dataset": "ticker_24h",
+      "url": "https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=BTCUSDT",
+      "status": "BLOCKED",
+      "http_status": 451,
+      "retrieved_at_utc": "2026-11-05T04:12:54.142381+00:00",
+      "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=BTCUSDT: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}"
+    },
+    {
+      "dataset": "candles_5m",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&interval=5m&limit=2",
+      "status": "BLOCKED",
+      "http_status": 451,
+      "retrieved_at_utc": "2026-11-05T04:12:54.410033+00:00",
+      "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&interval=5m&limit=2: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}"
+    },
+    {
+      "dataset": "funding_and_mark",
+      "url": "https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT",
+      "status": "BLOCKED",
+      "http_status": 451,
+      "retrieved_at_utc": "2026-11-05T04:12:54.523616+00:00",
+      "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}"
+    },
+    {
+      "dataset": "order_book_snapshot",
+      "url": "https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=5",
+      "status": "BLOCKED",
+      "http_status": 451,
+      "retrieved_at_utc": "2026-11-05T04:12:54.706426+00:00",
+      "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=5: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}"
+    }
+  ],
+  "websocket": {
+    "status": "BLOCKED",
+    "endpoint": "wss://fstream.binance.com/ws/btcusdt@markPrice",
+    "error": "TimeoutError: ",
+    "retrieved_at_utc": "2026-11-05T04:13:05.563108+00:00"
+  }
+}

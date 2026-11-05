@@ -1,0 +1,214 @@
+{
+  "environment": "Codex Cloud, read-only public probes through configured HTTP proxy; no API key, account or private endpoint used.",
+  "historical_archives": {
+    "archive_count": 49,
+    "archive_http_statuses": {
+      "aggTrades": {
+        "200": 1
+      },
+      "fundingRate": {
+        "200": 8
+      },
+      "klines": {
+        "200": 32
+      },
+      "markPriceKlines": {
+        "200": 8
+      }
+    },
+    "checksums": "All sample archives matched the adjacent Binance Vision .CHECKSUM SHA-256.",
+    "compressed_bytes": 3983632,
+    "daily_funding_rate_path": "NOT_FOUND (404) for tested daily pattern; monthly fundingRate path returned 200 and was used.",
+    "datasets": {
+      "aggTrades": {
+        "archives": 1,
+        "bytes": 3370321,
+        "checksums_verified": true,
+        "http_statuses": {
+          "200": 1
+        },
+        "symbols": [
+          "XRPUSDT"
+        ]
+      },
+      "fundingRate": {
+        "archives": 8,
+        "bytes": 8254,
+        "checksums_verified": true,
+        "http_statuses": {
+          "200": 8
+        },
+        "symbols": [
+          "1000BONKUSDT",
+          "1000CATUSDT",
+          "BNBUSDT",
+          "BTCUSDT",
+          "DOGEUSDT",
+          "ETHUSDT",
+          "SOLUSDT",
+          "XRPUSDT"
+        ]
+      },
+      "klines": {
+        "archives": 32,
+        "bytes": 598104,
+        "checksums_verified": true,
+        "http_statuses": {
+          "200": 32
+        },
+        "symbols": [
+          "1000BONKUSDT",
+          "1000CATUSDT",
+          "BNBUSDT",
+          "BTCUSDT",
+          "DOGEUSDT",
+          "ETHUSDT",
+          "SOLUSDT",
+          "XRPUSDT"
+        ]
+      },
+      "markPriceKlines": {
+        "archives": 8,
+        "bytes": 6953,
+        "checksums_verified": true,
+        "http_statuses": {
+          "200": 8
+        },
+        "symbols": [
+          "1000BONKUSDT",
+          "1000CATUSDT",
+          "BNBUSDT",
+          "BTCUSDT",
+          "DOGEUSDT",
+          "ETHUSDT",
+          "SOLUSDT",
+          "XRPUSDT"
+        ]
+      }
+    },
+    "four_hour": "Derived causally from completed 1h bars; no 4h archive downloaded.",
+    "funding_month": "2026-10",
+    "host": "https://data.binance.vision/",
+    "sample_date_utc": "2026-10-05",
+    "status": "PASS_FOR_REGISTERED_SAMPLE",
+    "supported_kline_timeframes": [
+      "1m",
+      "5m",
+      "15m",
+      "1h"
+    ]
+  },
+  "limitations": [
+    "Current trading membership cannot be counted while exchangeInfo is restricted.",
+    "The archive inventory contains historical and non-perpetual/non-USDT symbols.",
+    "Only eight symbols were content-validated; do not infer broad content quality from folder count.",
+    "Binance Vision Dataset Terms restrict use to non-commercial scope and require attribution/share-alike for derivatives."
+  ],
+  "official_archive_inventory": {
+    "all_usdm_daily_kline_symbol_directories": 1080,
+    "complete": true,
+    "current_active_contract_count": null,
+    "pages": 2,
+    "prefix": "data/futures/um/daily/klines/",
+    "source": "Binance Vision public archive bucket inventory",
+    "status": "Historical archive inventory only; does not qualify current membership, perpetual type, or tradability.",
+    "symbol_directories_ending_USDT": 923
+  },
+  "public_usdm_rest": {
+    "endpoints_tested": [
+      {
+        "dataset": "exchange_info",
+        "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/exchangeInfo: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}",
+        "http_status": 451,
+        "retrieved_at_utc": "2026-11-05T04:12:53.846394+00:00",
+        "status": "BLOCKED",
+        "url": "https://fapi.binance.com/fapi/v1/exchangeInfo"
+      },
+      {
+        "dataset": "ticker_24h",
+        "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=BTCUSDT: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}",
+        "http_status": 451,
+        "retrieved_at_utc": "2026-11-05T04:12:54.142381+00:00",
+        "status": "BLOCKED",
+        "url": "https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=BTCUSDT"
+      },
+      {
+        "dataset": "candles_5m",
+        "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&interval=5m&limit=2: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}",
+        "http_status": 451,
+        "retrieved_at_utc": "2026-11-05T04:12:54.410033+00:00",
+        "status": "BLOCKED",
+        "url": "https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&interval=5m&limit=2"
+      },
+      {
+        "dataset": "funding_and_mark",
+        "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}",
+        "http_status": 451,
+        "retrieved_at_utc": "2026-11-05T04:12:54.523616+00:00",
+        "status": "BLOCKED",
+        "url": "https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT"
+      },
+      {
+        "dataset": "order_book_snapshot",
+        "error": "HTTP 451 from https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=5: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}",
+        "http_status": 451,
+        "retrieved_at_utc": "2026-11-05T04:12:54.706426+00:00",
+        "status": "BLOCKED",
+        "url": "https://fapi.binance.com/fapi/v1/depth?symbol=BTCUSDT&limit=5"
+      }
+    ],
+    "observed_message": "Service unavailable from a restricted location according to Binance Terms of Use, eligibility section.",
+    "scope": "All five tested fapi.binance.com/fapi/v1 paths returned 451. This establishes broader restriction across tested USD-M REST endpoints, not all Binance domains or all network paths.",
+    "status": "BLOCKED"
+  },
+  "public_websocket": {
+    "endpoint": "wss://fstream.binance.com/ws/btcusdt@markPrice",
+    "error": "TimeoutError: ",
+    "retrieved_at_utc": "2026-11-05T04:13:05.563108+00:00",
+    "status": "BLOCKED"
+  },
+  "readiness": {
+    "broad_market_scan": "BLOCKED for live public tickers/stats; historical archive inventory available.",
+    "execution_rules_fees_spreads_fills": "BLOCKED/UNQUALIFIED.",
+    "future_deployment_host": "NOT_TESTED.",
+    "genuine_5m_with_causal_1h_4h": "PARTIAL; source fields and close-time availability implemented; underlying source mismatch remains disclosed.",
+    "historical_candles": "PARTIAL; verified sample data available, with one MTF source mismatch retained.",
+    "mark_and_funding_archives": "PARTIAL/VERIFIED historical files; REST unavailable and exact settlement mark not established.",
+    "trade_volume_profile_cvd": "PARTIAL; authentic aggregate trades available; 14 of 288 bars outside reconciliation tolerance; no L2 history."
+  },
+  "registered_sample_quality": {
+    "1000CATUSDT_1m_to_5m_mismatches": {
+      "close": 0,
+      "high": 1,
+      "low": 7,
+      "open": 17,
+      "quote_volume": 0,
+      "source_count": 0,
+      "taker_buy_base_volume": 0,
+      "taker_buy_quote_volume": 0,
+      "volume": 0
+    },
+    "all_sample_archives_checksum_verified": true,
+    "duplicate_aggregate_ids": 0,
+    "maximum_absolute_volume_difference_in_one_5m_bar_source_base_units": 954.6,
+    "maximum_relative_volume_difference_in_one_5m_bar": 0.000641201932648069,
+    "multi_timeframe_comparisons_exact": 23,
+    "multi_timeframe_comparisons_total": 24,
+    "symbols": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "DOGEUSDT",
+      "BNBUSDT",
+      "1000BONKUSDT",
+      "1000CATUSDT"
+    ],
+    "trade_archive_rows": 223084,
+    "trade_to_5m_bars_outside_tolerance": 14,
+    "trade_to_5m_bars_total": 288,
+    "trade_to_5m_bars_within_tolerance": 274,
+    "verdict": "PARTIAL_SOURCE_MISMATCH"
+  },
+  "retrieved_at_utc": "2026-11-05T04:12:53.846378+00:00"
+}
