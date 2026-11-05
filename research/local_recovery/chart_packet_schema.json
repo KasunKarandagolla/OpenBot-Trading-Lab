@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenBot historical chart packet v1",
+  "type": "object",
+  "required": [
+    "schema_version", "decision_id", "symbol", "as_of", "hidden_forward_cutoff",
+    "source", "terms", "input_status", "panels", "images", "levels", "uncertainties",
+    "source_receipt", "render_sha256", "candlestick_renderer_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "openbot.historical.chart.v1"},
+    "decision_id": {"type": "string", "pattern": "^(?:[a-f0-9]{24}|input-insufficient-control)$"},
+    "symbol": {"type": "string", "pattern": "^[A-Z0-9]+USDT$"},
+    "as_of": {"type": "string", "format": "date-time"},
+    "hidden_forward_cutoff": {"type": "string", "format": "date-time"},
+    "source": {"const": "Binance Vision USD-M"},
+    "terms": {"type": "string"},
+    "input_status": {"enum": ["ADEQUATE", "INPUT_INSUFFICIENT"]},
+    "panels": {
+      "type": "object",
+      "required": ["1d", "4h", "1h", "15m", "5m_overview", "5m_zoom"],
+      "additionalProperties": {
+        "type": "object",
+        "required": ["visible", "required_visible", "warmup", "required_warmup", "missing_bars",
+                     "last_available_at", "source_sha256", "price_units"],
+        "properties": {
+          "visible": {"type": "integer", "minimum": 0},
+          "required_visible": {"type": "integer", "minimum": 1},
+          "warmup": {"type": "integer", "minimum": 0},
+          "required_warmup": {"type": "integer", "minimum": 0},
+          "missing_bars": {"type": "integer", "minimum": 0},
+          "last_available_at": {"type": ["string", "null"], "format": "date-time"},
+          "source_sha256": {"type": "array", "items": {"$ref": "#/$defs/digest"}}
+        }
+      }
+    },
+    "images": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["file", "sha256", "image_role"],
+        "properties": {
+          "file": {"enum": ["context.png", "entry.png"]},
+          "sha256": {"$ref": "#/$defs/digest"},
+          "image_role": {"const": "analysis_input"}
+        }
+      }
+    },
+    "levels": {"type": "array"},
+    "uncertainties": {"type": "array", "items": {"type": "string"}},
+    "source_receipt": {
+      "type": "object",
+      "required": ["file", "sha256"],
+      "properties": {"file": {"const": "source-receipt.json"}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "render_sha256": {"$ref": "#/$defs/digest"},
+    "candlestick_renderer_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}
+}

@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "base": "91bcedfba3569c08933c03c144caeb96d47a524c",
+  "venue": "Binance Vision USD-M",
+  "research_status": "EXECUTION_METADATA_UNQUALIFIED",
+  "source_months": ["2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+  "symbols": [
+    "BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT", "BNBUSDT",
+    "ADAUSDT", "AVAXUSDT", "LINKUSDT", "DOTUSDT", "LTCUSDT", "BCHUSDT",
+    "TRXUSDT", "XLMUSDT", "UNIUSDT", "AAVEUSDT", "ATOMUSDT", "NEARUSDT",
+    "FILUSDT", "ETCUSDT", "SUIUSDT", "ARBUSDT", "OPUSDT", "APTUSDT"
+  ],
+  "sampling": "Six owner-specified anchors plus 18 preselected plain-USDT archive candidates. This convenience panel is not an unbiased historical listing census. Only completed coverage and rolling activity confer research eligibility at each cutoff.",
+  "partitions_utc": {
+    "development": ["2026-08-01", "2026-09-01"],
+    "validation": ["2026-09-02", "2026-09-17"],
+    "holdout": ["2026-09-18", "2026-10-01"]
+  },
+  "holdout_scope": "Untouched by this Binance challenger at registration. Independence from undocumented owner research is unknown. One-day embargo and a 15h05m proposal purge before each native stop boundary.",
+  "wallet_usdt": 1000,
+  "notional_cap_usdt": 25,
+  "positions_cap": 2,
+  "leverage": 1,
+  "hold_minutes": 900,
+  "expiry_minutes": 5,
+  "fee_per_side": 0.0005,
+  "additional_bps_per_side": [5, 10, 20],
+  "gates": {
+    "lookback_days": 14,
+    "median_daily_quote_usdt": 5000000,
+    "minimum_1h_atr_fraction": 0.001,
+    "minimum_net_reward_risk": 1.25,
+    "minimum_rvol_5m": 1.1,
+    "maximum_stop_fraction": 0.025,
+    "minimum_stop_fraction": 0.0025,
+    "active_shortlist_per_cutoff": 4
+  },
+  "playbooks": {
+    "continuation": "Prior confirmed 4h and 1h higher highs and lows (or lower highs and lows). A closed 15m correction visits a known 1h swing support/resistance area. A later 5m defense reclaims local structure with participation. A prior 1h swing caps the objective.",
+    "failed_auction": "A closed 15m candle sweeps and reclaims the prior completed UTC day boundary without jointly trending through it on 4h and 1h. A later 5m close confirms away from the boundary with participation. Prior-day midpoint and opposing structure bound the objective."
+  },
+  "archive_terms": "https://github.com/binance/binance-public-data/blob/master/TERMS_AND_CONDITIONS.md"
+}
