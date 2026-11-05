@@ -1,0 +1,73 @@
+{
+  "as_of_utc": "2026-11-05T04:12:53.846378+00:00",
+  "btc_fixture_observation": {
+    "fixture_contract": true,
+    "fixture_contract_size": 1,
+    "fixture_lineage": "Public CCXT test fixture included by PR #15; schema snapshot only, not a live Binance response or time-qualified history.",
+    "fixture_linear": true,
+    "fixture_maker_rate": 0.0002,
+    "fixture_min_notional_usdt": 50,
+    "fixture_min_quantity": 0.001,
+    "fixture_minimum_exceeds_cap": true,
+    "fixture_path": "research/validation_next/binance-fixture-markets.json",
+    "fixture_price_tick": 0.1,
+    "fixture_quantity_step": 0.001,
+    "fixture_sha256": "2b9c1b42a9fedd28f4ab3336782d6071ed864974468be048b02d0d98d638590d",
+    "fixture_taker_rate": 0.0005,
+    "fixture_type": "swap",
+    "qualification": "UNQUALIFIED_FIXTURE_OBSERVATION; cannot establish current or January 2026 Binance rules.",
+    "research_position_cap_usdt": 25.0,
+    "symbol": "BTCUSDT"
+  },
+  "exchange_info_probe": {
+    "http_status": 451,
+    "response": "HTTP 451 from https://fapi.binance.com/fapi/v1/exchangeInfo: {\n  \"code\": 0,\n  \"msg\": \"Service unavailable from a restricted location according to 'b. Eligibility' in https://www.binance.com/en/terms. Please contact customer service if you believe you received this message in error.\"\n}",
+    "status": "BLOCKED",
+    "url": "https://fapi.binance.com/fapi/v1/exchangeInfo"
+  },
+  "execution_gate": "FAIL_CLOSED_UNQUALIFIED_EXECUTION_METADATA",
+  "required_fields": {
+    "active_tradable_status": {
+      "evidence": "exchangeInfo HTTP 451; no current TRADING flag verified.",
+      "status": "BLOCKED"
+    },
+    "contract_size_and_units": {
+      "evidence": "Fixture contractSize is not verified for the evaluation period; multiplier-style archive units are not inferred.",
+      "status": "UNQUALIFIED_FOR_PERIOD"
+    },
+    "funding_information": {
+      "evidence": "Binance Vision funding records verified for eight archive symbols in 2026-10; public REST premiumIndex returned HTTP 451; no exact settlement mark.",
+      "status": "PARTIAL"
+    },
+    "maker_taker_fees": {
+      "evidence": "Fixture rates are generic test data, not authenticated account tier/current fees or historical fees.",
+      "status": "UNQUALIFIED_FOR_PERIOD"
+    },
+    "metadata_observation_or_effective_time": {
+      "evidence": "No authorized dated exchangeInfo snapshot available.",
+      "status": "BLOCKED"
+    },
+    "onboarding_delisting_dates": {
+      "evidence": "No authorized time-appropriate metadata snapshot verified; fixture onboardDate is not authoritative.",
+      "status": "UNQUALIFIED"
+    },
+    "order_constraints": {
+      "evidence": "No time-qualified order filters or restrictions verified.",
+      "status": "UNQUALIFIED_FOR_PERIOD"
+    },
+    "price_tick_quantity_step_min_max_minimum_notional": {
+      "evidence": "Fixture schema values are not authenticated current or historical exchange metadata.",
+      "status": "UNQUALIFIED_FOR_PERIOD"
+    },
+    "symbol_and_contract_identity": {
+      "evidence": "Archive symbol paths identify BTCUSDT under USD-M; perpetual classification not proved by archive path.",
+      "status": "PARTIAL"
+    }
+  },
+  "risk_control": "The existing 25 USDT cap remains unchanged. The fixture minNotional value of 50 USDT is not promoted to a market fact and is not worked around.",
+  "sources": [
+    "https://fapi.binance.com/fapi/v1/exchangeInfo",
+    "https://data.binance.vision/data/futures/um/",
+    "https://github.com/binance/binance-public-data/blob/master/TERMS_AND_CONDITIONS.md"
+  ]
+}

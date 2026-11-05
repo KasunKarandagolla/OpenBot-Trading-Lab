@@ -3,6 +3,7 @@ import io,zipfile,copy
 import numpy as np
 import pandas as pd
 from validation_next_common import *
+from binance_research_data import convert_funding_frame,convert_kline_frame
 from trade_contract import parent_target,audit,economics
 from session4_features import hourly,indicators,candidates
 from freqtrade.strategy import merge_informative_pair
@@ -19,15 +20,18 @@ def convert():
    frames=[]
    for r in rows:
     if (r['kind'],r['timeframe'])!=(kind,tf):continue
-    with zipfile.ZipFile(ROOT/r['path']) as z:f=pd.read_csv(io.BytesIO(z.read(z.namelist()[0])))
-    if kind=='fundingRate':
-     f=pd.DataFrame(dict(date=pd.to_datetime(f.calc_time,unit='ms',utc=True),funding_rate=f.last_funding_rate.astype(float)))
-    else:
-     f=f.rename(columns={'open_time':'date'});f['date']=pd.to_datetime(f.date,unit='ms',utc=True);f=f[['date','open','high','low','close','volume']]
-     for k in f.columns[1:]:f[k]=f[k].astype(float)
-    f['date']=f.date.dt.as_unit('ns');frames.append(f)
+    with zipfile.ZipFile(ROOT/r['path']) as z:source_frame=pd.read_csv(io.BytesIO(z.read(z.namelist()[0])))
+    standard,research=(convert_funding_frame(source_frame,r) if kind=='fundingRate'
+      else convert_kline_frame(source_frame,r,kind=kind,timeframe=tf))
+    sidecar=DATA/'binance/research'/(slug(pair)+'-'+(tf or '1h')+'-'+ftkind+'-research.feather')
+    sidecar.parent.mkdir(parents=True,exist_ok=True)
+    frames.append((standard,research,sidecar))
    target=DATA/'binance/futures'/(slug(pair)+'-'+(tf or '1h')+'-'+ftkind+'.feather')
-   target.parent.mkdir(parents=True,exist_ok=True);pd.concat(frames).sort_values('date').reset_index(drop=True).to_feather(target)
+   target.parent.mkdir(parents=True,exist_ok=True)
+   standard=pd.concat([x[0] for x in frames]).sort_values('date').reset_index(drop=True)
+   sidecar_rows=pd.concat([x[1] for x in frames]).sort_values('date').reset_index(drop=True)
+   standard.to_feather(target)
+   sidecar_rows.to_feather(frames[0][2])
  markets=read(ROOT/'research/validation_next/binance-fixture-markets.json');contracts={}
  for pair,m in markets.items():
   contracts[pair]=dict(verified=True,verification_scope='FIXTURE_SCHEMA_ONLY;NOT_HISTORICAL_VENUE',economic_qualified=False,contract_size=m['contractSize'],step_contracts=m['precision']['amount'],min_contracts=m['limits']['amount']['min'],max_contracts=m['limits']['amount']['max'],min_notional=m['limits']['cost']['min'],price_precision=m['precision']['price'],tiers=[],taker=m['taker'],observed_at=now())

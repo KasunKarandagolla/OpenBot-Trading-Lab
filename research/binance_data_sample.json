@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "purpose": "Outcome-independent archive integrity and data-capability acceptance sample; not a strategy evaluation.",
+  "utc_date": "2026-10-05",
+  "funding_month": "2026-10",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "DOGEUSDT",
+    "BNBUSDT",
+    "1000BONKUSDT",
+    "1000CATUSDT"
+  ],
+  "selection_rule": "Include the six requested major symbols where the registered date has all four official USD-M kline intervals. Add the first two alphabetically sorted 1000*USDT archive symbols whose 1m, 5m, 15m and 1h daily files are all present on that same date. This is archive availability selection only; Binance ticker statistics and current TRADING status are unavailable in this environment. No strategy outcomes were inspected.",
+  "timeframes": ["1m", "5m", "15m", "1h"],
+  "mark_timeframe": "1h",
+  "trade_sample": {
+    "symbol": "XRPUSDT",
+    "kind": "aggTrades",
+    "utc_date": "2026-10-05",
+    "selection_rule": "First required major in the registered list with a bounded daily archive below 5 MiB, selected before trade-profile calculation."
+  },
+  "max_archive_bytes": 20971520,
+  "max_total_archive_bytes": 33554432,
+  "attribution": "Binance Vision; CC BY-NC-SA 4.0. Use only within the non-commercial scope in Binance Vision Dataset Terms. Derived fixtures and reports must retain attribution and the same license."
+}

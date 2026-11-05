@@ -96,3 +96,7 @@ git switch --detach 29c07b80e8d3b15fb60f097a84eee30d730ffa40
 ```
 
 Stopping an existing paper engine pauses its position management; it does not guarantee closure. No merge, paid service, future session, live trading, deposit or exchange key is authorized by these instructions.
+
+## Binance Vision data-path follow-up
+
+The bounded read-only archive validation, source-coverage limits, commands and non-commercial dataset license are documented in [the Binance market-data guide](docs/operations/binance-market-data.md) and [its acceptance evidence](evidence/binance_data/README.md). This work does not qualify the public Futures REST API or historical execution metadata.

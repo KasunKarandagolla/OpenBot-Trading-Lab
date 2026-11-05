@@ -1,0 +1,29 @@
+test_validation_next (unittest.loader._FailedTest.test_validation_next) ... ERROR
+
+======================================================================
+ERROR: test_validation_next (unittest.loader._FailedTest.test_validation_next)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_validation_next
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "/workspace/OpenBot-Trading-Lab/tests/test_validation_next.py", line 8, in <module>
+    from ValidationPolicyR1 import ValidationPolicyR1
+  File "/workspace/OpenBot-Trading-Lab/research/validation_next/ValidationPolicyR1.py", line 2, in <module>
+    from DiagnosisPolicyR1 import DiagnosisPolicyR1
+  File "/workspace/OpenBot-Trading-Lab/research/diagnosis/DiagnosisPolicyR1.py", line 2, in <module>
+    from RecoveryPolicyR1 import RecoveryPolicyR1
+  File "/workspace/OpenBot-Trading-Lab/research/recovery/RecoveryPolicyR1.py", line 6, in <module>
+    from PaperPolicyV4 import Session4Replay
+  File "/workspace/OpenBot-Trading-Lab/research/session4/PaperPolicyV4.py", line 9, in <module>
+    from freqtrade.persistence import Trade
+ModuleNotFoundError: No module named 'freqtrade'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)
