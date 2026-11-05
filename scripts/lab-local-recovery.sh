@@ -28,7 +28,8 @@ case "${1:-}" in
     scan) "${runtime[@]}" scripts/local_recovery_scan.py "${@:2}" ;;
     replay) "${runtime[@]}" scripts/local_recovery_backtest.py "${@:2}" ;;
     charts) "${runtime[@]}" scripts/local_recovery_charts.py "${@:2}" ;;
+    pilot) "${runtime[@]}" scripts/local_recovery_visual_pilot.py "${@:2}" ;;
     report) "${runtime[@]}" scripts/local_recovery_report.py "${@:2}" ;;
     test) "${runtime[@]}" -m unittest discover -s tests -p "${2:-test_local_recovery.py}" -v ;;
-    *) printf 'Usage: %s {convert|freeze|scan|replay|charts|report|test}\n' "$0" >&2; exit 2 ;;
+    *) printf 'Usage: %s {convert|freeze|scan|replay|charts|pilot|report|test}\n' "$0" >&2; exit 2 ;;
 esac
