@@ -149,6 +149,15 @@ class GateTests(unittest.TestCase):
         result=self.evaluate({**self.plan,'invalidation':{**self.plan['invalidation'],'anchor_price':'98'}})
         self.assertIn('STOP_NOT_OUTSIDE_CITED_BAR_STRUCTURE',result['reasons'])
 
+    def test_funding_depletes_isolated_margin_before_stop(self):
+        plan={**self.plan,'leverage':25,'tp1':'110','tp2':'115',
+              'exits':[{'price':'110','quantity':'0.1','reduce_only':True},
+                       {'price':'115','quantity':'0.1','reduce_only':True}]}
+        account={**self.account,'configured_leverage':25,'adverse_funding_rate':'0.03',
+                 'adverse_funding_rate_per_event':'0.015','next_funding_ms':2000,
+                 'funding_interval_ms':3600000}
+        self.assertIn('LIQUIDATION_BUFFER_AFTER_FUNDING_STRESS',self.evaluate(plan,account=account)['reasons'])
+
     def test_liquidation_and_negative_net_reward(self):
         result=self.evaluate({**self.plan,'leverage':25},{**self.constraints},
                             {**self.account,'maintenance_ratio':'0.039'})

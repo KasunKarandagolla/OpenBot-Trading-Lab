@@ -161,8 +161,21 @@ def validate_market_plan(plan, constraints, account, now_ms, receipts=None, dige
             return response('UNKNOWN',['FUNDING_INTERVAL_UNVERIFIED'],metrics)
         hold_end=now_ms+plan['hold_seconds']*1000
         funding_events=max(0,(hold_end-account['next_funding_ms'])//interval+1)
-        if number(account['adverse_funding_rate'])<funding_events*number(account['adverse_funding_rate_per_event']):
+        per_event=number(account['adverse_funding_rate_per_event'])
+        if per_event<0 or number(account['adverse_funding_rate'])<funding_events*per_event:
             return response('VETO',['FUNDING_STRESS_DOES_NOT_COVER_HOLD'],metrics)
+        # Funding can deplete isolated margin before a stop triggers. Checking
+        # P&L costs alone does not establish stop-to-liquidation clearance.
+        leverage=number(plan['leverage'])
+        stressed_margin=(notional/leverage
+            -notional*(number(account['fee_per_side'])+number(account['adverse_funding_rate']))
+            +number(account['maintenance_deduction_usdt']))
+        liquidation=(notional-direction*stressed_margin)/(qty*(1-direction*number(account['maintenance_ratio'])))
+        clearance=direction*(number(plan['stop'])-liquidation)
+        metrics.update(funding_stressed_liquidation_usdt=str(liquidation),
+                       funding_stressed_stop_clearance_usdt=str(clearance))
+        if clearance<max(number(plan['entry'])*Decimal('.005'),abs(number(plan['entry'])-number(plan['stop']))/2):
+            return response('VETO',['LIQUIDATION_BUFFER_AFTER_FUNDING_STRESS'],metrics)
         # Fee/funding stress in assess is already charged in net-stop and target economics.
         metrics.update(account_risk_percent=str(loss/number(account['equity_usdt'])*100),
                        gross_pnl_tp1_usdt=str(direction*(number(plan['tp1'])-number(plan['entry']))*qty),
