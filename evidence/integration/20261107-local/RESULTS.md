@@ -11,7 +11,7 @@ It is not a completed five-agent or filled Demo-trade demonstration.
 | F4 five-agent/gate | PARTIAL | Actual Shared GATE reply SKIPPED_NO_PROPOSAL. No fabricated native agent messages/receipts. Authentic BNB historical contract at 2026-08-23 06:20 UTC: geometry PASS, original net RR 1.6000373310814, archive hash verified, future-bar case rejected. Historical leverage stays 1x; execution metadata/quantity/Demo filters remain UNKNOWN. No complete new account-qualified trade proposal was available. |
 | F5 signed Demo/account/order | BLOCKED | Credential boundary not established: same owner OS principal can read the credential file. Credential bytes were not opened. All signing paths in this add-on fail closed. Unsigned Demo public quotes/filters fetched; ordinary/algo/open-algo GET probes returned HTTP 401 / -2014 without a key. This does not prove authenticated route or stop support. Signed account reads 0; orders/settings mutations 0; transaction approval absent. |
 | F6 recovery | PASS (OFFLINE ONLY) | Persistent simulated submit intent, ambiguous acknowledgment reconciliation, restart, partial fill, stop rejection/disappearance/mismatch, pending-order exclusion, kill switch, close-only emergency policy, expiry and no duplicate opening calls exercised. Offline recovery ends CLOSED and flat; SIMULATED IDs are not Binance IDs. Real exchange protection/TP/user stream/fees/funding/management remain unverified and unimplemented in the isolated service. |
-| F7 publication/evidence | PARTIAL until publication verified | Public source/tests/summaries are secret-scanned. Full public-response/PNG/command evidence archive is produced outside Git. Private backups, databases, skill contents, conversations and credentials are excluded. Final remote HEAD and draft PR are reported to the owner after readback. |
+| F7 publication/evidence | PASS (PUBLICATION; archive reported separately) | Draft PR #18 is open against PR17. Published source commit cd13b9cae9d221d3aefe701afb39df4022b5566d has tree 7aa085848dbde2e5eeafb172e3b4642e2220cb60, identical to the tested local source tree. Git remote readback confirmed visibility. Public source/tests/summaries are secret-scanned; full sanitized evidence remains outside Git. Private backups, databases, skills, conversations and credentials are excluded. |
 
 ## Verification
 
@@ -57,3 +57,5 @@ Native five-agent acceptance and an OS-isolated signed service are outstanding. 
 current signed-service implementation is an unconditional stub, not a trade executor.
 The official modular Binance SDK is documented for a future isolated integration;
 no account connection, exchange stop or live-position management is claimed.
+
+Draft review: https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/pull/18 . The final documentation/readback commit may advance the PR head without changing the tested implementation.
