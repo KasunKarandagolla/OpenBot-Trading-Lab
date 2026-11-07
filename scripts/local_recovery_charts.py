@@ -57,7 +57,8 @@ def source_panels(symbol, cutoff):
     return bars, manifest, list(receipts.values()), base.tail(72)
 
 
-def draw_board(path, symbol, cutoff, boards, levels, case, participation=None):
+def draw_board(path, symbol, cutoff, boards, levels, case, participation=None,
+               *, venue_label="Binance Vision USD-M"):
     sys.path.append(str(WORK / "mpl"))
     import matplotlib.dates as mdates
     import matplotlib.pyplot as plt
@@ -120,7 +121,7 @@ def draw_board(path, symbol, cutoff, boards, levels, case, participation=None):
     state = case["status"].replace("_", " ").title()
     book = case.get("playbook", "").replace("_", " ").title()
     fig.suptitle(f"{symbol}  •  {book}  •  {state}\n"
-                 f"Binance Vision USD-M  •  Closed data as of {cutoff:%Y-%m-%d %H:%M} UTC",
+                 f"{venue_label}  •  Closed data as of {cutoff:%Y-%m-%d %H:%M} UTC",
                  fontsize=17, fontweight="bold")
     fig.savefig(path, dpi=140, facecolor="white")
     plt.close(fig)

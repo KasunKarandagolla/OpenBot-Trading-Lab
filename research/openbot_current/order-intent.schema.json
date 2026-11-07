@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenBot Binance Demo research proposal",
+  "description": "Disabled execution contract. A future separately authorized venue adapter would need deterministic validation, idempotency, receipts, reconciliation, and tested protective exits.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision", "venue", "symbol", "packet_sha256"],
+  "properties": {
+    "decision": { "enum": ["MARKET_ENTRY", "LIMIT_ENTRY", "CONDITIONAL_ENTRY", "NO_OPPORTUNITY"] },
+    "venue": { "const": "Binance USD-M Demo" },
+    "symbol": { "type": "string", "pattern": "^[A-Z0-9_]{2,32}$" },
+    "packet_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "side": { "enum": ["LONG", "SHORT"] },
+    "entry": { "$ref": "#/$defs/decimal" },
+    "stop": { "$ref": "#/$defs/decimal" },
+    "tp1": { "$ref": "#/$defs/decimal" },
+    "tp2": { "$ref": "#/$defs/decimal" },
+    "quantity": { "$ref": "#/$defs/decimal" },
+    "leverage": { "type": "integer", "minimum": 10, "maximum": 25 },
+    "expires_at_ms": { "type": "integer", "minimum": 1 },
+    "invalidation": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "trigger": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "revalidation_required": { "const": true },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 1000 }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "decision": { "const": "NO_OPPORTUNITY" } } },
+      "then": { "required": ["reason"] },
+      "else": {
+        "required": ["side", "entry", "stop", "tp1", "tp2", "quantity", "leverage", "expires_at_ms", "invalidation"]
+      }
+    },
+    {
+      "if": { "properties": { "decision": { "const": "CONDITIONAL_ENTRY" } } },
+      "then": { "required": ["trigger", "revalidation_required"] }
+    }
+  ],
+  "$defs": {
+    "decimal": { "type": "string", "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$" }
+  }
+}

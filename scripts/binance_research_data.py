@@ -57,8 +57,9 @@ def resolve_cache_path(value: str | Path) -> Path:
     return Path(__file__).resolve().parents[1] / path
 
 
-def _request(url: str, *, timeout: float = 20, max_bytes: int = 32 * 1024 * 1024) -> tuple[bytes, int, str, dict]:
-    req = urllib.request.Request(url, headers={"User-Agent": "OpenBot-research-data/1.0"})
+def _request(url: str, *, timeout: float = 20, max_bytes: int = 32 * 1024 * 1024,
+             request_headers: dict | None = None) -> tuple[bytes, int, str, dict]:
+    req = urllib.request.Request(url, headers={"User-Agent": "OpenBot-research-data/1.0", **(request_headers or {})})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as response:
             if not 200 <= response.status < 300:
