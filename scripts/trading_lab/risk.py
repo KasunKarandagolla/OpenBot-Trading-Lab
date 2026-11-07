@@ -85,8 +85,8 @@ def validate_market_plan(plan, constraints, account, now_ms, receipts=None, dige
                      and a['available_at_ms']==structural['available_at_ms']),None)
         if (anchor is None or plan['side'] not in {'LONG','SHORT'}
                 or number(structural['anchor_price'])!=number(anchor['low' if plan['side']=='LONG' else 'high'])
-                or (number(plan['stop'])>number(structural['anchor_price']) if plan['side']=='LONG'
-                    else number(plan['stop'])<number(structural['anchor_price']))):
+                or (number(plan['stop'])>=number(structural['anchor_price']) if plan['side']=='LONG'
+                    else number(plan['stop'])<=number(structural['anchor_price']))):
             return response('VETO',['STOP_NOT_OUTSIDE_CITED_BAR_STRUCTURE'])
         qty = number(plan['quantity'])
         if plan['decision'] == 'CONDITIONAL':

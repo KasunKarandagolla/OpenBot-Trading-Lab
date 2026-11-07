@@ -1,0 +1,5 @@
+# 05-failed-breakout-and-liquidity — v2.0.0-research
+
+Require pre-existing range/day/swing boundary, breach, completed re-entry and later confirmation under a frozen version. State which bars made each fact available. A marginal reclaim in a fresh opposing impulse is not proof of reversal. Define continuation acceptance as the competing path and the event invalidating reversal. Evaluate both false vetoes/missed winners and avoided losers; do not select cases by outcomes or tune thresholds on holdout. Historical Gate/PolicyFixedV3 examples are instructional archived context; current Binance cases require genuine source bars and independent later evaluation.
+
+Historical source: [immutable PR #19 file](https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/blob/6f1a378269d962e019498369099bf1a5039c70a4/audits/openbot-skills/2026-11-07/agents/astrabot-lead/skills/openbot-chart-vision-analyst/references/05-failed-breakout-and-liquidity.md). Original SHA-256 `60c7f7403bcd6c01fe6535505587306149860deeda9d03142d38647c292e46ec`. Revision `v2.0.0-research`; current instructions supersede historical venue/tool assumptions without modifying frozen studies.

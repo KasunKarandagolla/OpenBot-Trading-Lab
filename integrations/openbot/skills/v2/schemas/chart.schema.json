@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "cutoff_ms": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "end_ms": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "focus_zone": {
+      "items": {
+        "exclusiveMinimum": 0,
+        "type": "number"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "type": "array"
+    },
+    "overlays": {
+      "items": {
+        "enum": [
+          "vwap",
+          "ema20",
+          "ema50",
+          "confirmed_swings"
+        ]
+      },
+      "maxItems": 3,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "purpose": {
+      "maxLength": 240,
+      "minLength": 1,
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^[A-Za-z0-9-]{1,64}$",
+      "type": "string"
+    },
+    "revision": {
+      "maximum": 4,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "start_ms": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "symbol": {
+      "pattern": "^[A-Z0-9_]{2,32}$",
+      "type": "string"
+    },
+    "timeframe": {
+      "enum": [
+        "4h",
+        "1h",
+        "15m",
+        "5m",
+        "1m"
+      ]
+    },
+    "venue": {
+      "const": "BINANCE_PUBLIC_USDM"
+    },
+    "visible_candles": {
+      "maximum": 200,
+      "minimum": 20,
+      "type": "integer"
+    },
+    "volume": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "request_id",
+    "candidate_id",
+    "symbol",
+    "venue",
+    "cutoff_ms",
+    "timeframe",
+    "visible_candles",
+    "overlays",
+    "volume",
+    "purpose",
+    "revision"
+  ],
+  "type": "object"
+}

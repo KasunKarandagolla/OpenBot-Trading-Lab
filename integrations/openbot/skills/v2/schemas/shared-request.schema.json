@@ -1,0 +1,480 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "SCAN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "additionalProperties": false,
+            "properties": {
+              "shortlist": {
+                "maximum": 6,
+                "minimum": 3,
+                "type": "integer"
+              },
+              "universe": {
+                "maximum": 40,
+                "minimum": 24,
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "CHART"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "additionalProperties": false,
+            "properties": {
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "chart": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "additionalProperties": false,
+                "properties": {
+                  "candidate_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "cutoff_ms": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "end_ms": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "focus_zone": {
+                    "items": {
+                      "exclusiveMinimum": 0,
+                      "type": "number"
+                    },
+                    "maxItems": 2,
+                    "minItems": 2,
+                    "type": "array"
+                  },
+                  "overlays": {
+                    "items": {
+                      "enum": [
+                        "vwap",
+                        "ema20",
+                        "ema50",
+                        "confirmed_swings"
+                      ]
+                    },
+                    "maxItems": 3,
+                    "type": "array",
+                    "uniqueItems": true
+                  },
+                  "purpose": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "request_id": {
+                    "pattern": "^[A-Za-z0-9-]{1,64}$",
+                    "type": "string"
+                  },
+                  "revision": {
+                    "maximum": 4,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "start_ms": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "symbol": {
+                    "pattern": "^[A-Z0-9_]{2,32}$",
+                    "type": "string"
+                  },
+                  "timeframe": {
+                    "enum": [
+                      "4h",
+                      "1h",
+                      "15m",
+                      "5m",
+                      "1m"
+                    ]
+                  },
+                  "venue": {
+                    "const": "BINANCE_PUBLIC_USDM"
+                  },
+                  "visible_candles": {
+                    "maximum": 200,
+                    "minimum": 20,
+                    "type": "integer"
+                  },
+                  "volume": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "request_id",
+                  "candidate_id",
+                  "symbol",
+                  "venue",
+                  "cutoff_ms",
+                  "timeframe",
+                  "visible_candles",
+                  "overlays",
+                  "volume",
+                  "purpose",
+                  "revision"
+                ],
+                "type": "object"
+              },
+              "run_id": {
+                "pattern": "^[A-Za-z0-9-]{1,80}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "run_id",
+              "candidate_id",
+              "chart"
+            ],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "GATE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "additionalProperties": false,
+            "properties": {
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "native_receipts": {
+                "type": "object"
+              },
+              "proposal": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "else": {
+                      "required": [
+                        "side",
+                        "entry",
+                        "stop",
+                        "tp1",
+                        "tp2",
+                        "quantity",
+                        "leverage",
+                        "expires_at_ms",
+                        "invalidation",
+                        "engine_mode",
+                        "margin_type",
+                        "position_side",
+                        "stop_working_type",
+                        "hold_seconds",
+                        "exits"
+                      ]
+                    },
+                    "if": {
+                      "properties": {
+                        "decision": {
+                          "const": "NO_OPPORTUNITY"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "reason"
+                      ]
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "decision": {
+                          "const": "CONDITIONAL"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "trigger",
+                        "revalidation_required"
+                      ]
+                    }
+                  }
+                ],
+                "properties": {
+                  "decision": {
+                    "enum": [
+                      "MARKET",
+                      "LIMIT",
+                      "CONDITIONAL",
+                      "NO_OPPORTUNITY"
+                    ]
+                  },
+                  "engine_mode": {
+                    "const": "DEMO_READ_ONLY"
+                  },
+                  "entry": {
+                    "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                    "type": "string"
+                  },
+                  "exits": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "price": {
+                          "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                          "type": "string"
+                        },
+                        "reduce_only": {
+                          "const": true
+                        }
+                      },
+                      "required": [
+                        "price",
+                        "quantity",
+                        "reduce_only"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 2,
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "expires_at_ms": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "hold_seconds": {
+                    "maximum": 54000,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "invalidation": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "anchor_price": {
+                        "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                        "type": "string"
+                      },
+                      "available_at_ms": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "reason": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source_sha256": {
+                        "pattern": "^[a-f0-9]{64}$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source_sha256",
+                      "available_at_ms",
+                      "anchor_price",
+                      "reason"
+                    ],
+                    "type": "object"
+                  },
+                  "leverage": {
+                    "maximum": 25,
+                    "minimum": 10,
+                    "type": "integer"
+                  },
+                  "margin_type": {
+                    "const": "ISOLATED"
+                  },
+                  "packet_sha256": {
+                    "pattern": "^[a-f0-9]{64}$",
+                    "type": "string"
+                  },
+                  "position_side": {
+                    "const": "BOTH"
+                  },
+                  "quantity": {
+                    "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                    "type": "string"
+                  },
+                  "reason": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "revalidation_required": {
+                    "const": true
+                  },
+                  "side": {
+                    "enum": [
+                      "LONG",
+                      "SHORT"
+                    ]
+                  },
+                  "stop": {
+                    "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                    "type": "string"
+                  },
+                  "stop_working_type": {
+                    "const": "MARK_PRICE"
+                  },
+                  "symbol": {
+                    "pattern": "^[A-Z0-9_]{2,32}$",
+                    "type": "string"
+                  },
+                  "tp1": {
+                    "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                    "type": "string"
+                  },
+                  "tp2": {
+                    "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                    "type": "string"
+                  },
+                  "trigger": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "CLOSED_5M_ABOVE",
+                          "CLOSED_5M_BELOW"
+                        ]
+                      },
+                      "not_before_ms": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "order_after_confirmation": {
+                        "const": true
+                      },
+                      "price": {
+                        "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "price",
+                      "not_before_ms",
+                      "order_after_confirmation"
+                    ],
+                    "type": "object"
+                  },
+                  "venue": {
+                    "const": "Binance USD-M Demo"
+                  }
+                },
+                "required": [
+                  "decision",
+                  "venue",
+                  "symbol",
+                  "packet_sha256"
+                ],
+                "title": "Current validate_market_plan v2 research proposal; no execution authority",
+                "type": "object"
+              },
+              "run_id": {
+                "pattern": "^[A-Za-z0-9-]{1,80}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "run_id",
+              "candidate_id"
+            ],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "READINESS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "created_at_ms": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "expires_at_ms": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "kind": {
+      "enum": [
+        "SCAN",
+        "CHART",
+        "GATE",
+        "READINESS"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    },
+    "request_id": {
+      "pattern": "^[A-Za-z0-9-]{1,80}$",
+      "type": "string"
+    },
+    "schema": {
+      "const": "openbot.shared.request.v2"
+    }
+  },
+  "required": [
+    "schema",
+    "request_id",
+    "kind",
+    "created_at_ms",
+    "expires_at_ms",
+    "payload"
+  ],
+  "type": "object"
+}

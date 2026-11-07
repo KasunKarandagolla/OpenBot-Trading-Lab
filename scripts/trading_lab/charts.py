@@ -24,20 +24,22 @@ def validate_request(request, identity):
     required = FIELDS - {'start_ms', 'end_ms', 'focus_zone'}
     if not required <= set(request):
         raise DataError('CHART_REQUIRED_FIELD')
-    if (not re.fullmatch('[A-Za-z0-9-]{1,64}', request['request_id'])
+    if (not isinstance(request['request_id'], str)
+            or not re.fullmatch('[A-Za-z0-9-]{1,64}', request['request_id'])
             or request['candidate_id'] != identity['candidate_id']
             or request['symbol'] != identity['symbol']
             or request['venue'] != 'BINANCE_PUBLIC_USDM'
             or type(request['cutoff_ms']) is not int
             or request['cutoff_ms'] != identity['as_of_ms']):
         raise DataError('CHART_IDENTITY_VENUE_OR_CUTOFF')
-    if request['timeframe'] not in {'4h', '1h', '15m', '5m', '1m'}:
+    if not isinstance(request['timeframe'], str) or request['timeframe'] not in {'4h', '1h', '15m', '5m', '1m'}:
         raise DataError('CHART_TIMEFRAME_UNSUPPORTED')
     if (type(request['visible_candles']) is not int or not 20 <= request['visible_candles'] <= 200
             or type(request['revision']) is not int or not 1 <= request['revision'] <= 4
             or type(request['volume']) is not bool
             or not isinstance(request['purpose'], str) or not 1 <= len(request['purpose']) <= 240
             or not isinstance(request['overlays'], list) or len(request['overlays']) > 3
+            or any(not isinstance(x, str) for x in request['overlays'])
             or len(set(request['overlays'])) != len(request['overlays'])
             or set(request['overlays']) - OVERLAYS):
         raise DataError('CHART_BOUNDS_OR_OVERLAYS')
@@ -113,6 +115,8 @@ def render(packet, request, output):
                 frame.loc[group.index, 'vwap'] = np.nan
     swings = confirmed_swings(frame) if 'confirmed_swings' in overlays else []
     start, end = request.get('start_ms', 0), request.get('end_ms', identity['as_of_ms'])
+    # A bounded earlier view must not disclose levels confirmed after its end.
+    swings = [level for level in swings if level['known_at_ms'] <= end]
     display = frame.loc[(utc_milliseconds(frame.date) >= start) & (frame.available_at_ms <= end)].tail(request['visible_candles'])
     if len(display) != request['visible_candles']:
         raise DataError('CHART_INSUFFICIENT_VISIBLE_CANDLES')
@@ -139,9 +143,11 @@ def render(packet, request, output):
                              height_ratios=[4, 1] if request['volume'] else None,
                              sharex=True, layout='constrained', squeeze=False)
     price = axes[0, 0]
-    candles(price, display, INTERVAL_MS[tf]//60_000)
+    # The reused helper auto-plots a vwap column. Pass only candle columns so
+    # this renderer owns its explicit overlay allowlist and draws each once.
+    candles(price, display[['date','open','high','low','close','volume']], INTERVAL_MS[tf]//60_000)
     price.set_ylabel('Price (USDT)')
-    for name, color in [('ema20', '#2855a4'), ('ema50', '#b06712')]:
+    for name, color in [('ema20', '#2855a4'), ('ema50', '#b06712'), ('vwap', '#782ba3')]:
         if name in overlays:
             price.plot(display.date, display[name], label=name.upper(), color=color, linewidth=1)
     plotted_levels=[]
@@ -154,7 +160,17 @@ def render(packet, request, output):
     if 'focus_zone' in request:
         price.set_ylim(*request['focus_zone'])
     else:
-        price.margins(y=.06)
+        # Adding a line after collections must not crop candle wick extremes.
+        lows = [float(display.low.min())]
+        highs = [float(display.high.max())]
+        for name in overlays:
+            if name in display.columns:
+                lows.append(float(display[name].min())); highs.append(float(display[name].max()))
+        lows.extend(x['price'] for x in plotted_levels)
+        highs.extend(x['price'] for x in plotted_levels)
+        lower, upper = min(lows), max(highs)
+        padding = max((upper-lower)*.06, upper*.00001)
+        price.set_ylim(lower-padding, upper+padding)
     width = pd.Timedelta(milliseconds=INTERVAL_MS[tf])
     price.set_xlim(display.date.iloc[0]-width/2, display.date.iloc[-1]+width/2)
     last = display.iloc[-1]
@@ -177,13 +193,22 @@ def render(packet, request, output):
     fig.savefig(image, dpi=120, facecolor='white')
     plt.close(fig)
     if image.stat().st_size > 4*1024*1024:
+        image.unlink(); target.rmdir()
         raise DataError('CHART_IMAGE_BYTE_LIMIT')
+    if sum(p.stat().st_size for p in rendered) + image.stat().st_size > 24*1024*1024:
+        image.unlink(); target.rmdir()
+        raise DataError('CHART_CANDIDATE_REVISION_OR_BYTE_BUDGET')
     receipt = {'candidate_id': identity['candidate_id'], 'request_id': request['request_id'],
                'revision': request['revision'], 'request_sha256': request_hash, 'packet_sha256': seal['packet_sha256'],
                'image_sha256': hashlib.sha256(image.read_bytes()).hexdigest(), 'source_sha256': source['source']['sha256'],
                'image': target.name+'/chart.png', 'width': 1920, 'height': 1080, 'visible_candles': len(display),
                'first_open_ms': int(display.date.iloc[0].value//1_000_000),
                'last_available_ms': int(display.available_at_ms.iloc[-1]), 'cutoff_ms': identity['as_of_ms'],
+               'symbol': identity['symbol'], 'venue': 'BINANCE_PUBLIC_USDM', 'timeframe': tf,
+               'overlays': overlays,
+               'feature_versions': {'confirmed_swings': 'chart-swings-2L2R-v1',
+                                    'vwap': 'binance-quote-base-UTC-v1', 'ema': 'ewm-adjustFalse-minPeriodsLength-v1'},
+               'indicator_last_values': {name: float(display[name].iloc[-1]) for name in overlays if name in display.columns},
                'levels': plotted_levels, 'focus_zone_crops_candles': 'focus_zone' in request,
                'quality': {'candle_count': 'PASS', 'timestamp_cutoff': 'PASS', 'overlays_max_three': 'PASS',
                            'pixel_readability': 'PENDING_VISUAL_REVIEW', 'native_pixel_receipt': 'PENDING_OPENBOT_OWNER_RUN',
