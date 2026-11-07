@@ -11,3 +11,8 @@ Missing before Session 1 acceptance: concept-by-concept skill recovery and activ
 The installed CLI's Local scripts URL and token marker files were absent in the standard Windows automation directory when checked. This does not establish that another native interface does or does not exist, nor why the markers were absent. No token was read, no agent contacted, and no native agent participation was proved. The owner must enable or otherwise expose an authorized supported native route before a genuine acceptance attempt; any required profile-permission change needs separate approval.
 
 Validation in a temporary Python 3.12 environment with the pinned v2 requirements and existing read-only historical fixture plus an existing sealed Binance packet: `PYTHONPATH=scripts:tests MPLCONFIGDIR=/tmp/openbot-mpl OPENBOT_REAL_PACKET=PACKET /tmp/openbot-s1-venv/bin/python -m unittest test_openbot_current test_binance_research_data test_local_recovery test_trading_lab_workflow test_skill_integration test_watchlist -v` exited 0: **101 passed, 0 failed, 0 skipped**. `test-results.txt` contains the output. This validates the inherited contracts and the small prototype only; it is not Session 1 acceptance.
+
+**Later compatibility note:** Session 2 disables the unbound raw-bar observation API
+because the supplied hash did not establish source identity. The historical output above
+is preserved; the old reproduction script is no longer runnable against the safer API.
+See `evidence/session2-partial/README.md` for the pinned-case replay and its limitations.

@@ -207,7 +207,7 @@ class InstallerTests(unittest.TestCase):
 
     def test_drift_aborts_before_any_assignment_changed(self):
         prepare(self.roots,self.tx)
-        p=next(Path(self.roots['astrabot-lead']).glob('*/SKILL.md'));p.write_text('changed by owner')
+        p=Path(self.roots['astrabot-lead'])/'trading-lab-research-contract'/'SKILL.md';p.write_text('changed by owner')
         before={k:inventory(v) for k,v in self.roots.items()}
         with self.assertRaises(DataError):apply(self.tx,True)
         self.assertEqual(before,{k:inventory(v) for k,v in self.roots.items()})
