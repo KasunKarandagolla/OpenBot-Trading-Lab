@@ -83,10 +83,10 @@ class GateTests(unittest.TestCase):
         fixture=inherited_tests.RiskTests();fixture.setUp()
         self.constraints={**fixture.constraints,'as_of_ms':995,'public_symbol_status':'TRADING',
                           'closed_bar_source_sha256':['synthetic-source'],
-                          'structural_anchors':[{'source_sha256':'synthetic-source','available_at_ms':900,'low':'99','high':'101'}]}
+                          'structural_anchors':[{'source_sha256':'synthetic-source','available_at_ms':900,'low':'99.1','high':'101'}]}
         self.plan={**fixture.plan,'decision':'LIMIT','engine_mode':'DEMO_READ_ONLY','margin_type':'ISOLATED',
                    'position_side':'BOTH','stop_working_type':'MARK_PRICE','hold_seconds':3600,
-                   'invalidation':{'source_sha256':'synthetic-source','available_at_ms':900,'reason':'Synthetic unit level','anchor_price':'99'},
+                   'invalidation':{'source_sha256':'synthetic-source','available_at_ms':900,'reason':'Synthetic unit level with positive buffer','anchor_price':'99.1'},
                    'exits':[{'price':'103','quantity':'0.1','reduce_only':True},
                             {'price':'105','quantity':'0.1','reduce_only':True}]}
         self.account={**fixture.demo,'host':'demo-fapi.binance.com','engine_mode':'DEMO_READ_ONLY',
@@ -147,6 +147,10 @@ class GateTests(unittest.TestCase):
 
     def test_stop_must_match_cited_real_bar_anchor(self):
         result=self.evaluate({**self.plan,'invalidation':{**self.plan['invalidation'],'anchor_price':'98'}})
+        self.assertIn('STOP_NOT_OUTSIDE_CITED_BAR_STRUCTURE',result['reasons'])
+
+    def test_zero_structural_buffer_is_rejected(self):
+        result=self.evaluate({**self.plan,'stop':'99.1'})
         self.assertIn('STOP_NOT_OUTSIDE_CITED_BAR_STRUCTURE',result['reasons'])
 
     def test_funding_depletes_isolated_margin_before_stop(self):

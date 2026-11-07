@@ -1,0 +1,102 @@
+{
+  "adapter_entrypoint": "PYTHONPATH=scripts python -m trading_lab.skills",
+  "assignments": [
+    {
+      "count": 9,
+      "migration_sha256": "b8e3f942c35ff4c7e43387d41430bffa3b7ec1825a58e62d6a70475cd17cccbd",
+      "owner": "astrabot-lead",
+      "skills": [
+        "openbot-chart-vision-analyst",
+        "trading-lab-director-synthesis",
+        "trading-lab-independent-risk-review",
+        "trading-lab-market-regime-structure",
+        "trading-lab-news-macro-operations",
+        "trading-lab-opportunity-screening",
+        "trading-lab-orderflow-volume-profile",
+        "trading-lab-research-contract",
+        "trading-lab-trade-geometry-management"
+      ]
+    },
+    {
+      "count": 6,
+      "migration_sha256": "4bf05c3e39338c56d0b7ead119766bd8b2375a0b7e13119f211921b2a8c32e4d",
+      "owner": "trading-lab-director",
+      "skills": [
+        "trading-lab-director-synthesis",
+        "trading-lab-independent-risk-review",
+        "trading-lab-market-regime-structure",
+        "trading-lab-news-macro-operations",
+        "trading-lab-opportunity-screening",
+        "trading-lab-research-contract"
+      ]
+    },
+    {
+      "count": 6,
+      "migration_sha256": "126a51ec515b432aa68ba6c42706216bd35e024f6a677756d92295da81e68d13",
+      "owner": "trading-lab-market-researcher",
+      "skills": [
+        "trading-lab-market-regime-structure",
+        "trading-lab-news-macro-operations",
+        "trading-lab-opportunity-screening",
+        "trading-lab-orderflow-volume-profile",
+        "trading-lab-research-contract",
+        "trading-lab-trade-geometry-management"
+      ]
+    },
+    {
+      "count": 1,
+      "migration_sha256": "ca7c4f643e482073514ef38105ad58a502b5753e731e48b769a1948ef5737475",
+      "owner": "chart-vision-analyst",
+      "skills": [
+        "openbot-chart-vision-analyst"
+      ]
+    },
+    {
+      "count": 5,
+      "migration_sha256": "245c9647cb1865017f89c1fc4b70dacdbd7c4bcbca2ceff47f9062e64850f71c",
+      "owner": "independent-risk-reviewer",
+      "skills": [
+        "trading-lab-independent-risk-review",
+        "trading-lab-news-macro-operations",
+        "trading-lab-orderflow-volume-profile",
+        "trading-lab-research-contract",
+        "trading-lab-trade-geometry-management"
+      ]
+    }
+  ],
+  "bridge_namespace": "OpenBot/Shared/TradingLab-Workflow-v2",
+  "chart_candidate_bytes_cap": 25165824,
+  "chart_candidate_image_cap": 12,
+  "chart_revisions_per_id": 4,
+  "demo_quote_fresh_ms": 10000,
+  "execution_authority": "NONE",
+  "files": {
+    "research/openbot_current/order-intent.schema.json": "77b77b29af6b1109d9e32c185086e4a0b814a12502bda35dc6d7a32657c571ea",
+    "scripts/trading_lab/charts.py": "869c170adbad692a7aab0d47138c00e5e93836bfc85f753623c9e7408559b7e0",
+    "scripts/trading_lab/execution.py": "d9445b9c96cdf0c7ada37b1d4d7078d5ccd6381f55164bbad9bc84dec91f4c48",
+    "scripts/trading_lab/public.py": "79e17d5384f0dad551ac9050287e52df6e9e9507b3ac0b769d3936e6b07c8b23",
+    "scripts/trading_lab/risk.py": "e8536450703284338503ac816751ed5f59e120b5507836c1cc8e693538b9fcb0",
+    "scripts/trading_lab/workflow.py": "b5420f0c0d3f4971efce575fcc3022cac395ee1fef6428128eccb7866dd8b021"
+  },
+  "installed_activation": "PENDING_OWNER_APPROVAL",
+  "native_listener": "NOT_VERIFIED",
+  "operations": [
+    "SCAN",
+    "CHART",
+    "GATE",
+    "READINESS"
+  ],
+  "packet_schema": "openbot.binance.current.v1",
+  "program_base_branch": "codex/openbot-five-agent-demo-workflow",
+  "program_baseline": "d133b3bf91ab51765d9446e4e82f0bc38c0bae94",
+  "proposal_fresh_ms": 180000,
+  "quote_fresh_ms": 120000,
+  "readiness": "EXECUTION_BLOCKED_CREDENTIAL_BOUNDARY",
+  "request_schema": "openbot.shared.request.v2",
+  "request_ttl_ms": 600000,
+  "response_schema": "openbot.shared.reply.v2",
+  "revision": "v2.0.0-research",
+  "schema": "openbot.skill-compatibility.v2",
+  "skills_baseline": "6f1a378269d962e019498369099bf1a5039c70a4",
+  "tool_entrypoint": "PYTHONPATH=scripts python -m trading_lab.workflow"
+}

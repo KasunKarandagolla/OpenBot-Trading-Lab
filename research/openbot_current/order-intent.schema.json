@@ -1,42 +1,226 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "OpenBot Binance Demo research proposal",
-  "description": "Disabled execution contract. A future separately authorized venue adapter would need deterministic validation, idempotency, receipts, reconciliation, and tested protective exits.",
-  "type": "object",
   "additionalProperties": false,
-  "required": ["decision", "venue", "symbol", "packet_sha256"],
-  "properties": {
-    "decision": { "enum": ["MARKET_ENTRY", "LIMIT_ENTRY", "CONDITIONAL_ENTRY", "NO_OPPORTUNITY"] },
-    "venue": { "const": "Binance USD-M Demo" },
-    "symbol": { "type": "string", "pattern": "^[A-Z0-9_]{2,32}$" },
-    "packet_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-    "side": { "enum": ["LONG", "SHORT"] },
-    "entry": { "$ref": "#/$defs/decimal" },
-    "stop": { "$ref": "#/$defs/decimal" },
-    "tp1": { "$ref": "#/$defs/decimal" },
-    "tp2": { "$ref": "#/$defs/decimal" },
-    "quantity": { "$ref": "#/$defs/decimal" },
-    "leverage": { "type": "integer", "minimum": 10, "maximum": 25 },
-    "expires_at_ms": { "type": "integer", "minimum": 1 },
-    "invalidation": { "type": "string", "minLength": 1, "maxLength": 1000 },
-    "trigger": { "type": "string", "minLength": 1, "maxLength": 1000 },
-    "revalidation_required": { "const": true },
-    "reason": { "type": "string", "minLength": 1, "maxLength": 1000 }
-  },
   "allOf": [
     {
-      "if": { "properties": { "decision": { "const": "NO_OPPORTUNITY" } } },
-      "then": { "required": ["reason"] },
       "else": {
-        "required": ["side", "entry", "stop", "tp1", "tp2", "quantity", "leverage", "expires_at_ms", "invalidation"]
+        "required": [
+          "side",
+          "entry",
+          "stop",
+          "tp1",
+          "tp2",
+          "quantity",
+          "leverage",
+          "expires_at_ms",
+          "invalidation",
+          "engine_mode",
+          "margin_type",
+          "position_side",
+          "stop_working_type",
+          "hold_seconds",
+          "exits"
+        ]
+      },
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "NO_OPPORTUNITY"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason"
+        ]
       }
     },
     {
-      "if": { "properties": { "decision": { "const": "CONDITIONAL_ENTRY" } } },
-      "then": { "required": ["trigger", "revalidation_required"] }
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "CONDITIONAL"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "trigger",
+          "revalidation_required"
+        ]
+      }
     }
   ],
-  "$defs": {
-    "decimal": { "type": "string", "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$" }
-  }
+  "properties": {
+    "decision": {
+      "enum": [
+        "MARKET",
+        "LIMIT",
+        "CONDITIONAL",
+        "NO_OPPORTUNITY"
+      ]
+    },
+    "engine_mode": {
+      "const": "DEMO_READ_ONLY"
+    },
+    "entry": {
+      "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+      "type": "string"
+    },
+    "exits": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "price": {
+            "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+            "type": "string"
+          },
+          "quantity": {
+            "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+            "type": "string"
+          },
+          "reduce_only": {
+            "const": true
+          }
+        },
+        "required": [
+          "price",
+          "quantity",
+          "reduce_only"
+        ],
+        "type": "object"
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "type": "array"
+    },
+    "expires_at_ms": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "hold_seconds": {
+      "maximum": 54000,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "invalidation": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_price": {
+          "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+          "type": "string"
+        },
+        "available_at_ms": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "reason": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_sha256",
+        "available_at_ms",
+        "anchor_price",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "leverage": {
+      "maximum": 25,
+      "minimum": 10,
+      "type": "integer"
+    },
+    "margin_type": {
+      "const": "ISOLATED"
+    },
+    "packet_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "position_side": {
+      "const": "BOTH"
+    },
+    "quantity": {
+      "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+      "type": "string"
+    },
+    "reason": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "revalidation_required": {
+      "const": true
+    },
+    "side": {
+      "enum": [
+        "LONG",
+        "SHORT"
+      ]
+    },
+    "stop": {
+      "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+      "type": "string"
+    },
+    "stop_working_type": {
+      "const": "MARK_PRICE"
+    },
+    "symbol": {
+      "pattern": "^[A-Z0-9_]{2,32}$",
+      "type": "string"
+    },
+    "tp1": {
+      "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+      "type": "string"
+    },
+    "tp2": {
+      "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+      "type": "string"
+    },
+    "trigger": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "CLOSED_5M_ABOVE",
+            "CLOSED_5M_BELOW"
+          ]
+        },
+        "not_before_ms": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "order_after_confirmation": {
+          "const": true
+        },
+        "price": {
+          "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "price",
+        "not_before_ms",
+        "order_after_confirmation"
+      ],
+      "type": "object"
+    },
+    "venue": {
+      "const": "Binance USD-M Demo"
+    }
+  },
+  "required": [
+    "decision",
+    "venue",
+    "symbol",
+    "packet_sha256"
+  ],
+  "title": "Current validate_market_plan v2 research proposal; no execution authority",
+  "type": "object"
 }

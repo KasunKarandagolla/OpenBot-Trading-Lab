@@ -1,0 +1,383 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "openbot.vision.assessment.v2"
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packet_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "cutoff_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "execution_authority": {
+      "const": "NONE"
+    },
+    "order_authorized": {
+      "const": false
+    },
+    "research_status": {
+      "enum": [
+        "WATCH",
+        "UNQUALIFIED",
+        "REJECT_RESEARCH_THESIS",
+        "RESEARCH_CANDIDATE"
+      ]
+    },
+    "interest": {
+      "enum": [
+        "MARKET_INTERESTING",
+        "UNQUALIFIED"
+      ]
+    },
+    "trigger": {
+      "enum": [
+        "TRIGGER_VALID",
+        "PENDING",
+        "UNKNOWN"
+      ]
+    },
+    "admissibility": {
+      "const": "NOT_ESTABLISHED"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9-]{1,64}$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4
+          },
+          "image_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "source_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "packet_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "timeframe": {
+            "enum": [
+              "4h",
+              "1h",
+              "15m",
+              "5m",
+              "1m"
+            ]
+          },
+          "symbol": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]{2,32}$"
+          },
+          "venue": {
+            "const": "BINANCE_PUBLIC_USDM"
+          },
+          "cutoff_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_available_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pixels_seen": {
+            "type": "boolean"
+          },
+          "delivery": {
+            "enum": [
+              "NO_PIXELS",
+              "LOCAL_PIXEL_INSPECTION",
+              "NATIVE_ATTACHMENT"
+            ]
+          },
+          "attachment_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "message_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "request_id",
+          "revision",
+          "image_sha256",
+          "source_sha256",
+          "packet_sha256",
+          "timeframe",
+          "symbol",
+          "venue",
+          "cutoff_ms",
+          "last_available_ms",
+          "pixels_seen",
+          "delivery",
+          "attachment_id",
+          "message_id"
+        ]
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "enum": [
+              "VISIBLE",
+              "NUMERIC_VERIFIED",
+              "HYPOTHESIS",
+              "UNKNOWN"
+            ]
+          },
+          "evidence_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "available_at_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "feature": {
+            "enum": [
+              "OHLC",
+              "CONFIRMED_SWING",
+              "OTHER"
+            ]
+          },
+          "swing": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "feature_version": {
+                "const": "chart-swings-2L2R-v1"
+              },
+              "pivot_open_ms": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "known_at_ms": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "timeframe": {
+                "enum": [
+                  "1h",
+                  "15m",
+                  "5m"
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "support",
+                  "resistance"
+                ]
+              }
+            },
+            "required": [
+              "feature_version",
+              "pivot_open_ms",
+              "known_at_ms",
+              "timeframe",
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "text",
+          "classification",
+          "evidence_id",
+          "price",
+          "source_sha256",
+          "available_at_ms",
+          "feature"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "feature": {
+                  "const": "CONFIRMED_SWING"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "swing",
+                "price"
+              ],
+              "properties": {
+                "price": {
+                  "type": "string",
+                  "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$"
+                },
+                "classification": {
+                  "const": "NUMERIC_VERIFIED"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "hypotheses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confirm_if": {
+            "type": "string",
+            "minLength": 1
+          },
+          "invalidate_if": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "name",
+          "confirm_if",
+          "invalidate_if"
+        ]
+      }
+    },
+    "contradictions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "insight_gained": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "INSUFFICIENT_EVIDENCE",
+        "PARTIAL_EVIDENCE",
+        "SUFFICIENT_FOR_RESEARCH"
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "candidate_id",
+    "packet_sha256",
+    "cutoff_ms",
+    "execution_authority",
+    "order_authorized",
+    "research_status",
+    "interest",
+    "trigger",
+    "admissibility",
+    "images",
+    "observations",
+    "hypotheses",
+    "contradictions",
+    "unknowns",
+    "insight_gained",
+    "confidence"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "research_status": {
+            "const": "RESEARCH_CANDIDATE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "images": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "pixels_seen": {
+                  "const": true
+                },
+                "delivery": {
+                  "enum": [
+                    "LOCAL_PIXEL_INSPECTION",
+                    "NATIVE_ATTACHMENT"
+                  ]
+                }
+              }
+            }
+          },
+          "hypotheses": {
+            "minItems": 2
+          }
+        }
+      }
+    }
+  ]
+}

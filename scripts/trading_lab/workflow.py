@@ -166,6 +166,10 @@ class Inbox:
             raise DataError('REQUEST_EXPIRED_FUTURE_OR_TTL')
         data=request['payload'];kind=request['kind']
         if not isinstance(data,dict):raise DataError('PAYLOAD_OBJECT_REQUIRED')
+        # The versioned skill contract is also enforced at the actual transport.
+        # A valid JSON object must not bypass proposal shapes or introduce accounts.
+        from trading_lab.skills import validate_envelope
+        validate_envelope(request, now, self.packet(data) if kind in {'CHART', 'GATE'} else None)
         if kind=='SCAN':
             if set(data)-{'universe','shortlist'}:raise DataError('SCAN_UNKNOWN_FIELD')
             run=self.root/'runs'/key

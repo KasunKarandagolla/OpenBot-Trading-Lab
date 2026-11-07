@@ -1,0 +1,383 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "research_status": {
+            "const": "RESEARCH_CANDIDATE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "hypotheses": {
+            "minItems": 2
+          },
+          "images": {
+            "items": {
+              "properties": {
+                "delivery": {
+                  "enum": [
+                    "LOCAL_PIXEL_INSPECTION",
+                    "NATIVE_ATTACHMENT"
+                  ]
+                },
+                "pixels_seen": {
+                  "const": true
+                }
+              }
+            },
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "admissibility": {
+      "const": "NOT_ESTABLISHED"
+    },
+    "candidate_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "confidence": {
+      "enum": [
+        "INSUFFICIENT_EVIDENCE",
+        "PARTIAL_EVIDENCE",
+        "SUFFICIENT_FOR_RESEARCH"
+      ]
+    },
+    "contradictions": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "cutoff_ms": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "execution_authority": {
+      "const": "NONE"
+    },
+    "hypotheses": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "confirm_if": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "invalidate_if": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "confirm_if",
+          "invalidate_if"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "images": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "attachment_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "cutoff_ms": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "delivery": {
+            "enum": [
+              "NO_PIXELS",
+              "LOCAL_PIXEL_INSPECTION",
+              "NATIVE_ATTACHMENT"
+            ]
+          },
+          "image_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "last_available_ms": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "message_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "packet_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "pixels_seen": {
+            "type": "boolean"
+          },
+          "request_id": {
+            "pattern": "^[A-Za-z0-9-]{1,64}$",
+            "type": "string"
+          },
+          "revision": {
+            "maximum": 4,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "source_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "symbol": {
+            "pattern": "^[A-Z0-9_]{2,32}$",
+            "type": "string"
+          },
+          "timeframe": {
+            "enum": [
+              "4h",
+              "1h",
+              "15m",
+              "5m",
+              "1m"
+            ]
+          },
+          "venue": {
+            "const": "BINANCE_PUBLIC_USDM"
+          }
+        },
+        "required": [
+          "request_id",
+          "revision",
+          "image_sha256",
+          "source_sha256",
+          "packet_sha256",
+          "timeframe",
+          "symbol",
+          "venue",
+          "cutoff_ms",
+          "last_available_ms",
+          "pixels_seen",
+          "delivery",
+          "attachment_id",
+          "message_id"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "insight_gained": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "interest": {
+      "enum": [
+        "MARKET_INTERESTING",
+        "UNQUALIFIED"
+      ]
+    },
+    "observations": {
+      "items": {
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "feature": {
+                  "const": "CONFIRMED_SWING"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "classification": {
+                  "const": "NUMERIC_VERIFIED"
+                },
+                "price": {
+                  "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "swing",
+                "price"
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "available_at_ms": {
+            "minimum": 0,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "classification": {
+            "enum": [
+              "VISIBLE",
+              "NUMERIC_VERIFIED",
+              "HYPOTHESIS",
+              "UNKNOWN"
+            ]
+          },
+          "evidence_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "feature": {
+            "enum": [
+              "OHLC",
+              "CONFIRMED_SWING",
+              "OTHER"
+            ]
+          },
+          "price": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9]{1,12}([.][0-9]{1,12})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "swing": {
+            "additionalProperties": false,
+            "properties": {
+              "feature_version": {
+                "const": "chart-swings-2L2R-v1"
+              },
+              "kind": {
+                "enum": [
+                  "support",
+                  "resistance"
+                ]
+              },
+              "known_at_ms": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "pivot_open_ms": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "timeframe": {
+                "enum": [
+                  "1h",
+                  "15m",
+                  "5m"
+                ]
+              }
+            },
+            "required": [
+              "feature_version",
+              "pivot_open_ms",
+              "known_at_ms",
+              "timeframe",
+              "kind"
+            ],
+            "type": "object"
+          },
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "classification",
+          "evidence_id",
+          "price",
+          "source_sha256",
+          "available_at_ms",
+          "feature"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "order_authorized": {
+      "const": false
+    },
+    "packet_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "research_status": {
+      "enum": [
+        "WATCH",
+        "UNQUALIFIED",
+        "REJECT_RESEARCH_THESIS",
+        "RESEARCH_CANDIDATE"
+      ]
+    },
+    "schema": {
+      "const": "openbot.vision.assessment.v2"
+    },
+    "trigger": {
+      "enum": [
+        "TRIGGER_VALID",
+        "PENDING",
+        "UNKNOWN"
+      ]
+    },
+    "unknowns": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema",
+    "candidate_id",
+    "packet_sha256",
+    "cutoff_ms",
+    "execution_authority",
+    "order_authorized",
+    "research_status",
+    "interest",
+    "trigger",
+    "admissibility",
+    "images",
+    "observations",
+    "hypotheses",
+    "contradictions",
+    "unknowns",
+    "insight_gained",
+    "confidence"
+  ],
+  "type": "object"
+}
