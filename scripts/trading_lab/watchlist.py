@@ -21,7 +21,7 @@ def connect(root):
     db.execute('PRAGMA foreign_keys=ON')
     db.execute('PRAGMA journal_mode=WAL')
     version = db.execute('PRAGMA user_version').fetchone()[0]
-    if version not in (0, 1):
+    if version not in (0, 1, 2):
         raise ValueError('Unsupported watchlist schema')
     if version == 0:
         db.executescript('''BEGIN IMMEDIATE;
@@ -34,10 +34,19 @@ def connect(root):
             CREATE TRIGGER setups_no_update BEFORE UPDATE ON setups BEGIN SELECT RAISE(ABORT,'immutable'); END;
             CREATE TRIGGER setups_no_delete BEFORE DELETE ON setups BEGIN SELECT RAISE(ABORT,'immutable'); END;
             PRAGMA user_version=1; COMMIT;''')
+        version = 1
+    if version == 1:
+        # A legacy setup remains present, but has no trusted case binding.
+        db.executescript('''BEGIN IMMEDIATE;
+            CREATE TABLE case_bindings(setup_id TEXT PRIMARY KEY REFERENCES setups(id),
+                case_id TEXT NOT NULL, input_sha256 TEXT NOT NULL);
+            CREATE TRIGGER case_bindings_no_update BEFORE UPDATE ON case_bindings BEGIN SELECT RAISE(ABORT,'immutable'); END;
+            CREATE TRIGGER case_bindings_no_delete BEFORE DELETE ON case_bindings BEGIN SELECT RAISE(ABORT,'immutable'); END;
+            PRAGMA user_version=2; COMMIT;''')
     return db
 
 
-def create(db, data):
+def create(db, data, *, _case_binding=None):
     required = {'symbol', 'venue', 'direction', 'family', 'source_cutoff_ms', 'source_sha256',
                 'level', 'invalidation', 'expires_ms', 'hypothesis', 'opposition', 'confirmation', 'feature_version'}
     if set(data) != required or data['venue'] != 'BINANCE_PUBLIC_USDM':
@@ -58,7 +67,15 @@ def create(db, data):
     sid = hashlib.sha256(definition.encode()).hexdigest()
     db.execute('BEGIN IMMEDIATE')
     try:
+        if _case_binding and db.execute('SELECT 1 FROM setups WHERE id=?', (sid,)).fetchone():
+            existing = db.execute('SELECT case_id,input_sha256 FROM case_bindings WHERE setup_id=?', (sid,)).fetchone()
+            if existing != _case_binding:
+                raise ValueError('EXISTING_SETUP_HAS_NO_MATCHING_SOURCE_BINDING')
         db.execute('INSERT OR IGNORE INTO setups VALUES (?,?)', (sid, definition))
+        if _case_binding:
+            db.execute('INSERT OR IGNORE INTO case_bindings VALUES (?,?,?)', (sid, *_case_binding))
+            if db.execute('SELECT case_id,input_sha256 FROM case_bindings WHERE setup_id=?', (sid,)).fetchone() != _case_binding:
+                raise ValueError('Conflicting source binding')
         db.execute('INSERT OR IGNORE INTO events(setup_id,event_key,at_ms,state,body) VALUES (?,?,?,?,?)',
                    (sid, 'discovery', cutoff, 'DISCOVERED', encode({'research_only': True})))
         db.execute('COMMIT')
@@ -69,61 +86,10 @@ def create(db, data):
 
 
 def observe(db, sid, bars, source_hash, *, as_of_ms, mode):
-    """Process strictly contiguous, completed 5-minute bars; never infer an entry."""
+    """Legacy raw bars cannot establish instrument identity or source provenance."""
     if mode == 'LIVE':
         raise ValueError('Live monitoring is unavailable until source identity and freshness are verified')
-    if (not re.fullmatch('[0-9a-f]{64}', source_hash) or not bars or type(as_of_ms) is not int
-            or mode != 'HISTORICAL'):
-        raise ValueError('Missing source or bars')
-    db.execute('BEGIN IMMEDIATE')
-    try:
-        row = db.execute('SELECT definition FROM setups WHERE id=?', (sid,)).fetchone()
-        if not row:
-            raise ValueError('Unknown setup')
-        data = json.loads(row[0])
-        prior = db.execute('SELECT at_ms,state FROM events WHERE setup_id=? ORDER BY seq DESC LIMIT 1', (sid,)).fetchone()
-        previous_open = None
-        for bar in bars:
-            if (not isinstance(bar, list) or len(bar) != 12 or type(bar[0]) is not int or type(bar[6]) is not int
-                    or bar[0] % 300000 or bar[6] != bar[0] + 299999
-                    or (previous_open is not None and bar[0] != previous_open + 300000)):
-                raise ValueError('Malformed, duplicate or gapped bars')
-            previous_open = bar[0]
-            op, high, low, close = map(float, bar[1:5])
-            if not all(math.isfinite(x) and x > 0 for x in (op, high, low, close)) or high < max(op, low, close) or low > min(op, high, close):
-                raise ValueError('Invalid OHLC')
-            at = bar[6] + 1
-            if at > as_of_ms:
-                raise ValueError('Incomplete or future bar')
-            if at <= data['source_cutoff_ms']:
-                raise ValueError('Bar does not follow discovery')
-            key = 'bar:' + str(at)
-            bar_hash = hashlib.sha256(encode(bar).encode()).hexdigest()
-            old = db.execute('SELECT body FROM events WHERE setup_id=? AND event_key=?', (sid, key)).fetchone()
-            if old:
-                if json.loads(old[0])['bar_sha256'] != bar_hash:
-                    raise ValueError('Completed bar changed')
-                continue
-            if prior[1] in ('EXPIRED', 'INVALIDATED') or at != prior[0] + 300000:
-                raise ValueError('Terminal state or missing bar')
-            if at >= data['expires_ms']:
-                state = 'EXPIRED'
-            elif ((data['direction'] == 'LONG' and close <= float(data['invalidation'])) or
-                  (data['direction'] == 'SHORT' and close >= float(data['invalidation']))):
-                state = 'INVALIDATED'
-            elif abs(close / float(data['level']) - 1) <= .005:
-                state = 'APPROACHING_ZONE'
-            else:
-                state = 'WATCHING'
-            body = encode({'bar_sha256': bar_hash, 'source_sha256': source_hash, 'close': close, 'mode': mode,
-                           'note': 'Monitoring observation only; no trade trigger.'})
-            db.execute('INSERT INTO events(setup_id,event_key,at_ms,state,body) VALUES (?,?,?,?,?)',
-                       (sid, key, at, state, body))
-            prior = (at, state)
-        db.execute('COMMIT')
-    except BaseException:
-        db.execute('ROLLBACK')
-        raise
+    raise ValueError('UNVERIFIED_RAW_BARS: use a pinned historical case')
 
 
 def main():
@@ -135,19 +101,33 @@ def main():
     add = actions.add_parser('add'); add.add_argument('definition', type=Path)
     tick = actions.add_parser('tick'); tick.add_argument('setup_id'); tick.add_argument('bars', type=Path)
     tick.add_argument('--as-of-ms', required=True, type=int); tick.add_argument('--mode', required=True, choices=['HISTORICAL', 'LIVE'])
+    verified_add = actions.add_parser('case-add'); verified_add.add_argument('case_id'); verified_add.add_argument('definition', type=Path)
+    verified_tick = actions.add_parser('case-tick'); verified_tick.add_argument('setup_id'); verified_tick.add_argument('--as-of-ms', required=True, type=int)
+    expiry = actions.add_parser('expire'); expiry.add_argument('setup_id'); expiry.add_argument('--as-of-ms', required=True, type=int)
     history = actions.add_parser('history'); history.add_argument('setup_id')
     backup = actions.add_parser('backup'); backup.add_argument('destination', type=Path)
     args = parser.parse_args()
     db = connect(args.root)
     try:
         if args.action == 'init':
-            result = {'schema': 1, 'status': 'INITIALIZED'}
+            result = {'schema': 2, 'status': 'INITIALIZED'}
         elif args.action == 'add':
             result = {'setup_id': create(db, json.loads(args.definition.read_text()))}
         elif args.action == 'tick':
             raw = args.bars.read_bytes()
             observe(db, args.setup_id, json.loads(raw), hashlib.sha256(raw).hexdigest(), as_of_ms=args.as_of_ms, mode=args.mode)
             result = {'status': 'PROCESSED'}
+        elif args.action == 'case-add':
+            from trading_lab.case_monitor import create_case_setup
+            result = {'setup_id': create_case_setup(db, json.loads(args.definition.read_text()), args.case_id)}
+        elif args.action == 'case-tick':
+            from trading_lab.case_monitor import observe_case
+            observe_case(db, args.setup_id, as_of_ms=args.as_of_ms)
+            result = {'status': 'PROCESSED_HISTORICAL_ONLY'}
+        elif args.action == 'expire':
+            from trading_lab.case_monitor import expire
+            expire(db, args.setup_id, args.as_of_ms)
+            result = {'status': 'RECONCILED'}
         elif args.action == 'history':
             result = [dict(seq=r[0], at_ms=r[1], state=r[2], body=json.loads(r[3])) for r in db.execute(
                 'SELECT seq,at_ms,state,body FROM events WHERE setup_id=? ORDER BY seq', (args.setup_id,))]
