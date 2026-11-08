@@ -13,7 +13,10 @@ def encode(value):
 
 
 def connect(root):
-    root = Path(root).expanduser().resolve()
+    root = Path(root).expanduser().absolute()
+    if any(p.is_symlink() for p in [root, *root.parents]) or (root / 'watchlist.sqlite3').is_symlink():
+        raise ValueError('WATCHLIST_SYMLINK_REJECTED')
+    root = root.resolve()
     if str(root).startswith('/mnt/'):
         raise ValueError('Choose a local Linux filesystem for SQLite WAL, not /mnt')
     root.mkdir(parents=True, exist_ok=True)
@@ -21,7 +24,7 @@ def connect(root):
     db.execute('PRAGMA foreign_keys=ON')
     db.execute('PRAGMA journal_mode=WAL')
     version = db.execute('PRAGMA user_version').fetchone()[0]
-    if version not in (0, 1, 2):
+    if version not in (0, 1, 2, 3):
         raise ValueError('Unsupported watchlist schema')
     if version == 0:
         db.executescript('''BEGIN IMMEDIATE;
@@ -43,10 +46,18 @@ def connect(root):
             CREATE TRIGGER case_bindings_no_update BEFORE UPDATE ON case_bindings BEGIN SELECT RAISE(ABORT,'immutable'); END;
             CREATE TRIGGER case_bindings_no_delete BEFORE DELETE ON case_bindings BEGIN SELECT RAISE(ABORT,'immutable'); END;
             PRAGMA user_version=2; COMMIT;''')
+        version = 2
+    if version == 2:
+        db.executescript('''BEGIN IMMEDIATE;
+            CREATE TABLE source_bindings(setup_id TEXT PRIMARY KEY REFERENCES setups(id),
+                source_version TEXT NOT NULL, source_id TEXT NOT NULL, setup TEXT NOT NULL);
+            CREATE TRIGGER source_bindings_no_update BEFORE UPDATE ON source_bindings BEGIN SELECT RAISE(ABORT,'immutable'); END;
+            CREATE TRIGGER source_bindings_no_delete BEFORE DELETE ON source_bindings BEGIN SELECT RAISE(ABORT,'immutable'); END;
+            PRAGMA user_version=3; COMMIT;''')
     return db
 
 
-def create(db, data, *, _case_binding=None):
+def create(db, data, *, _case_binding=None, _panel_binding=None):
     required = {'symbol', 'venue', 'direction', 'family', 'source_cutoff_ms', 'source_sha256',
                 'level', 'invalidation', 'expires_ms', 'hypothesis', 'opposition', 'confirmation', 'feature_version'}
     if set(data) != required or data['venue'] != 'BINANCE_PUBLIC_USDM':
@@ -71,7 +82,13 @@ def create(db, data, *, _case_binding=None):
             existing = db.execute('SELECT case_id,input_sha256 FROM case_bindings WHERE setup_id=?', (sid,)).fetchone()
             if existing != _case_binding:
                 raise ValueError('EXISTING_SETUP_HAS_NO_MATCHING_SOURCE_BINDING')
+        if _panel_binding and db.execute('SELECT 1 FROM setups WHERE id=?', (sid,)).fetchone():
+            if db.execute('SELECT source_version,source_id,setup FROM source_bindings WHERE setup_id=?', (sid,)).fetchone() != _panel_binding:
+                raise ValueError('EXISTING_SETUP_HAS_NO_MATCHING_PANEL_BINDING')
         db.execute('INSERT OR IGNORE INTO setups VALUES (?,?)', (sid, definition))
+        if _panel_binding:
+            db.execute('INSERT OR IGNORE INTO source_bindings VALUES (?,?,?,?)', (sid, *_panel_binding))
+
         if _case_binding:
             db.execute('INSERT OR IGNORE INTO case_bindings VALUES (?,?,?)', (sid, *_case_binding))
             if db.execute('SELECT case_id,input_sha256 FROM case_bindings WHERE setup_id=?', (sid,)).fetchone() != _case_binding:
@@ -110,7 +127,7 @@ def main():
     db = connect(args.root)
     try:
         if args.action == 'init':
-            result = {'schema': 2, 'status': 'INITIALIZED'}
+            result = {'schema': db.execute('PRAGMA user_version').fetchone()[0], 'status': 'INITIALIZED'}
         elif args.action == 'add':
             result = {'setup_id': create(db, json.loads(args.definition.read_text()))}
         elif args.action == 'tick':

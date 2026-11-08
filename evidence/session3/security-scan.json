@@ -1,0 +1,13 @@
+{
+  "initial_findings": 1434,
+  "all_rule": "generic-api-key",
+  "all_exact_fields": "setup_key",
+  "all_values": "64 hexadecimal characters; deterministic setup identity, not credentials",
+  "verified_every_finding": true,
+  "allowlist_line_regex": "^\\s*\"setup_key\": \"[a-f0-9]{64}\",?\\s*$",
+  "status": "PASS",
+  "final_exit_code": 0,
+  "final_findings": 0,
+  "tool": "gitleaks 8.30.1",
+  "scope": "Outgoing source/evidence snapshot; narrow allowlist matches only verified JSON setup_key SHA256 lines; other default rules retained"
+}

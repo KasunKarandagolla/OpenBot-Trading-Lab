@@ -1,0 +1,73 @@
+{
+  "version": "3.0.2-research",
+  "mode": "OFFLINE_BACKTEST_ONLY",
+  "venue": "BINANCE_PUBLIC_USDM",
+  "development_windows": [
+    [
+      "2026-08-01",
+      "2026-08-08"
+    ],
+    [
+      "2026-08-08",
+      "2026-08-15"
+    ]
+  ],
+  "previously_studied_data": true,
+  "holdout_claim": false,
+  "scan_frequency": "one hour; cheap context on all 24 pinned symbols, focus four by boundary proximity then published rolling quote activity",
+  "developing_expiry_minutes": 180,
+  "entry_expiry_minutes": 5,
+  "entry_bar": "signal closes at T, native execution bar opens at T; no signal-bar fill",
+  "breakout": "prior 24h boundary excludes arming-hour bar; two later 5m closes accept; subsequent retest touch within 0.10 ATR1h and close <=0.75 ATR1h beyond boundary, rvol>=1; no chase >1.25 ATR1h",
+  "sweep": "prior 24h boundary; completed 5m excursion 0.05 to 1.5 ATR1h and reclaim; later close beyond reclaim-bar high/low with rvol>=1; simultaneous 1h/4h EMA and 1h structure opposing blocks reversal until new hypothesis",
+  "stop": "outside retest/boundary or full sweep extreme, plus 0.15 ATR1h; minimum .0025 and maximum .025 of entry",
+  "target": "Before nearest still-unconsumed, relevant-side pre-known 1h/4h 2L2R pivot in seven-day map, or range boundary/midpoint; .05 ATR1h buffer, <=6 ATR1h distance. Prior completed close through a pivot consumes its old role; a role flip requires a new explicit hypothesis.",
+  "cost_admission": {
+    "fee_round_trip": 0.001,
+    "modeled_friction_round_trip": 0.002,
+    "adverse_funding_allowance": 0.0003,
+    "minimum_net_rr": 1.25
+  },
+  "hold_minutes": {
+    "breakout": 480,
+    "sweep": 240
+  },
+  "no_progress_minutes": {
+    "breakout": 240,
+    "sweep": 120
+  },
+  "thesis_exit": "two completed closes against boundary by more than .15 ATR1h; distinct from native protective stop",
+  "partials_breakeven_trailing": "OFF; no claim of benefit",
+  "wallet_usdt": 1000,
+  "notional_cap_usdt": 25,
+  "leverage": 1,
+  "max_positions": 2,
+  "fee_per_side": 0.0005,
+  "native_limit_variants": [
+    "one-tick-through",
+    "range-touch"
+  ],
+  "early_variants": [
+    "BreakoutImmediate after second acceptance close",
+    "SweepReclaimEarly after completed reclaim"
+  ],
+  "stress_bps_extra_per_side": [
+    5,
+    10,
+    20
+  ],
+  "funding": "actual source event ms with same-hour mark open, strict (entry,exit] allocation; hourly mark approximation",
+  "unknowns": [
+    "historical exchange filters/listing census",
+    "spread",
+    "queue",
+    "real partial fills",
+    "impact",
+    "native OpenBot Risk",
+    "news at historical cutoffs"
+  ],
+  "execution_authority": "NONE",
+  "development_revision": "v3.0.0 latest-swing-only map could omit older obstacles; v3.0.1 all-pivot map over-rejected by retaining already-broken levels. v3.0.2 uses causal active level lifecycle. These are engineering/market-logic corrections, not profit-selected thresholds.",
+  "feature_warmup_days": 40,
+  "feature_origin": "For the matched registered windows: 2026-06-22 UTC, fixed for both windows/variants; through 2026-08-15. Complete source archives are still checksum-verified. Forty days exceed 14-day activity and 4h EMA50 warmup; bounded active pivots retain seven days. Append-future invariance uses identical origin."
+}

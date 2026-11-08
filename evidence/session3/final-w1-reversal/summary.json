@@ -1,0 +1,55 @@
+{
+  "archive": "backtest-result-2026-11-08_02-30-43.zip",
+  "archive_sha256": "43c8a3a7cf8285de0f82dd0f9d4ad716b05e115902dffc8a2ee692bed98e27a1",
+  "args": [
+    "backtesting",
+    "--config",
+    "/lab/evidence/session3/final-w1-reversal/config.json",
+    "--datadir",
+    "/lab/user_data/data/local_recovery/binance",
+    "--timerange",
+    "20260801-20260808",
+    "--cache",
+    "none",
+    "--export",
+    "trades",
+    "--backtest-directory",
+    "/lab/evidence/session3/final-w1-reversal"
+  ],
+  "end": "2026-08-08",
+  "entry_mode": "through",
+  "execution_authority": "NONE",
+  "fee_per_side": 0.0005,
+  "fill": "Native next-candle execution; touch/one-tick-through candle model. Queue, real spread/impact and partial fills unknown.",
+  "funding": "Sourced event milliseconds, same-hour mark open; strict (entry,exit] event assignment. Marks are an hourly approximation.",
+  "funding_net_usdt": -0.002541777462239999,
+  "historical_filters": "2026-11-05 public snapshot; historical execution metadata UNQUALIFIED",
+  "image": "freqtradeorg/freqtrade@sha256:0cc4b6dc9b16e0516d27efae1765e925da7d6aea5c8f3c3825930ffe3098d7c7",
+  "longs": 6,
+  "max_drawdown_abs": 1.20327382,
+  "max_drawdown_account": 0.0012028368366785037,
+  "native_metrics": {
+    "canceled_trade_entries": 0,
+    "max_open_trades": 2,
+    "rejected_signals": 1,
+    "timedout_entry_orders": 1
+  },
+  "native_net_usdt": -0.8399798900000001,
+  "plan_count": 18,
+  "shorts": 10,
+  "source_scope": "CHECKSUM_REVERIFIED_BINANCE_ARCHIVES_PREVIOUSLY_STUDIED_PANEL",
+  "start": "2026-08-01",
+  "strategy": "SweepReclaimReversal",
+  "stress_net_usdt": {
+    "10": -1.60625613,
+    "20": -2.37253237,
+    "5": -1.22311801
+  },
+  "terminal_counts": {
+    "CAPACITY_REJECT": 1,
+    "EXPIRED_UNFILLED": 1,
+    "FILLED": 16
+  },
+  "trades": 16,
+  "verdict": "UNQUALIFIED"
+}
