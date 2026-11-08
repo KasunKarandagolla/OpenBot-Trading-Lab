@@ -1,0 +1,63 @@
+{
+  "current_live": "BLOCKED_DNS_NO_LIVE_ACCEPTANCE",
+  "economic_promotion": "NONE",
+  "execution_authority": "NONE",
+  "matrix": {
+    "command": "LAB_PY=<isolated-python> bash scripts/lab-session3.sh matrix evidence/session3",
+    "commands": "native-matrix-commands.json",
+    "exit_code": 0,
+    "ledger_audits": "14 PASS",
+    "portfolios": 14
+  },
+  "monitor": {
+    "backup_integrity": "PASS",
+    "durable_private_backups": 4,
+    "restart": "PASS",
+    "scanner_monitor_equality": "PASS_ALL_FOUR_PHASES"
+  },
+  "native_original_agents": "NOT_VERIFIED_MISSING_SUPPORTED_LISTENER_MARKERS",
+  "skills": {
+    "assignments": 27,
+    "concept_spans": 441,
+    "execution_authority": "NONE",
+    "installed": "NOT_INSTALLED",
+    "native_injection": "NOT_VERIFIED",
+    "original_members": 55,
+    "owners": {
+      "astrabot-lead": 9,
+      "chart-vision-analyst": 1,
+      "independent-risk-reviewer": 5,
+      "trading-lab-director": 6,
+      "trading-lab-market-researcher": 6
+    },
+    "resolved_references": 78,
+    "status": "PASS",
+    "unique_skills": 9,
+    "v3_members": 109
+  },
+  "sources": {
+    "archives": 600,
+    "native_research_feathers": 240,
+    "restore": "PASS_600_PLUS_TWO_LEGACY_FIXTURES",
+    "verified_bytes": 62710170
+  },
+  "status": "PASS_HISTORICAL_VERTICAL_SLICE",
+  "tests": [
+    {
+      "command": "LAB_PY=<isolated-python> bash scripts/lab-session3.sh test",
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 118,
+      "skipped": 0,
+      "stdout": "acceptance-tests.txt"
+    },
+    {
+      "command": "docker run <pinned offline image> -m unittest test_session3_native test_playbooks -v",
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 27,
+      "skipped": 0,
+      "stdout": "native-tests.txt"
+    }
+  ]
+}

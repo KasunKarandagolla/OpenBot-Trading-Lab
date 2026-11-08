@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Chart-Vision advisory result; never an order authorization",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "decision_asof_utc", "contract", "authority", "vision_pixels_seen", "chart_evidence", "observations", "hypotheses", "contradictions", "unknowns", "research_status", "executable_trade_authorized"],
+  "properties": {
+    "task_id": {"type": "string"},
+    "decision_asof_utc": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$", "description": "RFC3339 UTC timestamp; null when unknown. Never use the string UNKNOWN."},
+    "contract": {"type": "string"},
+    "authority": {"enum": ["L0_RESEARCH_ONLY", "L1_COUNTERFACTUAL_ONLY"]},
+    "vision_pixels_seen": {"type": "boolean"},
+    "chart_evidence": {"type": "array", "items": {"type": "object", "required": ["timeframe", "source", "request_utc", "receipt_utc", "pixels_seen"], "properties": {"timeframe": {"type": "string"}, "source": {"type": "string"}, "request_utc": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$", "description": "RFC3339 UTC timestamp or null when unknown."}, "receipt_utc": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$", "description": "RFC3339 UTC timestamp or null when unknown."}, "last_closed_bar_utc": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"}, "image_sha256": {"type": ["string", "null"]}, "chart_symbol": {"type": ["string", "null"]}, "pixels_seen": {"type": "boolean"}, "visible_indicators": {"type": "array", "items": {"type": "string"}}, "warnings": {"type": "array", "items": {"type": "string"}}}}},
+    "observations": {"type": "array", "items": {"type": "object", "required": ["claim", "evidence_id", "classification"], "properties": {"claim": {"type": "string"}, "evidence_id": {"type": "string"}, "classification": {"enum": ["VISIBLE", "NUMERIC_VERIFIED", "INFERRED", "HYPOTHESIS", "UNKNOWN"]}}}},
+    "hypotheses": {"type": "array", "items": {"type": "object", "required": ["name", "confirm_if", "invalidate_if"], "properties": {"name": {"type": "string"}, "confirm_if": {"type": "string"}, "invalidate_if": {"type": "string"}}}},
+    "contradictions": {"type": "array", "items": {"type": "string"}},
+    "unknowns": {"type": "array", "items": {"type": "string"}},
+    "research_status": {"enum": ["WATCH", "UNQUALIFIED", "REJECT_RESEARCH_THESIS", "RESEARCH_CANDIDATE"]},
+    "native_recipe_fit": {"type": ["string", "null"]},
+    "execution_concerns": {"type": "array", "items": {"type": "string"}},
+    "latency_ms": {"type": ["number", "null"], "minimum": 0},
+    "executable_trade_authorized": {"const": false}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"vision_pixels_seen": {"const": false}},
+        "required": ["vision_pixels_seen"]
+      },
+      "then": {
+        "properties": {
+          "research_status": {"enum": ["WATCH", "UNQUALIFIED", "REJECT_RESEARCH_THESIS"]}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"research_status": {"const": "RESEARCH_CANDIDATE"}},
+        "required": ["research_status"]
+      },
+      "then": {
+        "properties": {
+          "decision_asof_utc": {"type": "string", "format": "date-time"},
+          "vision_pixels_seen": {"const": true},
+          "chart_evidence": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "request_utc": {"type": "string", "format": "date-time"},
+                "receipt_utc": {"type": "string", "format": "date-time"},
+                "last_closed_bar_utc": {"type": "string", "format": "date-time"},
+                "pixels_seen": {"const": true}
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

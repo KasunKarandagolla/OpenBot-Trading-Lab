@@ -1,0 +1,993 @@
+{
+  "review_type": "INDEPENDENT_CODEX_SUBAGENT_FORWARD_TEST_NOT_NATIVE_OPENBOT",
+  "scope": "Market Researcher v3 six skills and shared reasoning references; sample Vision current-contract audit",
+  "execution_authority": "NONE",
+  "no_outcome_files_read": true,
+  "vision_pixels_seen": false,
+  "blind_cases": [
+    "B01",
+    "B02",
+    "B03",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
+    "B09",
+    "B10",
+    "B11",
+    "B12"
+  ],
+  "baseline_contaminated": [
+    "B04"
+  ],
+  "metric_limit": "Twelve previously studied historical cases, eleven baseline-blind after source-only extraction and B04 excluded for accidental baseline exposure; zero outcome files viewed. No ground-truth label/accuracy/profitability score is asserted. All twelve retain conditional developing WATCHs; B01/B02/B03/B05/B06 have substantive trigger hypotheses, but no complete first-obstacle economic admission is independently established in this sample. This pass alone does not demonstrate positive economic entry acceptance. Minor lower-timeframe obstacles are reported explicitly; their policy significance must be frozen rather than used as an unversioned veto against unchanged controls.",
+  "calculation_version": "review numeric descriptors: SMA14 true-range ATR, ewm(adjust=False) EMA20/50 over available closed history, strict unique 2L/2R pivots; not substitutions into frozen controls",
+  "bootstrap_pass": true,
+  "observed_integrity": [
+    {
+      "case": "B01",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "169abb465e6300cd2ecd63a58340475ae2d4ac908a1c1338fe986849d75cef08",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "c3ba983c348692f8758449b9b844c92c234d9b318e1fd2b740d3786cc95cc001",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "00a87ab99b8b6466fd442a494076c7eeb4b136316cf842727363b2e15a74aaa2",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B02",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "45c336d62f28c801edf466b695179390f9fd2c7bbf3f3efd8fb72f5a8497b963",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "9425a6ee51f688e425e8845f93cf97e100fb91a2d12959709c5d266c27337cfa",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "4392e9914de86ebf2748dd3ca48494e7b86feb9e722495d078ebaa1b45ad231f",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B03",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "566c26b5b81f0d131bbf7562a5e4a9fffe147ec1f0bf06bb9d9a1e282ae01c7c",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "d4e04d04a2e4d26d9262f13b0525d5c179afb694851cdfb53be3a192bb3c2d75",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "e09ef1b784ce25efd300841bb4ee5acd3532b0f00f29326a9efe541f04a433ca",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B04",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "e2563452a62e7cc9d0ae31a88a4ddbdd825185b8885e19eb3fb72133b0a9ee01",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "db66469421e118fb9527f835a56321e4efc31a8eada2d6aa27c01f1610574d46",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "6915b92ed97dbd48c2b3110c268827e0cbcf05d4ffb7ffb2999fa99394840604",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B05",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "cfc65382eea68b929f3a8158434d1ffb8199c663a260215719898b34b46e7cc2",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "011c588e695537a5ea30db9b5ae08c56159f6d9084944f2bf4023c381bc63f7f",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "9cddb94574ed10e3ed82d76bcbf9440e607789bb99ca5c7d4f434eb321780e98",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B06",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "22f4825ceae5c5fad66b1ac1edc4d786985d830b2add8bb196e93f9519ec70a4",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "d6652a9e0dd9117ab5a9ff585b9f86055bd93900723c2e99c2b32ad4c56a5171",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "5670afff50d64066dfd777823277d8a7d4d0a964d19765b20dc927e36a796983",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B07",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "f7d8e81023ae813d03d9a9ace537daaecb6d15e5319da9c403cbf4d539d78984",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "a5d42359c0334b0892a8133b0309a550a0fae39ac2795733f105b759b6c28cfc",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "f9c2c3da3723797cc9c717c2bb41d46181c9d539db251701d243f9243a559a5a",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B08",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "6d25945d44f095ef3ac441ef09e1b986f017488c542bb09c790cdb26e7d99bdb",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "705d9c9526d2ebdab8d651fdba600047c9722ee6eaa95536060241b86b78d88f",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "2beb020b8a3b9ad44fd8d6ef1e82b2c129c3bfafededa2bcca402348579a2a8d",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B09",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "3a8b8026decbc58443f6798bb0002d6c3e137b27d2ab6410332f3a9b436f2b6e",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "4d1087680a184e0d312319120dca3a3a61155af5e796dc8246905a887d08f4a8",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "9b51daa56bf253fcc5053905dba997ffdf513a16186284edbbb9fe6be178e1fa",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B10",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "12b164da98ac9156dc363e69e3e9700fdaa95bacf08008be6f5c049b5e9fd847",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "31ecfdd69f4330a60fc9f83880ed9a7455e6b0c5fb3e9f5956ccde20cda22f9b",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "38204011b70eea5343a7f15450893d472e65aebc5e46202f97a91f9602441ff2",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B11",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "119c15675614b4d3408b1228c680d29995c7deea10f6c3171fad49b5e199c209",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "16c1dfdc94e1aebb3ae0a493a944160f7e2634d3ce125aed42b898abd22d605f",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "0c64d840083a823e7801bac9951ea8ea59e043c82f4e74d2522a4fb1a4114a68",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "case": "B12",
+      "venue": "BINANCE_PUBLIC_USDM",
+      "later_bars": "EXCLUDED",
+      "checks": [
+        {
+          "timeframe": "15m",
+          "rows": 289,
+          "sha256": "81c4c603ab70cdc71ec757fa68131afd5bda03013bda8d0911e28228905392f7",
+          "valid": true,
+          "source_count": 1
+        },
+        {
+          "timeframe": "1h",
+          "rows": 721,
+          "sha256": "4fc765164052389da99bd0915ffe7032001d9d2bb34f3ee08db29a69465359c0",
+          "valid": true,
+          "source_count": 2
+        },
+        {
+          "timeframe": "5m",
+          "rows": 865,
+          "sha256": "a70b444d8ef42d2a60e0d06e04200bf426fc05838027b2aad9dc31130747e290",
+          "valid": true,
+          "source_count": 1
+        }
+      ]
+    }
+  ],
+  "skills_used": [
+    "trading-lab-market-regime-structure",
+    "trading-lab-news-macro-operations",
+    "trading-lab-opportunity-screening",
+    "trading-lab-orderflow-volume-profile",
+    "trading-lab-research-contract",
+    "trading-lab-trade-geometry-management"
+  ],
+  "cases": [
+    {
+      "case_id": "B01",
+      "symbol": "FILUSDT",
+      "as_of": "2026-08-07T13:15:00+00:00",
+      "input_sha256": "adb7083456b25b10901168e2e7d749333a728cd6681792e28ac45c370a615441",
+      "clean_input_sha256": "14bf7ae69d8966027a96e800671b4d8266b536eb8f2da860ef1fdad0de39ef4d",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "4h descriptive EMA20/50 are downward (0.70610/0.71121) and 1h order is also downward, but the recent 1h sequence rebounded from 0.6845 to 0.6967. The 0.6967 1h resistance was confirmed at 10:00; the 12:30 15m bar traded to 0.7007 and closed back at 0.6962. The later 13:10\u201313:15 5m close 0.6951 extends that rejection. This is a meaningful resistance reaction in a broader down context, not simply EMA says sell.",
+      "long_hypothesis": "WATCH a renewed accepted recovery through 0.6967/0.7007 or a new defended pullback for reversal/rotation research. The 4h down context is a contradiction requiring a stronger long trigger, not a ban on watching it.",
+      "short_hypothesis": "WATCH / TRIGGER_CANDIDATE a sweep/reclaim short of the pre-known 0.6967 level, followed by the later local downside confirmation. A failed rally within the higher-timeframe down context is coherent.",
+      "breakout_vs_sweep": "The high crossed a known 1h resistance and the completed close returned below it; subsequent closes failed to regain it. This supports failed-breakout rather than accepted continuation. The 0.7007 15m pivot becomes confirmed only at 13:15 and cannot be called a confirmed pivot at 12:30.",
+      "nearest_obstacles": [
+        {
+          "price": 0.6938,
+          "basis": "recent defended low, confirmed on 5m at 12:50; 15m only at decision cutoff",
+          "known_at": "2026-08-07T12:50:00+00:00"
+        },
+        {
+          "price": 0.6904,
+          "basis": "15m support",
+          "known_at": "2026-08-07T11:30:00+00:00"
+        },
+        {
+          "price": 0.6854,
+          "basis": "1h support",
+          "known_at": "2026-08-07T06:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "A full-sweep short invalidates above 0.7007 plus a declared buffer. A later lower-high continuation variant would be a separate plan; do not quietly replace full excursion risk with a tiny signal-bar stop.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "RESEARCHABLE_SHORT_TRIGGER_HYPOTHESIS but NO_TRADE_COMPLETE_PLAN at 0.6951 under first-obstacle economics. A stop above 0.7007 is already over .80% away before buffer, while nearby support 0.6938 is only .19% away. A policy that explicitly targets a higher-timeframe objective must record these intermediate obstacles as caution rather than claim they are absent; this review does not silently alter frozen strategy rules.",
+      "strongest_contradiction": "A coherent short setup still faces nearby defended support and the recent hourly rebound. Pattern correctness does not establish sufficient target room.",
+      "over_rejection_check": "Do not discard the short merely because the last few 1h closes rose or the 5m fast EMA sits over the slow EMA; the meaningful resistance failure deserves investigation.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B02",
+      "symbol": "XLMUSDT",
+      "as_of": "2026-08-13T04:55:00+00:00",
+      "input_sha256": "75728e69bd497eebb798af252955b930d626d9a688df5b3091ddfa1840fb95fd",
+      "clean_input_sha256": "578ca8892cfd56c3f17a65d4180e65854a383afbdd9544007d977dbe0e186516",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "The broader 4h and 1h descriptive EMA orders remain down, while a strong lower-timeframe rebound pushed above the prior-day high 0.16264 to 0.16294. The 04:00 15m candle closed back at 0.16201, and the latest 04:50 5m candle closed 0.16128 on 2.34x prior20 volume. This is rejection after an attempted break, not proof of executed sell delta.",
+      "long_hypothesis": "WATCH if price accepts back above 0.16264/0.16294 with a later hold/retest; otherwise a lower-timeframe bounce cannot be presumed to have reversed the broader down context.",
+      "short_hypothesis": "WATCH / TRIGGER_CANDIDATE failed-breakout short of the pre-known 0.16264 day high or known 0.16233/0.16281 HTF resistance region, with later completed confirmation and a structural stop above the excursion.",
+      "breakout_vs_sweep": "The 04:00 15m high breached the prior-day high and closed below it; later price remained inside. The 0.16294 15m pivot was confirmed at 04:45, not at 04:00. One latest 5m wick through 0.16119 that closes 0.16128 can also be a minor opposite-side reclaim; mention it as competing local evidence rather than call everything bearish.",
+      "nearest_obstacles": [
+        {
+          "price": 0.16119,
+          "basis": "5m support",
+          "known_at": "2026-08-13T04:40:00+00:00"
+        },
+        {
+          "price": 0.15948,
+          "basis": "15m support",
+          "known_at": "2026-08-13T03:15:00+00:00"
+        },
+        {
+          "price": 0.15942,
+          "basis": "15m support",
+          "known_at": "2026-08-13T02:00:00+00:00"
+        },
+        {
+          "price": 0.15925,
+          "basis": "1h support",
+          "known_at": "2026-08-12T11:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "Full-sweep short stop above 0.16294 plus buffer; long continuation invalidates on loss of its eventual accepted/retested boundary. A new later retest can define another plan, but cannot rewrite the initial sweep invalidation.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "RESEARCHABLE_SHORT_TRIGGER_HYPOTHESIS, NO_TRADE_COMPLETE_PLAN at current price under full-sweep risk/first-obstacle economics. Stop to the excursion is over 1.02% before buffer; even 0.15948 is only about 1.12% reward before costs. The near 0.16119 support adds immediate caution. No net R:R >=1.25 is demonstrated.",
+      "strongest_contradiction": "The short has already moved away from the boundary and encounters a local opposing reclaim/support; late entry weakens economics.",
+      "over_rejection_check": "Do not require VWAP+FVG+OTE+BOS to all agree before retaining this failed-breakout hypothesis. Preserve the clear setup, then reject an uneconomic entry separately.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B03",
+      "symbol": "ARBUSDT",
+      "as_of": "2026-08-13T23:15:00+00:00",
+      "input_sha256": "9a9190b79df06c5e8b2047a266e16a319d6049eb079b1eb1f19a693b36ccf098",
+      "clean_input_sha256": "620c81e1caabbadd9e1305ce4127d11b7073a690f88de75006160eeccfa735e2",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "4h and 1h descriptive EMA order is bearish. The 1h 0.07576 resistance was confirmed at 18:00. A 22:15 15m candle exceeded it to 0.07599, followed by return below; a later 22:55 5m high 0.07577 failed and the last 23:10\u201323:15 candle closed 0.07533 on 1.79x prior20 volume. This gives a coherent failed rally/reclaim sequence.",
+      "long_hypothesis": "WATCH if price regains and accepts above 0.07576/0.07599. Sustained reclaim would challenge the failed-breakout short and could route a separate continuation-long hypothesis, despite higher-timeframe caution.",
+      "short_hypothesis": "WATCH / TRIGGER_CANDIDATE short after failure of known resistance, keeping both the full-sweep and later failed-retest variants separately versioned. The current local downside break is later than the initial excursion.",
+      "breakout_vs_sweep": "Excursion beyond a pre-known 0.07576 boundary followed by completed return inside supports sweep/reclaim research. The later lower-high failure is not the same stop hypothesis as a full-sweep fade. A supposed breakout below local 0.07550 has only its first fresh break at the last candle; two-close acceptance/retest of that lower boundary has not yet occurred.",
+      "nearest_obstacles": [
+        {
+          "price": 0.07488,
+          "basis": "15m support",
+          "known_at": "2026-08-13T21:30:00+00:00"
+        },
+        {
+          "price": 0.07481,
+          "basis": "15m support",
+          "known_at": "2026-08-13T20:00:00+00:00"
+        },
+        {
+          "price": 0.07435,
+          "basis": "1h support",
+          "known_at": "2026-08-13T13:00:00+00:00"
+        },
+        {
+          "price": 0.074,
+          "basis": "1h support",
+          "known_at": "2026-08-13T19:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "Full-sweep invalidation is above 0.07599 plus buffer. A later failed-retest short can cite 0.07577 plus its own buffer only if that is the frozen playbook and the separate sweep extreme/contradiction remains recorded.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "RESEARCHABLE_SHORT_TRIGGER_HYPOTHESIS; NO_TRADE_COMPLETE_PLAN under full-sweep stop and first meaningful support target. The raw stop is about .88% before buffer and first 15m support reward about .60% before .33% modeled costs. A tighter retest-stop variant and higher-timeframe objective need separate exact policy/testing; this pass does not assert they qualify.",
+      "strongest_contradiction": "The short pattern fits broader context, but the chosen stop/target hierarchy matters materially. Nearby 15m supports prevent a clean unqualified reward claim.",
+      "over_rejection_check": "A blanket veto because local 15m EMA20 is above EMA50 would miss this structurally coherent short. Retain both sweep and retest variants while refusing to blend their best parts.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B04",
+      "symbol": "ATOMUSDT",
+      "as_of": "2026-08-21T20:05:00+00:00",
+      "input_sha256": "5de8a743d8198c864db5d80371215f0cac46ae9e3901ca19afadce90ae028174",
+      "clean_input_sha256": "f5db053e27c8e2ce7389a584c5708edc946e79a53057132e44c525b6c2ad21e9",
+      "blind_to_baseline": false,
+      "blind_to_outcomes": true,
+      "market_map": "4h price 1.546 remains above descriptive EMA20/50 (1.49887/1.46713), but the completed 1h sequence declined from 1.579 to 1.546. The 1h 1.541 support was confirmed at 16:00; 1h 1.583 resistance at 18:00. The 20:00\u201320:05 5m candle visited 1.541 and closed 1.549; this is a support test inside a correction, not demonstrated HTF reversal.",
+      "long_hypothesis": "WATCH for defended 1.541 and later reclaim/acceptance of local 1.556; a controlled pullback continuation is plausible without requiring every SMC indicator.",
+      "short_hypothesis": "WATCH for acceptance below 1.541 or rejection of 1.556/1.570 to extend the intraday downswing. Do not short solely because the 5m EMA20 is under EMA50.",
+      "breakout_vs_sweep": "The last 5m low equals 1.541 rather than breaching it. It is not a meaningful sweep of that 1h support. Reclaim of a smaller local level would need its own pre-known boundary and explicit rule.",
+      "nearest_obstacles": [
+        {
+          "price": 1.556,
+          "basis": "5m pivot resistance",
+          "known_at": "2026-08-21T19:40:00+00:00"
+        },
+        {
+          "price": 1.57,
+          "basis": "15m pivot resistance",
+          "known_at": "2026-08-21T19:00:00+00:00"
+        },
+        {
+          "price": 1.583,
+          "basis": "1h pivot resistance",
+          "known_at": "2026-08-21T18:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "A support-defense long needs a buffer below the actual 1.541/1.542 defense region, not a stop tuned to desired R. A short failure thesis is invalidated by accepted recovery above its cited rejection level.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "NO_TRADE_CURRENT_ENTRY; WATCH pending a later discriminating trigger and obstacle/cost validation. B04 is excluded from blinded counts because the source input embedded a baseline plan exposed during schema discovery.",
+      "strongest_contradiction": "The short-term sell sequence and nearby 1.556 broken structure challenge a 1h-target-only continuation plan.",
+      "over_rejection_check": "Retain the developing long support defense even though the intraday trend is down; absence of a current qualified entry does not delete the setup.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B05",
+      "symbol": "BNBUSDT",
+      "as_of": "2026-08-23T06:20:00+00:00",
+      "input_sha256": "bdbdf49602fe11837529fe80fe6903dc117628f3eda75e4f39ebf902cdc92c37",
+      "clean_input_sha256": "1e3e42dae190dc234a22b333ae3fbc8629dd8ac3eb1094012d15a10b098f589a",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "4h EMA20/50 remain upward at 673.10/645.01 while price corrected from 727.15 into the prior-day low 682.12. The last completed 1h close 683.41 followed a 677.29 excursion. The later 06:15\u201306:20 5m close 686.22 is above the already known 686.00 pivot (known 05:55), so there is a real local recovery against the intraday downswing.",
+      "long_hypothesis": "A prior-day-low sweep/reclaim long is worth research: 05:15 15m low 677.29, close 683.79 above 682.12, followed by later recovery. Keep WATCH or a trigger candidate rather than dismissing all countertrend bounces.",
+      "short_hypothesis": "A renewed close/acceptance below 682.12 would favor failed reclaim and downside continuation. Otherwise seek a sourced rejection at 688.68/688.78 rather than shorting the recovery at market.",
+      "breakout_vs_sweep": "The 677.29 excursion below the pre-known 682.12 day low and completed reclaim distinguish reversal research from continuing acceptance below the level. The later 686.22 local break is supporting confirmation; it does not prove all higher-timeframe structure reversed.",
+      "nearest_obstacles": [
+        {
+          "price": 688.68,
+          "basis": "broken 1h support, possible role-reversal resistance",
+          "known_at": "2026-08-22T18:00:00+00:00"
+        },
+        {
+          "price": 688.78,
+          "basis": "earlier completed-hour low in broken support region",
+          "known_at": "2026-08-23T04:00:00+00:00"
+        },
+        {
+          "price": 690.82,
+          "basis": "15m pivot resistance",
+          "known_at": "2026-08-23T05:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "The full reversal invalidation is below 677.29 plus a declared volatility buffer; moving it up to manufacture reward/risk would change the thesis. A short continuation must invalidate above its own later rejection structure.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "NO_TRADE_AT_686.22: stop beyond 677.29 is over 1.30% away before buffer while nearest credible 688.68 objective is only about 0.36% away. Under the v3 0.33% roundtrip admission allowance this fails net R:R; keep the setup and research a new later location without rewriting the initial decision.",
+      "strongest_contradiction": "The reclaim is plausible, but entry is late relative to nearby overhead broken support and the 1h/15m correction remains material.",
+      "over_rejection_check": "Do not call NO_SETUP: a genuine developing sweep/reclaim exists. Rejecting all long research because the 15m EMA order is bearish would be over-restrictive.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B06",
+      "symbol": "XLMUSDT",
+      "as_of": "2026-08-25T12:35:00+00:00",
+      "input_sha256": "4346f659e5103018c1e89568824e1b5f7fdab3d15b40ee35466cea5884506147",
+      "clean_input_sha256": "13900315b86ca6908d9d8f2b2b547a5431c64c38e7536aca325a67647140c9d8",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "4h descriptive EMA order is still positive but price 0.19287 is below its fast average; 1h EMA20 is slightly below EMA50 and the intraday downswing is material. The prior-day low 0.19170 was swept to 0.19094 in the 12:00 15m candle, which closed 0.19200; latest 5m close 0.19240 on 2.05x volume shows later recovery. This is mixed context with a genuine boundary reclaim.",
+      "long_hypothesis": "WATCH / early research candidate long for prior-day-low sweep/reclaim. A later local-three-bar break exists at 12:35, but the stricter variant requiring a close through the reclaim candle high 0.19298 has not yet confirmed. State the variant rather than call all confirmation methods equivalent.",
+      "short_hypothesis": "WATCH for accepted loss of 0.19170/0.19111 or a later rejection near 0.19295/0.19458 to restore continuation down. A short solely on bearish 15m EMA order ignores the actual excursion/reclaim.",
+      "breakout_vs_sweep": "Pre-known day low was breached and price returned inside on completed data. The 0.19094 5m pivot confirms at 12:20, while a 15m 2L/2R pivot at that low is not yet available by 12:35. This is a reversal hypothesis, not proof of completed higher-timeframe trend change.",
+      "nearest_obstacles": [
+        {
+          "price": 0.19295,
+          "basis": "broken 5m support, possible role-reversal resistance",
+          "known_at": "2026-08-25T11:30:00+00:00"
+        },
+        {
+          "price": 0.19427,
+          "basis": "15m resistance",
+          "known_at": "2026-08-25T10:15:00+00:00"
+        },
+        {
+          "price": 0.19458,
+          "basis": "15m resistance",
+          "known_at": "2026-08-25T12:15:00+00:00"
+        },
+        {
+          "price": 0.20006,
+          "basis": "1h resistance",
+          "known_at": "2026-08-25T08:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "Full-reversal long stop belongs below 0.19094 plus a declared volatility buffer. Do not choose an inside-excursion micro-stop to make a distant target attractive.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "RESEARCHABLE_LONG_TRIGGER_HYPOTHESIS / WATCH, but NO_TRADE_COMPLETE_PLAN at 0.19240 under the strict confirmed variant and nearest-obstacle economics. Full excursion risk is .76% before buffer; first broken local structure near .19295 offers only .29% reward. A policy targeting 1h .20006 must explicitly account for nearer .19427/.19458 resistance, not erase it.",
+      "strongest_contradiction": "The reclaim is real but occurs within an intraday decline and faces nearby broken structure; confirmation differs by declared variant.",
+      "over_rejection_check": "Requiring both 1h and 4h to be trending upward before even watching this sweep would be over-restrictive. Preserve the countertrend opportunity and test the exact early/confirmed variants.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B07",
+      "symbol": "BTCUSDT",
+      "as_of": "2026-08-07T00:00:00+00:00",
+      "input_sha256": "e76af0cb5e7e4ff993351c2f2cdfcb9bde83c315169c144e663cf1065f06c16f",
+      "clean_input_sha256": "040950adb8b97e2854e6f98d2bbeddf7eafb72292e4b48cbb4e6d34d3007c751",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "The 4h descriptive EMA order is positive, but 1h price 64300 is below EMA20 64498.58 and EMA50 64396.55. The 23:00 and later hourly closes failed known 64323.2 support. The latest 5m rebound from 64163.5 returns to 64300. Prior-day low 64111 was not breached.",
+      "long_hypothesis": "WATCH for defense near 64163.5/64111 and a later reclaim of 64323.2. The latest rebound is not sufficient proof of a major sweep reversal.",
+      "short_hypothesis": "WATCH for a failed rally/rejection near 64323.2 and renewed lower continuation, with 64163.5 then 64111 as obstacles. Avoid a market chase into those nearby supports.",
+      "breakout_vs_sweep": "The important prior-day lower boundary 64111 is untouched. Sweeping a minor local low is not equivalent to sweeping that boundary. Acceptance below 64323.2 is a competing continuation reading, not automatically a stop hunt.",
+      "nearest_obstacles": [
+        {
+          "price": 64323.2,
+          "basis": "broken confirmed 1h support, now near overhead",
+          "known_at": "2026-08-06T22:00:00+00:00"
+        },
+        {
+          "price": 64333.1,
+          "basis": "5m resistance",
+          "known_at": "2026-08-06T23:20:00+00:00"
+        },
+        {
+          "price": 64163.5,
+          "basis": "observed recent low; 5m pivot confirmation just available",
+          "known_at": "2026-08-07T00:00:00+00:00"
+        },
+        {
+          "price": 64111,
+          "basis": "prior-day low",
+          "known_at": "2026-08-07T00:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "Long invalidation belongs beyond the defended lower structure plus buffer. Short invalidation belongs beyond a later actual rejection high, which has not yet formed at cutoff.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "NO_TRADE_CURRENT_ENTRY: no completed new setup-specific trigger at a favorable location; nearest obstacles are small relative to costs. Example long room to 64323.2 is only 0.036%, below the declared admission allowance.",
+      "strongest_contradiction": "Local bounce has poor immediate target room, and the claimed major sweep never crossed the day low.",
+      "over_rejection_check": "Retain both boundary-defense and rally-failure hypotheses; neither EMA mismatch nor absence of day-low sweep justifies discarding the whole market.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B08",
+      "symbol": "BTCUSDT",
+      "as_of": "2026-08-07T12:00:00+00:00",
+      "input_sha256": "c681d628b952c5cd7735dd1c3cab1a889cf28c3451cb8e5fc6bd90e2221b9b4c",
+      "clean_input_sha256": "afb4bff2238fc43061396868fe0058844859793bcb7d1daa8609bb4e0aad33cb",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "1h and 4h show a fresh upward leg, with 1h close 64996.1 above both descriptive EMAs and 1h volume 2.68x prior20. Price has crossed prior-day high 64971.7; the last 15m/5m participation is weaker (0.52x/0.32x), not executed-trade selling pressure.",
+      "long_hypothesis": "A legitimate acceptance/retest continuation WATCH exists at prior-day high 64971.7: earlier 5m closes held above it and 11:50\u201311:55 retested that exact low and closed 64996.4. Investigate this even if the frozen VWAP control is silent.",
+      "short_hypothesis": "WATCH for actual completed acceptance back below 64971.7/64900.8 before entertaining a short failed breakout. The upper wick alone against the fresh HTF expansion is not a qualified reversal.",
+      "breakout_vs_sweep": "This is primarily accepted breakout/retest research, not a short sweep merely because 65187.9 left a wick. The 15m 65187.9 pivot is known only at 12:00; it cannot be cited as confirmed at its 11:15 extreme.",
+      "nearest_obstacles": [
+        {
+          "price": 65022,
+          "basis": "prior confirmed 4h resistance",
+          "known_at": "2026-08-06T08:00:00+00:00"
+        },
+        {
+          "price": 65187.9,
+          "basis": "new 15m resistance confirmed only at decision cutoff",
+          "known_at": "2026-08-07T12:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "A local retest defense stop beyond 64971.7 plus 0.15*1h ATR is about 64938.31, only 0.089% below reference and fails the .25% minimum. Do not move the stop simply to meet a threshold. Broader swing invalidation requires its own declared plan and still faces the 65022 obstacle.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "NO_TRADE_CURRENT_ENTRY_GEOMETRY; WATCH remains justified. Room to the pre-known 65022 obstacle is only about .040% before a target buffer, below costs; this cannot be repaired by choosing 65187.9 while ignoring 65022.",
+      "strongest_contradiction": "Nearest pre-known 4h resistance makes current net economics poor despite plausible pattern fit; immediate participation is also weak.",
+      "over_rejection_check": "This is a concrete developing opportunity that a trigger-only or all-indicator-confluence recipe would miss; economic rejection must remain distinct from denying its existence.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B09",
+      "symbol": "ETHUSDT",
+      "as_of": "2026-08-07T00:00:00+00:00",
+      "input_sha256": "76047a9c3ba4106b2c3d6e68aa34b2a0ce60332efffd0fe5a6d1b0c587cefa9c",
+      "clean_input_sha256": "0989d42334f8e39308e1d90987b05ef730d54f1e73387789933bd6615bbb20f9",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "ETH 4h descriptive EMA order is positive; 1h close 1903.12 is below its fast EMA but above slow EMA. Lower-timeframe price declined then bounced from 1897.82 to 1903.12. The known 1h support 1903.06 (confirmed 21:00) was breached and only marginally reclaimed by the latest completed hour; this is not a clear broad trend reversal.",
+      "long_hypothesis": "WATCH a 1903.06 support-reclaim/rotation if later closes hold and a meaningful local obstacle is reclaimed. The major prior-day low 1891.46 was not swept.",
+      "short_hypothesis": "WATCH rejection below 1905.12/1908.67 or renewed acceptance under 1903.06 to continue the intraday decline, with nearby 1897.82/1891.46 support limiting room.",
+      "breakout_vs_sweep": "There is a possible local support excursion/reclaim around 1903.06, but the close is only .06 above it, too marginal to treat as robust acceptance without the declared rule. It is not a sweep of prior-day low 1891.46. Preserve ambiguity and exact thresholds.",
+      "nearest_obstacles": [
+        {
+          "price": 1905.12,
+          "basis": "15m/5m pivot resistance",
+          "known_at": "2026-08-06T23:45:00+00:00"
+        },
+        {
+          "price": 1908.67,
+          "basis": "15m resistance",
+          "known_at": "2026-08-06T22:00:00+00:00"
+        },
+        {
+          "price": 1897.82,
+          "basis": "5m support",
+          "known_at": "2026-08-06T23:55:00+00:00"
+        },
+        {
+          "price": 1891.46,
+          "basis": "prior-day low, also confirmed 1h support earlier",
+          "known_at": "2026-08-06T16:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "A long reclaim stop is beyond the actual 1897.82 excursion plus buffer. A short rally-failure stop must use the later actual rejection structure; it is not known simply because the latest candle is green.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "NO_TRADE_CURRENT_ENTRY; WATCH both conditional paths. Immediate long room to 1905.12 is only .105% and immediate short room to 1897.82 .279%, both below the .33% modeled roundtrip admission allowance before stop risk.",
+      "strongest_contradiction": "The reclaim is marginal and the surrounding range is too narrow for the stated cost assumptions at the current entry.",
+      "over_rejection_check": "Do not confuse the correct economic NO_TRADE with a claim that no support-reaction hypothesis exists. Keep a revisit condition if location/volatility changes.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B10",
+      "symbol": "ETHUSDT",
+      "as_of": "2026-08-07T12:00:00+00:00",
+      "input_sha256": "e375ccb07536e92acd990b79f0b3d813048c4ffe9b4f52dcb28c13d833ed4ede",
+      "clean_input_sha256": "8873955111238644b6025a9d64c6d80ffd55d60cf3e095a73e6f3d542f6a3e56",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "ETH 4h and 1h descriptive EMA order is positive; 1h price recovered to 1915.51. It remains below the prior-day 1920.92 and prior 4h 1927.19 resistances. The 11:15 15m high 1920.5 is confirmed as a pivot only at 12:00. Last 15m/5m volume is 0.48x/0.42x, which is weak participation, not negative delta.",
+      "long_hypothesis": "WATCH continuation on a controlled pullback to a pre-known support such as the broken 1907.89 region, or a later accepted breakout through 1920.92 with room recalculated. At 1915.51, overhead supply is close.",
+      "short_hypothesis": "WATCH for a real sweep/reclaim of 1920.92 or a defined local boundary followed by later structure change. Current high 1920.5 never crossed the prior-day high; do not invent that sweep.",
+      "breakout_vs_sweep": "Bullish recovery under resistance is neither an accepted breakout of 1920.92 nor a sweep of it. A smaller 1917.33-level failure may be investigated only as a separately named lower-timeframe countertrend hypothesis.",
+      "nearest_obstacles": [
+        {
+          "price": 1916.9,
+          "basis": "5m pivot resistance",
+          "known_at": "2026-08-07T11:55:00+00:00"
+        },
+        {
+          "price": 1920.5,
+          "basis": "15m resistance newly confirmed at cutoff",
+          "known_at": "2026-08-07T12:00:00+00:00"
+        },
+        {
+          "price": 1920.92,
+          "basis": "prior-day high",
+          "known_at": "2026-08-07T00:00:00+00:00"
+        },
+        {
+          "price": 1927.19,
+          "basis": "confirmed 4h resistance",
+          "known_at": "2026-08-06T04:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "Use the actual defended pullback/sweep extreme with buffer; last local 1913.29 defense yields a stop too close for this policy, while broader 1911.28 invalidation still leaves little target room.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "NO_TRADE_CURRENT_ENTRY: even the 1920.92 objective is only .282% away before buffer, below the .33% admission allowance. Retain conditional WATCH for improved location or a later breakout rather than manufacture a distant target.",
+      "strongest_contradiction": "The market direction can be correctly bullish while current target room is insufficient; weak last-bar participation adds caution rather than replacing numeric economics.",
+      "over_rejection_check": "Do not reject the market merely for no immediate trigger: a later breakout and controlled-pullback long are distinct watchable paths; a short needs an actual failure sequence.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B11",
+      "symbol": "BNBUSDT",
+      "as_of": "2026-08-07T00:00:00+00:00",
+      "input_sha256": "d4d08799357a094f6e9db17479daf3a1d302d4b9f2bad88c597ed2af494b4572",
+      "clean_input_sha256": "e06e750748cf75e3d5a6e6bbb90f74e8c054fb24b716a6527bf78a936364fcf9",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "BNB 1h descriptive EMA20/50 point downward at 593.45/594.37; 4h retains an upward slow context but price 592.60 is below fast EMA593.25. A local recovery from 590.11/591.18 has reached 592.60. This is a rebound inside a larger intraday correction, not a confirmed full bullish reversal.",
+      "long_hypothesis": "WATCH a supported recovery/retest or later acceptance above 592.92/593.60. A prior known 591.01 support was breached at the earlier low and later reclaimed, which can support rotation research; do not retroactively call 590.11 a prior-day boundary before this midnight cutoff.",
+      "short_hypothesis": "WATCH a rally-failure below 592.92/593.60 or renewed acceptance below the defended support region for continuation down. Requires a later rejection trigger, not simply bearish EMA order.",
+      "breakout_vs_sweep": "The latest rise crosses local 592.53 resistance but has not accepted beyond the more important 592.92 resistance. There is no completed new sweep of 590.11 at cutoff. Preserve the difference between an older support failure/reclaim and a new current trigger.",
+      "nearest_obstacles": [
+        {
+          "price": 592.92,
+          "basis": "15m resistance",
+          "known_at": "2026-08-06T23:15:00+00:00"
+        },
+        {
+          "price": 593.6,
+          "basis": "15m resistance",
+          "known_at": "2026-08-06T19:00:00+00:00"
+        },
+        {
+          "price": 594.78,
+          "basis": "1h resistance",
+          "known_at": "2026-08-06T18:00:00+00:00"
+        },
+        {
+          "price": 591.18,
+          "basis": "5m support",
+          "known_at": "2026-08-06T23:50:00+00:00"
+        },
+        {
+          "price": 590.11,
+          "basis": "1h support known before midnight; prior-day boundary only after midnight",
+          "known_at": "2026-08-06T22:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "A broader reversal stop belongs beyond 590.11 plus buffer; a local defense stop beyond 591.18 is a different declared hypothesis and may be below the .25% minimum after correct calculation. Do not select the stop merely to pass R:R.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "NO_TRADE_CURRENT_ENTRY; WATCH developing resistance acceptance or rally failure. The nearest 592.92 obstacle is only .054% above current price, and even 593.60 only .169%, below the .33% modeled cost allowance.",
+      "strongest_contradiction": "The rebound currently runs straight into known resistance with little economic room, and hourly trend context remains bearish.",
+      "over_rejection_check": "Do not discard the long rotation hypothesis solely because the hourly EMA order is bearish; likewise do not call the final green candle a completed entry.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    },
+    {
+      "case_id": "B12",
+      "symbol": "BNBUSDT",
+      "as_of": "2026-08-07T12:00:00+00:00",
+      "input_sha256": "d38599b4ddfff6e0e0f6e7d32cad61f1f9291e5eee8fc0bca7b723de87f2fa0f",
+      "clean_input_sha256": "95ab1062492c4f456a67b68f82bc13c6940e9acced9bcb36956ebdd9da2ca88c",
+      "blind_to_baseline": true,
+      "blind_to_outcomes": true,
+      "market_map": "BNB has a mixed context: 4h EMA20/50 are 592.46/588.59 but the latest completed close 591.78 is below the fast average; 1h EMA20 remains below EMA50 (591.11/592.80). Price fell through prior-day low 590.11 to 585.6 and subsequently reclaimed it. The latest 4h candle closes 591.78, so the reclaim is now completed rather than a live bounce.",
+      "long_hypothesis": "WATCH a failed-breakout reversal long after reclaiming 590.11 and a controlled retest. The 585.6 1h swing became known at 10:00; the 4h low at 04:00 is not itself a confirmed 2L/2R pivot by 12:00.",
+      "short_hypothesis": "WATCH renewed acceptance below 590.11 or an actual rejection under 592.09/592.37 to revive downside continuation. Shorting solely because 1h EMA order remains negative ignores the genuine boundary reclaim.",
+      "breakout_vs_sweep": "This is an actual prior-day-low excursion and reclaim. It can be reversal research without an already completed 4h trend reversal. Re-acceptance below 590.11 would favor continuation and invalidate that reversal premise.",
+      "nearest_obstacles": [
+        {
+          "price": 592.09,
+          "basis": "old 4h support above current price, possible role-reversal resistance",
+          "known_at": "2026-08-06T08:00:00+00:00"
+        },
+        {
+          "price": 592.37,
+          "basis": "15m pivot resistance confirmed at cutoff",
+          "known_at": "2026-08-07T12:00:00+00:00"
+        },
+        {
+          "price": 594.93,
+          "basis": "1h resistance known 06:00; 4h confirmation only 12:00",
+          "known_at": "2026-08-07T06:00:00+00:00"
+        }
+      ],
+      "structural_invalidation": "The full reversal stop belongs below the actual 585.6 excursion plus buffer; that is materially farther than the current 5m micro-low. A new local retest plan would need explicit thesis and its own stop, not a retroactive change to the excursion thesis.",
+      "status": "DEVELOPING_WATCH",
+      "entry_research_decision": "NO_TRADE_CURRENT_ENTRY_GEOMETRY; keep WATCH. At 591.78, first overhead structure around 592.09/592.37 leaves less than .1% gross room; it cannot support the broad reversal stop plus costs.",
+      "strongest_contradiction": "Strong rebound does not remove near overhead structural obstacles; the 1h context remains mixed and no current low-cost entry is established.",
+      "over_rejection_check": "This case would be falsely discarded by a rule requiring every timeframe to trend up before any reversal can be watched. Keep the developing reversal while refusing poor current entry economics.",
+      "unknowns": [
+        "Historical execution eligibility/filters and contemporaneous spread UNQUALIFIED",
+        "No authenticated account/portfolio state or native original Risk Reviewer receipt",
+        "No genuine trade-print CVD/footprint/profile; candle volume only",
+        "No source-qualified news/macro clearance",
+        "No chart pixels supplied/inspected in this numeric-only pass; vision NOT_VERIFIED",
+        "No actual fill or queue information"
+      ],
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "execution_authority": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-F01",
+      "severity": "medium",
+      "files": "v3/agents/*/skills/*/references/current-contract.md",
+      "problem": "Unlabeled embedded v2 bootstrap could reload reduced v2 instead of active v3.",
+      "fix": "Use skills_v3 bootstrap and identify v2 tool/schema compatibility only.",
+      "status": "FIXED_AND_RECHECKED"
+    },
+    {
+      "id": "V3-F02",
+      "severity": "medium",
+      "files": "v3/agents/*/skills/trading-lab-opportunity-screening/SKILL.md:35",
+      "problem": "Unscoped spread-missing EXCLUDE conflicted with archive WATCH research.",
+      "fix": "Limit exclusion to CURRENT execution clearance; retain UNKNOWN historical spread without qualification.",
+      "status": "FIXED_AND_RECHECKED"
+    },
+    {
+      "id": "V3-F03",
+      "severity": "medium",
+      "files": "v3/agents/*/skills/trading-lab-trade-geometry-management/SKILL.md:116",
+      "problem": "Active checklist asserted .003 minimum while current named policy uses .0025.",
+      "fix": "Use .0025 active checklist and retain .003 explicitly as historical control.",
+      "status": "FIXED_AND_RECHECKED"
+    },
+    {
+      "id": "V3-F04",
+      "severity": "low",
+      "files": "Both Vision packages references/01-image-data-contract.md,06-volume-orderflow-profile.md,08-evidence-and-failure-modes.md",
+      "problem": "Some present-tense operational instructions still refer to Gate as native/default, and the current supplemental-MCP heading can make historic advertising look current.",
+      "fix": "Change operational defaults to Binance USD-M, preserve explicitly dated Gate case examples, and mark old provider advertising historical/runtime-unverified.",
+      "status": "FIXED_AND_RECHECKED"
+    },
+    {
+      "id": "EVAL-F01",
+      "severity": "medium",
+      "files": "casebook/agent-inputs/*/input.json",
+      "problem": "Agent input embeds baseline recommendation/plan alongside raw inputs. A simple schema head exposed B04 baseline.",
+      "fix": "Use pre-generated source-only input files without baseline/recipe/known regime labels for blind evaluation. Exclude B04 from blinded counts in this pass.",
+      "status": "MITIGATED_IN_THIS_REVIEW"
+    }
+  ],
+  "depth_assessment": "No dropped original Market Researcher specialist concept found in this pass. Original practical structure, flow fidelity, contradiction, geometry, management, news and handoff detail is active; the shared v3 routing adds acceptance/retest, HTF reaction, inverse FVG/OTE and developing-opportunity logic. This is a sample behavioral review, not exhaustive proof of all 27 owner runtimes.",
+  "final_manifest_sha256": "c6e1bcfd5f77900be04ad2f391ca5a08434265e949d5892ffa82b12ca32e0b72"
+}

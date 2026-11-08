@@ -1,3 +1,15 @@
+# Session 3 — v3 expertise and native multi-playbook research
+
+The source-bound historical pipeline now runs **24-market scan → persistent developing watches → causal plans → risk diagnostics → native Freqtrade comparisons**. All 27 specialist assignments and both complete Vision packages are restored in a separate v3 pack; installed profiles are untouched.
+
+**Research only; economics UNQUALIFIED.** Across two independent weekly runs, breakout/retest makes −1.16639944 USDT over 25 fills. Sweep/reclaim makes +0.33425955 over 26 fills, but −0.89923022 with another 10 bp/side. These are small, previously studied samples, not an edge or activation approval. Native original agents and live monitoring remain unverified.
+
+[Commands and source restoration](docs/operations/session3-v3.md) · [Results](evidence/session3/README.md) · [Native records/economics](evidence/session3/ECONOMICS.md) · [v3 skill pack](integrations/openbot/skills/v3/RUNBOOK.md)
+
+The older session summaries below are preserved historical context.
+
+---
+
 # OpenBot Trading Lab
 
 **Session 4:** [Native paper capability and broader economic evidence](evidence/session4/owner-report.md)

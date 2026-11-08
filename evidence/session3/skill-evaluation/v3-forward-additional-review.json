@@ -1,0 +1,631 @@
+{
+  "review_type": "INDEPENDENT_CODEX_SUBAGENT_SOURCE_ONLY_SKILL_FORWARD_TEST",
+  "review_status": "COMPLETED_WITH_LIMITATIONS",
+  "policy_version": "3.0.2-research",
+  "policy_sha256": "bad4c5b3a603a2f689ab6f48becf479e7998c8362e68a003a8e4035249bfeed8",
+  "skill_manifest_sha256": "472c65b2cb7f684a3a9f4f6ea2267a885bb7dc93cf60ddc91cce9a6179093f36",
+  "sample": "Four parent-selected developing/trigger cases; previously studied historical market panel, no unbiased accuracy or holdout claim.",
+  "source_integrity": "All four supplied file SHA256 values match the source-only manifest; all supplied bars are completed by cutoff and exact contiguous intervals. No plan, scan summary, native result, ledger, baseline or outcome files opened.",
+  "calculation_provenance": "Independent work/inspect_additional_forward.py: SMA14 true range ATR at arming, prior20 volume denominator excluding current 5m, strict unique 2L/2R HTF pivots with close-time known_at, completed-close consumption and relevant-side seven-day active map. Geometry is derived from raw bars and watch definitions, not copied from native plans.",
+  "frontmatter": {
+    "metadata_version_used": true,
+    "quick_validate_count": 27,
+    "passed": 27
+  },
+  "cases": [
+    {
+      "case_id": "F1",
+      "symbol": "ATOMUSDT",
+      "as_of": "2026-08-02T19:20:00+00:00",
+      "input_sha256": "8e87806c076e8a6c5b0807c501e0fe0c0ef7364acd9d445b01fe332048461011",
+      "watch_definition": {
+        "family": "BREAKOUT_RETEST",
+        "side": "long",
+        "armed_at": "2026-08-02T18:00:00+00:00",
+        "boundary": 1.262,
+        "boundary_known_at": "2026-08-02T17:00:00+00:00"
+      },
+      "status": "RESEARCH_PROPOSAL",
+      "qualification": "GEOMETRY_PASS_RESEARCH_ONLY",
+      "execution_authority": "NONE",
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "market_map": "The 1h structure at 18:00 arming is UP and the near-term rebound is taking out a pre-known 24h high at 1.262. The latest completed 4h context remains below its slow EMA (descriptive fast/slow 1.25150/1.29800), so this is an intraday continuation attempt within a less supportive higher-timeframe map. Location is a known breakout boundary, not an arbitrary indicator cross.",
+      "causal_trigger": {
+        "acceptance": [
+          "2026-08-02T18:25:00+00:00 close 1.263 > 1.262",
+          "2026-08-02T18:30:00+00:00 close 1.265 > 1.262"
+        ],
+        "retest": "At 19:20 the later completed 5m bar low 1.262 tests the boundary and closes 1.266, with prior20 rvol 1.3764. Close is .441 ATR1h beyond boundary, below .75 retest and 1.25 no-chase bounds; setup is inside its 3h expiry.",
+        "decision_time": "2026-08-02T19:20:00+00:00"
+      },
+      "competing_hypothesis": "A completed loss/re-acceptance below 1.262 would favor failed breakout and could route a new short reversal hypothesis. No such future event is assumed.",
+      "strongest_contradiction": "The 4h down/repair context is the strongest directional caution. It does not activate a new blanket veto for this declared breakout policy.",
+      "lower_timeframe_caution": "The 18:40 high 1.268 and later local congestion can delay follow-through. These 5m features are lower-timeframe cautions; the registered target policy is active pre-known HTF resistance, not every micro-pivot. Consumed old support at 1.273 cannot silently be revived as resistance without a new role-flip hypothesis.",
+      "independently_recomputed": {
+        "case_id": "F1",
+        "entry": 1.266,
+        "stop_anchor": 1.262,
+        "atr1h_armed": 0.009071428571428524,
+        "stop": 1.2606392857142856,
+        "objective": {
+          "price": 1.29,
+          "basis": "1h_2L2R_resistance",
+          "known_at": "2026-07-31T04:00:00+00:00"
+        },
+        "target": 1.2895464285714286,
+        "risk_fraction": 0.004234371473708045,
+        "reward_fraction": 0.018599074700970487,
+        "net_rr": 2.030570798686813,
+        "target_distance_atr": 2.5956692913386035,
+        "excluded_old_or_wrong_role_levels": [
+          {
+            "kind": "support",
+            "price": 1.273,
+            "pivot_at": "2026-07-29T04:00:00+00:00",
+            "known_at": "2026-07-29T07:00:00+00:00",
+            "consumed_at": "2026-07-29T17:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "support",
+            "price": 1.278,
+            "pivot_at": "2026-07-29T08:00:00+00:00",
+            "known_at": "2026-07-29T11:00:00+00:00",
+            "consumed_at": "2026-07-29T16:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "support",
+            "price": 1.283,
+            "pivot_at": "2026-07-28T01:00:00+00:00",
+            "known_at": "2026-07-28T04:00:00+00:00",
+            "consumed_at": "2026-07-29T13:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "support",
+            "price": 1.283,
+            "pivot_at": "2026-07-28T00:00:00+00:00",
+            "known_at": "2026-07-28T12:00:00+00:00",
+            "consumed_at": "2026-07-29T16:00:00+00:00",
+            "timeframe": "4h"
+          },
+          {
+            "kind": "support",
+            "price": 1.286,
+            "pivot_at": "2026-07-28T12:00:00+00:00",
+            "known_at": "2026-07-29T00:00:00+00:00",
+            "consumed_at": "2026-07-29T04:00:00+00:00",
+            "timeframe": "4h"
+          },
+          {
+            "kind": "support",
+            "price": 1.287,
+            "pivot_at": "2026-07-28T17:00:00+00:00",
+            "known_at": "2026-07-28T20:00:00+00:00",
+            "consumed_at": "2026-07-29T02:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 1.29,
+            "pivot_at": "2026-07-29T14:00:00+00:00",
+            "known_at": "2026-07-29T17:00:00+00:00",
+            "consumed_at": "2026-07-30T14:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 1.293,
+            "pivot_at": "2026-07-29T09:00:00+00:00",
+            "known_at": "2026-07-29T12:00:00+00:00",
+            "consumed_at": "2026-07-30T14:00:00+00:00",
+            "timeframe": "1h"
+          }
+        ]
+      },
+      "research_entry": {
+        "type": "LIMIT_RESEARCH_SCENARIO",
+        "reference": 1.266,
+        "earliest_order_at": "2026-08-02T19:20:00+00:00",
+        "expires_at": "2026-08-02T19:25:00+00:00",
+        "signal_bar_fill": false,
+        "maximum_hold_minutes": 480,
+        "no_progress_minutes": 240,
+        "notional_cap_usdt": 25,
+        "leverage": 1,
+        "margin_at_cap_usdt": 25,
+        "cost_inclusive_planned_cash_risk_at_cap_usdt": 0.18835928684270112,
+        "quantity": null,
+        "quantity_status": "UNKNOWN_FILTER_GRID_NOT_ADMITTED"
+      },
+      "frozen_management": {
+        "partials": false,
+        "breakeven": false,
+        "trailing": false,
+        "thesis_exit": "Two later completed closes against boundary by more than .15 ATR1h; does not replace protective stop."
+      },
+      "unknowns": [
+        "Original native Independent Risk Reviewer absent: AGENT_NOT_VERIFIED / NO ACTION",
+        "Historical listing/filter/lot/tick/minimum-notional and account/portfolio evidence are unqualified; 25-USDT size is a research cap, not an executable quantity",
+        "Contemporaneous spread, queue, impact, real partial fills and limit-fill probability unknown",
+        "Fees/friction/funding are the protocol admission scenario (.001 + .002 + .0003), not a realized cost receipt",
+        "Historical news/event clearance absent; genuine trade-print flow unavailable and is not required by this OHLCV policy",
+        "No chart pixels inspected in this numeric-only evaluation; original native Chart Vision NOT_VERIFIED",
+        "Cases expose 30 days of 1h / 20 days of supplied 4h; these are adequate for the local descriptor checks but do not reproduce the full engine feature origin beginning 2026-06-22. Re-aggregating the supplied 1h bars preserves the relevant 4h EMA-order signs; exact full-origin feature parity remains an engine check."
+      ],
+      "substantive_skill_procedures": [
+        "Known-at structure and separate timeframe dimensions allow a 1h breakout WATCH without pretending 4h trend has reversed.",
+        "Acceptance must precede a later retest: the 18:30 acceptance is distinct from the 19:20 retest.",
+        "Causal active-level lifecycle retains 1h 1.290 resistance known 2026-07-31 04:00 and excludes old consumed support at 1.273.",
+        "Structural stop remains below the actual retest/boundary with .15 ATR buffer; after-cost R:R is recomputed, not assumed from gross reward."
+      ]
+    },
+    {
+      "case_id": "F2",
+      "symbol": "DOTUSDT",
+      "as_of": "2026-08-06T01:45:00+00:00",
+      "input_sha256": "a36dffde84364e3f3305f1507f49aef481f27258041bcef49caa4ed41739750d",
+      "watch_definition": {
+        "family": "BREAKOUT_RETEST",
+        "side": "short",
+        "armed_at": "2026-08-05T23:00:00+00:00",
+        "boundary": 0.8391,
+        "boundary_known_at": "2026-08-05T22:00:00+00:00"
+      },
+      "status": "RESEARCH_PROPOSAL",
+      "qualification": "GEOMETRY_PASS_RESEARCH_ONLY",
+      "execution_authority": "NONE",
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "market_map": "The declared short setup is a downside break of pre-known 24h low .8391, with 1h structural direction DOWN at arming. The broader 4h EMA context is upward and hourly EMA order is still positive, so the short is an intraday structural breakdown against a larger upward context rather than a claimed fully aligned bear trend.",
+      "causal_trigger": {
+        "acceptance": [
+          "2026-08-06T01:35:00+00:00 close .8385 < .8391",
+          "2026-08-06T01:40:00+00:00 close .8381 < .8391"
+        ],
+        "retest": "At 01:45 high .8386 reaches the .8391 - .10*ATR1h tolerance (.83854857), close .8375 remains below boundary and .2902 ATR1h away, rvol 1.2934 >=1. The retest tolerance is actually met, not inferred from rounded chart pixels; setup age 165 minutes is under 180.",
+        "decision_time": "2026-08-06T01:45:00+00:00"
+      },
+      "competing_hypothesis": "A renewed accepted reclaim of .8391 would negate this breakdown and favor a continuation of the larger upward context. The native research plan must expire if it cannot obtain the declared next executable entry.",
+      "strongest_contradiction": "Positive 4h/1h EMA order is a real contradiction to a short; the policy nevertheless permits a structurally supported short breakout rather than adding an unregistered all-timeframe-alignment gate.",
+      "lower_timeframe_caution": "The repeated .8372 local lows can produce a bounce and are a useful caution. They are not a pre-arming active 1h/4h support target under this policy. Old .8295 support was already consumed by a completed 1h close on August 4 at 14:00, so it does not cap the target as if still active.",
+      "independently_recomputed": {
+        "case_id": "F2",
+        "entry": 0.8375,
+        "stop_anchor": 0.8391,
+        "atr1h_armed": 0.005514285714285717,
+        "stop": 0.8399271428571428,
+        "objective": {
+          "price": 0.8243,
+          "basis": "1h_2L2R_support",
+          "known_at": "2026-08-04T17:00:00+00:00"
+        },
+        "target": 0.8245757142857143,
+        "risk_fraction": 0.0028980810234540163,
+        "reward_fraction": 0.015431982942430712,
+        "net_rr": 1.9573772747601,
+        "target_distance_atr": 2.3437823834196894,
+        "excluded_old_or_wrong_role_levels": [
+          {
+            "kind": "resistance",
+            "price": 0.8318,
+            "pivot_at": "2026-08-03T18:00:00+00:00",
+            "known_at": "2026-08-03T21:00:00+00:00",
+            "consumed_at": "2026-08-04T02:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "support",
+            "price": 0.8295,
+            "pivot_at": "2026-08-04T08:00:00+00:00",
+            "known_at": "2026-08-04T11:00:00+00:00",
+            "consumed_at": "2026-08-04T14:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 0.8288,
+            "pivot_at": "2026-08-03T14:00:00+00:00",
+            "known_at": "2026-08-03T17:00:00+00:00",
+            "consumed_at": "2026-08-03T19:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 0.801,
+            "pivot_at": "2026-08-02T09:00:00+00:00",
+            "known_at": "2026-08-02T12:00:00+00:00",
+            "consumed_at": "2026-08-03T10:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 0.801,
+            "pivot_at": "2026-08-02T08:00:00+00:00",
+            "known_at": "2026-08-02T20:00:00+00:00",
+            "consumed_at": "2026-08-03T12:00:00+00:00",
+            "timeframe": "4h"
+          },
+          {
+            "kind": "resistance",
+            "price": 0.8006,
+            "pivot_at": "2026-08-02T13:00:00+00:00",
+            "known_at": "2026-08-02T16:00:00+00:00",
+            "consumed_at": "2026-08-03T10:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 0.7998,
+            "pivot_at": "2026-08-02T18:00:00+00:00",
+            "known_at": "2026-08-02T21:00:00+00:00",
+            "consumed_at": "2026-08-03T10:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 0.7994,
+            "pivot_at": "2026-08-02T02:00:00+00:00",
+            "known_at": "2026-08-02T05:00:00+00:00",
+            "consumed_at": "2026-08-02T14:00:00+00:00",
+            "timeframe": "1h"
+          }
+        ]
+      },
+      "research_entry": {
+        "type": "LIMIT_RESEARCH_SCENARIO",
+        "reference": 0.8375,
+        "earliest_order_at": "2026-08-06T01:45:00+00:00",
+        "expires_at": "2026-08-06T01:50:00+00:00",
+        "signal_bar_fill": false,
+        "maximum_hold_minutes": 480,
+        "no_progress_minutes": 240,
+        "notional_cap_usdt": 25,
+        "leverage": 1,
+        "margin_at_cap_usdt": 25,
+        "cost_inclusive_planned_cash_risk_at_cap_usdt": 0.1549520255863504,
+        "quantity": null,
+        "quantity_status": "UNKNOWN_FILTER_GRID_NOT_ADMITTED"
+      },
+      "frozen_management": {
+        "partials": false,
+        "breakeven": false,
+        "trailing": false,
+        "thesis_exit": "Two later completed closes against boundary by more than .15 ATR1h; does not replace protective stop."
+      },
+      "unknowns": [
+        "Original native Independent Risk Reviewer absent: AGENT_NOT_VERIFIED / NO ACTION",
+        "Historical listing/filter/lot/tick/minimum-notional and account/portfolio evidence are unqualified; 25-USDT size is a research cap, not an executable quantity",
+        "Contemporaneous spread, queue, impact, real partial fills and limit-fill probability unknown",
+        "Fees/friction/funding are the protocol admission scenario (.001 + .002 + .0003), not a realized cost receipt",
+        "Historical news/event clearance absent; genuine trade-print flow unavailable and is not required by this OHLCV policy",
+        "No chart pixels inspected in this numeric-only evaluation; original native Chart Vision NOT_VERIFIED",
+        "Cases expose 30 days of 1h / 20 days of supplied 4h; these are adequate for the local descriptor checks but do not reproduce the full engine feature origin beginning 2026-06-22. Re-aggregating the supplied 1h bars preserves the relevant 4h EMA-order signs; exact full-origin feature parity remains an engine check."
+      ],
+      "substantive_skill_procedures": [
+        "Use market understanding -> location -> playbook -> trigger -> geometry, rather than reject the short solely because EMA context is positive.",
+        "Maintain independent continuation/reversal hypotheses and the exact observation that separates them.",
+        "Apply active relevant-side HTF support lifecycle; nearest eligible objective .8243 was known August 4 at 17:00 and is not replaced by consumed .8295.",
+        "Preserve structural stop above .8391 plus .15 ATR1h; the .2898% risk clears the current .25% minimum without applying the historical .30% minimum."
+      ]
+    },
+    {
+      "case_id": "F3",
+      "symbol": "AAVEUSDT",
+      "as_of": "2026-08-01T07:55:00+00:00",
+      "input_sha256": "c548bd24544bcb8bcc8e1420e12b48917647802a0fa84caca54fce735a672e4c",
+      "watch_definition": {
+        "family": "SWEEP_RECLAIM",
+        "side": "long",
+        "armed_at": "2026-08-01T07:00:00+00:00",
+        "boundary": 90.89,
+        "boundary_known_at": "2026-08-01T06:00:00+00:00"
+      },
+      "status": "RESEARCH_PROPOSAL",
+      "qualification": "GEOMETRY_PASS_RESEARCH_ONLY",
+      "execution_authority": "NONE",
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "market_map": "AAVE is testing the known 24h low 90.89 during an intraday decline. At arming the 1h structure is DOWN and EMA20/50 are 94.2099/96.1108. The 4h fast EMA remains slightly above its slow EMA (96.9683/96.7186 on supplied 4h), so the registered simultaneous-opposition block is not met. This is reversal research against a fresh 1h impulse, not proof of an established bullish trend.",
+      "causal_trigger": {
+        "sweep": "The 07:25\u201307:30 5m bar reaches 90.76, an excursion .13 / 1.23214286 = .1055 ATR1h below 90.89, and closes back inside at 90.91. Its high is 91.17.",
+        "later_confirmation": "The 07:45 close 91.18 is above 91.17 but has rvol .6201 and does not satisfy the confirmed variant. At 07:55 close 91.26 is above reclaim-bar high 91.17 and rvol 1.1042 qualifies. No right-side pivot at the sweep extreme is needed to know the already completed excursion low.",
+        "decision_time": "2026-08-01T07:55:00+00:00"
+      },
+      "competing_hypothesis": "Sustained acceptance below 90.89 or a new adverse excursion beyond the frozen invalidation would favor continuing downside. A marginal early reclaim is not treated as proof that sellers have exhausted.",
+      "strongest_contradiction": "The hourly down structure and expanding decline make this a countertrend reversal attempt. The 90.91 initial reclaim was marginal; waiting for the later participation-qualified confirmation is substantively useful.",
+      "lower_timeframe_caution": "Local supply around 91.30\u201391.41 can interrupt progress, and the old 91.45 support may be worth a separately explicit role-flip investigation. It was consumed at the 06:00 completed close and cannot silently become a new hard target. The declared first eligible objective is the known prior24h midpoint 95.615, before the next active HTF resistance at 97.43.",
+      "independently_recomputed": {
+        "case_id": "F3",
+        "entry": 91.26,
+        "stop_anchor": 90.76,
+        "atr1h_armed": 1.23214285714286,
+        "stop": 90.57517857142858,
+        "objective": {
+          "price": 95.61500000000001,
+          "basis": "prior24h_midpoint",
+          "known_at": "2026-08-01T06:00:00+00:00"
+        },
+        "target": 95.55339285714287,
+        "risk_fraction": 0.007504070004069964,
+        "reward_fraction": 0.04704572493034037,
+        "net_rr": 4.049004209882116,
+        "target_distance_atr": 3.4844927536231842,
+        "excluded_old_or_wrong_role_levels": [
+          {
+            "kind": "support",
+            "price": 91.45,
+            "pivot_at": "2026-08-01T01:00:00+00:00",
+            "known_at": "2026-08-01T04:00:00+00:00",
+            "consumed_at": "2026-08-01T06:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "support",
+            "price": 91.8,
+            "pivot_at": "2026-07-26T06:00:00+00:00",
+            "known_at": "2026-07-26T09:00:00+00:00",
+            "consumed_at": "2026-08-01T01:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 92.09,
+            "pivot_at": "2026-07-25T05:00:00+00:00",
+            "known_at": "2026-07-25T08:00:00+00:00",
+            "consumed_at": "2026-07-25T18:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 92.39,
+            "pivot_at": "2026-07-25T23:00:00+00:00",
+            "known_at": "2026-07-26T02:00:00+00:00",
+            "consumed_at": "2026-07-26T03:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 92.6,
+            "pivot_at": "2026-07-25T18:00:00+00:00",
+            "known_at": "2026-07-25T21:00:00+00:00",
+            "consumed_at": "2026-07-26T07:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 92.77,
+            "pivot_at": "2026-07-26T03:00:00+00:00",
+            "known_at": "2026-07-26T06:00:00+00:00",
+            "consumed_at": "2026-07-26T07:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 93.86,
+            "pivot_at": "2026-07-26T07:00:00+00:00",
+            "known_at": "2026-07-26T10:00:00+00:00",
+            "consumed_at": "2026-07-26T11:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "support",
+            "price": 94.05,
+            "pivot_at": "2026-07-30T00:00:00+00:00",
+            "known_at": "2026-07-30T03:00:00+00:00",
+            "consumed_at": "2026-07-31T23:00:00+00:00",
+            "timeframe": "1h"
+          }
+        ]
+      },
+      "research_entry": {
+        "type": "LIMIT_RESEARCH_SCENARIO",
+        "reference": 91.26,
+        "earliest_order_at": "2026-08-01T07:55:00+00:00",
+        "expires_at": "2026-08-01T08:00:00+00:00",
+        "signal_bar_fill": false,
+        "maximum_hold_minutes": 240,
+        "no_progress_minutes": 120,
+        "notional_cap_usdt": 25,
+        "leverage": 1,
+        "margin_at_cap_usdt": 25,
+        "cost_inclusive_planned_cash_risk_at_cap_usdt": 0.2701017501017491,
+        "quantity": null,
+        "quantity_status": "UNKNOWN_FILTER_GRID_NOT_ADMITTED"
+      },
+      "frozen_management": {
+        "partials": false,
+        "breakeven": false,
+        "trailing": false,
+        "thesis_exit": "Two later completed closes against boundary by more than .15 ATR1h; does not replace protective stop."
+      },
+      "unknowns": [
+        "Original native Independent Risk Reviewer absent: AGENT_NOT_VERIFIED / NO ACTION",
+        "Historical listing/filter/lot/tick/minimum-notional and account/portfolio evidence are unqualified; 25-USDT size is a research cap, not an executable quantity",
+        "Contemporaneous spread, queue, impact, real partial fills and limit-fill probability unknown",
+        "Fees/friction/funding are the protocol admission scenario (.001 + .002 + .0003), not a realized cost receipt",
+        "Historical news/event clearance absent; genuine trade-print flow unavailable and is not required by this OHLCV policy",
+        "No chart pixels inspected in this numeric-only evaluation; original native Chart Vision NOT_VERIFIED",
+        "Cases expose 30 days of 1h / 20 days of supplied 4h; these are adequate for the local descriptor checks but do not reproduce the full engine feature origin beginning 2026-06-22. Re-aggregating the supplied 1h bars preserves the relevant 4h EMA-order signs; exact full-origin feature parity remains an engine check."
+      ],
+      "substantive_skill_procedures": [
+        "Distinguish a real pre-known-boundary sweep/reclaim from a wick story; neither candle volume nor the wick proves absorption or stop hunting.",
+        "Separate setup, later confirmation and entry: the low is known at reclaim close, and confirmation requires a later bar with rvol>=1.",
+        "Use the full excursion extreme for invalidation; do not tighten the stop to get attractive reward.",
+        "Treat a consumed support as consumed until a new role-flip hypothesis exists, preserving the exact registered objective policy and avoiding an unversioned micro-obstacle veto."
+      ]
+    },
+    {
+      "case_id": "F4",
+      "symbol": "ATOMUSDT",
+      "as_of": "2026-08-04T09:15:00+00:00",
+      "input_sha256": "fffdee66025478aa95932222e0151c3aa11f170b2c7b5bbd73f5083269f1cf24",
+      "watch_definition": {
+        "family": "SWEEP_RECLAIM",
+        "side": "short",
+        "armed_at": "2026-08-04T08:00:00+00:00",
+        "boundary": 1.39,
+        "boundary_known_at": "2026-08-04T07:00:00+00:00"
+      },
+      "status": "RESEARCH_PROPOSAL",
+      "qualification": "GEOMETRY_PASS_RESEARCH_ONLY",
+      "execution_authority": "NONE",
+      "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+      "market_map": "ATOM is extended upward on the 1h map, whose structure at arming is UP and whose EMA20/50 are positive. The 4h fast EMA remains below its slow EMA (1.30034/1.30590 on the supplied history), giving a mixed larger context rather than unanimous upward expansion. The relevant location is prior24h upper boundary 1.390.",
+      "causal_trigger": {
+        "sweep": "The 09:05\u201309:10 5m candle reaches 1.393, an excursion .003 / .01642857 = .1826 ATR1h beyond pre-known 1.390, then closes back inside at 1.384. Reclaim-bar low is 1.383.",
+        "later_confirmation": "The distinct 09:10\u201309:15 candle closes 1.380 below 1.383 with rvol 1.3072 >=1. Full excursion high remains 1.393 and the simultaneous 1h/4h opposing-EMA block is not met because 4h order is down.",
+        "decision_time": "2026-08-04T09:15:00+00:00"
+      },
+      "competing_hypothesis": "Renewed accepted closes above 1.390 would favor genuine upward continuation and invalidate the failed-breakout interpretation. A sweep label alone cannot override that alternative.",
+      "strongest_contradiction": "The 1h upward structure is a strong objection to fading the move; one failed excursion is not a completed hourly trend reversal. Research remains a limited reversal hypothesis with a four-hour holding policy.",
+      "lower_timeframe_caution": "Lower-timeframe support near the earlier 1.368\u20131.372 region can slow the reversal and belongs in the caution record. It does not silently replace the declared pre-arming active HTF/range objective with an unregistered 5m target rule. No automatic role flip is assumed for old broken resistance levels.",
+      "independently_recomputed": {
+        "case_id": "F4",
+        "entry": 1.38,
+        "stop_anchor": 1.393,
+        "atr1h_armed": 0.016428571428571348,
+        "stop": 1.3954642857142858,
+        "objective": {
+          "price": 1.3255,
+          "basis": "prior24h_midpoint",
+          "known_at": "2026-08-04T07:00:00+00:00"
+        },
+        "target": 1.3263214285714284,
+        "risk_fraction": 0.011206004140786907,
+        "reward_fraction": 0.03889751552795034,
+        "net_rr": 2.453984928065744,
+        "target_distance_atr": 3.267391304347844,
+        "excluded_old_or_wrong_role_levels": [
+          {
+            "kind": "resistance",
+            "price": 1.315,
+            "pivot_at": "2026-07-28T20:00:00+00:00",
+            "known_at": "2026-07-29T08:00:00+00:00",
+            "consumed_at": "2026-08-03T16:00:00+00:00",
+            "timeframe": "4h"
+          },
+          {
+            "kind": "resistance",
+            "price": 1.312,
+            "pivot_at": "2026-07-28T05:00:00+00:00",
+            "known_at": "2026-07-28T08:00:00+00:00",
+            "consumed_at": "2026-07-28T22:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 1.307,
+            "pivot_at": "2026-07-28T13:00:00+00:00",
+            "known_at": "2026-07-28T16:00:00+00:00",
+            "consumed_at": "2026-07-28T21:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 1.306,
+            "pivot_at": "2026-07-30T14:00:00+00:00",
+            "known_at": "2026-07-30T17:00:00+00:00",
+            "consumed_at": "2026-08-03T15:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 1.306,
+            "pivot_at": "2026-07-30T12:00:00+00:00",
+            "known_at": "2026-07-31T00:00:00+00:00",
+            "consumed_at": "2026-08-03T16:00:00+00:00",
+            "timeframe": "4h"
+          },
+          {
+            "kind": "resistance",
+            "price": 1.296,
+            "pivot_at": "2026-07-30T19:00:00+00:00",
+            "known_at": "2026-07-30T22:00:00+00:00",
+            "consumed_at": "2026-08-03T15:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "support",
+            "price": 1.294,
+            "pivot_at": "2026-07-28T09:00:00+00:00",
+            "known_at": "2026-07-28T12:00:00+00:00",
+            "consumed_at": "2026-07-28T14:00:00+00:00",
+            "timeframe": "1h"
+          },
+          {
+            "kind": "resistance",
+            "price": 1.294,
+            "pivot_at": "2026-07-29T18:00:00+00:00",
+            "known_at": "2026-07-29T21:00:00+00:00",
+            "consumed_at": "2026-07-30T14:00:00+00:00",
+            "timeframe": "1h"
+          }
+        ]
+      },
+      "research_entry": {
+        "type": "LIMIT_RESEARCH_SCENARIO",
+        "reference": 1.38,
+        "earliest_order_at": "2026-08-04T09:15:00+00:00",
+        "expires_at": "2026-08-04T09:20:00+00:00",
+        "signal_bar_fill": false,
+        "maximum_hold_minutes": 240,
+        "no_progress_minutes": 120,
+        "notional_cap_usdt": 25,
+        "leverage": 1,
+        "margin_at_cap_usdt": 25,
+        "cost_inclusive_planned_cash_risk_at_cap_usdt": 0.36265010351967264,
+        "quantity": null,
+        "quantity_status": "UNKNOWN_FILTER_GRID_NOT_ADMITTED"
+      },
+      "frozen_management": {
+        "partials": false,
+        "breakeven": false,
+        "trailing": false,
+        "thesis_exit": "Two later completed closes against boundary by more than .15 ATR1h; does not replace protective stop."
+      },
+      "unknowns": [
+        "Original native Independent Risk Reviewer absent: AGENT_NOT_VERIFIED / NO ACTION",
+        "Historical listing/filter/lot/tick/minimum-notional and account/portfolio evidence are unqualified; 25-USDT size is a research cap, not an executable quantity",
+        "Contemporaneous spread, queue, impact, real partial fills and limit-fill probability unknown",
+        "Fees/friction/funding are the protocol admission scenario (.001 + .002 + .0003), not a realized cost receipt",
+        "Historical news/event clearance absent; genuine trade-print flow unavailable and is not required by this OHLCV policy",
+        "No chart pixels inspected in this numeric-only evaluation; original native Chart Vision NOT_VERIFIED",
+        "Cases expose 30 days of 1h / 20 days of supplied 4h; these are adequate for the local descriptor checks but do not reproduce the full engine feature origin beginning 2026-06-22. Re-aggregating the supplied 1h bars preserves the relevant 4h EMA-order signs; exact full-origin feature parity remains an engine check."
+      ],
+      "substantive_skill_procedures": [
+        "The strongest-contradiction checkpoint acknowledges the 1h up impulse while testing the specific completed failure sequence.",
+        "Keep continuation and sweep hypotheses separate: completed excursion/reclaim plus later confirmation is materially different from acceptance beyond the boundary.",
+        "Full-sweep stop above 1.393 plus the declared buffer is used despite its larger cash risk; it stays inside frozen policy and is not moved into noise.",
+        "First credible declared objective is known prior24h midpoint 1.3255; costs, holding fit and <=6 ATR distance are checked explicitly."
+      ]
+    }
+  ],
+  "counts": {
+    "research_proposals": 4,
+    "geometry_rejections": 0,
+    "watch_only": 0,
+    "native_qualified": 0,
+    "orders": 0
+  },
+  "findings": [
+    {
+      "id": "ADDITIONAL-F01",
+      "severity": "medium",
+      "status": "FIXED_AND_RECHECKED",
+      "finding": "Shared skill routing says nearest known obstacle but does not explicitly spell out the current registered active-level lifecycle and HTF objective scope.",
+      "fix": "Add protocol-aware role/consumption guidance: a completed close consumes the old pivot role; no automatic role flip; lower-TF caution must not silently become a hard recipe veto."
+    },
+    {
+      "id": "ADDITIONAL-F02",
+      "severity": "low",
+      "status": "LIMITATION_RECORDED",
+      "finding": "Source-only case snapshots contain fewer historical bars than the full engine fixed feature origin. Exact full-origin EMA parity is not proved by this review.",
+      "fix": "Retain the full-origin feature-parity acceptance test in the engine; this review independently checks source-contained signs and causal patterns without inventing missing history."
+    }
+  ],
+  "meaning": "Four source-only economic research proposals are supported under this explicitly declared policy. These are not four trades/fills/wins and not native Risk approval. Earlier B-case reviews used lower-timeframe cautions conservatively; this pass makes objective scope explicit and avoids converting every micro-pivot or consumed level into a new hard veto. No performance/edge/accuracy improvement is inferred.",
+  "native_openbot": "NOT_VERIFIED",
+  "vision_pixels_seen": false,
+  "native_risk": "AGENT_NOT_VERIFIED / NO ACTION",
+  "execution_authority": "NONE"
+}
