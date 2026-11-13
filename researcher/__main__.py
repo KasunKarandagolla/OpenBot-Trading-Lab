@@ -24,6 +24,9 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     config = sub.add_parser("config"); config.add_argument("action", choices=["validate"])
     provider = sub.add_parser("provider"); provider.add_argument("action", choices=["status"])
+    review = sub.add_parser('review')
+    review.add_argument('action',choices=['replay-session3','probe-precursors'])
+    review.add_argument('--output',help='new JSON file below work/; never overwrites')
     scan = sub.add_parser("scan"); scan.add_argument("action", choices=["smoke", "now", "live", "qualify"])
     scan.add_argument("--output", help="new JSON file below work/; never overwrites")
     scan.add_argument("--inventory", help="owner-supplied official exchangeInfo JSON")
@@ -35,6 +38,10 @@ def main():
             report = validate_config(config)
         elif args.command == "provider":
             report = provider_status(config)
+        elif args.command == 'review':
+            from .session4 import replay_session3,probe_precursors
+            report=replay_session3() if args.action=='replay-session3' else probe_precursors()
+            if args.output:write_report(args.output,report)
         else:
             if bool(args.inventory) != bool(args.inventory_provenance) or (args.action != "now" and args.inventory):
                 raise ContractError("INVENTORY_PROVENANCE_REQUIRED")

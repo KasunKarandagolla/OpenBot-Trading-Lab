@@ -42,3 +42,17 @@ all production CORE/family/method flags remain disabled. Preserve known ATR seed
 mismatch and Unicode targeted-tool errors. Do not infer broad qualification from
 135 passing offline tests. Next Cloud work fetches the exact pushed Local SHA
 and rechecks its own lawful access; never retry a denied route to change location.
+
+Session 4 was authorized and implemented on CODEX_CLOUD. Read
+`docs/implementation/SESSION_04_RUNBOOK.md`, the newest PROGRESS entry and
+`.agents/skills/market-research-review/SKILL.md`. Research review is implemented;
+full source/production qualification stays PARTIAL. `review replay-session3`
+is explicitly offline authentic historical evidence; `review probe-precursors`
+is an opt-in bounded live Basis experiment, not operational orchestration.
+Keep ATR_REMOTE_UNQUALIFIED, full CORE/method flags disabled, current Cloud
+Binance 451 stopped, Unicode targeted faults and exact per-feature denominators.
+No qualified specialist or LLM provider is installed. Do not promote the 98
+retained-time matches, two exact-start BTC ATR seed trials or synthetic READY
+tests into broad live capability claims.
+Session 5 retains durable one-command integration, watches/resume/gap recovery;
+Session 6 retains bounded usability. One writer and same integration branch.

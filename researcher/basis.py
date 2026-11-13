@@ -74,13 +74,14 @@ def tool_object(result):
 
 
 class BasisMCP:
-    def __init__(self, http=None, *, qualification=False):
+    def __init__(self, http=None, *, qualification=False, session4=False):
         self.http = http or PublicHTTP()
         self.session = None
         self.counter = 0
         self.tools = {}
         self.initialized = False
         self.qualification = qualification
+        self.session4 = session4
 
     def _rpc(self, method, params, *, notification=False):
         self.counter += 1
@@ -143,6 +144,9 @@ class BasisMCP:
             specs = load_config()
             registered = {s["expression"] for s in specs["qualification_formulas"].values()}
             registered.add(specs["qualification_failure_expression"])
+            if self.session4:
+                from .precursors import FEATURES
+                registered.update(f.expression for f in FEATURES.values())
             expressions = ([arguments["expression"]] if name == "formula_evaluate" else
                            [r.get("left", {}).get("expression") for r in arguments.get("rules", [])])
             if not expressions or any(e not in registered for e in expressions):
@@ -153,7 +157,7 @@ class BasisMCP:
                     raise ContractError("EXPLICIT_SOURCE_REQUIRED")
             if "symbol" in arguments:
                 symbol(arguments["symbol"])
-            if "bars" in arguments and (type(arguments["bars"]) is not int or not 1 <= arguments["bars"] <= 65):
+            if "bars" in arguments and (type(arguments["bars"]) is not int or not 1 <= arguments["bars"] <= (300 if self.session4 and self.qualification else 65)):
                 raise ContractError("TARGETED_HISTORY_LIMIT")
             if name == "formula_evaluate" and arguments.get("includeForming") is not False:
                 raise ContractError("CLOSED_FORMULA_REQUIRED")

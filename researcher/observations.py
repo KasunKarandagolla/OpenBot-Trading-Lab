@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta, timezone
 from .contracts import ContractError, Evidence, Fidelity, Instrument, ScanBatchReceipt, number, symbol, utc
 
-WIDTHS = {"15m": 900, "1h": 3600}
+WIDTHS = {"15m": 900, "1h": 3600, "4h": 14400}
 
 
 def iso_seconds(value):

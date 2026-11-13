@@ -4,19 +4,19 @@ One bounded transport; no auth, redirects, alternate hosts or route recovery.
 Only current aggregate data and at most five selected-symbol history samples.
 """
 import time
-import urllib.request
 from .contracts import ContractError, digest, now_utc
 from .inventory import OfficialBinanceInventory, json_document
 from .market import normalize_market
 from .numerics import parse_klines
-from .transport import NoRedirect, ProviderError, PublicHTTP
+from .transport import ProviderError, PublicHTTP
 
 
 class CachedPublicHTTP:
     """Short in-memory reuse; configuration never contains API payloads."""
     def __init__(self,http=None,*,clock=time.monotonic):
-        self.http=http or PublicHTTP(max_requests=20,opener=urllib.request.build_opener(
-            urllib.request.ProxyHandler({}),NoRedirect()))
+        # Preserve managed-host transport/trust settings. Never change routes
+        # or retry a denial; on hosts without a proxy this is the normal route.
+        self.http=http or PublicHTTP(max_requests=20)
         self.clock=clock;self.cache={};self.cache_hits=0
 
     @property

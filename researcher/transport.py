@@ -74,7 +74,7 @@ class PublicHTTP:
             raise ProviderError("PUBLIC_METHOD_REJECTED")
         if endpoint == "binance_klines":
             if (not isinstance(query, dict) or set(query) != {"symbol", "interval", "limit", "endTime"}
-                    or query["interval"] not in {"15m", "1h"}
+                    or query["interval"] not in {"15m", "1h", "4h"}
                     or type(query["limit"]) is not int or not 1 <= query["limit"] <= 300
                     or type(query["endTime"]) is not int or query["endTime"] <= 0):
                 raise ProviderError("BOUNDED_KLINE_QUERY_REQUIRED")

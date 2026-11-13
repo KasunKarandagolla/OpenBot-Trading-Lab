@@ -50,11 +50,12 @@ class Nomination:
 
 class NominationRouter:
     """Union independent paths; BTC/ETH context deliberately is not an input."""
-    def __init__(self, config, inventory):
+    def __init__(self, config, inventory, *, specialist_capabilities=None):
         self.routes = config["external_discovery"]["nomination_routes"]
         self.methods = {m["id"]: m for m in config["methods"]}
         self.symbols = set(inventory.symbols)
         self.items = {}
+        self.specialists = specialist_capabilities or {}
 
     def add(self, nomination, evidence_by_id):
         if (nomination.route not in self.routes or nomination.native_symbol not in self.symbols
@@ -65,16 +66,31 @@ class NominationRouter:
         if "M15" in nomination.method_ids:
             raise ContractError("KEEPSSY_DEFINITION_PENDING")
         if nomination.route == "SPECIALIST":
-            raise ContractError("NO_QUALIFIED_SPECIALIST_REGISTERED")
+            capability = self.specialists.get(nomination.source_id)
+            if not capability or capability.get('qualification') != 'QUALIFIED':
+                raise ContractError("NO_QUALIFIED_SPECIALIST_REGISTERED")
+            if (nomination.native_symbol not in capability.get('exact_contracts', ())
+                    or not set(nomination.method_ids) <= set(capability.get('method_ids', ()))
+                    or capability.get('venue') != 'BINANCE_USDM'
+                    or not capability.get('authorized_read_only')):
+                raise ContractError('SPECIALIST_SCOPE_MISMATCH')
         for evidence_id in nomination.evidence_ids:
             evidence = evidence_by_id.get(evidence_id)
             if (evidence is None or evidence.instrument.native_symbol != nomination.native_symbol
                     or evidence.provider != nomination.source_id
+                    or evidence.instrument.venue != 'BINANCE_USDM'
                     or evidence.fidelity != nomination.fidelity
                     or utc(evidence.known_at_utc) > utc(nomination.known_at_utc)
                     or utc(evidence.received_at_utc) > utc(nomination.received_at_utc)
                     or utc(evidence.window_end_utc) != utc(nomination.cutoff_utc)):
                 raise ContractError("NOMINATION_EVIDENCE_SCOPE")
+            if nomination.route == 'SPECIALIST' and (not evidence.complete
+                    or evidence.units not in capability.get('units', ())
+                    or evidence.timeframe not in capability.get('timeframes', ())
+                    or evidence.temporal_status != 'CLOSED_CURRENT'
+                    or evidence.verdict != 'SUPPORTED'
+                    or evidence.source_scope != 'BINANCE_USDM_PERPETUAL'):
+                raise ContractError('SPECIALIST_SCOPE_MISMATCH')
         key = (nomination.native_symbol, nomination.route, nomination.reference_id,
                nomination.cutoff_utc, nomination.evidence_ids)
         self.items[key] = nomination

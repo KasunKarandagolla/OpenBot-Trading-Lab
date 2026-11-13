@@ -15,7 +15,7 @@ def load_config():
 
 
 def validate_config(config):
-    if config.get("schema_version") != "openbot.discovery-specs.v1" or config.get("session") != 3:
+    if config.get("schema_version") != "openbot.discovery-specs.v1" or config.get("session") != 4:
         raise ContractError("CONFIG_VERSION")
     if config.get("policy") != {
         "external_first": True, "context_policy": "ADVISORY_NON_VETO", "trade_authorization": False,
@@ -68,9 +68,19 @@ def validate_config(config):
             raise ContractError("UNQUALIFIED_FORMULA_PROMOTION")
     from .method_registry import validate_method_contracts
     validate_method_contracts(config)
+    s4=config.get('session4',{})
+    if (s4.get('default_llm_calls')!=0 or s4.get('optional_llm_provider_enabled') is not False
+            or s4.get('max_horizon_seconds')!=54000 or s4.get('max_shortlist')!=5
+            or s4.get('atr_remote_status')!='ATR_REMOTE_UNQUALIFIED' or s4.get('full_core_enabled') is not False
+            or s4.get('specialist_runtime_sources')!={} or s4.get('scheduling_enabled') is not False
+            or s4.get('max_remote_selected_bars')!=300 or s4.get('max_live_probe_requests')!=45
+            or s4.get('budget_pools')!=['broad','targeted','exception','watch']
+            or s4.get('quiet_trial_percentile_max')!='0.25'):
+        raise ContractError('SESSION4_CAPABILITY_BOUNDARY')
     return {"status": "VALID", "families": 9, "methods": 31,
             "manifest_sha256": digest(MANIFEST.read_bytes()), "detectors_enabled": 0,
-            "release": discovery["release"], "full_core_packs_enabled": 0}
+            "release": discovery["release"], "research_review_release":s4['release'],
+            "full_core_packs_enabled": 0}
 
 
 def provider_status(config):
@@ -78,6 +88,7 @@ def provider_status(config):
     return {"status_kind": "RECORDED_CAPABILITIES_NOT_LIVE_HEALTH",
             "providers": config["providers"],
             "external_discovery": config["external_discovery"],
+            "session4": config['session4'],
             "optional_basis_key_present": bool(os.environ.get("OPENBOT_BASIS_TOKEN")),
             "optional_basis_key_used": False,
             "setup_keys": "DEFERRED: public runtime needs no keys; auth contract must be qualified first"}

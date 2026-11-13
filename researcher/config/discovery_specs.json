@@ -1,6 +1,6 @@
 {
   "schema_version": "openbot.discovery-specs.v1",
-  "session": 3,
+  "session": 4,
   "policy": {
     "external_first": true,
     "context_policy": "ADVISORY_NON_VETO",
@@ -1504,5 +1504,36 @@
     "proxies": false,
     "measurement_semantics": "docs/implementation/SESSION_03_NUMERICS.md",
     "numerical_oracle_status": "SAMPLED_SOURCE_VERIFIED_EXCEPT_BLUEPRINT_ATR_SEED"
+  },
+  "session4": {
+    "release": "PARTIAL_RESEARCH_REVIEW_AND_REMOTE_PRECURSOR_TRIALS",
+    "default_llm_calls": 0,
+    "optional_llm_provider_enabled": false,
+    "max_horizon_seconds": 54000,
+    "max_shortlist": 5,
+    "atr_remote_status": "ATR_REMOTE_UNQUALIFIED",
+    "full_core_enabled": false,
+    "specialist_runtime_sources": {},
+    "context_status": "IMPLEMENTED_SOURCE_GATED; LIVE_4H_AND_SYNC_BREADTH_UNQUALIFIED",
+    "readiness_scope": "QUALIFIED_CURRENT_EVIDENCE_ONLY; CURRENT_CAPTURE_TRIALS_CANNOT_PROMOTE",
+    "budget_pools": [
+      "broad",
+      "targeted",
+      "exception",
+      "watch"
+    ],
+    "max_remote_selected_bars": 300,
+    "max_live_probe_requests": 45,
+    "quiet_trial_percentile_max": "0.25",
+    "scheduling_enabled": false,
+    "source_evidence": "evidence/external-first/session4/qualification.json",
+    "deployment_host_observation": {
+      "environment": "CODEX_CLOUD",
+      "binance": "BLOCKED_HTTP_451",
+      "basis": "LIVE_TESTED_NARROW",
+      "production_methods": "DISABLED_UNVERIFIED",
+      "specialists": "NO_QUALIFIED_RUNTIME_SOURCE"
+    },
+    "explicit_atr_trial": "EXACT_SEED_AND_RECURRENCE_MATCH_BTC_1H_15M_ONLY"
   }
 }

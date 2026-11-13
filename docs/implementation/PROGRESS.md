@@ -1,5 +1,143 @@
 # OpenBot external-first Market Researcher — progress
 
+## Session 4 — context, evidence investigation and research admission (2026-11-13)
+
+**Environment: CODEX_CLOUD. Coherent implemented increment; full source/production
+exit gate PARTIAL. Session 4 of the accepted six-session plan.** Verified the
+actual remote feature head was exactly
+`5c659786b66f36d186e1740417a4703e958b1213` before edits. Clean generated checkout
+initially fetched only main; explicitly fetched/tracked the approved integration
+branch and fast-forwarded only. No user changes, reset, force operation, main
+edit, Local launch or parallel writer. Immutable blueprint/plan preserved.
+PR #24 remains draft. Final pushed SHA and observed CI belong in the handoff;
+a commit cannot record its own hash.
+
+### Supported implementation and reuse
+
+- Typed source/units/time/fidelity-aware research facts and ContextCard slots for
+  BTC/ETH 4H/1H; selected causal benchmark producer; synchronized breadth,
+  median/MAD and outperform-BTC fraction with exact evaluable denominators.
+  Qualified missing/stale HTF and dated sector mappings remain UNKNOWN. Context
+  reorders questions without altering nomination eligibility or side.
+- Deterministic necessary-fact/contradiction query planning with allowlisted
+  read-only operations, exact scope/windows/units, authorization/history checks,
+  separate discovery/targeted/exception/watch budgets, cheaper equivalent
+  sources, validated cache, unchanged-WATCH suppression and explicit stop/UNKNOWN/
+  NOT_REVIEWED_BUDGET dispositions. No invented agent-tool Python entitlement.
+- Typed structure/hypothesis cards reuse the Session 3 frozen references, causal
+  F2/F4/F5 events and metadata-ledger contracts. NULL and opposing rivals remain;
+  same-reference chronology is enforced. Deduplication preserves all initiators.
+  All nine families/31 methods retain honest original states/roles/dependencies.
+- Every research stage has declared requirements. Admission needs qualified
+  current causal facts, fresh verified identity, significance, first pre-known
+  opposing obstacle, actual source-fresh price/spread/depth, fees and declared
+  slippage/funding bounds plus relevance within 15h. Unknown room/economics is
+  distinct from exhaustion/unfavorable friction. A consumed first obstacle cannot
+  be replaced with a farther one. Pairwise/Pareto comparisons and exposure
+  diversity preserve incomparable cases and audit records; maximum five handoffs.
+- Actual operator interfaces: `review replay-session3` is hash-checked, offline
+  AUTHENTIC_REPLAY; `review probe-precursors` makes real bounded Basis calls.
+  Existing automatic `scan now`, provider clients, partition normalizer, Decimal
+  library, method registry and SQLite metadata ledger remain reused. Added 4H
+  clock/selected-public-kline support without increasing sample-symbol/call caps.
+  Managed-host inherited transport/trust settings are preserved; no route override.
+- Reviewed pinned PR #23 OpenBot v3 structure/research-contract/flow skills and
+  current-contract. Added one original compact
+  `.agents/skills/market-research-review/SKILL.md`; reused contradiction/causality/
+  fidelity concepts, imported no old code or conflicting funnels/recipe/trading
+  assumptions. No third-party skill collection/license dependency installed.
+  LLM calls zero; optional model integration remains unimplemented.
+
+### Real source evidence and exact qualification limits
+
+- One Cloud Binance access check: **HTTP 451**, 224 bytes, 722 ms. Stopped the
+  route; no alternate host, location, VPN, bypass or second Binance request.
+- Twelve registered remote precursor expressions executed for BTC × 1H/15M:
+  width16; past-only quiet median ratio and percentile; prior bounds; rolling
+  distances; efficiency/progress; base RVOL; TR fraction; explicit TR/rma ATR.
+  Two more ETH ATR experiments were executed. **98/98 comparisons match** exact
+  retained independent Local timestamps across **22 evaluations**; four other
+  evaluations (base RVOL and quiet median ratio, both tf) have no adequate retained
+  independent inputs. These are live Basis vs authentic historical independent
+  facts, never a falsely live Cloud Binance oracle.
+- The four new long-warm-up ATR matches are convergence evidence with changed
+  starts, **not exact seed repair**. Recomputed all **four original evaluations /
+  80 failed scalar pairs** from authentic receipts. First-bar H-L alternative and
+  conditional recurrence evidence remains; raw initial seed bars were not
+  retained. `ATR_REMOTE_UNQUALIFIED` and full CORE gates remain disabled.
+- A bounded additional experiment starts remote history at the first of the 20
+  retained independent BTC HLC rows. **Explicit TR/rma passes the exact seed plus
+  five recurrences on each timeframe: 12/12**. Native atr(14) fails all 12 and
+  matches its first-bar H-L alternative. This supplies a real sampled remote
+  remedy; global/all-contract/ETH production qualification remains absent.
+  The original four/80 failures are retained, not overwritten.
+- New explicit independent cohort screens on each timeframe: quiet percentile
+  **50/50 requested/evaluated**, progress16 **50/50**, upper distance **7/7**;
+  returned/matched sets equal requests, zero failed/missing/truncated names;
+  **13 footer fillers excluded per timeframe**. Distinct scope **107 per tf**;
+  each formula covers only its stated partition. Historical source census is
+  **946 / 519 eligible / 427 excluded**; current live eligible denominator null.
+  Historical not-requested counts by formula: **469 / 469 / 512**. Full CORE and
+  production method evaluations **0**. No current all-universe or pressure/
+  swing-lifecycle certification follows from scalar outputs.
+- Original Unicode market_candles failure on both tf preserved. The one bounded
+  supported formula-by-symbol alternative for `我踏马来了USDT` on 1H also returned
+  **HTTP 200 / MCP_TOOL_ERROR**. Successful screens do not establish targeted
+  history. The coin remains in scope and fault records.
+- **24** low-width research questions (4 on 1H, 20 on 15M) preserve both directions
+  and NULL; all PREMATURE, formation unsupported, UNKNOWN due to absent qualified
+  frozen-reference/current-eligibility facts. They are not READY nominations.
+- Three routes are implemented as independent contracts. A currently blocked by
+  remote causal predicate/history qualification; B has no qualified runtime
+  specialist; C preserves genuine quiet questions and recorded watch/reference
+  audits. No denied specialist route was retried; no paid/trial dependency, key
+  request, true-profile/footprint/absorption/OI-intent/liquidation claim invented.
+- Authentic historical review: **40 references → 37 watches, 3 invalidations,
+  zero research handoffs**. Qualified HTF/breadth/sector context UNKNOWN; neutral
+  agenda. Planner retains missing necessary facts rather than querying today's
+  API as if it supported historical as-of. Empty shortlist is incomplete coverage,
+  not a statement that the market offers no opportunities.
+
+### Verification, resources and delivery gates
+
+- **184 tests passed / 0 failed / 0 skipped**, preserving all 135 original tests
+  and adding 49 source/contract/causal/fairness/planner/admission tests. Real 98
+  matches and four/80 ATR failures are regressions; synthetic READY/FAST cases
+  validate safety contracts without promoting live capabilities. Tests include
+  bullish BTC/bearish alt, falling BTC/bullish alt, mixed/unknown context, shock
+  retaining a range question, equal budgets, specialist-only/quiet routes, source
+  mismatch, stale clocks/quotes, cache/quota, room/exhaustion, citations, 0–5 and
+  no executable trade output. No existing tests weakened or skipped.
+- **53 actual HTTP requests** (52 Basis, one Binance), **373,822 response bytes**,
+  **52,346 ms summed durations**, p50/p95 **774/3,260 ms**; one HTTP 451 and one
+  HTTP-200 tool error. Actual charged quota and sustainable cadence unknown;
+  separate probe wall time was not instrumented. No fabricated throughput claim.
+- Configuration/immutable reference validation and whitespace checks pass;
+  standard library only, no credentials, orders/accounts, Freqtrade/trading DB
+  mutation, full candle store, runtime SQLite artifact, scheduler or LLM calls.
+  Curated evidence and hashes: [Session 4](../../evidence/external-first/session4/README.md).
+  Commands, stages and source limits: [runbook](SESSION_04_RUNBOOK.md).
+- P0/P1/P3 and G1/G2/G8 remain **PARTIAL**, with host access, exact ATR seed,
+  full remote causal CORE/history, true specialists/current coverage/quota gates
+  explicit. G3/G4/G5/G7 have deterministic and stated source-scope verification.
+  G6 durability is Session 5. G9 delivery additionally requires remote SHA and
+  both push/PR CI observation, recorded in the final handoff.
+
+**Owner help: NONE for the implementation.** Live qualification requires a
+separately authorized, independently lawful runtime for a bounded same-start/
+same-cutoff BTC/ETH × 1H/15M oracle, retaining the first 15 selected seed bars and
+final comparisons, plus two selected 4H benchmark samples. Maximum 300 bars,
+within the existing five-symbol/ten-kline-call cap; exact GitHub-synced handoff
+in the runbook. No Local execution or location change was initiated here.
+
+**Session 5 readiness: PARTIAL.** Proceed with dependency-ready read-only
+orchestration, watch persistence/resumption/gap recovery and end-to-end failure
+handling using these capability gates. Production source qualification remains
+blocked until real evidence clears it; no diagnosis-only extra session and no
+premature Session 6 merge.
+
+---
+
 ## Session 3 — Local live APIs and causal intelligence (2026-11-13)
 
 **Environment: CODEX_LOCAL_EXCEPTION. Delivered functional increment; full remote
