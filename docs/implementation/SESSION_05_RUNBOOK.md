@@ -141,6 +141,10 @@ Delisted/changed identities are archived/quarantined, never silently renamed.
 Corrupt/foreign/future-schema databases are rejected without replacement. SQLite
 savepoints compose with the outer transaction, and crashes roll back all metadata.
 No terminal reference may be resurrected on a later selected reconstruction.
+If host UTC regresses behind a completed receipt, preserve the raw timestamps,
+record clock uncertainty and use the maximum observed known-by bound for atomic
+metadata ordering. This never changes bar cutoffs or source times, establishes
+historical actionability, or permits READY admission under clock uncertainty.
 
 Limits are local safety ceilings, **not provider entitlements**: 26 serial screen
 attempts including two bounded recoveries; 40 Basis HTTP calls including handshake;

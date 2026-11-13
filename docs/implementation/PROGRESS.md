@@ -84,8 +84,8 @@ final handoff; a commit cannot contain its own SHA.
 
 ## Verification and measured operation
 
-Baseline **184/184** passed before edits. Full suite **212 passed / 0 failed /
-0 skipped**, plus the final 28 Session 5 tests after source/cache refinements.
+Baseline **184/184** passed before edits. Full suite **213 passed / 0 failed /
+0 skipped**, plus the final 29 Session 5 tests after source/cache refinements.
 Config, immutable hashes and whitespace checks pass. Tests include authentic
 same-start seeds/initial samples, original failures, scaled columns, stale clocks
 and filler exclusion, source/identity/gap safety, first run/repeat/restart,
@@ -114,7 +114,25 @@ no automatic schedule was enabled. No orders, account/admin/trading DB access,
 credentials, whole-market candle store or external messages outside the authorized
 GitHub workflow.
 
-**Owner assistance now: NONE for the supported subset.** Session 5 is a useful
+**Owner assistance now: GitHub Git sign-in for publication.** Both WSL HTTPS and
+Windows Git lack usable non-interactive credentials; a normal Git Credential
+Manager sign-in was opened. No exchange/provider key is needed. Local checkpoint
+`747da48c1cb9af859fe8096ae010ecc24bbf836c` was committed; remote publication/CI
+must not be claimed until verified. A clean checkout of it passed 212 tests but
+its live metadata write found receipt/host UTC skew. The repaired run preserves
+all original timestamps, uses a disclosed conservative known-by bound and blocks
+READY under clock uncertainty. It accepted all **16 columns × 519 contracts ×
+2 timeframes = 16,608** scalar readings: 41 HTTP, 189,558 request-body bytes,
+4,918,993 response bytes, 115.149 seconds; p50/p95 2,692/4,784 ms. It saved
+48 references, 44 watches and four causal invalidations in **1,961,984 SQLite
+bytes**; zero handoffs/near misses, 776 budget omissions. BTC/ETH 4H/1H and
+519/519 synchronized breadth are source-backed; sectors UNKNOWN. Clock skew
+up to 6.589 seconds is explicit; it is not used to assert historical timeliness.
+A later invocation after cache expiry was correctly refreshed and partially
+failed (15M 519/519; 1H 319/519), not mislabeled an immediate repeat. Final clean
+clock-repaired cold/warm evidence is recorded separately.
+
+ Session 5 is a useful
 PARTIAL read-only checkpoint, not the complete six-session source/structural exit
 gate. Full CORE/ordered method compiler and source-backed admission/specialist
 qualification remain Sol work; do not move those blockers to Luna. Session 6

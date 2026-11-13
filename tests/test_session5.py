@@ -110,6 +110,15 @@ class OperationalDurability(unittest.TestCase):
         self.assertTrue(all(w['stage'] not in {'READY_FOR_DEEP','FAST_WITH_ROOM'} for w in r['watches']))
         self.assertEqual(sum(c['status']=='SUPPORTED' for c in r['context']['claims'][:4]),4)
 
+    def test_backward_host_clock_preserves_original_receipts_and_commits_safely(self):
+        ahead=(utc(AT)+timedelta(seconds=10)).isoformat()
+        r=self.scan(api=FakeAPI(ahead))
+        self.assertTrue(r['clock_anomalies']);self.assertEqual(r['shortlist'],[])
+        self.assertEqual(r['time_integrity_status'],'CLOCK_UNCERTAINTY; NO_READY')
+        self.assertGreaterEqual(utc(r['completed_at_utc']),utc(ahead))
+        self.assertEqual(r['persistence']['run_snapshots'],1)
+        self.assertTrue(all(w['reference']['available_at']==ahead for w in r['watches']))
+
     def test_repeat_reopens_database_without_duplicate_watch_or_events(self):
         a=self.scan();client=FakeClient();b=self.scan(client=client)
         self.assertTrue(b['costs']['cached_snapshot_reused']);self.assertEqual(client.connections,0)

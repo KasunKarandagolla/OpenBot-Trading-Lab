@@ -350,12 +350,29 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
             'FEES_DEPTH_SLIPPAGE_FUNDING_BOUNDS_AND_HORIZON_UNVERIFIED; NO_FAKE_READY',
             'PUBLISH_LAG_AND_SUSTAINABLE_QUOTA_UNKNOWN; SCHEDULING_DISABLED']}
     bundles=[];verified=[];terminals=[];facts={};cards=[];references=[];cached=False
+    observed_times=[start]
+    def evaluation_time():
+        # Local UTC can step backwards between completed HTTP requests. Preserve
+        # every original receipt/availability; use a conservative logical upper
+        # bound for metadata ordering and disclose the clock uncertainty.
+        wall_at=clock()
+        received=[r['received_at_utc'] for r in (*api.http.receipts,*client.http.receipts)]
+        bound=max([wall_at,*observed_times,*received],key=utc)
+        if utc(bound)>utc(wall_at):
+            report.setdefault('clock_anomalies',[]).append({'kind':'HOST_UTC_REGRESSION_OR_RECEIPT_SKEW',
+                'observed_wall_utc':wall_at,'conservative_known_by_bound':bound,
+                'seconds':(utc(bound)-utc(wall_at)).total_seconds(),
+                'original_source_times_modified':False})
+        observed_times.append(bound)
+        return bound
     try:
         with ledger.writer(start) as attempt:
             previous=ledger.latest();prior_watches={w['id']:w for w in previous['watches']} if previous else {}
+            if previous:observed_times.append(previous['completed_at_utc'])
             old_cutoffs=ledger.cutoffs()
             try:
                 inventory=api.inventory();members={i.native_symbol:i for i in inventory.instruments}
+                observed_times.append(inventory.received_at_utc)
                 ir=inventory.report();report['inventory']={k:v for k,v in ir.items() if k!='instruments'}
                 report['inventory']['source_total_rows']=len(inventory.symbols)+len(inventory.excluded)
                 report['coverage']['eligible_contracts']=ir['eligible_contracts']
@@ -383,6 +400,10 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         'original_snapshot':previous.get('reuse',{}).get('original_snapshot',previous['run_key']),
                         'original_evidence_cutoffs':cutoffs,
                         'fresh_remote_requests':0,'retained_partial_failures_are_not_retried_until_cache_expiry':True}
+                    selected_names=set(report.get('current_economics',{}))
+                    report['current_economics']={n:[o for p in pulse if p['kind'] in {'book','premium'}
+                        for o in p['observations'] if o['native_symbol']==n] for n in selected_names}
+                    report['reuse']['closed_bar_review_recomputed']=False
                     # No fresh READY assertion may inherit cached execution facts.
                     if report['shortlist']:raise ContractError('STALE_OR_INCOMPLETE_BAR_TAIL')
                 else:
@@ -485,13 +506,14 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 try:
                                     bars,source=api.klines(members[n],timeframe=tf,cutoff=cutoffs[tf])
                                     selected[n,tf]=(bars,source)
+                                    observed_times.append(source['receipt']['received_at_utc'])
                                     if n in {'BTCUSDT','ETHUSDT'} and tf in {'1h','4h'}:
-                                        f=benchmark_fact(bars,members[n],as_of=clock(),mode=mode,qualification='QUALIFIED')
+                                        f=benchmark_fact(bars,members[n],as_of=evaluation_time(),mode=mode,qualification='QUALIFIED')
                                         facts[f.id]=f;benchmark_ids.append(f.id)
                                 except (ContractError,KeyError,ValueError,TypeError) as e:
                                     report['source_faults'].append({'phase':'targeted_history','symbol':n,'timeframe':tf,'code':safe_error(e)})
                     fetch_selected(('BTCUSDT','ETHUSDT'))
-                    context=build_context(facts,as_of=clock(),eligible_symbols=inventory.eligible_symbols,
+                    context=build_context(facts,as_of=evaluation_time(),eligible_symbols=inventory.eligible_symbols,
                         eligible_known=True,benchmark_ids=benchmark_ids,return_ids=return_ids)
                     report['context']=asdict(context)
                     # Separate watch, exception and structural allocations. All
@@ -532,7 +554,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                     'OFFICIAL_BINANCE_TOP_OF_BOOK',o['source_response_sha256'],'EXACT_REPORTED',True,'QUALIFIED',mode,30,
                                     cluster='EXECUTION_FRICTION')
                                 facts[f.id]=f;econ_ids.setdefault(n,[]).append(f.id)
-                    as_of=clock()
+                    as_of=evaluation_time()
                     planner=QueryPlanner()
                     for (n,tf),(bars,source) in selected.items():
                         if tf=='4h':continue
@@ -572,6 +594,11 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             report['planner'].append({'card_id':card.id,'status':plan['status'],'next_fact':plan.get('question').fact if plan.get('question') else None,
                                 'reason':'NO_QUALIFIED_SOURCE_FOR_NECESSARY_ADMISSION_FACT; STOP_UNRELATED_QUERIES'})
                     reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],as_of=as_of) for c in cards]
+                    if report.get('clock_anomalies'):
+                        for r in reviews:
+                            if r['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM'}:
+                                r['stage']='UNKNOWN';r['reason_code']='CLOCK_COHERENCE_UNQUALIFIED'
+                                r['missing_necessary_inputs'].append('CLOCK_COHERENCE')
                     reviewed=shortlist(reviews,coverage=report['coverage'])
                     for field in ('shortlist','near_misses','invalidations'):report[field]=reviewed[field]
                     report['empty_shortlist_reason']=reviewed['empty_shortlist_reason']
@@ -618,7 +645,12 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     report['watches']=[{**w,'stage':'UNKNOWN','gap_status':'GAP_UNOBSERVED',
                         'next_review':'Source recovery required; retain last viable frozen reference'} for w in previous['watches']]
             receipts=[*api.http.receipts,*client.http.receipts];durations=sorted(r['elapsed_ms'] for r in receipts)
-            report['request_receipts']=receipts;report['completed_at_utc']=clock()
+            report['request_receipts']=receipts;report['completed_at_utc']=evaluation_time()
+            report['time_integrity_status']='CLOCK_UNCERTAINTY; NO_READY' if report.get('clock_anomalies') else 'NORMAL'
+            if report.get('clock_anomalies') and report['shortlist']:
+                for r in report['shortlist']:
+                    report['near_misses'].append({**r,'stage':'UNKNOWN','reason_code':'CLOCK_COHERENCE_UNQUALIFIED'})
+                report['shortlist']=[]
             report['costs']={'http_requests':len(receipts),'response_bytes':sum(r.get('response_bytes') or 0 for r in receipts),
                 'request_body_bytes':sum(r.get('request_body_bytes') or 0 for r in receipts),
                 'request_url_bytes':sum(r.get('request_url_bytes') or 0 for r in receipts),
