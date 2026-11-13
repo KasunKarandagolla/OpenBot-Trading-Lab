@@ -139,6 +139,54 @@ qualification remain Sol work; do not move those blockers to Luna. Session 6
 Luna may do bounded operator help/status/report presentation and housekeeping
 while preserving the exact capability gates. Keep PR #24 draft and do not merge.
 
+## Final clean-checkout verification (local publication pending)
+
+Clean detached checkout `1985543a59aab066120f00b5e26669b07c433579`, initially
+unmodified, Python 3.12.3, no manual market input: both actual CLI processes exited
+0 with PARTIAL reports. **213 tests / 0 failures / 0 skips** also pass in that
+checkout. Blueprint/plan and evidence checksums/config/whitespace pass.
+
+| Final cold source | Eligible | Requested | Evaluated | Returned | Missing | Failed | Unsupported |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 15M, each of all 16 columns | 519 | 519 | 519 | 519 | 0 | 0 | 0 |
+| 1H, each of all 16 columns | 519 | 519 | 450 | 450 | 69 | 69 | 0 |
+
+All failed partitions/recoveries remain in receipts; this is not a no-setup
+result. Quote RVOL has the same evaluable counts and zero unavailable baselines
+in this run. Low historical width questions: 82 on 15M, 52 on the accepted 1H
+subset. Those counts are not full method detections. All 31 full remote method
+predicates remain requested/evaluated/returned 0, missing 0, failed 0 and
+unsupported/unqualified 519 on each 1H/15M/4H; selected trial sources are reported
+separately. BTC/ETH 4H/1H are source-backed; synchronized breadth is 450/519;
+sectors UNKNOWN. Outcome: **44 watches, 4 causal invalidations, 0 handoffs,
+0 near misses, 727 budget omissions**. Source/economic/causal qualification limits
+explain zero; no claim of no opportunities or predictive accuracy.
+
+Cold: **43 HTTP**, 206,258 request-body bytes, 2,214 URL bytes (headers unmeasured),
+4,747,359 response bytes, **116.653 seconds**, p50/p95 **2,031/4,529 ms**;
+SQLite **1,982,464 bytes**. Immediate separate process: **4 HTTP**, zero Basis,
+zero history, 1,808,957 response bytes, **5.516 seconds**, p50/p95 **1,015/1,789 ms**;
+SQLite **2,035,712 bytes**. Same 48 reference IDs, 106 events, 240 hypotheses,
+44 watch revisions and original first-seen values; no duplicate watch/event writes.
+The repeated snapshot stores a delta and the database retains one current scalar
+cache. Partial coverage is retained explicitly during reuse. Charged units,
+permitted daily quota and sustainable cadence remain UNKNOWN.
+
+The earlier clock-order failure and import failure have unretained source receipts;
+measured totals explicitly exclude their unknown requests/bytes/latencies. A
+complete 16-column 519/519 pass on both tf is separately recorded from the repaired
+run; it does not overwrite this final clean run's 69 failed 1H names.
+
+**Publication remains blocked by GitHub Git authentication.** The connected
+GitHub reader confirms PR #24 is draft and its remote head is still
+`38437c031a007634161edf03f5dde07afd7b9dd0`. Local commits are preserved, no remote
+ref was reset or forced, and new-commit CI is **NOT_TRIGGERED** until push succeeds.
+The PR description is prepared but not published ahead of its code. Complete the
+pending Git Credential Manager sign-in to publish and observe CI in this chat.
+No provider or exchange key is requested. All remaining full CORE/ordered method/
+specialist/admission source gates remain Sol work; Session 6 Luna gets only bounded
+operator usability and housekeeping, not those unresolved release blockers.
+
 ---
 
 # OpenBot external-first Market Researcher — progress
