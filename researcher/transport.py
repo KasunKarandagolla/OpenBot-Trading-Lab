@@ -6,8 +6,9 @@ import json
 import time
 import urllib.error
 import urllib.request
+from urllib.parse import urlencode
 
-from .contracts import ContractError, digest, now_utc
+from .contracts import ContractError, digest, now_utc, symbol
 
 ENDPOINTS = {
     "basis": "https://www.basischarts.com/api/mcp",
@@ -15,6 +16,7 @@ ENDPOINTS = {
     "binance_ticker": "https://fapi.binance.com/fapi/v1/ticker/24hr",
     "binance_book": "https://fapi.binance.com/fapi/v1/ticker/bookTicker",
     "binance_premium": "https://fapi.binance.com/fapi/v1/premiumIndex",
+    "binance_klines": "https://fapi.binance.com/fapi/v1/klines",
 }
 MAX_BYTES = 2 * 1024 * 1024
 MCP_READ_TOOLS = frozenset({"catalog_search", "catalog_describe", "market_candles",
@@ -63,13 +65,22 @@ class PublicHTTP:
         self.stopped = set()
         self.receipts = []
 
-    def request(self, endpoint, *, payload=None, headers=None):
+    def request(self, endpoint, *, payload=None, headers=None, query=None):
         if endpoint not in ENDPOINTS or endpoint in self.stopped:
             raise ProviderError("ROUTE_DISABLED")
         if self.remaining <= 0:
             raise ProviderError("REQUEST_BUDGET_EXHAUSTED")
         if (endpoint == "basis") != (payload is not None):
             raise ProviderError("PUBLIC_METHOD_REJECTED")
+        if endpoint == "binance_klines":
+            if (not isinstance(query, dict) or set(query) != {"symbol", "interval", "limit", "endTime"}
+                    or query["interval"] not in {"15m", "1h"}
+                    or type(query["limit"]) is not int or not 1 <= query["limit"] <= 300
+                    or type(query["endTime"]) is not int or query["endTime"] <= 0):
+                raise ProviderError("BOUNDED_KLINE_QUERY_REQUIRED")
+            symbol(query["symbol"])
+        elif query is not None:
+            raise ProviderError("PUBLIC_QUERY_REJECTED")
         if endpoint == "basis":
             if (not isinstance(payload, dict) or payload.get("jsonrpc") != "2.0"
                     or payload.get("method") not in {"initialize", "notifications/initialized", "tools/list", "tools/call"}):
@@ -81,7 +92,8 @@ class PublicHTTP:
         if set(headers or {}) - allowed_headers:
             raise ProviderError("AUTH_OR_HEADER_REJECTED")
         data = json.dumps(payload, allow_nan=False).encode() if payload is not None else None
-        req = urllib.request.Request(ENDPOINTS[endpoint], data=data, headers=headers or {},
+        url = ENDPOINTS[endpoint] + ("?" + urlencode(query) if query else "")
+        req = urllib.request.Request(url, data=data, headers=headers or {},
                                      method="POST" if data is not None else "GET")
         started = time.monotonic()
         try:
@@ -110,10 +122,14 @@ class PublicHTTP:
                    "elapsed_ms": round((time.monotonic() - started) * 1000),
                    "retry_after": safe_retry_after(private_headers.get("retry-after")),
                    "quota_charged_units": None}
+        if query:
+            receipt["requested_query"] = dict(query)
+        used = private_headers.get("x-mbx-used-weight-1m")
+        receipt["binance_used_weight_1m"] = int(used) if used and used.isascii() and used.isdigit() else None
         self.receipts.append(receipt)
         if len(body) > MAX_BYTES:
             raise ProviderError("RESPONSE_SIZE_LIMIT", receipt)
-        if status in {403, 429, 451}:
+        if status in {403, 418, 429, 451}:
             self.stopped.add(endpoint)
             if endpoint.startswith("binance_"):
                 self.stopped.update(e for e in ENDPOINTS if e.startswith("binance_"))

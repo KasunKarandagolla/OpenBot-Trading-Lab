@@ -7,7 +7,7 @@ fetch first, fast-forward only, never force push or merge automatically.
 
 Session 1 is a provider qualification scaffold, not an all-market scanner.
 External services compute broad history. No compulsory all-symbol candle store,
-detector engine, scheduler, trading credentials, orders, Freqtrade admin access,
+broad local detector engine, scheduler, trading credentials, orders, Freqtrade admin access,
 config changes or trading DB access. Use public, allowlisted research operations.
 Stop denied 403/451 routes; do not change location or proxy to evade restrictions.
 
@@ -29,3 +29,16 @@ independent source accuracy, quiet-tail qualification and scheduling stay gated;
 do not infer production qualification from the finite width probe. Do not begin
 Session 3 without a new owner instruction. Read docs/implementation/SESSION_02_RUNBOOK.md and the
 latest PROGRESS entry for the exact owner-snapshot format and handoff.
+
+
+Session 3 was explicitly authorized on CODEX_LOCAL_EXCEPTION. Official public
+Binance access succeeded directly; the historical Cloud denial remains a
+host-specific restriction, never permission to bypass it. Read
+`docs/implementation/SESSION_03_RUNBOOK.md` and `SESSION_03_NUMERICS.md` plus the
+latest PROGRESS entry. CLI `scan now` refreshes live official data automatically;
+`scan qualify` is a bounded explicit 50+50+7 / five-selected-symbol probe.
+Selected causal trial primitives and the tiny metadata ledger are implemented;
+all production CORE/family/method flags remain disabled. Preserve known ATR seed
+mismatch and Unicode targeted-tool errors. Do not infer broad qualification from
+135 passing offline tests. Next Cloud work fetches the exact pushed Local SHA
+and rechecks its own lawful access; never retry a denied route to change location.

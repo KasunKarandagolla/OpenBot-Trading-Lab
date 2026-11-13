@@ -15,7 +15,7 @@ def load_config():
 
 
 def validate_config(config):
-    if config.get("schema_version") != "openbot.discovery-specs.v1" or config.get("session") != 2:
+    if config.get("schema_version") != "openbot.discovery-specs.v1" or config.get("session") != 3:
         raise ContractError("CONFIG_VERSION")
     if config.get("policy") != {
         "external_first": True, "context_policy": "ADVISORY_NON_VETO", "trade_authorization": False,
@@ -66,6 +66,8 @@ def validate_config(config):
                 or column["id"] != "NORMALIZED_WIDTH_3" or column["production_enabled"] is not False
                 or column["independent_source_accuracy"] != "UNVERIFIED"):
             raise ContractError("UNQUALIFIED_FORMULA_PROMOTION")
+    from .method_registry import validate_method_contracts
+    validate_method_contracts(config)
     return {"status": "VALID", "families": 9, "methods": 31,
             "manifest_sha256": digest(MANIFEST.read_bytes()), "detectors_enabled": 0,
             "release": discovery["release"], "full_core_packs_enabled": 0}

@@ -143,6 +143,9 @@ def official_snapshot(payload, *, manifest, content_hash, received_at):
         if mismatch:
             excluded[native] = "INELIGIBLE_" + mismatch.upper()
             continue
+        if row.get("underlyingType") in {"INDEX", "PREMARKET", "COMMODITY", "STOCK"}:
+            excluded[native] = "INELIGIBLE_UNDERLYINGTYPE_" + row["underlyingType"]
+            continue
         unsupported = [key for key in ["contractType", "quoteAsset", "marginAsset", "status"] if row.get(key) is None]
         classification = "CRYPTO" if row.get("underlyingType") == "COIN" else None
         if classification is None:
@@ -197,7 +200,10 @@ def official_snapshot(payload, *, manifest, content_hash, received_at):
             identity_status="EXCHANGE_VERIFIED" if verified else "UNVERIFIED",
             trading_status=row.get("status"), underlying_class=classification,
             source_id=manifest["source_kind"], captured_at_utc=manifest["captured_at_utc"],
-            unsupported_fields=tuple(unsupported))
+            unsupported_fields=tuple(unsupported),
+            exchange_rules=tuple(json.loads(json.dumps(filters))),
+            listing_metadata={key: row[key] for key in ("baseAsset", "pair", "onboardDate", "deliveryDate",
+                "pricePrecision", "quantityPrecision", "underlyingType", "underlyingSubType") if key in row})
         instruments.append(instrument)
         (eligible if verified else provisional).append(native)
     complete = manifest["complete_exchange_info"]

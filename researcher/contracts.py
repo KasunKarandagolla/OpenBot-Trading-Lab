@@ -5,7 +5,7 @@ from decimal import Decimal
 from enum import StrEnum
 import hashlib
 import json
-import re
+import unicodedata
 from typing import Any, TypedDict
 
 
@@ -67,7 +67,12 @@ def number(value: Any, *, positive: bool = False) -> Decimal:
 
 
 def symbol(value: str) -> str:
-    if not isinstance(value, str) or not re.fullmatch(r"[A-Z0-9_]{2,32}", value):
+    # Preserve native Unicode spellings; never normalize, uppercase or transliterate.
+    # Binance's current COIN inventory contains Han-script contract names.
+    if (not isinstance(value, str) or not 2 <= len(value) <= 32
+            or any(not (c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+                        or unicodedata.name(c, "").startswith("CJK UNIFIED IDEOGRAPH-"))
+                   for c in value)):
         raise ContractError("EXACT_NATIVE_SYMBOL_REQUIRED")
     return value
 
@@ -104,6 +109,8 @@ class Instrument:
     source_id: str | None = None
     captured_at_utc: str | None = None
     unsupported_fields: tuple[str, ...] = ()
+    exchange_rules: tuple[dict, ...] = ()
+    listing_metadata: dict = field(default_factory=dict)
 
     def __post_init__(self):
         symbol(self.native_symbol)

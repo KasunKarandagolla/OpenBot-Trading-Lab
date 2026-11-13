@@ -1,5 +1,134 @@
 # OpenBot external-first Market Researcher — progress
 
+## Session 3 — Local live APIs and causal intelligence (2026-11-13)
+
+**Environment: CODEX_LOCAL_EXCEPTION. Delivered functional increment; full remote
+CORE/production structural qualification and Session 4 readiness remain PARTIAL.**
+The owner explicitly authorized Local execution and Session 3 implementation.
+Started from the latest verified remote
+`35f459e42b17a05ec041db71614f82624acf3eb8`, still the last reported successful
+commit. Fresh checkout was clean; fetched all remote branches and confirmed
+fast-forward. No existing user changes were overwritten, reset or force-pulled.
+One writer / same integration branch / PR #24 remains draft. Immutable blueprint
+and plan hashes remain unchanged. The exact final SHA/CI are in the delivery
+handoff; no commit can contain its own hash.
+
+### Implemented and independently source-verified
+
+- Official normal-host Binance public access succeeded directly with HTTP 200;
+  no proxy/VPN, alternate market-data host, geographic switching, API credential,
+  paid service, order/account mutation, scheduler or trading DB access.
+- `python3 -m researcher scan now` automatically fetches current exchangeInfo,
+  market-wide 24h ticker, bookTicker and premiumIndex, using the existing
+  inventory/market/runtime contracts. `scan live` is an alias. Manual JSON is no
+  longer required for ordinary runs; the explicitly supplied owner-snapshot
+  compatibility path remains available. `scan qualify` is a separately bounded
+  explicit probe, not implicit production promotion.
+- Verified universe: **946 inventory rows, 519 eligible COIN USDT perpetuals,
+  427 exclusions, zero provisional rows**. Fixed exact native Unicode symbols,
+  official INDEX/PREMARKET class exclusion and ticker minute-boundary window
+  handling. Preserve full exchange filters/listing metadata, exact status,
+  settlement/tick/quantity rules and optional facts; never infer multipliers.
+- Two genuine disjoint lower/medium 50-symbol partitions plus a seven-name
+  footer: **107/107 requested/returned/scalar-evaluated on each timeframe**, no
+  missing/failed IDs or truncation. **13 fillers excluded per footer**. Full
+  exchange denominator stays 519; 107 observations do not certify full-market
+  structure or complete per-row remote history.
+- Five selected symbols × 1H/15M, 300 closed official klines each; 10 small
+  samples, no market-wide candle store. **46 remote formula evaluations / 920
+  numeric comparisons; 42 evaluations / 840 values match** independent Binance
+  references. Close/high/low, base volume, width, previous extrema, lag, median,
+  odd q=.5 and BTC taker-buy/delta evidence improve on the unchanged prior
+  **167 same-Basis-input arithmetic comparisons**.
+- Request/time/byte/query/source hashes, original source time, actual bar-open
+  and inclusive/exclusive close semantics, native base/USDT units, missingness,
+  quota headers, 25-second timeouts, response/request/sample budgets and short
+  memory caching are explicit. Source/API data never becomes operational config.
+
+### Implemented but awaiting remote/provider qualification
+
+- Shared Decimal verification library: TR/Wilder ATR with explicit seed,
+  normalized width, excluded-current-window historical percentile, efficiency,
+  overlap/displacement, confirmed swings/ladder, frozen level/first obstacle
+  distance, independent touches, quote RVOL, bar aggressor delta, whole-bar Q/V
+  and anchored CVD, aligned relative return and lag-trained beta/residual.
+- Frozen references and trial chronological **F2/F4/F5** rivals; same-reference
+  pressure/excursion/reclaim/opposing attempt/rebreak/two-later-hold semantics.
+  **F5 never comes from no-reclaim F2**. NULL and rival explanations remain.
+- Confirmed swing BOS / CHoCH candidates and FVG birth/mitigation/accepted
+  failure/iFVG opposite-side retest and later invalidation. No institutional,
+  stop-execution, tick-path, predictive or readiness claim is inferred.
+- Compact immutable SQLite metadata/event ledger; stable origin IDs, first
+  recorded availability/scale reuse, chronological/identity enforcement,
+  lifecycle and hypothesis snapshots, atomic rollback and idempotent reopening.
+  Final persistent replay of captured actual selected metadata: **40 references,
+  59 events, 200 hypothesis snapshots, 425,984 bytes**. The capture originally
+  used memory; final persistence replay is labeled retrospective and distinguishes
+  the fixed stable-ID scheme. No candle table or runtime DB is committed.
+- All **F1–F9 and 31 exact blueprint methodologies** remain in one registry,
+  each with role, necessary evidence, calculation dependencies, sequence,
+  interpretation, traps/rivals, invalidation, provider/fidelity and honest state.
+  F1/F3/F6 are **partial formation/primitives**; F7/F8 **primitives only**;
+  F9 **not implemented**. All production detector/CORE flags remain false.
+
+### Actual failures, partial coverage and unsupported methods
+
+- **Four ATR evaluations / 80 values fail blueprint seed equivalence.** Basis
+  matches a first-bar H−L seed; all four alternative-seed and conditional Wilder
+  recurrence checks pass. This remains a production gate, not a rounded-away
+  discrepancy. The passing test suite asserts these actual live failures.
+- `我踏马来了USDT` screen rows succeeded, but targeted Basis `market_candles`
+  failed with HTTP 200 tool errors on both timeframes. Independent Binance
+  samples succeeded. Exact provider support is operation-specific.
+- Qualification current pulse: ticker/premium 519, valid book 516 (three rejected
+  rows). Final normal pulse: ticker 518 (YGGUSDT rejected), book/premium 519.
+  Rejected rows remain visible; no failed row becomes no-opportunity evidence.
+- No eligible contract younger than 30 days existed (youngest onboard date
+  CTUSDT, 2026-10-01). No explicit multiplier metadata was returned. Those
+  real-world qualification classes remain unexercised/unsupported.
+- Full remote CORE, remote causal method packs, all-symbol production history,
+  quota sustainability and arbitrary historical provider replay remain
+  unqualified. **No full-market structural-success claim is made.**
+- True profile/nodes/footprint/absorption/exhaustion/OI/observed forced orders/news
+  remain **blocked by source requirements**. Keepssy stays **DEFINITION_PENDING**;
+  Silver Bullet lacks a qualified primary-source window. Full OB/breaker/EQH,
+  CRT/AMD/OTE and statistical-reversion detectors are **not implemented**.
+- Context interpretation/specialist query planning, room/ranking/shortlist,
+  watch recovery and complete Deep Analyst handoff stay in later packages.
+  BTC/ETH remains non-veto guidance and cannot suppress contrary nominations.
+
+### Measurements and verification
+
+- Qualification: **79 HTTP requests / 2,449,132 response bytes / 96,725 ms summed
+  request time / 188,303 ms wall**, p50/p95 **929/3,413 ms**; 14 Binance / 65 Basis
+  calls, six screens, zero HTTP failures, two HTTP-200 tool errors, no recovery.
+- Final normal automatic run: **9 requests / 1,898,702 bytes / 15,801 ms summed /
+  16,053 ms wall**, p50/p95 **1,574/3,525 ms**, zero HTTP/tool errors, one rejected
+  ticker row. Earlier diagnostics used 14 more requests; **102 explicitly issued
+  provider requests total**. Early unavailable byte/latency observations stay
+  NULL in the diagnostic accounting. No unknown quota is estimated.
+- Actual Binance used-weight headers are retained; Basis charged units absent,
+  cache hits zero. Continuous/hourly/15M sustainable cadence remains unqualified.
+- **135 offline tests passed / 0 failed / 0 skipped**, including the original 80
+  and 55 new numeric/causal/API/integration/recorded-source tests. Append-future,
+  shifted time, pivot timing, missing bars, volume units, warm-up, independent
+  touches, F2/F4/F5 distinctions, FVG/iFVG, F1 false-pullback, shock-without-base,
+  BOS/CHoCH, metadata persistence and contradiction/non-veto cases pass.
+- Config validation passes with 9 families / 31 methods / zero production
+  detectors or full CORE packs enabled. Diff whitespace, immutable reference
+  hashes and outgoing credential/database/personal-data checks pass. No added
+  package dependencies. Evidence/hashes: [Session 3](../../evidence/external-first/session3/README.md).
+
+**Owner assistance required: none for the delivered increment.** Provider limits
+are documented; no paid service, credentials or manual snapshots are requested.
+**Session 4 readiness: PARTIAL.** Proceed with interpretation/query planning only
+within the verified source scope, while resolving remote ATR/CORE semantics and
+operation-specific coverage gates. The next Cloud session must fetch the exact
+pushed Local commit and recheck its own lawful access; Local 200 does not clear
+Cloud's historical 451. Keep PR #24 in draft.
+
+---
+
 ## Session 2 — external discovery implementation (2026-11-13)
 
 **State: working R0 partial-coverage implementation; full-market source

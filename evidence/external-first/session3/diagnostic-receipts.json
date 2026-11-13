@@ -1,0 +1,140 @@
+{
+  "accounting": "All explicitly issued provider requests are counted; unavailable earlier byte/latency measurements stay null, not estimated",
+  "captured_inventory_pulse_diagnostic": {
+    "http_requests": 4,
+    "reason": "Identified all ticker rows rejected by one-second window contract",
+    "receipts": [
+      {
+        "binance_used_weight_1m": 52,
+        "elapsed_ms": 2616,
+        "endpoint": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:16:00.073732+00:00",
+        "response_bytes": 1176965,
+        "response_sha256": "7f0a464f20083e4a1ce51f3f380d1fb340fce649e309a920757dd328a269a827",
+        "retry_after": null
+      },
+      {
+        "binance_used_weight_1m": 40,
+        "elapsed_ms": 1344,
+        "endpoint": "https://fapi.binance.com/fapi/v1/ticker/24hr",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:16:01.505280+00:00",
+        "response_bytes": 299245,
+        "response_sha256": "b4db2bfdf2ab4ae29c9b5a124c78eb9bca8078a62214b5012ea1ff005be52520",
+        "retry_after": null
+      },
+      {
+        "binance_used_weight_1m": 5,
+        "elapsed_ms": 1620,
+        "endpoint": "https://fapi.binance.com/fapi/v1/ticker/bookTicker",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:16:03.134477+00:00",
+        "response_bytes": 121688,
+        "response_sha256": "3bb15631999f164c25d7ddfdb969d65ea0f3ee17f0f1474a933dd4644e695fdd",
+        "retry_after": null
+      },
+      {
+        "binance_used_weight_1m": 50,
+        "elapsed_ms": 1444,
+        "endpoint": "https://fapi.binance.com/fapi/v1/premiumIndex",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:16:04.546338+00:00",
+        "response_bytes": 210579,
+        "response_sha256": "875db0bbd6c35e7813b66fb72a53f09082bd02fe022f06154dcb046e5d5a1419",
+        "retry_after": null
+      }
+    ]
+  },
+  "cohort_view_failed_run": {
+    "resources": {
+      "api_cache_hits": 0,
+      "basis_charged_units": null,
+      "http_failures": 0,
+      "http_requests": 4,
+      "p50_ms": 1137,
+      "p95_ms": 4157,
+      "response_bytes": 1808463,
+      "sum_request_elapsed_ms": 7424,
+      "sustainable_cadence": "UNQUALIFIED",
+      "wall_elapsed_ms": 7644
+    },
+    "source_faults": [
+      {
+        "code": "PROVIDER_OR_CONTRACT_FAILURE",
+        "failure_class": "ContractError",
+        "phase": "live_run"
+      }
+    ],
+    "transport_receipts": [
+      {
+        "binance_used_weight_1m": 1,
+        "elapsed_ms": 4157,
+        "endpoint": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:22:11.953221+00:00",
+        "response_bytes": 1176965,
+        "response_sha256": "028df7ff548b55c74b338ee69f988eaf0e898260d8dc8e996005c11ca2ac19d0",
+        "retry_after": null
+      },
+      {
+        "binance_used_weight_1m": 41,
+        "elapsed_ms": 1380,
+        "endpoint": "https://fapi.binance.com/fapi/v1/ticker/24hr",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:22:13.443465+00:00",
+        "response_bytes": 299285,
+        "response_sha256": "5203ef511fd8a33defda55d817025c187788b94a8d9b0ff9087878960d9da817",
+        "retry_after": null
+      },
+      {
+        "binance_used_weight_1m": 5,
+        "elapsed_ms": 750,
+        "endpoint": "https://fapi.binance.com/fapi/v1/ticker/bookTicker",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:22:24.365666+00:00",
+        "response_bytes": 121636,
+        "response_sha256": "3e4779a8e42062f3b3625c85b337893ca5939820b7e5f86fd959db92eb056f18",
+        "retry_after": null
+      },
+      {
+        "binance_used_weight_1m": 51,
+        "elapsed_ms": 1137,
+        "endpoint": "https://fapi.binance.com/fapi/v1/premiumIndex",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:22:15.446745+00:00",
+        "response_bytes": 210577,
+        "response_sha256": "1e2ed51fc2ca0bee30c685d6bcbf5570920e1bfd4314a075c55293935d938414",
+        "retry_after": null
+      }
+    ]
+  },
+  "first_integration_diagnostic": {
+    "elapsed_ms": null,
+    "http_requests": 4,
+    "reason": "Old ticker window contract rejected rows; response receipts not retained",
+    "response_bytes": null
+  },
+  "initial_direct_access_probe": {
+    "date_header_utc": "2026-11-13T08:50:09Z",
+    "elapsed_ms": null,
+    "endpoint": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+    "http_status": 200,
+    "normal_direct_route": true,
+    "response_bytes": 1176965
+  },
+  "ticker_inspection": {
+    "elapsed_ms": null,
+    "http_requests": 1,
+    "reason": "Observed official minute-aligned openTime",
+    "response_bytes": 299362
+  }
+}

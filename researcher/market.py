@@ -36,12 +36,20 @@ def normalize_market(rows, *, kind, inventory, captured_at, response_hash):
             values = {}
             if kind == "ticker":
                 start = milliseconds(row["openTime"])
-                if not 86399 <= (utc(source_time) - utc(start)).total_seconds() <= 86401:
+                window_seconds = (utc(source_time) - utc(start)).total_seconds()
+                # Official rolling ticker openTime is minute-aligned; actual
+                # windows extend up to one minute beyond a nominal 24 hours.
+                # Preserve the returned interval, never relabel synchronized bars.
+                if not 86399 <= window_seconds < 86460:
                     raise ContractError("ROLLING_24H_WINDOW_MISMATCH")
                 values = {k: number(row[k]) for k in ["priceChangePercent", "quoteVolume", "volume"]}
                 values["lastPrice"] = number(row["lastPrice"], positive=True)
                 if values["quoteVolume"] < 0 or values["volume"] < 0:
                     raise ContractError("NEGATIVE_VOLUME")
+                values["window_start_utc"] = start
+                values["window_seconds"] = window_seconds
+                values["quote_volume_unit"] = "USDT"
+                values["base_volume_unit"] = "NATIVE_BASE_ASSET"
             elif kind == "book":
                 bid, ask = number(row["bidPrice"], positive=True), number(row["askPrice"], positive=True)
                 if ask < bid:
