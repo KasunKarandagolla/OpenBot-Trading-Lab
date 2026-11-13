@@ -1,0 +1,600 @@
+{
+  "schema_version": "openbot.discovery-specs.v1",
+  "session": 1,
+  "policy": {
+    "external_first": true,
+    "context_policy": "ADVISORY_NON_VETO",
+    "trade_authorization": false,
+    "max_shortlist": 5,
+    "scheduling_enabled": false,
+    "whole_market_history_enabled": false
+  },
+  "references": {
+    "blueprint_sha256": "cf7a58fd9ed5f5d1010673406c26a405c8112b907216a47f88a9ebee1bd3d45c",
+    "plan_sha256": "245591eea0f92cd185c51db3420043031c11c1d941f91ecdb31fd64a34e0c232"
+  },
+  "providers": {
+    "basis": {
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "authentication": "NONE",
+      "key_setup": "DEFERRED_UNTIL_AUTH_CONTRACT_VERIFIED",
+      "evidence": "LIVE_TESTED_NARROW",
+      "operations": {
+        "market_candles": {
+          "enabled": true,
+          "feasibility": "TARGETED_ONLY",
+          "scope": "provider-reported BINANCE futures; exchange identity UNVERIFIED",
+          "timeframes": [
+            "1h",
+            "15m"
+          ],
+          "oracle_status": "INDEPENDENT_SOURCE_BLOCKED"
+        },
+        "formula_evaluate": {
+          "enabled": false,
+          "feasibility": "UNVERIFIED"
+        },
+        "screener_run": {
+          "enabled": false,
+          "feasibility": "UNVERIFIED"
+        },
+        "orderflow_read": {
+          "enabled": false,
+          "feasibility": "UNVERIFIED",
+          "schema_inspected": true
+        }
+      },
+      "free_automation_terms": "DOC_CONFIRMED_2026-11-13",
+      "documented_keyless_daily_calls": 1000,
+      "documented_free_key_daily_calls": 10000,
+      "observed_charged_units": null,
+      "minute_limit": null,
+      "continuous_cadence_qualified": false
+    },
+    "binance": {
+      "endpoint": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+      "authentication": "NONE",
+      "evidence": "BLOCKED",
+      "http_status": 451,
+      "enabled": false,
+      "retry_policy": "STOP_ROUTE_NO_BYPASS"
+    }
+  },
+  "families": [
+    {
+      "id": "F1",
+      "name": "Controlled trend continuation / pullback",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F1"
+    },
+    {
+      "id": "F2",
+      "name": "Breakout/breakdown, acceptance and retest",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F2"
+    },
+    {
+      "id": "F3",
+      "name": "Compression-to-expansion or momentum continuation with room",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F3"
+    },
+    {
+      "id": "F4",
+      "name": "Liquidity sweep / failed-break reversal",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F4"
+    },
+    {
+      "id": "F5",
+      "name": "Failed reversal / sweep continuation (explicitly distinct from F2)",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F5"
+    },
+    {
+      "id": "F6",
+      "name": "Range rotation / auction and true-profile value interaction",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F6"
+    },
+    {
+      "id": "F7",
+      "name": "VWAP / value-based mean reversion",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F7"
+    },
+    {
+      "id": "F8",
+      "name": "Relative strength / weakness with local structural consequence",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F8"
+    },
+    {
+      "id": "F9",
+      "name": "Post-shock / post-liquidation stabilization or second-leg opportunity",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F9"
+    }
+  ],
+  "methods": [
+    {
+      "id": "M01",
+      "name": "Confirmed swings, HH/HL/LH/LL",
+      "roles": "SHARED, INITIATE",
+      "observable_definition": "Confirmed ladder or protected high/low; structure near a consequential reference",
+      "caveat": "Required `known_at`, enough actual previous pivots; no retroactive ZigZag",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M02",
+      "name": "BOS / CHoCH / MSS",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "First accepted buffered close through a pre-known comparable swing; opposing break suggests shift, displacement + prior context qualifies MSS trial",
+      "caveat": "Wick/noise is not BOS; multi-timeframe and ladder context required",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M03",
+      "name": "Horizontal S/R, supply/demand",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "Separated pre-known visits, impulsive response, approach to still-valid area",
+      "caveat": "Zone source/age/confirmed events; do not assume hidden orders",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M04",
+      "name": "EQH/EQL / inferred liquidity pool",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "At least two separated confirmed pivots within frozen ATR/tick tolerance; revisit/sweep proximity",
+      "caveat": "Inferred stop concentration, not recorded stop orders",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M05",
+      "name": "Liquidity sweep / reclaim",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "Excursion and ordered close back through same frozen boundary",
+      "caveat": "F4/F5/F6 rivals; intrabar ordering not inferred from OHLC",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M06",
+      "name": "Order Block (OB) candidate",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "Last opposite candle in a small predeclared base immediately preceding meaningful displacement + BOS; birth known **at BOS**, then unconsumed zone approach",
+      "caveat": "Pre-register wick/body/full-candle bounds and base length; pattern does not prove an institutional order",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M07",
+      "name": "Breaker / role-flip",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "Existing valid OB/reference **accepted through**, followed by later opposite-side approach/retest",
+      "caveat": "Requires same original zone ID and failure order, not a newly invented box",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M08",
+      "name": "Fair Value Gap (FVG)",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "Bullish 3-bar **non-overlap** `L_t > H_(t-2)`, bearish `H_t < L_(t-2)`; middle displacement and min width qualify meaningful subclass",
+      "caveat": "Zone born at close `t`, not a promise of future fill, no inference of absent trades",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M09",
+      "name": "Inverse FVG (iFVG)",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "Previously established FVG accepted through distal edge, then later tested from other side",
+      "caveat": "Must reference same gap, not arbitrary inverse color",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M10",
+      "name": "Mitigation/zone revisits",
+      "roles": "SHARED, DISCRIMINATE",
+      "observable_definition": "First/subsequent visits to a pre-known OB/FVG/S&D zone; penetration, response, accepted failure",
+      "caveat": "Touch ≠ unfilled institutional orders; accepted breach changes rival setup",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M11",
+      "name": "OTE",
+      "roles": "CONTEXT, targeted INITIATE only when independent structure",
+      "observable_definition": "Frozen confirmed impulse `[A,B]`, price retraces trial `62%–79%` band **plus** real zone/structure",
+      "caveat": "Fibonacci alone adds no independent proof, no self-fulfilling claim",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M12",
+      "name": "Candle Range Theory (CRT) variant",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "**Preselected** completed 1H/4H reference candle `[L0,H0]`; later edge excursion, reclaim and structural initiative toward opposite reference",
+      "caveat": "Exact reference selection must precede outcome; variants differ; do not label all candle sweeps universally CRT",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M13",
+      "name": "PO3 / AMD prototype",
+      "roles": "TARGETED/INITIATE when qualified",
+      "observable_definition": "Predeclared session balance → boundary excursion → reclaim → later opposing displacement/acceptance",
+      "caveat": "Crypto session definition is experimental; “manipulation” is a label for measured excursion, **not intent**",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M14",
+      "name": "Silver Bullet",
+      "roles": "TARGETED method subclass",
+      "observable_definition": "Credible primary-source time window + independent FVG/displacement/liquidity sequence, strict timezone/DST",
+      "caveat": "Do not invent canonical window or assume US equities schedule predictive for 24/7 crypto; C1 trial of 10–11am NY is **not validated**; outside-window generic FVG remains eligible",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M15",
+      "name": "Keepssy Reversal Model",
+      "roles": "DEFINITION_PENDING",
+      "observable_definition": "None until primary-source exact rules supplied and reconciled",
+      "caveat": "Do not manufacture formula, rank, or method-specific signals",
+      "status": "DEFINITION_PENDING",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M16",
+      "name": "Auction Market Theory",
+      "roles": "INITIATE, SHARED, DISCRIMINATE",
+      "observable_definition": "Balance/imbalance, value-edge test, acceptance/rejection, failed auction, price discovery, value migration",
+      "caveat": "Auction language should identify actually measured price/value processes",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M17",
+      "name": "Volume Profile POC/VAH/VAL",
+      "roles": "INITIATE where TRUE, TARGETED",
+      "observable_definition": "Verified price-bin executed-volume distribution and zone approach; compare fixed complete sessions",
+      "caveat": "Composite vs Binance-only and true vs proxy must appear in field name; complete window/binning required",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M18",
+      "name": "HVN/LVN / naked POC",
+      "roles": "INITIATE if TRUE, TARGETED",
+      "observable_definition": "Documented node extremum/local minima and first visit to pre-known unfinished reference",
+      "caveat": "Smoothing, tie, interval, venue/time changes; a table of POC/VAH/VAL alone cannot certify nodes",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M19",
+      "name": "Session/anchored VWAP",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "Valid anchor, later price/value extension/reclaim, value migration or rejection",
+      "caveat": "Exact Q/V first moment for complete bars where qualified; genuine anchor known-at and reset; proxy kept separate",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M20",
+      "name": "Statistical reversion",
+      "roles": "DISCRIMINATE, INITIATE only with conditional regime",
+      "observable_definition": "Past-only distribution of residuals, excursion, later failed progress, space to actual value",
+      "caveat": "Normalized extension alone not a standalone fade; no fake normality assumption",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M21",
+      "name": "Real trade-side delta/CVD",
+      "roles": "INITIATE on supported sources, DISCRIMINATE otherwise",
+      "observable_definition": "Timed, anchored price-vs-flow divergence, initiative/resistance at pre-known reference",
+      "caveat": "Bar-delta vs true price-bin/sequence separated; spot/perp and venue identity",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M22",
+      "name": "Footprint diagonal imbalance",
+      "roles": "TARGETED, specialist INITIATE on supported instruments",
+      "observable_definition": "Valid price-bin executed buy vs adjacent-bin executed sell ratio, declared min volume and ≥3 adjacent bins as **trial** stack",
+      "caveat": "Full coverage/bin/tick and zero denominator policy. Vendor may use different diagonal convention",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M23",
+      "name": "Absorption",
+      "roles": "TARGETED, DISCRIMINATE",
+      "observable_definition": "Repeated aggressive executed activity near a level **with limited price progress**, adequate tape, later response",
+      "caveat": "Cannot infer from OI or static book wall; requires real executed trade/price response and complete enough window",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M24",
+      "name": "Aggression exhaustion",
+      "roles": "TARGETED, DISCRIMINATE",
+      "observable_definition": "Declining price progress and aggressive flow across comparable repeated attempts under valid tape history",
+      "caveat": "Decline in volume alone not exhaustion; possible delayed breakout remains rival",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M25",
+      "name": "Order-book depth / walls",
+      "roles": "CONTEXT, TARGETED",
+      "observable_definition": "Current displayed depth within stated bps, imbalance, spread/wall appearance/removal if time series complete",
+      "caveat": "Static snapshot does not show historical replenishment; no spoof/iceberg intent claim",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M26",
+      "name": "Open interest",
+      "roles": "CONTEXT, DISCRIMINATE, specialist INITIATE for shocks",
+      "observable_definition": "Native/unit-aligned ΔOI with price, funding and actual structure",
+      "caveat": "Does not identify newly opening longs vs shorts; coin-wide aggregates are not exact Binance perps",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M27",
+      "name": "Funding / basis",
+      "roles": "CONTEXT, TARGETED",
+      "observable_definition": "Source rate/interval percentile, extreme changes, basis dislocations and timing",
+      "caveat": "Carry varies by venue/time, crowding can persist; no automatic reversal rule",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M28",
+      "name": "Reported liquidations",
+      "roles": "INITIATE F9 when covered, TARGETED",
+      "observable_definition": "Covered forced-order observations during shock, source sampling and currency units",
+      "caveat": "Sampled/not complete; modeled liquidation level ≠ actual execution",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M29",
+      "name": "Relative strength and sectors",
+      "roles": "INITIATE, CONTEXT",
+      "observable_definition": "Persistent lag-trained residual, or broad cheap proxy followed by local structure",
+      "caveat": "Independent strength needs aligned data, not only top-% gain",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M30",
+      "name": "Volatility/market breadth",
+      "roles": "CONTEXT, SHARED, INITIATE for shock/expansion",
+      "observable_definition": "BTC/ETH regime, cross-sectional dispersion, unusual own historic quietness and shock",
+      "caveat": "Macro context guides attention, never disables an altcoin method",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    },
+    {
+      "id": "M31",
+      "name": "News/events/catalysts",
+      "roles": "CONTEXT, targeted INITIATE",
+      "observable_definition": "Source-verified scheduled event or asset-specific announcement with usable time",
+      "caveat": "External text is untrusted; no causal proof solely from temporal coincidence",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2"
+    }
+  ],
+  "qualification_formulas": {
+    "close": {
+      "expression": "close",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "high": {
+      "expression": "high",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "low": {
+      "expression": "low",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "volume": {
+      "expression": "volume",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "width": {
+      "expression": "(highest(high,3)-lowest(low,3))/close",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "prior_high": {
+      "expression": "highest(high[1],3)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "prior_low": {
+      "expression": "lowest(low[1],3)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "lag": {
+      "expression": "lag(close,1)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "median": {
+      "expression": "median(close,3)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "quantile": {
+      "expression": "quantile(close,3,0.5)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "atr": {
+      "expression": "atr(14)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "prior_compare": {
+      "expression": "close>close[1]",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "no_event_bars": {
+      "expression": "bars_since(close<0)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "no_event_value": {
+      "expression": "value_when(close<0,close,0)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "flow_identity": {
+      "expression": "delta-(2*buy_volume-volume)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    }
+  },
+  "packs": {
+    "CORE_1H": {
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "reason": "quiet-tail and independent exchange oracle blocked"
+    },
+    "CORE_15M": {
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "reason": "quiet-tail and independent exchange oracle blocked"
+    },
+    "METHOD_STRUCTURE": {
+      "enabled": false,
+      "status": "UNVERIFIED"
+    },
+    "METHOD_AUCTION_VALUE": {
+      "enabled": false,
+      "status": "UNVERIFIED"
+    },
+    "RELATIONSHIP": {
+      "enabled": false,
+      "status": "UNVERIFIED"
+    },
+    "DERIV_SPECIALIST": {
+      "enabled": false,
+      "status": "UNVERIFIED"
+    }
+  },
+  "qualification_failure_expression": "quantile(close[1],1000,0.2)",
+  "frameworks": {
+    "SMC_ICT": {
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "method_ids": [
+        "M01",
+        "M02",
+        "M03",
+        "M04",
+        "M05",
+        "M06",
+        "M07",
+        "M08",
+        "M09",
+        "M10",
+        "M11",
+        "M12",
+        "M13",
+        "M14",
+        "M15"
+      ],
+      "spec": "blueprint §9.1–9.2; observable components only, no intent claims"
+    }
+  }
+}

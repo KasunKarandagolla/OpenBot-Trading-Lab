@@ -1,0 +1,52 @@
+{
+  "label": "screen_poison_footer",
+  "request": {
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "id": "screen_poison_footer",
+    "params": {
+      "name": "screener_run",
+      "arguments": {
+        "exchange": "binance",
+        "market": "futures",
+        "quote": "USDT",
+        "manualSymbols": [
+          "BTCUSDT",
+          "ETHUSDT"
+        ],
+        "universeSize": 20,
+        "timeframe": "1h",
+        "lookback": 300,
+        "logic": "any",
+        "limit": 60,
+        "rules": [
+          {
+            "left": {
+              "kind": "formula",
+              "expression": "(highest(high,3)-lowest(low,3))/close"
+            },
+            "operator": "atOrAbove",
+            "right": 0
+          },
+          {
+            "left": {
+              "kind": "formula",
+              "expression": "quantile(close[1],1000,0.2)"
+            },
+            "operator": "above",
+            "right": 0
+          }
+        ]
+      }
+    }
+  },
+  "status": 200,
+  "bytes": 377,
+  "response_sha256": "12d41c4235309c68250220316f07c2e1a17c97fd80d9f918ec759677d5582475",
+  "elapsed_ms": 2196,
+  "received_at_utc": "2026-11-13T05:21:18.268538+00:00",
+  "safe_headers": {
+    "content-type": "application/json",
+    "date": "Fri, 13 Nov 2026 05:21:18 GMT"
+  }
+}

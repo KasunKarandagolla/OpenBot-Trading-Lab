@@ -1,0 +1,166 @@
+{
+  "http_receipts": [
+    {
+      "elapsed_ms": 542,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:32:14.459590+00:00",
+      "response_bytes": 4022,
+      "response_sha256": "aada727f47b586edc974a4bd213791bc54bb638a0f1be6965bb39982470227f1",
+      "retry_after": null
+    },
+    {
+      "elapsed_ms": 477,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 202,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:32:14.937067+00:00",
+      "response_bytes": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retry_after": null
+    },
+    {
+      "elapsed_ms": 566,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:32:15.502700+00:00",
+      "response_bytes": 68090,
+      "response_sha256": "98b5f49997dbbb9e1a2733fc0ba75286cca94e9dbea5e38ee8802338efb8e674",
+      "retry_after": null
+    },
+    {
+      "elapsed_ms": 2586,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:32:18.095033+00:00",
+      "response_bytes": 9077,
+      "response_sha256": "a6012326c07bf6c91d3d67605217593f352bf88a4449a858e2fde19c13515bb2",
+      "retry_after": null
+    },
+    {
+      "elapsed_ms": 1671,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:32:19.770006+00:00",
+      "response_bytes": 356,
+      "response_sha256": "311bb805837f5b3930770c3797dc95f132c523e6c47c2e1b63c853cfe1e6eed9",
+      "retry_after": null
+    },
+    {
+      "elapsed_ms": 1653,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:32:21.424059+00:00",
+      "response_bytes": 9077,
+      "response_sha256": "0031abd3fb1cb090b1f6fbc6b6493077d7b7a24b340a273a0f492acab34f7502",
+      "retry_after": null
+    }
+  ],
+  "independent_source_oracle": "BLOCKED_HTTP_451",
+  "outcomes": [
+    {
+      "probe": "finite",
+      "receipt": {
+        "arguments": {
+          "exchange": "binance",
+          "limit": 60,
+          "logic": "any",
+          "lookback": 300,
+          "manualSymbols": [
+            "BTCUSDT",
+            "ETHUSDT"
+          ],
+          "market": "futures",
+          "quote": "USDT",
+          "rules": [
+            {
+              "left": {
+                "expression": "(highest(high,3)-lowest(low,3))/close",
+                "kind": "formula"
+              },
+              "operator": "atOrAbove",
+              "right": 0
+            }
+          ],
+          "timeframe": "1h",
+          "universeSize": 20
+        },
+        "elapsed_ms": 2586,
+        "endpoint": "https://www.basischarts.com/api/mcp",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T05:32:18.095033+00:00",
+        "response_bytes": 9077,
+        "response_sha256": "a6012326c07bf6c91d3d67605217593f352bf88a4449a858e2fde19c13515bb2",
+        "retry_after": null,
+        "stored_object_sha256": "ccce245723f8d045499edab580a46bc20eefaedcccea2e1c6162d3b75a29d911",
+        "tool": "screener_run"
+      },
+      "status": "LIVE_TESTED_NARROW"
+    },
+    {
+      "code": "MCP_TOOL_ERROR",
+      "probe": "poison",
+      "receipt": {
+        "elapsed_ms": 1671,
+        "endpoint": "https://www.basischarts.com/api/mcp",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T05:32:19.770006+00:00",
+        "response_bytes": 356,
+        "response_sha256": "311bb805837f5b3930770c3797dc95f132c523e6c47c2e1b63c853cfe1e6eed9",
+        "retry_after": null
+      },
+      "status": "FAILED"
+    },
+    {
+      "probe": "recovery",
+      "receipt": {
+        "arguments": {
+          "exchange": "binance",
+          "limit": 60,
+          "logic": "any",
+          "lookback": 300,
+          "manualSymbols": [
+            "BTCUSDT",
+            "ETHUSDT"
+          ],
+          "market": "futures",
+          "quote": "USDT",
+          "rules": [
+            {
+              "left": {
+                "expression": "(highest(high,3)-lowest(low,3))/close",
+                "kind": "formula"
+              },
+              "operator": "atOrAbove",
+              "right": 0
+            }
+          ],
+          "timeframe": "1h",
+          "universeSize": 20
+        },
+        "elapsed_ms": 1653,
+        "endpoint": "https://www.basischarts.com/api/mcp",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T05:32:21.424059+00:00",
+        "response_bytes": 9077,
+        "response_sha256": "0031abd3fb1cb090b1f6fbc6b6493077d7b7a24b340a273a0f492acab34f7502",
+        "retry_after": null,
+        "stored_object_sha256": "749a52ae79759f2d606f847b54b566f144554e03c1c9542efa9723e782af077c",
+        "tool": "screener_run"
+      },
+      "status": "LIVE_TESTED_NARROW"
+    }
+  ],
+  "profile": "footer",
+  "qualification": "UNVERIFIED",
+  "quiet_tail": "BLOCKED_CURRENT_INVENTORY",
+  "trade_authorization": false
+}
