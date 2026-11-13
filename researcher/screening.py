@@ -5,6 +5,7 @@ strategy predicates. Full CORE requirements remain visible and disabled.
 """
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal as D
 import time
 from typing import Protocol
 
@@ -41,6 +42,7 @@ class RemotePack:
     precision_absolute: str
     supported_symbols: tuple[str, ...]
     full_core_qualified: bool = False
+    columns: tuple = ()
 
     @property
     def formula_hash(self):
@@ -87,8 +89,9 @@ class BasisScreenSource:
         args = {"exchange": "binance", "market": "futures", "quote": "USDT",
             "manualSymbols": list(names), "universeSize": 20 if len(names) <= 20 else 50,
             "timeframe": pack.timeframe, "lookback": 300, "logic": "all", "limit": 60,
-            "rules": [{"left": {"kind": "formula", "expression": pack.expression},
-                       "operator": "atOrAbove", "right": 0}]}
+            "rules": [{"left": {"kind": "formula", "expression": c[1]},
+                       "operator": "atOrAbove", "right": 0}
+                       for c in (pack.columns or ((pack.column_id,pack.expression,pack.units,pack.required_closed_bars),))]}
         before = len(self.client.http.receipts)
         try:
             data = self.client.call("screener_run", args)
@@ -164,6 +167,8 @@ def normalize_screen(names, data, metadata, *, pack, instruments, cutoff):
     Aggregate provider counts include fillers. They cannot certify any missing
     requested ID. Truncated partitions contribute zero qualified observations.
     """
+    if pack.columns:
+        return normalize_columns(names,data,metadata,pack=pack,instruments=instruments,cutoff=cutoff)
     if not isinstance(data, dict):
         raise ContractError("SCREEN_SCHEMA")
     rules = data.get("rules")
@@ -226,12 +231,63 @@ def normalize_screen(names, data, metadata, *, pack, instruments, cutoff):
                 "observed_history_bars": None, "precision_absolute": pack.precision_absolute,
                 "window_semantics": "LAST_OUTPUT_BAR; INPUT_HISTORY_NOT_ATTESTED",
                 "strategy_predicate": False})
+            observed[-1]['source_closed_close']=row.get('last')
             valid.append(name)
             cutoffs[name] = end
         except (ContractError, KeyError, TypeError, ValueError):
             failed[name] = "INVALID_READING_SEMANTICS"
     receipt = replace(receipt, evaluated_symbols=tuple(valid), failed_symbols=failed, source_cutoffs=cutoffs)
     return receipt, observed
+
+
+def normalize_columns(names,data,metadata,*,pack,instruments,cutoff):
+    """Export compatible finite columns, reusing the scalar source validator.
+
+    Missing/undefined columns invalidate that row's complete pack. No OR
+    fallback can turn an unavailable input into a false detector result.
+    """
+    if (not isinstance(data,dict) or not isinstance(data.get('rules'),list)
+            or len(data['rules'])!=len(pack.columns) or not isinstance(data.get('results'),list)):
+        raise ContractError('SCREEN_SCHEMA')
+    from .core import CORE, EXPORT_SCALE, export_expression
+    closes=[j for j,c in enumerate(pack.columns) if c[0]=='close' and c[1]==export_expression(CORE['close'].expression)]
+    receipts=[];observed=[]
+    for j,(label,expression,units,history) in enumerate(pack.columns):
+        rows=[]
+        for row in data['results']:
+            if isinstance(row,dict) and row.get('symbol') not in names:
+                # Fillers are never admitted observations. Their unavailable
+                # optional values cannot poison requested-symbol arithmetic.
+                readings=row.get('values',[])
+                rows.append({**row,'values':readings[j:j+1] if isinstance(readings,list) else []})
+                continue
+            if not isinstance(row,dict) or not isinstance(row.get('values'),list) or len(row['values'])!=len(pack.columns):
+                raise ContractError('SCREEN_SCHEMA')
+            projected_row={**row,'values':[row['values'][j]]}
+            if closes:
+                close=number(row['values'][closes[0]]['left'],positive=True)/EXPORT_SCALE
+                if abs(close-number(row['last']))>D('0.0000500001'):
+                    raise ContractError('SOURCE_PRICE_MISMATCH')
+                projected_row['last']=close
+            rows.append(projected_row)
+        projected={**data,'rules':[data['rules'][j]],'results':rows}
+        scalar=replace(pack,columns=(),expression=expression,column_id=label,units=units,required_closed_bars=history)
+        receipt,values=normalize_screen(names,projected,metadata,pack=scalar,instruments=instruments,cutoff=cutoff)
+        if label in CORE and expression==export_expression(CORE[label].expression):
+            values=[{**o,'value':number(o['value'])/EXPORT_SCALE,'encoded_provider_value':o['value'],
+                'export_scale':EXPORT_SCALE,'precision_absolute':'1e-10',
+                'export_rounding':'PROVIDER_4_DECIMALS_BEFORE_SCALE_DECODE'} for o in values]
+            if label=='quote_rvol32':
+                values=[{**o,'value':o['value']-1 if o['value']>0 else None,
+                    'verdict':'SUPPORTED' if o['value']>0 else 'UNKNOWN',
+                    'null_reason':None if o['value']>0 else 'ZERO_QUOTE_VOLUME_BASELINE',
+                    'participation_not_required_for_price_family':True} for o in values]
+        receipts.append(receipt);observed.extend(values)
+    valid=set.intersection(*(set(r.evaluated_symbols) for r in receipts))
+    errors={n:reason for r in receipts for n,reason in r.failed_symbols.items()}
+    receipt=replace(receipts[0],evaluated_symbols=tuple(n for n in names if n in valid),
+                    failed_symbols={n:errors.get(n,'INCOMPLETE_CORE_ROW') for n in names if n not in valid})
+    return receipt,[o for o in observed if o['instrument']['native_symbol'] in valid]
 
 
 def calculation_report(receipt, pack, *, provider_counts=None):
@@ -337,6 +393,11 @@ def safe_error(error):
     # exception's text unless it is one of those fixed codes.
     code = str(error)
     allowed = {
+        'SESSION5_CAPABILITY_BOUNDARY','SOURCE_PRICE_MISMATCH','RESEARCH_DB_CORRUPT',
+        'RESEARCH_DB_CORRUPT_OR_BUSY','RESEARCH_DB_VERSION_UNSUPPORTED','NOT_A_RESEARCH_DATABASE',
+        'RESEARCH_WRITER_BUSY','RESEARCH_SNAPSHOT_CORRUPT','RESEARCH_CUTOFF_REGRESSION',
+        'HISTORY_BEFORE_CURRENT_CONTRACT_LISTING','CONTRACT_IDENTITY_CHANGED',
+        'TARGETED_BOUNDED_REF_REQUIRED',
         'FACT_PROVENANCE', 'BENCHMARK_HISTORY_REQUIRED', 'AMBIGUOUS_CONTEXT_SOURCE',
         'CONTEXT_STRUCTURE_SCHEMA', 'STRUCTURE_CARD_CONTRACT', 'NULL_AND_OPPOSING_RIVAL_REQUIRED',
         'CONFLICTING_STRUCTURE_DUPLICATE', 'AMBIGUOUS_RESEARCH_FACT', 'EVENT_NOT_AVAILABLE',

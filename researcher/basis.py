@@ -74,7 +74,7 @@ def tool_object(result):
 
 
 class BasisMCP:
-    def __init__(self, http=None, *, qualification=False, session4=False):
+    def __init__(self, http=None, *, qualification=False, session4=False, session5=False):
         self.http = http or PublicHTTP()
         self.session = None
         self.counter = 0
@@ -82,6 +82,7 @@ class BasisMCP:
         self.initialized = False
         self.qualification = qualification
         self.session4 = session4
+        self.session5 = session5
 
     def _rpc(self, method, params, *, notification=False):
         self.counter += 1
@@ -135,6 +136,8 @@ class BasisMCP:
         if not self.initialized or name not in READ_TOOLS or name not in self.tools:
             raise ProviderError("RESEARCH_TOOL_NOT_ALLOWED")
         schema = self.tools[name]["inputSchema"]
+        if self.session5 and name=='formula_evaluate' and 'ref' not in arguments:
+            raise ContractError('TARGETED_BOUNDED_REF_REQUIRED')
         if set(arguments) - set(schema.get("properties", {})) or not set(schema.get("required", [])) <= set(arguments):
             raise ContractError("TOOL_ARGUMENT_SCHEMA")
         if name in {"formula_evaluate", "screener_run"}:
@@ -147,6 +150,9 @@ class BasisMCP:
             if self.session4:
                 from .precursors import FEATURES
                 registered.update(f.expression for f in FEATURES.values())
+            if self.session5:
+                from .core import EXPRESSIONS
+                registered.update(EXPRESSIONS)
             expressions = ([arguments["expression"]] if name == "formula_evaluate" else
                            [r.get("left", {}).get("expression") for r in arguments.get("rules", [])])
             if not expressions or any(e not in registered for e in expressions):
@@ -157,7 +163,7 @@ class BasisMCP:
                     raise ContractError("EXPLICIT_SOURCE_REQUIRED")
             if "symbol" in arguments:
                 symbol(arguments["symbol"])
-            if "bars" in arguments and (type(arguments["bars"]) is not int or not 1 <= arguments["bars"] <= (300 if self.session4 and self.qualification else 65)):
+            if "bars" in arguments and (type(arguments["bars"]) is not int or not 1 <= arguments["bars"] <= (300 if (self.session4 or self.session5) and self.qualification else 65)):
                 raise ContractError("TARGETED_HISTORY_LIMIT")
             if name == "formula_evaluate" and arguments.get("includeForming") is not False:
                 raise ContractError("CLOSED_FORMULA_REQUIRED")

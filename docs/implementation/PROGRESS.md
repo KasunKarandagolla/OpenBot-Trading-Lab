@@ -1,3 +1,128 @@
+# Session 5 — durable on-demand remote research (2026-11-14)
+
+**Environment: CODEX_LOCAL. Release gate: PARTIAL.** Explicit owner authorization
+covers this Local session. Starting actual fetched remote feature head:
+`38437c031a007634161edf03f5dde07afd7b9dd0`; local was `5c65978` and was
+fast-forwarded only. Clean baseline, one Local writer, no agents/concurrent Cloud
+writer launched. PR #24 remains draft. No main edits, resets or force operations.
+Immutable blueprint/plan hashes remain unchanged. Delivery SHAs and CI are in the
+final handoff; a commit cannot contain its own SHA.
+
+## What now functions
+
+- One `scan_market_research` path behind ordinary `python3 -m researcher scan now`:
+  automatic official inventory/pulse, frozen source cutoffs, registered remote
+  partitions, independent research questions, BTC/ETH context, bounded causal
+  investigation, current selected economics, source-cited review, watches and
+  atomic metadata. No owner inventory JSON, account key or LLM is required.
+- Reused existing Basis/public Binance clients, PartitionEngine, Decimal numerics,
+  frozen references/events, hypothesis/review/planner and SQLite ledger. No
+  competing scanner, full-market local candle engine, feature history, bot/admin
+  interface, paid/trial service, order route or scheduler was added.
+- SQLite v5 composes savepoints with an outer transaction; immutable reference
+  identity/ATR/availability, idempotent event/hypothesis writes, watch first-seen,
+  scoped last **verified** observations, crash recovery and identity quarantine.
+  Historical snapshots retain coverage/receipts/output hashes and causal metadata;
+  only one current remote scalar export is cached. Repeats store compact deltas.
+- Bounded selected F1/F3/F6/F7/F8/F9 facts now join the existing F2/F4/F5 and
+  FVG/iFVG machinery. Added an executable selected EQH/EQL trial (M04): two
+  confirmed separated pivots, first-pivot frozen ATR/tick tolerance, actual
+  intervening retreat, birth only at second confirmation. Inferred price
+  sensitivity is never witnessed stops. All 31 method statuses remain explicit.
+- Source-backed BTC/ETH 4H/1H ContextCards and synchronized 16-bar remote-return
+  breadth/median/MAD. Context orders questions without direction eligibility;
+  watch/exception/structural budgets and every omitted question remain visible.
+  Sector mapping stays UNKNOWN. No discovery-lift or profitability claim.
+- Fresh selected top-of-book/premium facts may inform review; actual depth, fee
+  tier, slippage/funding bounds, horizon and complete production causal source
+  qualification remain missing. No fictitious READY/FAST or executable entries,
+  stops, targets or probabilities are produced.
+
+## Exact inherited repairs and limits
+
+1. **ATR sampled remedy qualified:** explicit `rma(TR,14)` passes eight identical
+   long starts and eight short starts for BTC/ETH/1000PEPE/quiet FRAX × 1H/15M.
+   Short captures retain initial NULLs, 14-valid-TR seed and next five recurrences.
+   The native `atr(14)` four/80 failures and Session 4 exact-start failures remain
+   rejected regressions. No infinite-history or all-contract seed promise.
+2. **New precision defect fixed:** Basis screen exports round to four decimals.
+   The unscaled trial passes only 35/140 scalar comparisons. Registered ×1e8
+   export/decode and a scaled close preserve small ATRs/prices. Final selected
+   multi-column checks pass **160/160**, including Unicode screen membership and
+   independent official oracle values. Actual source warm-up/window/ties/units
+   are declared. A later positive-event check exposed the zero-offset pressure defect missed by
+   zero-only samples. Both failed trials are retained; explicit current fields now
+   pass 16 tail evaluations / 320 values, including 45 positives. Pressure remains
+   a fixed-window visit proxy, not a complete method predicate.
+3. **Real broad price pass:** fresh inventory **519 eligible / 427 excluded /
+   946 total**; on both 1H and 15M, all 15 columns requested/evaluated/returned
+   **519/519/519**, zero missing/failed in a complete development run. This is
+   historical protocol coverage; its pressure qualification was revoked/repaired
+   after the positive-event check. The final 16-column clean pass is recorded
+   separately. **Full CORE = 0** and
+   **production remote method predicates = 0**. Method/tf denominators and missing
+   specialist/source reasons remain explicit for all 31 methods.
+4. **Failures retained:** first broad run 1H 517/519 (rounded small prices rejected),
+   15M 0/519 (source advanced beyond frozen cutoff plus tool failures); a later
+   run accepted 300/519 and 319/519 amid transient MCP errors. A subsequent full
+   pass accepted both 519/519. No failed response becomes a no-setup observation.
+   One restart crashed on a missing `utc` import; fixed here, transaction recovered;
+   its four earlier successful GETs have no retained byte/latency receipts and
+   are explicitly excluded from measured totals, not hidden.
+5. **Unicode remains operation-specific:** `我踏马来了USDT` screen formulas match
+   independent Binance values, while Basis targeted `market_candles` fails on
+   both tf with HTTP 200/MCP_TOOL_ERROR. Preserve exact native spelling.
+6. **Quote RVOL repaired:** camel-case quoteVolume still fails; the supported
+   quote_volume field matches native quote-volume RVOL in the final oracle. Zero
+   baseline is separately UNKNOWN and cannot veto price families. One unqualified
+   exploratory alias call used a provider-default 999-bar remote window; final
+   client requires bounded references, and qualifying data is <=300 bars.
+   **Still unavailable:** complete CORE, remote ordered method packs, true profile/nodes/footprint,
+   absorption/OI direction/complete liquidations, unspecified primary definitions,
+   dated sectors and sustained quota/rights remain unqualified/unsupported.
+   Young and official multiplier cohorts are not fabricated from symbol names.
+
+## Verification and measured operation
+
+Baseline **184/184** passed before edits. Full suite **212 passed / 0 failed /
+0 skipped**, plus the final 28 Session 5 tests after source/cache refinements.
+Config, immutable hashes and whitespace checks pass. Tests include authentic
+same-start seeds/initial samples, original failures, scaled columns, stale clocks
+and filler exclusion, source/identity/gap safety, first run/repeat/restart,
+crash rollback, corrupt/foreign/future DB rejection, bounded scalar retention,
+zero ATR/volume, new listings, EQH known-at and no fake readiness. Existing tests
+and source fixtures were not weakened. Required clean-pushed-checkout live and
+CI evidence is appended after that execution; development results are not
+relabeled as a clean-checkout test.
+
+Development full pass: **39 HTTP / 4,471,412 response bytes / 109.810 seconds**,
+p50/p95 **3,458/4,901 ms**. Separate-process warm repeat: **4 public GETs / zero
+Basis/history calls / 1,808,644 bytes / 6.342 seconds**; references/events and
+first-seen watches reused. That development ledger reached 9,154,560 bytes before
+final bounded-cache compaction; it is an ignored runtime artifact, not a release
+storage claim. Final fresh-ledger measurements are recorded separately.
+
+Price-return coverage and causal/admission coverage are separate. The measured
+development review retained **44 watches, 0 handoffs, 0 near misses**; zero does
+**not** establish no opportunities. Hundreds of questions remain budget omissions.
+Real request/source hashes and failures are in the
+[Session 5 evidence](../../evidence/external-first/session5/README.md); operation
+and resource scenarios are in the [runbook](SESSION_05_RUNBOOK.md). Gap/outage
+multi-day tests are explicitly **SIMULATED**, not measured live downtime.
+Charged units, daily quota, sustained rights and sustainable cadence are UNKNOWN;
+no automatic schedule was enabled. No orders, account/admin/trading DB access,
+credentials, whole-market candle store or external messages outside the authorized
+GitHub workflow.
+
+**Owner assistance now: NONE for the supported subset.** Session 5 is a useful
+PARTIAL read-only checkpoint, not the complete six-session source/structural exit
+gate. Full CORE/ordered method compiler and source-backed admission/specialist
+qualification remain Sol work; do not move those blockers to Luna. Session 6
+Luna may do bounded operator help/status/report presentation and housekeeping
+while preserving the exact capability gates. Keep PR #24 draft and do not merge.
+
+---
+
 # OpenBot external-first Market Researcher — progress
 
 ## Session 4 — context, evidence investigation and research admission (2026-11-13)

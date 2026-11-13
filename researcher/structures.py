@@ -209,6 +209,41 @@ def swing_references(bars,tick,*,as_of,ttl_seconds=7*86400):
     return refs
 
 
+def equal_level_references(bars,tick,*,as_of):
+    """Selected EQH/EQL trial: two confirmed pivots plus an actual retreat.
+
+    Freeze the first pivot's known ATR; cluster birth is the second pivot's
+    confirmation. These are inferred price-sensitive levels, never stop prints.
+    """
+    from datetime import timedelta
+    from .observations import iso_seconds
+    bars=visible_bars(bars,as_of)
+    if len(bars)<15:return []
+    atr=wilder_atr(bars);swings=confirmed_swings(bars);result=[]
+    for j,second in enumerate(swings):
+        prior=[s for s in swings[:j] if s['kind']==second['kind']]
+        for first in reversed(prior):
+            scale=atr[first['known_index']]
+            if scale is None or scale<=0:continue
+            if abs(first['price']-second['price'])>max(2*tick,D('.15')*scale):continue
+            between=bars[first['index']+1:second['index']]
+            if not between:continue
+            high=second['kind']=='SWING_HIGH'
+            retreat=(min(first['price'],second['price'])-min(b.low for b in between) if high
+                else max(b.high for b in between)-max(first['price'],second['price']))
+            if retreat<D('.5')*scale:continue
+            confirmation=bars[second['known_index']];until=(utc(confirmation.end)+timedelta(days=7)).isoformat()
+            available=confirmation.available_at or confirmation.received_at
+            if utc(available)>utc(until):continue
+            result.append(Reference(confirmation.native_symbol,confirmation.timeframe,second['kind'],
+                min(first['price'],second['price']),max(first['price'],second['price']),scale,tick,
+                1 if high else -1,iso_seconds(bars[first['index']].open_ms//1000),confirmation.end,
+                available,until,(first['pivot_bar_id'],bars[first['known_index']].id,second['pivot_bar_id'],confirmation.id),
+                'EQH_EQL:'+stable_id(first['id'],second['id']),fidelity='INFERRED_LIQUIDITY_PRICE_GEOMETRY'))
+            break
+    return result
+
+
 def swing_breaks(bars,tick,*,as_of):
     bars=visible_bars(bars,as_of)
     refs=swing_references(bars,tick,as_of=as_of)
@@ -313,6 +348,79 @@ def formation_candidates(bars,tick,*,as_of):
     return result
 
 
+def selected_family_facts(bars,tick,*,as_of,benchmark=None):
+    """Source-backed, bounded F1/F3/F6/F7/F8/F9 watch evidence.
+
+    Current historical reconstruction does not establish prospective discovery,
+    first opposing room, profile/footprint or research admission economics.
+    """
+    from .numerics import anchored_value, lag_trained_beta, relative_return, overlap
+    from statistics import median
+    bars=visible_bars(bars,as_of)
+    result=formation_candidates(bars,tick,as_of=as_of)
+    if len(bars)<34:return result
+    atr=wilder_atr(bars);last=bars[-1]
+    # Actual quiet prefixes precede the displacement, with separate subsequent
+    # retention observations. No current low-width flag used as a past state.
+    expansions=[]
+    for i in range(max(160,len(bars)-8),len(bars)):
+        if atr[i-1] is None or atr[i-1]<=0:continue
+        quiet=compression(bars[:i],tick=tick)
+        dp=displacement(bars[i-1],bars[i],atr[i-1],tick)
+        if quiet['past_percentile']<=D('.20') and dp['tr_atr_previous']>=D('1.2') and dp['body_fraction']>=D('.5'):
+            direction=1 if bars[i].close>bars[i].open else -1
+            retained=bool(bars[i+1:]) and all(direction*(b.close-bars[i].open)>0 for b in bars[i+1:])
+            expansions.append({'quiet_known_at':bars[i-1].end,'displacement_known_at':bars[i].end,
+                'retention_known_at':last.end if retained else None,'direction':direction,
+                'quiet_percentile':quiet['past_percentile'],'displacement':dp,
+                'retained':retained,'source_ids':[b.id for b in bars[i-1:]]})
+    result.append({'family':'F3','status':'TARGETED_CHRONOLOGICAL_WATCH','expansions':expansions,
+        'unknowns':['SIGNIFICANT_DECISION_REFERENCE','ROOM','ECONOMICS'],'production_enabled':False})
+    prior=bars[-48:-16];hi=max(b.high for b in prior);lo=min(b.low for b in prior)
+    scale=atr[-17];buffer=max(2*tick,D('.15')*scale)
+    def episodes(edge):
+        count=0;armed=True
+        for b in prior:
+            touch=b.high>=edge-buffer and b.low<=edge+buffer
+            if touch and armed:count+=1;armed=False
+            elif not touch and max(edge-b.high,b.low-edge,D(0))>=D('.5')*scale:armed=True
+        return count
+    er=efficiency(prior);visits=(episodes(lo),episodes(hi));balance=len(prior)==32 and er is not None and er<=D('.35') and min(visits)>=2
+    result.append({'family':'F6','status':'PRICE_ONLY_BALANCE_WATCH','bounds':[lo,hi],
+        'reference_known_at':prior[-1].end,'efficiency':er,'separated_visits':visits,'balance_supported':balance,
+        'current_inside':lo<=last.close<=hi,'history_bars':len(prior),'true_profile':False,'production_enabled':False,
+        'unknowns':['QUALIFIED_ROTATION_RESPONSE','FIRST_OBSTACLE','ECONOMICS']})
+    day=utc(last.end).replace(hour=0,minute=0,second=0,microsecond=0)
+    # If last close is midnight, its bar belongs to the prior UTC session.
+    if int(day.timestamp()*1000)==last.end_ms:
+        from datetime import timedelta
+        day-=timedelta(days=1)
+    session=[b for b in bars if b.open_ms>=int(day.timestamp()*1000)]
+    if session and session[0].open_ms==int(day.timestamp()*1000):
+        value=anchored_value(session,anchor_ms=session[0].open_ms,anchor_known_at=day.isoformat())
+        result.append({'family':'F7','status':'TARGETED_WHOLE_BAR_SESSION_VALUE','anchor':day.isoformat(),
+            'value':value,'extension_atr':(last.close-value['vwap_whole_bars'])/atr[-1] if value['vwap_whole_bars'] is not None and atr[-1]>0 else None,
+            'true_profile':False,'true_weighted_variance':False,'production_enabled':False,
+            'unknowns':['FAILED_DIRECTIONAL_ACCEPTANCE','CONDITIONAL_REVERSION','ROOM','ECONOMICS']})
+    if benchmark is not None and len(benchmark)>=34:
+        result.append({'family':'F8','status':'TARGETED_LAG_TRAINED_RELATIVE','benchmark':'BTCUSDT',
+            'relative_log_return16':relative_return(bars,benchmark),
+            'lag_trained':lag_trained_beta(bars,benchmark),'sector':'UNKNOWN_NO_DATED_MAPPING',
+            'production_enabled':False,'unknowns':['PERSISTENCE','LOCAL_STRUCTURAL_CONSEQUENCE','ROOM','ECONOMICS']})
+    shocks=[]
+    for i in range(max(15,len(bars)-8),len(bars)):
+        if atr[i-1] is None or atr[i-1]<=0:continue
+        dp=displacement(bars[i-1],bars[i],atr[i-1],tick)
+        if dp['tr_atr_previous']<3:continue
+        later=bars[i+1:];stable=len(later)>=2 and all(b.high<=bars[i].high and b.low>=bars[i].low for b in later)
+        shocks.append({'kind':'POST_SHOCK','known_at':bars[i].end,'source_id':bars[i].id,
+            'tr_atr_previous':dp['tr_atr_previous'],'stabilization_supported':stable,
+            'later_closed_bars':len(later),'confirmed_liquidation':False})
+    result.append({'family':'F9','status':'TARGETED_POST_SHOCK_WATCH','shocks':shocks,'production_enabled':False,
+        'unknowns':['COVERED_LIQUIDATIONS','CURRENT_DEPTH','ROOM','ECONOMICS']})
+    return result
+
+
 class ResearchLedger:
     """Append-only metadata/events; immutable snapshots and explicit lifecycle.
 
@@ -327,7 +435,7 @@ class ResearchLedger:
                     or any(x.is_symlink() for x in [p,*p.parents])):
                 raise ContractError("LEDGER_MUST_BE_UNDER_WORK")
             p.parent.mkdir(parents=True,exist_ok=True)
-        self.db=sqlite3.connect(str(path))
+        self.db=sqlite3.connect(str(path),timeout=5)
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.executescript('''
             CREATE TABLE IF NOT EXISTS reference(id TEXT PRIMARY KEY, symbol TEXT NOT NULL, known_at TEXT NOT NULL, body TEXT NOT NULL);
@@ -339,6 +447,21 @@ class ResearchLedger:
         self.db.commit()
 
     def close(self):self.db.close()
+
+    def transaction(self):
+        """Savepoints compose with an outer atomic run transaction."""
+        from contextlib import contextmanager
+        @contextmanager
+        def savepoint():
+            self.db.execute('SAVEPOINT research_metadata')
+            try:
+                yield
+                self.db.execute('RELEASE SAVEPOINT research_metadata')
+            except BaseException:
+                self.db.execute('ROLLBACK TO SAVEPOINT research_metadata')
+                self.db.execute('RELEASE SAVEPOINT research_metadata')
+                raise
+        return savepoint()
 
     def freeze_reference(self,ref):
         """Reuse the first recorded scale/availability for the same origin."""
@@ -365,10 +488,10 @@ class ResearchLedger:
         self.db.execute(f"INSERT INTO {table} (id,{columns},body) VALUES ({','.join('?' for _ in range(len(values)+2))})",
                         (key,*values,body))
 
-    def record(self,ref,events,*,hypotheses=(),cutoff):
+    def record(self,ref,events,*,hypotheses=(),cutoff,snapshot_cutoff=None):
         utc(cutoff)
         if utc(ref.available_at)>utc(cutoff):raise ContractError("REFERENCE_NOT_AVAILABLE")
-        with self.db:
+        with self.transaction():
             self._immutable("reference",ref.id,"symbol,known_at",(ref.native_symbol,ref.known_at),encode(asdict(ref)))
             last=self.db.execute("SELECT max(known_at) FROM event WHERE reference_id=?",(ref.id,)).fetchone()[0]
             prior=utc(last) if last else utc(ref.known_at)
@@ -385,8 +508,10 @@ class ResearchLedger:
                 claimed=set(h.get("supporting_ids",[])+h.get("contradicting_ids",[]))
                 known={x[0] for x in self.db.execute("SELECT id FROM event WHERE reference_id=?",(ref.id,))}
                 if not claimed<=known:raise ContractError("HYPOTHESIS_UNKNOWN_EVIDENCE")
-                key=stable_id(h["id"],cutoff)
-                self._immutable("hypothesis",key,"reference_id,cutoff",(ref.id,cutoff),encode(h))
+                effective=snapshot_cutoff or cutoff
+                utc(effective)
+                key=stable_id(h["id"],effective)
+                self._immutable("hypothesis",key,"reference_id,cutoff",(ref.id,effective),encode(h))
 
     def transition(self,ref,*,state,at):
         if state not in {"CONSUMED","INVALIDATED","EXPIRED"}:raise ContractError("REFERENCE_LIFECYCLE_STATE")
@@ -394,7 +519,7 @@ class ResearchLedger:
         if state=='EXPIRED' and utc(at)<utc(ref.valid_until):raise ContractError("REFERENCE_CAUSAL_TIME")
         previous=self.db.execute("SELECT max(at) FROM lifecycle WHERE reference_id=?",(ref.id,)).fetchone()[0]
         if previous and utc(at)<utc(previous):raise ContractError("LIFECYCLE_TIME_REGRESSION")
-        with self.db:self.db.execute("INSERT OR IGNORE INTO lifecycle VALUES(?,?,?,?)",(stable_id(ref.id,state,at),ref.id,at,state))
+        with self.transaction():self.db.execute("INSERT OR IGNORE INTO lifecycle VALUES(?,?,?,?)",(stable_id(ref.id,state,at),ref.id,at,state))
 
     def active_references(self,at):
         utc(at)

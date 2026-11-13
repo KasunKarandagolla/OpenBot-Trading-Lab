@@ -302,8 +302,8 @@
       "enabled": false,
       "spec": "blueprint §9.1–9.2",
       "implementation": {
-        "state": "NOT_IMPLEMENTED",
-        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "state": "IMPLEMENTED_TRIAL",
+        "execution_scope": "TARGETED_ONLY; TWO_CONFIRMED_PIVOTS_WITH_FROZEN_FIRST_ATR_AND_INTERVENING_RETREAT",
         "dependencies": [
           "confirmed_swings",
           "touch_episodes"
@@ -1535,5 +1535,44 @@
       "specialists": "NO_QUALIFIED_RUNTIME_SOURCE"
     },
     "explicit_atr_trial": "EXACT_SEED_AND_RECURRENCE_MATCH_BTC_1H_15M_ONLY"
+  },
+  "session5": {
+    "release": "PARTIAL_ON_DEMAND_REMOTE_PRICE_PRECURSORS_AND_TARGETED_CAUSAL_RESEARCH",
+    "environment": "CODEX_LOCAL",
+    "qualification_evidence": "evidence/external-first/session5/core-qualification.json",
+    "qualification_sha256": "ce3bebb8f247978d0611fba1f8d962c2ad11714a3e07cc9faa19843f7aea6638",
+    "qualified_price_columns": [
+      "atr_explicit",
+      "width16",
+      "quiet_percentile",
+      "efficiency16",
+      "progress16",
+      "prior_high16",
+      "prior_low16",
+      "upper_distance",
+      "lower_distance",
+      "tr_fraction",
+      "close",
+      "displacement",
+      "body_fraction",
+      "pressure_upper",
+      "pressure_lower",
+      "quote_rvol32"
+    ],
+    "full_core_enabled": false,
+    "remote_quote_rvol": "QUALIFIED_SAMPLED_QUOTE_VOLUME; ZERO_BASELINE_UNKNOWN",
+    "production_remote_family_detectors_enabled": false,
+    "targeted_causal_scope": "SELECTED_ONLY; CURRENT_HISTORICAL_RECONSTRUCTION",
+    "max_screen_requests": 26,
+    "max_targeted_alt_symbols": 2,
+    "max_http_requests": 40,
+    "cache_ttl_seconds": 300,
+    "max_horizon_seconds": 54000,
+    "scheduling_enabled": false,
+    "specialist_runtime_sources": {},
+    "default_llm_calls": 0,
+    "gap_policy": "GAP_UNOBSERVED_UNLESS_CAUSALLY_SOURCE_COVERED",
+    "source_availability_delay_seconds": 0,
+    "availability_delay_status": "ACTUAL_SOURCE_CUTOFF_VALIDATION; PUBLISH_LAG_UNKNOWN"
   }
 }

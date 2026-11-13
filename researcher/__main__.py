@@ -2,21 +2,29 @@
 import argparse
 from pathlib import Path
 from .contracts import ContractError, encode
-from .discovery import scan_live, scan_now, smoke
+from .discovery import scan_live, scan_now, smoke, scan_market_research
 from .inventory import OwnerOfficialSnapshot
 from .contracts import now_utc
 from .settings import ROOT, load_config, provider_status, validate_config
 
 
 def write_report(path, value):
+    import os
+    import tempfile
     path = Path(path).absolute()
     root = ROOT / "work"
     if (".." in path.parts or path.suffix != ".json" or not path.is_relative_to(root)
             or any(p.is_symlink() for p in [path, *path.parents])):
         raise ContractError("OUTPUT_MUST_BE_NEW_JSON_UNDER_WORK")
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("x", encoding="utf-8") as stream:
-        stream.write(encode(value) + "\n")
+    temporary=None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=path.parent,
+                prefix='.openbot-report-',suffix='.tmp',delete=False) as stream:
+            temporary=Path(stream.name);stream.write(encode(value)+'\n');stream.flush();os.fsync(stream.fileno())
+        os.link(temporary,path)  # Atomic publication; existing user files win.
+    finally:
+        if temporary is not None:temporary.unlink(missing_ok=True)
 
 
 def main():
@@ -31,6 +39,8 @@ def main():
     scan.add_argument("--output", help="new JSON file below work/; never overwrites")
     scan.add_argument("--inventory", help="owner-supplied official exchangeInfo JSON")
     scan.add_argument("--inventory-provenance", help="required provenance manifest for --inventory")
+    scan.add_argument('--db',help='research metadata SQLite below work/; default work/research-metadata.sqlite')
+    scan.add_argument('--json',action='store_true',help='print full machine-readable report instead of the concise research summary')
     args = parser.parse_args()
     try:
         config = load_config()
@@ -47,13 +57,19 @@ def main():
                 raise ContractError("INVENTORY_PROVENANCE_REQUIRED")
             inventory = (OwnerOfficialSnapshot(Path(args.inventory), Path(args.inventory_provenance)).load(now_utc())
                          if args.inventory else None)
-            if args.action in {"live", "qualify"} or (args.action == "now" and inventory is None):
-                report = scan_live(qualification=args.action == "qualify", config=config)
+            if args.action in {'now','live'} and inventory is None:
+                report=scan_market_research(config=config,ledger_path=args.db)
+            elif args.action == 'qualify':
+                from .qualification5 import qualify_core
+                report = qualify_core()
             else:
                 report = scan_now(inventory=inventory, config=config) if args.action == "now" else smoke()
             if args.output:
                 write_report(args.output, report)
-        print(encode(report))
+        if args.command=='scan' and report.get('schema_version')=='openbot.market-research.v5' and not args.json:
+            from .discovery import research_summary
+            print(research_summary(report))
+        else:print(encode(report))
         return 2 if report.get("operation_status") == "BLOCKED_OR_UNQUALIFIED" else 0
     except (ContractError, OSError) as error:
         from .screening import safe_error

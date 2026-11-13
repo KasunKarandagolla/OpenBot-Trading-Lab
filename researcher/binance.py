@@ -45,13 +45,20 @@ class OfficialResearchAPI:
     def inventory(self):
         return OfficialBinanceInventory(self.http,access_denial=self.access_denial).load(now_utc())
 
-    def pulse(self,inventory):
+    def pulse(self,inventory,*,partial=False,kinds=('ticker','book','premium')):
         if self.access_denial in {403,451}:raise ProviderError("RECORDED_BINANCE_ACCESS_DENIAL")
+        if not kinds or len(kinds)!=len(set(kinds)) or not set(kinds)<={'ticker','book','premium'}:
+            raise ContractError('PUBLIC_QUERY_REJECTED')
         out=[]
-        for kind in ("ticker","book","premium"):
-            response=self.http.request("binance_"+kind)
-            out.append(normalize_market(json_document(response.body),kind=kind,inventory=inventory,
-                captured_at=response.receipt["received_at_utc"],response_hash=digest(response.body)))
+        for kind in kinds:
+            try:
+                response=self.http.request("binance_"+kind)
+                out.append(normalize_market(json_document(response.body),kind=kind,inventory=inventory,
+                    captured_at=response.receipt["received_at_utc"],response_hash=digest(response.body)))
+            except ContractError as error:
+                if not partial:raise
+                from .screening import safe_error
+                out.append({'kind':kind,'observations':[],'status':'SOURCE_FAILURE','faults':[safe_error(error)]})
         return out
 
     def klines(self,instrument,*,timeframe,cutoff,bars=300):
@@ -72,6 +79,12 @@ class OfficialResearchAPI:
         response=self.http.request("binance_klines",query=query)
         data=parse_klines(json_document(response.body),native_symbol=instrument.native_symbol,
             timeframe=timeframe,cutoff=cutoff,receipt=response.receipt,requested_bars=bars)
+        if instrument.onboard_at_utc and data[0].open_ms<int(utc(instrument.onboard_at_utc).timestamp()*1000):
+            # The listing bar may open just before intrabar activation; older
+            # complete bars must never be assigned to the current contract.
+            from .observations import WIDTHS
+            if data[0].end_ms<=int(utc(instrument.onboard_at_utc).timestamp()*1000):
+                raise ContractError('HISTORY_BEFORE_CURRENT_CONTRACT_LISTING')
         return data,{"requested_bars":bars,"returned_bars":len(data),"native_symbol":instrument.native_symbol,
             "timeframe":timeframe,"cutoff":cutoff,"source_response_sha256":digest(response.body),
             "receipt":response.receipt,"closed_bar_semantics":"OPEN_MS; CLOSE_INCLUSIVE_END_MINUS_1MS",

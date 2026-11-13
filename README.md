@@ -58,3 +58,13 @@ The complete original Markdown design is preserved in **[docs/design/README.md](
 5. Do not import AstraBot's unfinished branches or implementation architecture automatically.
 
 **Next:** Follow the current partial-coverage handoff in [PROGRESS.md](docs/implementation/PROGRESS.md). Session 3 has not begun.
+
+
+## External-first Market Researcher (PARTIAL, read-only)
+
+Python 3.11+, standard library; run `python3 -m researcher scan now`. It refreshes
+public sources automatically and persists research metadata under ignored `work/`.
+No keys, inventory JSON, orders or scheduler are required. Qualified sampled price
+precursors are not complete CORE or all-method structural discovery. Read the
+[current operator runbook](docs/implementation/SESSION_05_RUNBOOK.md) and
+[verified implementation status](docs/implementation/PROGRESS.md) before use.

@@ -2,7 +2,7 @@
 import json
 import os
 from pathlib import Path
-from .contracts import ContractError, Feasibility, digest
+from .contracts import ContractError, Feasibility, digest, encode
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "researcher/config/discovery_specs.json"
@@ -77,10 +77,14 @@ def validate_config(config):
             or s4.get('budget_pools')!=['broad','targeted','exception','watch']
             or s4.get('quiet_trial_percentile_max')!='0.25'):
         raise ContractError('SESSION4_CAPABILITY_BOUNDARY')
+    if 'session5' in config:
+        validate_session5(config['session5'])
     return {"status": "VALID", "families": 9, "methods": 31,
             "manifest_sha256": digest(MANIFEST.read_bytes()), "detectors_enabled": 0,
             "release": discovery["release"], "research_review_release":s4['release'],
-            "full_core_packs_enabled": 0}
+            "full_core_packs_enabled": 0,
+            "market_research_release":config.get('session5',{}).get('release'),
+            "qualified_remote_price_columns":len(config.get('session5',{}).get('qualified_price_columns',()))}
 
 
 def provider_status(config):
@@ -89,6 +93,32 @@ def provider_status(config):
             "providers": config["providers"],
             "external_discovery": config["external_discovery"],
             "session4": config['session4'],
+            "session5": config.get('session5'),
             "optional_basis_key_present": bool(os.environ.get("OPENBOT_BASIS_TOKEN")),
             "optional_basis_key_used": False,
             "setup_keys": "DEFERRED: public runtime needs no keys; auth contract must be qualified first"}
+
+
+def validate_session5(spec):
+    from .core import CORE,manifest
+    columns=spec.get('qualified_price_columns',[])
+    if (not columns or len(columns)!=len(set(columns)) or not set(columns)<=set(CORE) or spec.get('full_core_enabled') is not False
+            or spec.get('production_remote_family_detectors_enabled') is not False
+            or spec.get('scheduling_enabled') is not False or spec.get('specialist_runtime_sources')!={}
+            or spec.get('default_llm_calls')!=0 or spec.get('max_horizon_seconds')!=54000
+            or spec.get('max_screen_requests')!=26 or spec.get('max_targeted_alt_symbols')!=2
+            or spec.get('max_http_requests')!=40 or spec.get('cache_ttl_seconds')!=300
+            or spec.get('source_availability_delay_seconds')!=0
+            or spec.get('qualification_evidence')!='evidence/external-first/session5/core-qualification.json'):
+        raise ContractError('SESSION5_CAPABILITY_BOUNDARY')
+    raw=(ROOT/spec['qualification_evidence']).read_bytes()
+    if digest(raw)!=spec.get('qualification_sha256'):raise ContractError('QUALIFICATION_EVIDENCE_DRIFT')
+    proof=json.loads(raw)
+    current=json.loads(encode(manifest()))
+    if any(proof.get('formula_manifest',{}).get(k)!=current[k] for k in columns):
+        raise ContractError('QUALIFICATION_EVIDENCE_DRIFT')
+    checks=[c for s in proof['screens'] for c in s['oracle_checks']]
+    if (len(checks)!=10*len(proof['formula_manifest']) or not all(c['passed'] for c in checks)
+            or len([c for c in proof['checks'] if c['feature']=='atr_explicit'])!=16
+            or not all(c['passed'] for c in proof['checks'])):
+        raise ContractError('QUALIFICATION_EVIDENCE_DRIFT')

@@ -56,3 +56,17 @@ retained-time matches, two exact-start BTC ATR seed trials or synthetic READY
 tests into broad live capability claims.
 Session 5 retains durable one-command integration, watches/resume/gap recovery;
 Session 6 retains bounded usability. One writer and same integration branch.
+
+Session 5 is explicitly authorized on CODEX_LOCAL. Read SESSION_05_RUNBOOK.md
+and the latest PROGRESS entry. Ordinary `scan now` uses the single durable
+scan_market_research path, fresh official APIs and qualified scaled remote price
+precursors over explicit eligible partitions. This is a PARTIAL release: full
+CORE and broad production family detectors remain disabled. Do not equate a
+519/519 precursor pass with all-method discovery. Preserve unscaled precision
+failures, cutoff/partition faults, Unicode targeted errors, rejected camel-case quoteVolume and failed zero-offset
+pressure trials. The supported quote_volume remedy is sampled-qualified; zero
+baseline remains UNKNOWN and never gates price families.
+The ledger keeps one current scalar cache, immutable selected causal metadata,
+verified scope cutoffs and honest GAP_UNOBSERVED records; no historical market
+feature/candle archive. The current `scan qualify` is the bounded Session 5 oracle.
+Never send unresolved core/source/causal qualification to Luna as cosmetic work.

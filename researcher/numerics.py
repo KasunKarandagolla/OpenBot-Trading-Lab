@@ -139,11 +139,15 @@ def past_percentile(value, baseline, *, required=128):
 
 def compression(bars, n=16, baseline=128, tick=D("0.00000001")):
     # Entire measured n-bar window excluded from historical reference windows.
+    validate_bars(bars)
     require_count(bars, 2*n+baseline-1)
+    tick=number(tick,positive=True)
     stop = len(bars)-n
-    previous = [normalized_width(bars[:end], n, tick)
-                for end in range(stop-baseline+1, stop+1)]
-    value = normalized_width(bars, n, tick)
+    def width_at(end):
+        window=bars[end-n:end]
+        return (max(b.high for b in window)-min(b.low for b in window))/max(bars[end-1].close,tick)
+    previous = [width_at(end) for end in range(stop-baseline+1, stop+1)]
+    value = width_at(len(bars))
     return {"width": value, "past_percentile": past_percentile(value, previous, required=baseline),
             "baseline_windows": baseline, "measured_window_excluded": True}
 

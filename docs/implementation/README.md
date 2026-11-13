@@ -5,8 +5,8 @@ These are the **approved design and implementation references** for the *externa
 1. [`OpenBot_Final_External_First_Market_Discovery_Blueprint.md`](./OpenBot_Final_External_First_Market_Discovery_Blueprint.md) — primary architecture, formulas, nine families, specialist methodologies, source qualification, non-veto BTC/ETH context, on-demand operation, data contracts, validation and safety boundaries.
 2. [`OpenBot_Cloud_First_GitHub_Synced_Implementation_Plan.md`](./OpenBot_Cloud_First_GitHub_Synced_Implementation_Plan.md) — six-session Cloud-first plan, GitHub synchronization and acceptance gates. Five substantive Sol sessions and an optional narrow Luna polish session are the target, not a shortcut around tests.
 3. [`CODEX_SESSION_01_PROMPT.md`](./CODEX_SESSION_01_PROMPT.md) — ready-to-use first-session instruction; it requires full reading of both references and first verifies actual repository code and remote provider capability.
-4. [`SESSION_02_RUNBOOK.md`](./SESSION_02_RUNBOOK.md) — current on-demand partial
-   discovery command, inventory import contract, limits and owner assistance.
+4. [`SESSION_02_RUNBOOK.md`](./SESSION_02_RUNBOOK.md) — historical R0 partial observation and optional import contract.
+5. [`SESSION_05_RUNBOOK.md`](./SESSION_05_RUNBOOK.md) — current on-demand Local command, qualified price precursors, durable watches/gaps and explicit PARTIAL release limits.
 
 ## Source integrity
 
