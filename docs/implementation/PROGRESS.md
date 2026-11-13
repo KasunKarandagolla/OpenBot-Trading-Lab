@@ -1,5 +1,78 @@
 # OpenBot external-first Market Researcher — Session 1
 
+## Session 1.5 — External provider qualification repair (2026-11-13)
+
+**State:** bounded investigation complete; provider qualification remains
+**PARTIAL / BLOCKED** and **Session 2 remains NO-GO**. The latest remote branch
+was fetched before work and matched starting SHA
+`aba986518fda656a5ae3c3d5f78cced594dc4b96`; the checkout was clean. No reset,
+rebase, alternate network location, Local Codex, paid service, trading route,
+or Session 2 implementation was used. No external market-data or trading
+credential was used.
+
+### Qualification repair findings
+
+- **Official eligible Binance inventory remains BLOCKED.** The recorded
+  `fapi.binance.com/fapi/v1/exchangeInfo` HTTP 451 was not retried or bypassed.
+  Binance's official Public Data repository documents USD-M klines in daily or
+  monthly archives. Its current-symbol helper directly calls the same blocked
+  futures `exchangeInfo` URL and reduces the response to symbol strings; it is
+  not a separate metadata source or a route around the 451. A single HEAD for
+  the documented BTCUSDT 1H daily archive for 2026-11-12 returned HTTP 404 from
+  CloudFront at 2026-11-13 06:03:50 UTC. No file was downloaded and the reason
+  for the missing file is not established. The archive's terms specify
+  noncommercial CC BY-NC-SA 4.0 use; no dataset or derived fixture was retained.
+- **CoinGecko is only a documented candidate.** Its derivatives ticker endpoint
+  offers exchange/contract labels and live ticker fields, but the free Demo API
+  requires an owner-created key. The documented response does not supply the
+  complete authoritative exchange status, settlement, listing-age, tick-size,
+  lot-size, or multiplier facts needed here. No key was present and no request
+  was sent; it cannot clear the inventory gate by itself.
+- **Genuine Basis quiet-tail support remains BLOCKED.** The prior live footer
+  probe evaluated the two requested popular symbols and exposed 18 provider
+  fillers. No independently selected eligible 50-member quiet-tail cohort was
+  available, so zero tail partitions were submitted. The prior live evidence
+  demonstrates narrow remote formula execution and explicit-symbol input, not
+  coverage of the lower-ranked, young, or multiplier contract tail.
+- **Independent numerical verification remains PARTIAL.** Session 1's
+  167/167 comparisons are same-Basis-input arithmetic only. The independent
+  Binance archive file probe returned 404, so no source-aligned formula
+  comparison was possible in this repair. No external-source accuracy,
+  volume-unit, ATR-seed, or cross-source timestamp claim is added.
+- **Free-service suitability remains PARTIAL.** Session 1's credential-free
+  Basis observations and terms remain the bounded evidence: 33 HTTP requests,
+  251,961 response bytes, p50 696 ms / p95 1,671 ms, no observed 429, no
+  returned charged units, and no measured sustainable cadence. Its documented
+  1,000 keyless daily calls and 10,000 free-key daily calls do not establish a
+  per-minute limit or production automation suitability.
+
+The exact source checks, limits, and owner dependency are recorded in
+[`Session 1.5 evidence`](../../evidence/external-first/session1_5/README.md).
+There was no provider code defect justified by the evidence; existing
+capability gates and disabled methods were preserved. No historical market
+data, credentials, caches, or generated runtime output were added.
+
+### Session 1.5 verification and handoff
+
+- `python -m unittest discover -s tests -v`: **43 passed, 0 failed, 0 skipped**.
+- `python -m researcher config validate`: **VALID**, 9 families / 31 methods,
+  0 detectors enabled.
+- `python -m researcher provider status`: Basis remains
+  `LIVE_TESTED_NARROW`; formula/screener production enablement remains false;
+  Binance remains blocked at HTTP 451.
+- **Owner assistance needed to clear the inventory and tail gates:** provide a
+  current, provenance-bound Binance USD-M USDT-perpetual inventory captured
+  through a lawful authorized source, including native symbol, contract type,
+  quote/settlement, status, listing time where available, price/quantity rules,
+  and multiplier metadata. A plain symbol list or CoinGecko key alone is not
+  sufficient. No credential is requested for this checkpoint. Do not use Local
+  Codex to change location or work around the 451.
+- **Session 2: NO-GO** until exact inventory, real independent quiet-tail
+  partitions, and a source-aligned numerical oracle pass the blueprint gates.
+  Next task is to obtain that authorized inventory and a bounded independent
+  Binance-futures historical sample; then resume the 50-member Basis tail
+  qualification. PR #24 must remain draft.
+
 **Environment:** CODEX_CLOUD. **State:** Session 1 scaffold and bounded proof sprint
 implemented; provider qualification **PARTIAL / BLOCKED**. **Session 2: NO-GO**
 until the narrower qualification repairs below pass. No Local exception used.
