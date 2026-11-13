@@ -1,5 +1,7 @@
 """Bounded public HTTPS only. Default TLS/proxy trust is preserved."""
 from dataclasses import dataclass
+from email.utils import format_datetime, parsedate_to_datetime
+from datetime import timezone
 import json
 import time
 import urllib.error
@@ -10,6 +12,9 @@ from .contracts import ContractError, digest, now_utc
 ENDPOINTS = {
     "basis": "https://www.basischarts.com/api/mcp",
     "binance_inventory": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+    "binance_ticker": "https://fapi.binance.com/fapi/v1/ticker/24hr",
+    "binance_book": "https://fapi.binance.com/fapi/v1/ticker/bookTicker",
+    "binance_premium": "https://fapi.binance.com/fapi/v1/premiumIndex",
 }
 MAX_BYTES = 2 * 1024 * 1024
 MCP_READ_TOOLS = frozenset({"catalog_search", "catalog_describe", "market_candles",
@@ -32,6 +37,20 @@ class Response:
     body: bytes
     headers: dict
     receipt: dict
+
+
+def safe_retry_after(value):
+    """Keep only valid HTTP delay/date syntax, never arbitrary header text."""
+    if not isinstance(value, str) or len(value) > 128:
+        return None
+    value = value.strip()
+    if value.isascii() and value.isdigit():
+        return str(int(value))
+    try:
+        parsed = parsedate_to_datetime(value)
+        return format_datetime(parsed.astimezone(timezone.utc), usegmt=True) if parsed.tzinfo else None
+    except (ValueError, TypeError, OverflowError):
+        return None
 
 
 class PublicHTTP:
@@ -89,13 +108,15 @@ class PublicHTTP:
                    "received_at_utc": now_utc(), "response_bytes": len(body),
                    "response_sha256": digest(body),
                    "elapsed_ms": round((time.monotonic() - started) * 1000),
-                   "retry_after": private_headers.get("retry-after"),
+                   "retry_after": safe_retry_after(private_headers.get("retry-after")),
                    "quota_charged_units": None}
         self.receipts.append(receipt)
         if len(body) > MAX_BYTES:
             raise ProviderError("RESPONSE_SIZE_LIMIT", receipt)
         if status in {403, 429, 451}:
             self.stopped.add(endpoint)
+            if endpoint.startswith("binance_"):
+                self.stopped.update(e for e in ENDPOINTS if e.startswith("binance_"))
         if not 200 <= status < 300:
             raise ProviderError(f"HTTP_{status}", receipt)
         return Response(body, private_headers, receipt)

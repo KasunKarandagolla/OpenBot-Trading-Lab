@@ -99,6 +99,11 @@ class Instrument:
     onboard_at_utc: str | None = None
     metadata_hash: str | None = None
     identity_status: str = "UNVERIFIED"
+    trading_status: str | None = None
+    underlying_class: str | None = None
+    source_id: str | None = None
+    captured_at_utc: str | None = None
+    unsupported_fields: tuple[str, ...] = ()
 
     def __post_init__(self):
         symbol(self.native_symbol)
@@ -108,11 +113,14 @@ class Instrument:
             if (self.venue != "BINANCE_USDM" or self.quote != "USDT"
                     or self.settlement != "USDT" or self.contract_type != "PERPETUAL"
                     or not self.metadata_hash or not self.quantity_rules
-                    or self.tick_size is None):
+                    or self.tick_size is None or self.trading_status != "TRADING"
+                    or self.underlying_class != "CRYPTO" or not self.source_id or not self.captured_at_utc):
                 raise ContractError("INCOMPLETE_EXCHANGE_IDENTITY")
             number(self.tick_size, positive=True)
         if self.contract_multiplier is not None:
             number(self.contract_multiplier, positive=True)
+        if self.captured_at_utc is not None:
+            utc(self.captured_at_utc)
 
 
 @dataclass(frozen=True)

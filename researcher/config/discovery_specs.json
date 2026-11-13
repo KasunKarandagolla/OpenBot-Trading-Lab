@@ -1,6 +1,6 @@
 {
   "schema_version": "openbot.discovery-specs.v1",
-  "session": 1,
+  "session": 2,
   "policy": {
     "external_first": true,
     "context_policy": "ADVISORY_NON_VETO",
@@ -36,7 +36,8 @@
         },
         "screener_run": {
           "enabled": false,
-          "feasibility": "UNVERIFIED"
+          "feasibility": "UNVERIFIED",
+          "on_demand_observation_probe": "NARROW_PROVIDER_REPORTED_ONLY"
         },
         "orderflow_read": {
           "enabled": false,
@@ -548,12 +549,150 @@
     "CORE_1H": {
       "enabled": false,
       "status": "UNVERIFIED",
-      "reason": "quiet-tail and independent exchange oracle blocked"
+      "reason": "quiet-tail and independent exchange oracle blocked",
+      "version": "2.0.0-partial.1",
+      "timeframe": "1h",
+      "provider": "basis",
+      "scope": "EXPLICIT_PROVIDER_OBSERVED_SYMBOLS_ONLY; EXCHANGE_ELIGIBILITY_UNVERIFIED",
+      "output_mode": "BROAD_FEATURE_EXPORT",
+      "lookback": 300,
+      "cutoff_convention": "observationTime is last closed bar OPEN; end=open+tf; frozen run cutoff",
+      "null_semantics": "UNKNOWN; never numeric zero; no sparse columns in baseline",
+      "failure_isolation": "bounded bisection for tool errors/truncation; stop denials/quota",
+      "full_core_qualified": false,
+      "observation_columns": [
+        {
+          "id": "NORMALIZED_WIDTH_3",
+          "expression": "(highest(high,3)-lowest(low,3))/close",
+          "required_closed_bars": 3,
+          "units": "DIMENSIONLESS_PRICE_WIDTH_RATIO",
+          "schema_test": "PASS_SESSION1",
+          "arithmetic_test": "PASS_SAME_SOURCE_18_COMPARISONS_1H",
+          "source_semantics": "PROVIDER_REPORTED_CLOSED_OHLC_WINDOW",
+          "independent_source_accuracy": "UNVERIFIED",
+          "production_enabled": false,
+          "observation_probe_enabled": true,
+          "oracle_evidence": "tests/fixtures/session1/oracle_btc_1h.json",
+          "precision_absolute": "0.00005",
+          "cannot_certify": [
+            "historical compression percentile",
+            "significant structural boundary",
+            "SMC/ICT sequence"
+          ]
+        }
+      ],
+      "required_outputs": {
+        "ATR_SCALE": {
+          "status": "UNVERIFIED",
+          "reason": "independent ATR seed/warmup unqualified"
+        },
+        "PAST_ONLY_BOUNDS": {
+          "status": "UNVERIFIED",
+          "reason": "prior3 arithmetic passed; structural window/source qualification pending"
+        },
+        "EFFICIENCY_PROGRESSION": {
+          "status": "UNVERIFIED",
+          "reason": "remote denominator/constant-series semantics unqualified"
+        },
+        "HISTORICAL_COMPRESSION": {
+          "status": "INCOMPLETE_HISTORY",
+          "reason": "past percentile convention and full baseline unqualified"
+        },
+        "RELATIVE_QUOTE_VOLUME": {
+          "status": "UNVERIFIED",
+          "reason": "quote-volume units and baseline unqualified"
+        },
+        "LEVEL_DISTANCE": {
+          "status": "UNVERIFIED",
+          "reason": "frozen reference evidence belongs to Session3"
+        },
+        "TREND_PULLBACK": {
+          "status": "UNVERIFIED",
+          "reason": "causal swing/impulse sequence not implemented"
+        },
+        "SHOCK_DISPLACEMENT": {
+          "status": "UNVERIFIED",
+          "reason": "ATR baseline and historical outlier not qualified"
+        }
+      }
     },
     "CORE_15M": {
       "enabled": false,
       "status": "UNVERIFIED",
-      "reason": "quiet-tail and independent exchange oracle blocked"
+      "reason": "quiet-tail and independent exchange oracle blocked",
+      "version": "2.0.0-partial.1",
+      "timeframe": "15m",
+      "provider": "basis",
+      "scope": "EXPLICIT_PROVIDER_OBSERVED_SYMBOLS_ONLY; EXCHANGE_ELIGIBILITY_UNVERIFIED",
+      "output_mode": "BROAD_FEATURE_EXPORT",
+      "lookback": 300,
+      "cutoff_convention": "observationTime is last closed bar OPEN; end=open+tf; frozen run cutoff",
+      "null_semantics": "UNKNOWN; never numeric zero; no sparse columns in baseline",
+      "failure_isolation": "bounded bisection for tool errors/truncation; stop denials/quota",
+      "full_core_qualified": false,
+      "observation_columns": [
+        {
+          "id": "NORMALIZED_WIDTH_3",
+          "expression": "(highest(high,3)-lowest(low,3))/close",
+          "required_closed_bars": 3,
+          "units": "DIMENSIONLESS_PRICE_WIDTH_RATIO",
+          "schema_test": "PASS_SESSION1",
+          "arithmetic_test": "PASS_SAME_SOURCE_18_COMPARISONS_1H",
+          "source_semantics": "PROVIDER_REPORTED_CLOSED_OHLC_WINDOW",
+          "independent_source_accuracy": "UNVERIFIED",
+          "production_enabled": false,
+          "observation_probe_enabled": true,
+          "oracle_evidence": "tests/fixtures/session1/oracle_btc_1h.json",
+          "precision_absolute": "0.00005",
+          "cannot_certify": [
+            "historical compression percentile",
+            "significant structural boundary",
+            "SMC/ICT sequence"
+          ]
+        }
+      ],
+      "required_outputs": {
+        "ATR_SCALE": {
+          "status": "UNVERIFIED",
+          "reason": "independent ATR seed/warmup unqualified"
+        },
+        "PAST_ONLY_BOUNDS": {
+          "status": "UNVERIFIED",
+          "reason": "prior3 arithmetic passed; structural window/source qualification pending"
+        },
+        "EFFICIENCY_PROGRESSION": {
+          "status": "UNVERIFIED",
+          "reason": "remote denominator/constant-series semantics unqualified"
+        },
+        "HISTORICAL_COMPRESSION": {
+          "status": "INCOMPLETE_HISTORY",
+          "reason": "past percentile convention and full baseline unqualified"
+        },
+        "RELATIVE_QUOTE_VOLUME": {
+          "status": "UNVERIFIED",
+          "reason": "quote-volume units and baseline unqualified"
+        },
+        "LEVEL_DISTANCE": {
+          "status": "UNVERIFIED",
+          "reason": "frozen reference evidence belongs to Session3"
+        },
+        "TREND_PULLBACK": {
+          "status": "UNVERIFIED",
+          "reason": "causal swing/impulse sequence not implemented"
+        },
+        "SHOCK_DISPLACEMENT": {
+          "status": "UNVERIFIED",
+          "reason": "ATR baseline and historical outlier not qualified"
+        },
+        "APPROACH_REJECTION": {
+          "status": "UNVERIFIED",
+          "reason": "reference and causal events pending"
+        },
+        "BAR_AGGRESSOR_DELTA": {
+          "status": "UNVERIFIED",
+          "reason": "independent volume definitions unqualified"
+        }
+      }
     },
     "METHOD_STRUCTURE": {
       "enabled": false,
@@ -596,5 +735,109 @@
       ],
       "spec": "blueprint §9.1–9.2; observable components only, no intent claims"
     }
+  },
+  "external_discovery": {
+    "version": "2.0.0",
+    "release": "R0_ON_DEMAND_OBSERVATION",
+    "partition_size": 50,
+    "concurrency": 1,
+    "max_screen_requests": 8,
+    "max_http_requests": 16,
+    "min_request_interval_seconds": 1,
+    "retry_budget": 2,
+    "inventory_max_age_seconds": 86400,
+    "independent_source_accuracy": "UNVERIFIED",
+    "quiet_tail_qualification": "BLOCKED_CURRENT_INVENTORY",
+    "qualified_alternative_inventories": [],
+    "observed_symbols": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "SOLUSDT",
+      "FILUSDT",
+      "1000PEPEUSDT"
+    ],
+    "observed_scope_evidence": "evidence/external-first/session1/runtime-samples-001.json",
+    "screen_fidelity": "EXACT_REPORTED",
+    "screen_precision_absolute": "0.00005",
+    "source_semantics": "PROVIDER_REPORTED_BINANCE_FUTURES_CLOSED_WINDOW_ONLY",
+    "scheduling_enabled": false,
+    "nomination_routes": {
+      "BOUNDARY_PRESSURE": [
+        "F2",
+        "F4",
+        "F5",
+        "F6"
+      ],
+      "COMPRESSION_EXPANSION": [
+        "F3",
+        "F2"
+      ],
+      "TREND_PULLBACK": [
+        "F1"
+      ],
+      "BREAKOUT_SWEEP_REGION": [
+        "F2",
+        "F4",
+        "F5",
+        "F6"
+      ],
+      "RELATIVE_ANOMALY": [
+        "F8"
+      ],
+      "TRANSITION_SHOCK": [
+        "F9"
+      ],
+      "PREVIOUS_WATCH": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "QUIET_TAIL": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "NEW_LISTING": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "SPECIALIST": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "VALUE_LOCATION": [
+        "F6",
+        "F7"
+      ]
+    },
+    "observed_scope_sha256": "a738381eda170f27ee0b5ada90dd101b2fd2f43ab1b36bfdf551aef18e822184",
+    "arithmetic_evidence": "evidence/external-first/session1/oracle-results.json",
+    "arithmetic_sha256": "262e142c2d5c88eb8220a699577f1aa8bf8bdb671ad8178475e8e79f51c5c3de"
   }
 }

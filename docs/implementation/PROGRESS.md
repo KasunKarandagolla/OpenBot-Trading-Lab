@@ -1,3 +1,135 @@
+# OpenBot external-first Market Researcher — progress
+
+## Session 2 — external discovery implementation (2026-11-13)
+
+**State: working R0 partial-coverage implementation; full-market source
+qualification remains incomplete. Session 3 readiness: PARTIAL; not started.**
+The owner explicitly instructed Session 2 to proceed while resolving or carrying
+Session 1 dependencies. That instruction supersedes the historical NO-GO/stop
+wording below and the former AGENTS gate; the immutable blueprint/plan bytes
+remain unchanged. Provider production gates were not waived.
+
+### Repository and delivery scope
+
+- Repository `KasunKarandagolla/OpenBot-Trading-Lab`; approved branch
+  `feature/external-first-market-researcher`.
+- Latest remote verified before edits: expected
+  `1c47940657339aa7fa058966ccca9528f3609a1c`. Checkout clean; the prepared
+  container initially held documentation-only `work` at `2343053`, so the
+  explicitly fetched feature head was checked out safely. No reset, overwrite,
+  automatic merge, force push, main edit, Local switch or parallel writer.
+- Reused the existing standard-library Basis runtime MCP client, transport,
+  immutable contracts, manifest, clock validator and 167-comparison arithmetic
+  oracle. No alternate client, dependencies, candle store, trading service,
+  ledger database, LLM call or scheduler.
+- PR [#24](https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/pull/24)
+  remains draft. Final pushed SHA and observed CI are supplied in the exact
+  session handoff; a commit cannot include its own hash.
+
+### Implemented
+
+- Typed official/live, owner-official snapshot and future reviewed inventory
+  source interface; strict provenance/hash/schema/UTC/TTL validation. Exact
+  native identity, contract type, quote/settle, trading status, tick/quantity,
+  classification, source/capture, listing and explicit multiplier facts retained.
+  Missing fields stay unsupported; no multiplier-prefix inference. Source
+  completeness and eligibility completeness are distinct. Stale or unresolved
+  rows preserve `PARTIAL_INVENTORY`; eligible denominator stays null when unknown.
+- Fixed read-only aggregate ticker/book/premium adapters and current timestamp,
+  spread, rolling-window and unit contracts; disabled on this recorded-denied
+  Cloud route. Current observations do not certify historical structure.
+- One capability registry and finite remote compiler; explicit maximum-50
+  partitions, smaller footer support, serial bounded pacing and HTTP/screen/
+  recovery/byte budgets. Separate `CORE_1H` / `CORE_15M` contracts expose every
+  required unavailable output and isolate the registered width3 observation.
+  Full CORE, optional/sparse formulas and all strategy detectors remain disabled.
+- Strict response scope/formula/count/numeric/clock normalization, filler
+  exclusion, missing/failed identities, hidden truncation detection, bounded
+  bisection and HTTP 200 tool-error isolation. Denials/quota end the route;
+  each original/recovery attempt stays visible. Effective recovery leaves avoid
+  double-counting. Invalid temporal joins and stale/after-cutoff values fail.
+- Per-calculation/timeframe coverage and provenance: planned/not-requested,
+  requested/recognized/evaluated/returned/matched/missing/failed, fillers,
+  truncation, cutoffs, source/schema/formula hashes, version, fidelity, history
+  uncertainty, quota and measured resource use. Raw scalar execution never
+  becomes qualified CORE or zero-opportunity evidence.
+- Independent nomination contracts for boundary/pressure, compression,
+  trend/pullback, breakout/sweep, relative anomalies, shock, previous watch,
+  quiet tail, new listings, specialists and value. Exact source evidence IDs,
+  fidelity, frozen reference times, stages and rivals validated; BTC/ETH context
+  cannot veto routing. All F1-F9 and 31 methodologies remain represented.
+  No actual strategy predicate or readiness promotion was invented.
+- Independent lower/medium/young/multiplier cohort planner, gated on fresh
+  verified inventory and complete independent turnover data. Its synthetic
+  50+7 tests are not an authentic tail qualification.
+- `python -m researcher scan now` end-to-end read-only partial observation;
+  optional owner inventory/provenance arguments. Existing smoke/probes retained.
+  [Session 2 runbook](SESSION_02_RUNBOOK.md) documents usage and source contracts.
+
+### Actual source qualification and live denominators
+
+Final run began `2026-11-13T06:57:27.785971+00:00` (machine UTC).
+[Curated source evidence](../../evidence/external-first/session2/README.md).
+
+| Capability | Actual result / state |
+|---|---|
+| Binance official inventory / current pulse | Existing HTTP 451 honored; zero new Binance requests. No authorized snapshot supplied; no qualified alternate inventory. `PARTIAL_INVENTORY`, eligible denominator null; 5 provisional names only. |
+| Finite width3 on 1H | Requested 5 / recognized 5 / scalar-evaluated 5 / returned 5 / matched 5 / missing 0 / failed 0; 15 fillers excluded; no truncation; closed output end 06:00 UTC. |
+| Finite width3 on 15M | Requested 5 / recognized 5 / scalar-evaluated 5 / returned 5 / matched 5 / missing 0 / failed 0; 15 fillers excluded; no truncation; closed output end 06:45 UTC. |
+| Genuine independent quiet tail | Zero partitions sent; inventory plus independent liquidity cohort unavailable. Young/multiplier eligibility remains unverified; exact 1000PEPE spelling is not multiplier proof. |
+| Independent numerical source | Unverified; no lawful timestamp-aligned independent sample available. Existing 167/167 same-source arithmetic passes; no ATR seed, source authenticity, exact volume-unit or historical event claims promoted. |
+| Full CORE / F1-F9 / 31 methods / true specialists | Zero qualified evaluations; all unavailable outputs explicitly retained. No shortlist, room, causal structure or specialist signal generated. |
+| Free access / cadence | Credential-free public Basis calls succeeded. Actual charged units absent; fixed small run budgets applied. Sustainable cadence and production broad scope remain unqualified; scheduling disabled. |
+
+The exact cohort is BTCUSDT, ETHUSDT, SOLUSDT, FILUSDT, 1000PEPEUSDT. It comes
+from prior targeted provider observations, not authoritative eligibility or an
+independent tail source. `complete=false` records absent per-row input-history
+attestation. Four-decimal screen readings cannot establish tick-exact levels.
+
+Final demonstration: **5 HTTP requests / 2 screens / 90,208 response bytes**,
+6,212 ms summed request durations, **6,239 ms wall**, p50 713 ms / nearest-rank
+p95 2,272 ms; **0 HTTP/tool failures**, 0 retries. These include MCP startup.
+All three bounded implementation demonstrations combined: **15 HTTP requests / 6
+screens / 270,621 bytes / 17,505 ms summed durations**. No endurance, cache or
+throughput guarantee inferred. No credentials/session headers committed.
+
+### Verification, limits and owner assistance
+
+- `python -m unittest discover -s tests -v`: **80 passed / 0 failed / 0 skipped**.
+- `python -m researcher config validate`: **VALID**, 9 families / 31 methods,
+  zero strategy/full-CORE packs enabled, frozen reference hashes unchanged.
+- `python -m researcher provider status`: recorded source capabilities, public
+  keyless observations only; no optional key used.
+- `git diff --check`: passed. Source/evidence hashes are recorded in
+  `evidence/external-first/session2/SHA256SUMS.json`. CI must be observed after
+  pushing; local test success is not a claim of remote CI success.
+- Unimplemented/degraded: complete inventory and cheap current pulse, genuine
+  broad-tail and young/multiplier qualification, full CORE calculations,
+  independent source accuracy/ATR seed/volume definitions, sustainable quota,
+  causal F1-F9 detector/event ledger, real specialist feeds, watch persistence,
+  context interpretation, remaining room and Deep Analysis shortlisting.
+  The latter responsibilities remain in their planned later sessions.
+- **OWNER ASSISTANCE REQUIRED:** provide a fresh full lawful official Binance
+  USD-M `exchangeInfo` JSON file plus capture UTC, exact raw-file SHA-256, source
+  URL, completeness attestation and authorization/source statement in the
+  [runbook's provenance format](SESSION_02_RUNBOOK.md). For genuine tail tests,
+  also provide a contemporaneous official `/fapi/v1/ticker/24hr` snapshot with
+  the same provenance facts. For independent numerics, provide a licensed tiny
+  source-aligned sample (about 65 closed bars per 1H/15M for at most five
+  representative symbols, with venue, time/unit definitions, capture/hash and
+  retention rights). No secret value, new API key or Local geographic workaround
+  is requested. The prior CoinGecko review shows its key alone does not solve
+  this gap; no speculative new provider search was repeated.
+- **Session 3 readiness: PARTIAL.** Reusable contracts, partitions, coverage and
+  on-demand partial observation are ready. Full production universe/core
+  qualification remains blocked on the stated source evidence. Next authorized
+  work should import/validate that evidence, run real tail/independent checks
+  under bounded budgets and preserve these capability gates while implementing
+  later causal intelligence only when separately requested. Session 3 was not
+  started during this session.
+
+---
+
 # OpenBot external-first Market Researcher — Session 1
 
 ## Session 1.5 — External provider qualification repair (2026-11-13)

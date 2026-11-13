@@ -20,5 +20,12 @@ Run `python -m unittest discover -s tests -v` and `python -m researcher config
 validate`. Live probes are opt-in; keep them bounded. Never log secrets/session
 IDs. Keep scratch and unsanitized responses in ignored `work/`. Record actual
 tests, evidence hashes, failures and next dependency in PROGRESS; commit, push,
-verify remote HEAD and observe CI before handing off. Do not begin Session 2
-while its provider qualification dependencies are unresolved.
+verify remote HEAD and observe CI before handing off.
+
+The owner explicitly authorized Session 2 partial implementation despite the
+remaining Session 1 dependencies. Its R0 on-demand observation path may proceed
+with PARTIAL_INVENTORY and explicit unsupported calculations. Full CORE,
+independent source accuracy, quiet-tail qualification and scheduling stay gated;
+do not infer production qualification from the finite width probe. Do not begin
+Session 3 without a new owner instruction. Read docs/implementation/SESSION_02_RUNBOOK.md and the
+latest PROGRESS entry for the exact owner-snapshot format and handoff.

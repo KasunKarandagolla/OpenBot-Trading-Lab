@@ -1,6 +1,6 @@
 # OpenBot Trading Lab
 
-**Status: Session 1 read-only external-first researcher scaffold. Provider qualification is partial; no trading authority or profitability claim.**
+**Status: Session 2 partial external discovery implementation, on demand and read-only. Full CORE and provider qualification remain incomplete; no trading authority.**
 
 The current workstream follows the [finalized implementation references](docs/implementation/README.md).
 Read [PROGRESS.md](docs/implementation/PROGRESS.md) for verified capabilities, blocked
@@ -14,6 +14,7 @@ Python 3.11+; standard library only. From the repository root:
 python -m researcher config validate
 python -m researcher provider status
 python -m researcher scan smoke --output work/smoke-001.json
+python -m researcher scan now --output work/discovery-001.json
 python -m unittest discover -s tests -v
 ```
 
@@ -21,6 +22,13 @@ The smoke command performs one public targeted Basis observation after the MCP
 handshake. It emits an empty research shortlist and explicit unknown exchange
 coverage. `provider status` reports recorded capabilities; `scan smoke` checks
 actual current access. See the [Session 1 runbook](docs/implementation/SESSION_01_RUNBOOK.md).
+
+`scan now` executes explicit 1H/15M partitions of the finite provider-reported
+width observation on the five previously exercised symbols, with exact filler,
+missing/failure and budget accounting. It reports `PARTIAL_INVENTORY`, unknown
+eligible universe and zero qualified CORE/strategy coverage. See the
+[Session 2 runbook](docs/implementation/SESSION_02_RUNBOOK.md) for capability
+limits and the provenance-bound official inventory snapshot interface.
 
 A small, reuse-first **OpenBot-directed crypto trading research and paper-trading laboratory**, proposed to use Freqtrade/FreqUI for deterministic strategy testing and simulated position management. **No strategy has been proven profitable.**
 
@@ -44,9 +52,9 @@ The complete original Markdown design is preserved in **[docs/design/README.md](
 ## Project controls
 
 1. **Design ≠ deployed software; backtest ≠ proven profitability.** No production or paper engine is installed by these documents.
-2. Session 1 permits credential-free, bounded provider qualification and tiny oracle samples under the finalized references. Routine all-market historical downloads remain outside this workstream.
+2. Session 2 permits credential-free, bounded on-demand observations and tiny oracle samples under the finalized references. Routine all-market historical downloads remain outside this workstream.
 3. OpenBot must remain isolated from trading keys and execution-administration APIs. Research outputs are read-only.
 4. Authorize at most one bounded Codex session at a time, with explicit pass/fail gates. Do not spend the remaining five by default.
 5. Do not import AstraBot's unfinished branches or implementation architecture automatically.
 
-**Next:** Follow the dependency gate in [PROGRESS.md](docs/implementation/PROGRESS.md); Session 2 has not begun.
+**Next:** Follow the current partial-coverage handoff in [PROGRESS.md](docs/implementation/PROGRESS.md). Session 3 has not begun.
