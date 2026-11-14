@@ -307,7 +307,8 @@ class ResearchSources:
                     and utc(c['valid_from'])<=utc(e.start)<utc(e.end)<=utc(c['valid_until'])
                     and utc(as_of)<=utc(c['valid_until'])),None)
                 if (not cert or e.mode!=self.mode or e.native_symbol not in eligible
-                        or e.coverage!='COMPLETE' or not n.get('question')):
+                        or e.coverage!='COMPLETE' and not (e.coverage=='SAMPLED' and mid in {'M28','M31'})
+                        or not n.get('question')):
                     raise ContractError('SPECIALIST_SOURCE_SCOPE_UNQUALIFIED')
                 if mid=='M25' and not 0<=(utc(as_of)-utc(e.end)).total_seconds()<=30:
                     raise ContractError('STALE_DEPTH')
@@ -315,6 +316,8 @@ class ResearchSources:
                 if result['status']!='COMPUTED':raise ContractError('SPECIALIST_NOMINATION_UNKNOWN')
                 key=(e.native_symbol,n['timeframe'])
                 self.normalized_inputs.setdefault(key,{})[mid]=e.payload
+                if mid=='M28' and result['value']['classification']=='OBSERVED_FORCED_EXECUTIONS':
+                    self.normalized_inputs[key]['observed_liquidation']=result['value']
                 if mid=='M17':
                     profile=result['value']
                     self.normalized_inputs.setdefault(key,{}).setdefault('true_profiles',[]).append(profile)

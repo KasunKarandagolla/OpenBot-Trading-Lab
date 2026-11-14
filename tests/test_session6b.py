@@ -357,6 +357,20 @@ class AuthenticAndSpecialist(unittest.TestCase):
         self.assertEqual(analyze_specialist_envelope('M21',complete,as_of=t.end)['status'],'COMPUTED')
         with self.assertRaisesRegex(ContractError,'SPECIALIST_ENVELOPE_SCOPE_OR_TIME'):
             analyze_specialist_envelope('M21',replace(complete,mode='AUTHENTIC_REPLAY'),as_of=t.end)
+        # A declared sampled forced-execution feed can initiate a bounded
+        # question; it never becomes complete liquidation-market coverage.
+        payload={'rows':[{'native_symbol':t.native_symbol,'venue':t.venue,'id':'SYNTHETIC_FORCED_1',
+            'at':t.start,'kind':'OBSERVED_FORCED_EXECUTION','price':D(100),'base':D(1)}],
+            'native_symbol':t.native_symbol,'venue':t.venue,'start':t.start,'end':t.end,
+            'coverage':'SAMPLED','source_hash':t.source_hash}
+        sampled=replace(e,units='OBSERVED_FORCED_BASE',coverage='SAMPLED',payload=payload)
+        cert={**cert,'methods':['M28'],'families':['F9']}
+        src=ResearchSources(mode='SYNTHETIC',certificates=[cert],nominations=[{'envelope':sampled,
+            'source_id':cert['source_id'],'method_id':'M28','family':'F9','timeframe':'1h','question':'Did witnessed forced executions coincide with a price shock?'}])
+        accepted,faults=src.independent(as_of=t.end,eligible={t.native_symbol:replace(api.instruments[0],native_symbol=t.native_symbol)})
+        self.assertFalse(faults);self.assertTrue(accepted)
+        observed=src.normalized_inputs[t.native_symbol,'1h']['observed_liquidation']
+        self.assertEqual(observed['coverage'],'SAMPLED');self.assertIsNone(observed['market_total_estimate'])
 
     def test_complete_covered_gap_and_incomplete_interval_are_distinct(self):
         api,client,sources,at,_=synthetic_6b();bars=api.samples['CONTROLUSDT','1h'][0][-10:]
