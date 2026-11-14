@@ -153,9 +153,12 @@ class BasisMCP:
             if self.session5:
                 from .core import EXPRESSIONS
                 registered.update(EXPRESSIONS)
+                from .remote_structure import EXPRESSIONS as structure_expressions
+                registered.update(structure_expressions)
             expressions = ([arguments["expression"]] if name == "formula_evaluate" else
                            [r.get("left", {}).get("expression") for r in arguments.get("rules", [])])
-            if not expressions or any(e not in registered for e in expressions):
+            from .remote_structure import registered as registered_structure
+            if not expressions or any(e not in registered and not (self.session5 and registered_structure(e)) for e in expressions):
                 raise ContractError("UNREGISTERED_FORMULA")
         if name in {"market_candles", "formula_evaluate", "screener_run"}:
             if name != "formula_evaluate" or "ref" not in arguments:

@@ -17,6 +17,8 @@ ENDPOINTS = {
     "binance_book": "https://fapi.binance.com/fapi/v1/ticker/bookTicker",
     "binance_premium": "https://fapi.binance.com/fapi/v1/premiumIndex",
     "binance_klines": "https://fapi.binance.com/fapi/v1/klines",
+    "binance_depth": "https://fapi.binance.com/fapi/v1/depth",
+    "binance_oi_history": "https://fapi.binance.com/futures/data/openInterestHist",
 }
 MAX_BYTES = 2 * 1024 * 1024
 MCP_READ_TOOLS = frozenset({"catalog_search", "catalog_describe", "market_candles",
@@ -79,6 +81,15 @@ class PublicHTTP:
                     or type(query["endTime"]) is not int or query["endTime"] <= 0):
                 raise ProviderError("BOUNDED_KLINE_QUERY_REQUIRED")
             symbol(query["symbol"])
+        elif endpoint == 'binance_depth':
+            if not isinstance(query,dict) or set(query)!={'symbol','limit'} or type(query['limit']) is not int or query['limit']!=100:
+                raise ProviderError('PUBLIC_QUERY_REJECTED')
+            symbol(query['symbol'])
+        elif endpoint == 'binance_oi_history':
+            if (not isinstance(query,dict) or set(query)!={'symbol','period','limit'}
+                    or query['period']!='5m' or type(query['limit']) is not int or query['limit']!=12):
+                raise ProviderError('PUBLIC_QUERY_REJECTED')
+            symbol(query['symbol'])
         elif query is not None:
             raise ProviderError("PUBLIC_QUERY_REJECTED")
         if endpoint == "basis":

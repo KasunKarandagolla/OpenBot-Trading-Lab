@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from .contracts import ContractError, Feasibility, Fidelity, symbol, utc
 
-STAGES = {"PREMATURE", "EARLY", "DEVELOPING", "APPROACHING_DECISION", "READY_FOR_DEEP",
+STAGES = {"PREMATURE", "EARLY", "DEVELOPING", "APPROACHING_DECISION", "READY_FOR_DEEP", "CONDITIONAL_FOR_DEEP",
           "FAST_WITH_ROOM", "LATE", "INVALIDATED", "UNKNOWN"}
 
 

@@ -20,6 +20,7 @@ STAGE_REQUIREMENTS={
     'APPROACHING_DECISION':('PREKNOWN_REFERENCE','ORDERED_PARTIAL_SEQUENCE','REFERENCE_SIGNIFICANCE','DECISION_PROXIMITY'),
     'READY_FOR_DEEP':('QUALIFIED_CURRENT_SEQUENCE','REFERENCE_SIGNIFICANCE','ROOM','ECONOMICS','HORIZON'),
     'FAST_WITH_ROOM':('QUALIFIED_CURRENT_SEQUENCE','REFERENCE_SIGNIFICANCE','ROOM','ECONOMICS','HORIZON','RECENT_EVENT','NEAR_DECISION'),
+    'CONDITIONAL_FOR_DEEP':('QUALIFIED_CURRENT_SEQUENCE','REFERENCE_SIGNIFICANCE','ROOM','DECLARED_ECONOMIC_SCENARIO','HORIZON'),
     'LATE':('KNOWN_FIRST_OBSTACLE_CONSUMED',), 'INVALIDATED':('CAUSAL_CONTRADICTING_EVENT',),
     'UNKNOWN':('MISSING_OR_STALE_NECESSARY_EVIDENCE',),
 }
@@ -162,10 +163,16 @@ def remaining_room(card, facts, references, *, as_of):
     _,rid,edge,r=min(choices,key=lambda x:(x[0],x[1]))
     if not set(r.source_ids)<=set(facts):raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
     gross=max(D(0),direction*(edge-number(current.value)))
-    return {'status':'ROOM_EXHAUSTED' if gross==0 else 'ROOM_OBSERVED','first_obstacle_id':rid,
+    lifecycle=[facts[i] for i in card.evidence_ids if i in facts and facts[i].measurement=='OBSTACLE_LIFECYCLE'
+        and isinstance(facts[i].value,dict) and facts[i].value.get('reference_id')==rid
+        and facts[i].usable(as_of=as_of,native_symbol=card.native_symbol,qualified=True)
+        and utc(facts[i].value['after'])<=utc(card.window_start)]
+    consumed=any(f.value.get('consumed') is True for f in lifecycle)
+    return {'status':'ROOM_EXHAUSTED' if gross==0 or consumed else 'ROOM_OBSERVED','first_obstacle_id':rid,
         'obstacle_known_at':r.known_at,'obstacle_available_at':r.available_at,'gross_room':gross,
         'units':'USDT_PER_BASE','room_bps':gross/number(current.value,positive=True)*10000,
-        'evidence_ids':[origin.id,current.id,*r.source_ids],
+        'evidence_ids':[origin.id,current.id,*r.source_ids,*(f.id for f in lifecycle)],
+        'consumed_since_initiation':consumed,
         'interpretation':'RESEARCH_GEOMETRY; NO_EXECUTABLE_TARGET_OR_PROFIT_ESTIMATE'}
 
 
@@ -183,7 +190,9 @@ def economics(card, facts, room, *, as_of):
     friction=sum((vals[k] for k in ('SPREAD_BPS','ROUND_TRIP_FEE_BPS','SLIPPAGE_BOUND_BPS','FUNDING_BOUND_BPS')),D(0))
     status='ECONOMICS_UNKNOWN' if room['status']=='ROOM_UNKNOWN' else (
         'ECONOMICS_FAVORABLE_FOR_RESEARCH' if room['room_bps']>friction else 'ECONOMICS_UNFAVORABLE')
-    return {'status':status,'observed_friction_bound_bps':friction,
+    assumptions=[f.id for f in found.values() if f.source_id.startswith('DECLARED_RESEARCH_')]
+    if status=='ECONOMICS_FAVORABLE_FOR_RESEARCH' and assumptions:status='ECONOMICS_CONDITIONAL_RESEARCH_SCENARIO'
+    return {'status':status,'observed_friction_bound_bps':friction,'assumption_evidence_ids':assumptions,
         'horizon_seconds':vals['HORIZON_SECONDS'],'evidence_ids':[f.id for f in found.values()],
         'scope':'SOURCE_DECLARED_BOUNDS; EXECUTION_NOT_CERTIFIED'}
 
@@ -235,6 +244,8 @@ def review_card(card, facts, references, *, as_of):
         event_age=(utc(as_of)-utc(card.events[-1]['known_at'])).total_seconds()
         if event_age<=900 and proximity and proximity.value is True:
             stage='FAST_WITH_ROOM';reason='RECENT_VERIFIED_EVENT_WITH_ROOM_AND_FRICTION'
+    elif complete and current and primary.verdict=='SUPPORTED' and card.qualification=='QUALIFIED' and significance and significance.value in {'HIGH','MED'} and room['status']=='ROOM_OBSERVED' and eco['status']=='ECONOMICS_CONDITIONAL_RESEARCH_SCENARIO':
+        stage='CONDITIONAL_FOR_DEEP';reason='CAUSAL_RESEARCH_QUESTION_WITH_EXPLICIT_ECONOMIC_ASSUMPTIONS; ANALYST_MAY_DECLINE'
     elif sequence_ids and significance and proximity and proximity.value is True:
         stage='APPROACHING_DECISION';reason='CAUSAL_SEQUENCE_AND_SIGNIFICANT_DECISION_AREA'
     elif sequence_ids or primary.supporting_ids:
@@ -279,7 +290,7 @@ def shortlist(reviews, *, coverage, max_count=5, not_reviewed=()):
     if type(max_count) is not int or not 0<=max_count<=5:raise ContractError('MAX_SHORTLIST_FIVE')
     rows=list(reviews)
     if len({r['card_id'] for r in rows})!=len(rows):raise ContractError('CONFLICTING_STRUCTURE_DUPLICATE')
-    eligible=[r for r in rows if r['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM'}]
+    eligible=[r for r in rows if r['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}]
     def dimensions(r):
         return (2 if r['historical_significance']=='HIGH' else 1,
                 1 if r['stage']=='FAST_WITH_ROOM' else 0,-r['contradiction_load'])

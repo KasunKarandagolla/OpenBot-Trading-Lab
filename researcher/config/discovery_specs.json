@@ -1574,5 +1574,36 @@
     "gap_policy": "GAP_UNOBSERVED_UNLESS_CAUSALLY_SOURCE_COVERED",
     "source_availability_delay_seconds": 0,
     "availability_delay_status": "ACTUAL_SOURCE_CUTOFF_VALIDATION; PUBLISH_LAG_UNKNOWN"
+  },
+  "session55": {
+    "enabled": true,
+    "revision": "session55.0",
+    "qualification_evidence": "evidence/external-first/session55/causal-qualification.json",
+    "qualification_sha256": "08247bdcf936019b9e779e4e9225ce2947791e52c032085ad9ed7109c5baa0cf",
+    "screen_schema_sha256": "afddba4ce7b0a06855421392da3f5c9d2f2658ed869dc2752d255d380899b02c",
+    "causal_timeframes": [
+      "1h"
+    ],
+    "method_screen_requests": 14,
+    "method_recovery_requests": 2,
+    "qualified_bits": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "full_core_enabled": false,
+    "all_methods_enabled": false,
+    "llm_status": "LLM_DISABLED_NO_APPROVED_PROVIDER",
+    "economics": {
+      "probe_notional_usdt": "100",
+      "round_trip_fee_assumption_bps": "20",
+      "additional_slippage_assumption_bps": "10",
+      "funding_assumption_bound_bps": "100",
+      "max_horizon_seconds": 54000,
+      "fee_source": "https://www.binance.com/en/support/faq/detail/360033544231",
+      "bound_status": "CONFIGURED_CONSERVATIVE_RESEARCH_SCENARIO; NOT_ACCOUNT_FEES_OR_GUARANTEED_FUTURE_BOUNDS"
+    }
   }
 }

@@ -1,3 +1,15 @@
+# Session 5.5 — source-qualified causal nominations and defect closure
+
+**CODEX_LOCAL; integration branch; start remote b330b20c4f7ff5d1558ed98fe0aa5b8cd36fa836. Release remains PARTIAL.**
+
+Implemented a finite registered remote compiler for confirmed-pivot fixed-age F2/F4/F5 nomination subclasses, independently qualified on actual selected Binance data. Broad 1H causal work reuses the existing PartitionEngine and scan path, with separate sparse/event coverage and explicit disabled F2-upper positive gate. Added bounded deferred recovery across distinct failed partitions, protected same-budget causal/watch/quiet/contrary/audit allocation, genuine selected native depth/OI, first-obstacle consumption checks, declared economic scenarios with a separate conditional disposition, and a hashed replayable one-way export. Optional consultant stays disabled and cannot invent evidence. The public provider schema is pinned and checked before enabling causal work.
+
+**Critical remaining gates:** full always-finite/sparse-isolated CORE, complete family/method semantics beyond the narrow templates, authentic positive admission under prospective availability, full representative young/multiplier cohorts, and sustained quota/recall qualification remain incomplete. This is substantive Sol work, not Luna housekeeping. No downstream integration or GO claim.
+
+The concise [Session 5.5 acceptance matrix/runbook](SESSION_05_5_RUNBOOK.md) and [evidence](../../evidence/external-first/session55/README.md) record before/after states, exact failures and source limits. Owner assistance: **NONE** for the enabled public subset; no model provider is approved. Final clean, restart, tests and publication verification follow below.
+
+---
+
 # Session 5 — durable on-demand remote research (2026-11-14)
 
 **Environment: CODEX_LOCAL. Release gate: PARTIAL.** Explicit owner authorization

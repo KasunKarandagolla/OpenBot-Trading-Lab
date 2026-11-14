@@ -1,3 +1,5 @@
+Session 5.5: narrow source-qualified causal nominations, public depth/OI and repair work; **PARTIAL**, integration gates still open. See [acceptance matrix](SESSION_05_5_RUNBOOK.md).
+
 # OpenBot Market Researcher — Implementation References
 
 These are the **approved design and implementation references** for the *external-first, read-only* market-discovery workstream. They are design/plan inputs, **not claims that the system has been coded, all providers qualified, or trading performance established**.

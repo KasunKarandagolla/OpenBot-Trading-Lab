@@ -70,3 +70,11 @@ The ledger keeps one current scalar cache, immutable selected causal metadata,
 verified scope cutoffs and honest GAP_UNOBSERVED records; no historical market
 feature/candle archive. The current `scan qualify` is the bounded Session 5 oracle.
 Never send unresolved core/source/causal qualification to Luna as cosmetic work.
+
+Session 5.5 adds a pinned restricted causal compiler and separate broad 1H
+nomination pack, deferred distinct-partition tool recovery, protected same-budget
+allocation, selected public depth/OI and a read-only hashed export. Read
+SESSION_05_5_RUNBOOK.md and session55 evidence. Full CORE/all methods and authentic
+prospective positive admission remain PARTIAL; do not send them to Luna. Preserve
+F2-upper unqualified bit, selected-oracle revocation, explicit conditional fee/
+slippage/funding scenarios, Unicode operation-specific failures and zero LLM.

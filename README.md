@@ -1,3 +1,5 @@
+Session 5.5: narrow source-qualified causal nominations, public depth/OI and repair work; **PARTIAL**, integration gates still open. See [acceptance matrix](docs/implementation/SESSION_05_5_RUNBOOK.md).
+
 # OpenBot Trading Lab
 
 **Status: Session 2 partial external discovery implementation, on demand and read-only. Full CORE and provider qualification remain incomplete; no trading authority.**

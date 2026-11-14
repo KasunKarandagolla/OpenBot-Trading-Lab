@@ -302,15 +302,16 @@ def calculation_report(receipt, pack, *, provider_counts=None):
 
 
 class PartitionEngine:
-    def __init__(self, source: RemoteScreenSource, budget: RequestBudget, *, partition_size=50):
+    def __init__(self, source: RemoteScreenSource, budget: RequestBudget, *, partition_size=50,deferred_tool_recovery=False):
         partitions((), partition_size)
         self.source, self.budget, self.partition_size = source, budget, partition_size
+        self.deferred_tool_recovery=deferred_tool_recovery
 
     def run(self, inventory, pack, cutoff):
         instruments = {i.native_symbol: i for i in inventory.instruments}
         supported = tuple(n for n in inventory.symbols if n in pack.supported_symbols)
         unsupported = tuple(n for n in inventory.symbols if n not in pack.supported_symbols)
-        attempts, effective, observations, dispatched = [], [], [], []
+        attempts, effective, observations, dispatched, pending = [], [], [], [], []
 
         def execute(names, recovery=False):
             metadata, data, acquired = {}, None, False
@@ -343,6 +344,9 @@ class PartitionEngine:
                         row_times[row["symbol"]] = row["observationTime"]
             attempts.append({**calculation_report(receipt, pack, provider_counts=counts),
                 "dispatched": acquired, "provider_reported_bar_open_seconds": row_times})
+            if self.deferred_tool_recovery and not recovery and receipt.provider_error=='MCP_TOOL_ERROR' and not self.budget.stopped_reason:
+                pending.append((names,receipt))
+                return
             # Tool failure or truncation gets finite smaller partitions. A known
             # denial, sparse function or missing ID never triggers an open loop.
             retryable = receipt.truncated or receipt.provider_error == "MCP_TOOL_ERROR"
@@ -358,6 +362,13 @@ class PartitionEngine:
 
         for part in partitions(supported, self.partition_size):
             execute(part)
+        # Retry distinct transient-fault partitions after healthy work, rather
+        # than spending both recovery credits on the first failing half-group.
+        # Truncation still needs finite bisection. Never retry denials or clocks.
+        for names,receipt in pending:
+            if (not self.budget.stopped_reason and self.budget.retries<self.budget.retry_limit
+                    and self.budget.calls<self.budget.max_calls):execute(names,True)
+            else:effective.append(receipt)
         evaluated = tuple(n for r in effective for n in r.evaluated_symbols)
         failures = {n: reason for r in effective for n, reason in r.failed_symbols.items()}
         failures.update({n: "UNVERIFIED_PROVIDER_SYMBOL_SCOPE" for n in unsupported})
@@ -385,6 +396,7 @@ class PartitionEngine:
             "calculation": pack.column_id, "calculation_coverage": [calculation_report(r, pack) for r in effective],
             "attempts": attempts, "observations": observations,
             "zero_opportunities_established": False,
+            "recovery_policy":"DEFER_DISTINCT_TOOL_FAULTS; BISECT_TRUNCATION" if self.deferred_tool_recovery else "BOUNDED_BISECTION",
         }
 
 
