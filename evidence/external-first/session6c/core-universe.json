@@ -1,0 +1,294 @@
+{
+  "budget": {
+    "charged_quota_units": null,
+    "concurrency": 1,
+    "min_request_interval_seconds": 1,
+    "recovery_requests": 2,
+    "scheduling_enabled": false,
+    "screen_request_limit": 26,
+    "screen_requests_attempted": 24,
+    "screen_response_bytes": 147330,
+    "stopped_reason": null,
+    "sustainable_cadence": "UNQUALIFIED"
+  },
+  "cohort": {
+    "failure": "INCOMPLETE_TAIL_LIQUIDITY_DENOMINATOR",
+    "raw_turnover_not_used_as_verified_liquidity": true
+  },
+  "http_requests": 31,
+  "inventory": {
+    "captured_at_utc": "2026-11-14T14:17:27.226761+00:00",
+    "content_sha256": "ded70a0066bc4c83aaab816a3b5af6b5e758247fd43af7b0ac5817223fb640b3",
+    "eligible_contracts": 519,
+    "excluded": {
+      "count": 427,
+      "sha256": "e6c739aedb0bef62e10522a74cdc0d63f04db0f5f527dd2a33d786f2e2a5a321",
+      "values_count": {
+        "INELIGIBLE_CONTRACTTYPE": 241,
+        "INELIGIBLE_QUOTEASSET": 46,
+        "INELIGIBLE_STATUS": 137,
+        "INELIGIBLE_UNDERLYINGTYPE_INDEX": 2,
+        "INELIGIBLE_UNDERLYINGTYPE_PREMARKET": 1
+      }
+    },
+    "faults": []
+  },
+  "mode": "LIVE_QUALIFICATION_PROBE_NOT_RELEASE",
+  "p50_ms": 630,
+  "p95_ms": 961,
+  "production_enabled": false,
+  "receipts": {
+    "count": 31,
+    "first_three": [
+      {
+        "binance_used_weight_1m": 1,
+        "elapsed_ms": 1478,
+        "endpoint": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-14T14:17:27.226761+00:00",
+        "request_body_bytes": 0,
+        "request_url_bytes": 45,
+        "response_bytes": 1176965,
+        "response_sha256": "ded70a0066bc4c83aaab816a3b5af6b5e758247fd43af7b0ac5817223fb640b3",
+        "retry_after": null
+      },
+      {
+        "binance_used_weight_1m": 41,
+        "elapsed_ms": 764,
+        "endpoint": "https://fapi.binance.com/fapi/v1/ticker/24hr",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-14T14:17:28.216825+00:00",
+        "request_body_bytes": 0,
+        "request_url_bytes": 44,
+        "response_bytes": 299841,
+        "response_sha256": "20ad85d78f895cee9bcea18594d6461486f8b56cc0662ba0e72bd2c52cd82862",
+        "retry_after": null
+      },
+      {
+        "binance_used_weight_1m": 5,
+        "elapsed_ms": 576,
+        "endpoint": "https://fapi.binance.com/fapi/v1/ticker/bookTicker",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-14T14:17:28.817916+00:00",
+        "request_body_bytes": 0,
+        "request_url_bytes": 50,
+        "response_bytes": 121615,
+        "response_sha256": "ed2679a0cffd94eb16be4a2b1c671b22cda0dedca096dc54082fbda9aa653ad5",
+        "retry_after": null
+      }
+    ],
+    "sha256": "cf3317093d51328a6c120c299d74dcde5ca33068b6a68fb7ea775ec8b4e454da"
+  },
+  "response_bytes": 2028533,
+  "results": [
+    {
+      "column_values": {
+        "atr14": 0,
+        "body_fraction": 0,
+        "close": 0,
+        "displacement": 0,
+        "efficiency16": 0,
+        "prior_high16": 0,
+        "prior_low16": 0,
+        "progress16": 0,
+        "quiet_percentile": 0,
+        "tr": 0,
+        "tr_fraction": 0,
+        "width16": 0
+      },
+      "cutoff": "2026-11-14T14:15:00+00:00",
+      "eligible": 519,
+      "evaluated_symbols": 0,
+      "failed_symbols": {
+        "count": 519,
+        "sha256": "60b9a2e8424cb37189b08eecc533ad8e91a0933042577059c60898be51692970",
+        "values_count": {
+          "MCP_TOOL_ERROR": 519
+        }
+      },
+      "filler_symbols": [],
+      "missing_symbols": 519,
+      "not_requested_symbols": 0,
+      "pack_id": "CORE_15M",
+      "partition_calls": 13,
+      "qualification": "PROBE_ONLY; NUMERIC_CLOCK_FORMATION_CERTIFICATE_REQUIRED",
+      "recognized_symbols": 0,
+      "requested_symbols": 519,
+      "returned_symbols": 0,
+      "timeframe": "15m"
+    },
+    {
+      "column_values": {
+        "atr14": 0,
+        "body_fraction": 0,
+        "close": 0,
+        "displacement": 0,
+        "efficiency16": 0,
+        "prior_high16": 0,
+        "prior_low16": 0,
+        "progress16": 0,
+        "quiet_percentile": 0,
+        "tr": 0,
+        "tr_fraction": 0,
+        "width16": 0
+      },
+      "cutoff": "2026-11-14T14:00:00+00:00",
+      "eligible": 519,
+      "evaluated_symbols": 0,
+      "failed_symbols": {
+        "count": 519,
+        "sha256": "60b9a2e8424cb37189b08eecc533ad8e91a0933042577059c60898be51692970",
+        "values_count": {
+          "MCP_TOOL_ERROR": 519
+        }
+      },
+      "filler_symbols": [],
+      "missing_symbols": 519,
+      "not_requested_symbols": 0,
+      "pack_id": "CORE_1H",
+      "partition_calls": 11,
+      "qualification": "PROBE_ONLY; NUMERIC_CLOCK_FORMATION_CERTIFICATE_REQUIRED",
+      "recognized_symbols": 0,
+      "requested_symbols": 519,
+      "returned_symbols": 0,
+      "timeframe": "1h"
+    }
+  ],
+  "source_health": [
+    {
+      "evaluated_symbols": {
+        "count": 517,
+        "first_three": [
+          "JUPUSDT",
+          "MOODENGUSDT",
+          "ANIMEUSDT"
+        ],
+        "sha256": "9458b2d8f98b47e839d0cf8c6a28f96a86b5a5ad75697fe1576c4027949ad9d4"
+      },
+      "failed_symbols": {
+        "ACUUSDT": "INVALID_OR_STALE_MARKET_ROW",
+        "SPELLUSDT": "INVALID_OR_STALE_MARKET_ROW"
+      },
+      "filler_symbols": {
+        "count": 287,
+        "first_three": [
+          "MCDUSDT",
+          "BNBUSDC",
+          "BABAUSDT"
+        ],
+        "sha256": "bfc85b9811050edb4116461e7f022ddb75e6fb96bf2bb9956e89c2e638559909"
+      },
+      "kind": "ticker",
+      "missing_symbols": [],
+      "requested_symbols": {
+        "count": 519,
+        "first_three": [
+          "BTCUSDT",
+          "ETHUSDT",
+          "BCHUSDT"
+        ],
+        "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+      },
+      "returned_symbols": {
+        "count": 519,
+        "first_three": [
+          "0GUSDT",
+          "1000000MOGUSDT",
+          "1000BONKUSDT"
+        ],
+        "sha256": "d64ed73119bca52b81acc4b32211cf65fc5eda34755cc049e33f563317b38075"
+      },
+      "synchronized_closed_bar_cross_section": false
+    },
+    {
+      "evaluated_symbols": {
+        "count": 519,
+        "first_three": [
+          "BTCUSDT",
+          "ETHUSDT",
+          "BCHUSDT"
+        ],
+        "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+      },
+      "failed_symbols": {},
+      "filler_symbols": {
+        "count": 287,
+        "first_three": [
+          "BTCDOMUSDT",
+          "ETHBTC",
+          "BTCUSDC"
+        ],
+        "sha256": "1275c40c46ecd2919fb84332d8e06e0f2f005b7966cfa9b8d4a68d2b827c614b"
+      },
+      "kind": "book",
+      "missing_symbols": [],
+      "requested_symbols": {
+        "count": 519,
+        "first_three": [
+          "BTCUSDT",
+          "ETHUSDT",
+          "BCHUSDT"
+        ],
+        "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+      },
+      "returned_symbols": {
+        "count": 519,
+        "first_three": [
+          "0GUSDT",
+          "1000000MOGUSDT",
+          "1000BONKUSDT"
+        ],
+        "sha256": "d64ed73119bca52b81acc4b32211cf65fc5eda34755cc049e33f563317b38075"
+      },
+      "synchronized_closed_bar_cross_section": false
+    },
+    {
+      "evaluated_symbols": {
+        "count": 519,
+        "first_three": [
+          "SOMIUSDT",
+          "STRKUSDT",
+          "FIDAUSDT"
+        ],
+        "sha256": "accce97d8313c62b40c568ebecbd096b16e40f86fd7acd78d5c367fdb6b8667d"
+      },
+      "failed_symbols": {},
+      "filler_symbols": {
+        "count": 430,
+        "first_three": [
+          "TEAMUSDT",
+          "FORTHUSDT",
+          "BBXUSDT"
+        ],
+        "sha256": "e74d0a61eed9641e3b3c8958d466440874bfa2d513184ca9d2de69f6a4b23f5d"
+      },
+      "kind": "premium",
+      "missing_symbols": [],
+      "requested_symbols": {
+        "count": 519,
+        "first_three": [
+          "BTCUSDT",
+          "ETHUSDT",
+          "BCHUSDT"
+        ],
+        "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+      },
+      "returned_symbols": {
+        "count": 519,
+        "first_three": [
+          "0GUSDT",
+          "1000000MOGUSDT",
+          "1000BONKUSDT"
+        ],
+        "sha256": "d64ed73119bca52b81acc4b32211cf65fc5eda34755cc049e33f563317b38075"
+      },
+      "synchronized_closed_bar_cross_section": false
+    }
+  ],
+  "source_rights": "PUBLIC_RESEARCH; CHARGED_QUOTA_UNKNOWN",
+  "version": "packs-6c.1",
+  "wall_seconds": 350.8199897789998
+}

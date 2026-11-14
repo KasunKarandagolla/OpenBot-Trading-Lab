@@ -1,0 +1,72 @@
+{
+  "agent_name": "Trading Lab Market Researcher",
+  "audit_source": "OPENBOT_APP_SCOPED_READ_ONLY_AUDIT",
+  "authority": "ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM",
+  "current_live_admission_authorized": false,
+  "format_repair_turns": 1,
+  "frozen_evidence_test_only": true,
+  "material_sha256": "56edc0debbf659435052f369887a03ffd9a519616ca63b67e3249ff14e8d813f",
+  "model": "opencode/deepseek-v4.1-flash-free",
+  "model_request_count_semantics": "PROVIDER_ASSISTANT_ATTEMPTS; UNDERLYING_HTTP_RETRIES_NOT_INDEPENDENTLY_MEASURED",
+  "model_requests": 6,
+  "native_app_turns": 2,
+  "native_invocation_verified": true,
+  "native_skill_tool_loads": 1,
+  "original_turn_wall_seconds": 778.943,
+  "provider_transport_failures": 2,
+  "quota_entitlement_and_future_cost": "UNKNOWN; CURRENT_CONFIGURED_FREE_MODEL_REUSED",
+  "repair_turn_wall_seconds": 60.996,
+  "reply_sha256": "9789d0296ac1251ca4a2422726d3cbaae59b3c686ed6e5a23b3a6d5fc847d83a",
+  "request_file_sha256": "49aa924ab7bd0226758b36eeb74a93dd738d451b9b9f5ec26a24f752db533404",
+  "request_read_proof": "Two read ranges reconstruct every line and exact request file SHA256",
+  "request_read_ranges": [
+    [
+      1,
+      1318
+    ],
+    [
+      1319,
+      2139
+    ]
+  ],
+  "schema_version": "openbot.native-review.audit.v1",
+  "skill_load_proof": "Provider v2 completed skill tool content contains the complete deployed skill body",
+  "skill_name": "market-research-review",
+  "skill_sha256": "c2b50794113ea9561c0f38f3d99e9ad063e5f1e6517e1e9f5ca716b551b3ced9",
+  "skill_version": "6c-native-review.1",
+  "tool_operations": [
+    "READ_SKILL",
+    "READ_REQUEST",
+    "READ_REQUEST"
+  ],
+  "unauthorized_tool_operations": 0,
+  "underlying_transport_retry_count": "UNKNOWN",
+  "usage": [
+    {
+      "model": "opencode/deepseek-v4.1-flash-free",
+      "phase": "initial",
+      "provider": "opencode",
+      "rate_basis": "OpenCode session cost report; API-equivalent rates, not subscription charges",
+      "reported_estimated_cost_usd": 0.0,
+      "tokens": {
+        "cacheCreation": 0,
+        "cachedInput": 78080,
+        "output": 10902,
+        "uncachedInput": 29366
+      }
+    },
+    {
+      "model": "opencode/deepseek-v4.1-flash-free",
+      "phase": "format_repair",
+      "provider": "opencode",
+      "rate_basis": "OpenCode session cost report; API-equivalent rates, not subscription charges",
+      "reported_estimated_cost_usd": 0.0,
+      "tokens": {
+        "cacheCreation": 0,
+        "cachedInput": 512,
+        "output": 2841,
+        "uncachedInput": 67080
+      }
+    }
+  ]
+}

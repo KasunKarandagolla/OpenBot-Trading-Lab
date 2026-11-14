@@ -1,0 +1,1609 @@
+{
+  "schema_version": "openbot.discovery-specs.v1",
+  "session": 4,
+  "policy": {
+    "external_first": true,
+    "context_policy": "ADVISORY_NON_VETO",
+    "trade_authorization": false,
+    "max_shortlist": 5,
+    "scheduling_enabled": false,
+    "whole_market_history_enabled": false
+  },
+  "references": {
+    "blueprint_sha256": "cf7a58fd9ed5f5d1010673406c26a405c8112b907216a47f88a9ebee1bd3d45c",
+    "plan_sha256": "245591eea0f92cd185c51db3420043031c11c1d941f91ecdb31fd64a34e0c232"
+  },
+  "providers": {
+    "basis": {
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "authentication": "NONE",
+      "key_setup": "DEFERRED_UNTIL_AUTH_CONTRACT_VERIFIED",
+      "evidence": "LIVE_TESTED_NARROW",
+      "operations": {
+        "market_candles": {
+          "enabled": true,
+          "feasibility": "TARGETED_ONLY",
+          "scope": "provider-reported BINANCE futures; exchange identity UNVERIFIED",
+          "timeframes": [
+            "1h",
+            "15m"
+          ],
+          "oracle_status": "PARTIAL_SESSION3_ATR_SEED_MISMATCH_AND_UNICODE_TARGETED_FAILURE"
+        },
+        "formula_evaluate": {
+          "enabled": false,
+          "feasibility": "UNVERIFIED"
+        },
+        "screener_run": {
+          "enabled": false,
+          "feasibility": "UNVERIFIED",
+          "on_demand_observation_probe": "NARROW_PROVIDER_REPORTED_ONLY"
+        },
+        "orderflow_read": {
+          "enabled": false,
+          "feasibility": "UNVERIFIED",
+          "schema_inspected": true
+        }
+      },
+      "free_automation_terms": "DOC_CONFIRMED_2026-11-13",
+      "documented_keyless_daily_calls": 1000,
+      "documented_free_key_daily_calls": 10000,
+      "observed_charged_units": null,
+      "minute_limit": null,
+      "continuous_cadence_qualified": false
+    },
+    "binance": {
+      "endpoint": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+      "authentication": "NONE",
+      "evidence": "LIVE_TESTED_NARROW",
+      "http_status": 200,
+      "enabled": true,
+      "retry_policy": "STOP_ROUTE_NO_BYPASS",
+      "scope": "PUBLIC_READ_ONLY; INTENDED_HOST_ACCESS_MUST_BE_RECHECKED",
+      "historical_cloud_denial": {
+        "http_status": 451,
+        "environment": "CODEX_CLOUD",
+        "no_bypass": true
+      },
+      "local_evidence": "evidence/external-first/session3/live-qualification.json"
+    }
+  },
+  "families": [
+    {
+      "id": "F1",
+      "name": "Controlled trend continuation / pullback",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F1",
+      "implementation": {
+        "state": "PARTIAL_FORMATION",
+        "production_enabled": false,
+        "scope": "SELECTED_SAMPLE_ONLY",
+        "ready_for_deep_enabled": false,
+        "null_hypothesis_required": true,
+        "remote_qualification": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "F2",
+      "name": "Breakout/breakdown, acceptance and retest",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F2",
+      "implementation": {
+        "state": "IMPLEMENTED_TRIAL",
+        "production_enabled": false,
+        "scope": "SELECTED_SAMPLE_ONLY",
+        "ready_for_deep_enabled": false,
+        "null_hypothesis_required": true,
+        "remote_qualification": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "F3",
+      "name": "Compression-to-expansion or momentum continuation with room",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F3",
+      "implementation": {
+        "state": "PARTIAL_FORMATION",
+        "production_enabled": false,
+        "scope": "SELECTED_SAMPLE_ONLY",
+        "ready_for_deep_enabled": false,
+        "null_hypothesis_required": true,
+        "remote_qualification": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "F4",
+      "name": "Liquidity sweep / failed-break reversal",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F4",
+      "implementation": {
+        "state": "IMPLEMENTED_TRIAL",
+        "production_enabled": false,
+        "scope": "SELECTED_SAMPLE_ONLY",
+        "ready_for_deep_enabled": false,
+        "null_hypothesis_required": true,
+        "remote_qualification": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "F5",
+      "name": "Failed reversal / sweep continuation (explicitly distinct from F2)",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F5",
+      "implementation": {
+        "state": "IMPLEMENTED_TRIAL",
+        "production_enabled": false,
+        "scope": "SELECTED_SAMPLE_ONLY",
+        "ready_for_deep_enabled": false,
+        "null_hypothesis_required": true,
+        "remote_qualification": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "F6",
+      "name": "Range rotation / auction and true-profile value interaction",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F6",
+      "implementation": {
+        "state": "PARTIAL_PRICE_ONLY",
+        "production_enabled": false,
+        "scope": "SELECTED_SAMPLE_ONLY",
+        "ready_for_deep_enabled": false,
+        "null_hypothesis_required": true,
+        "remote_qualification": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "F7",
+      "name": "VWAP / value-based mean reversion",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F7",
+      "implementation": {
+        "state": "PRIMITIVES_ONLY",
+        "production_enabled": false,
+        "scope": "SELECTED_SAMPLE_ONLY",
+        "ready_for_deep_enabled": false,
+        "null_hypothesis_required": true,
+        "remote_qualification": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "F8",
+      "name": "Relative strength / weakness with local structural consequence",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F8",
+      "implementation": {
+        "state": "PRIMITIVES_ONLY",
+        "production_enabled": false,
+        "scope": "SELECTED_SAMPLE_ONLY",
+        "ready_for_deep_enabled": false,
+        "null_hypothesis_required": true,
+        "remote_qualification": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "F9",
+      "name": "Post-shock / post-liquidation stabilization or second-leg opportunity",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §8 F9",
+      "implementation": {
+        "state": "NOT_IMPLEMENTED",
+        "production_enabled": false,
+        "scope": "SELECTED_SAMPLE_ONLY",
+        "ready_for_deep_enabled": false,
+        "null_hypothesis_required": true,
+        "remote_qualification": "UNVERIFIED"
+      }
+    }
+  ],
+  "methods": [
+    {
+      "id": "M01",
+      "name": "Confirmed swings, HH/HL/LH/LL",
+      "roles": "SHARED, INITIATE",
+      "observable_definition": "Confirmed ladder or protected high/low; structure near a consequential reference",
+      "caveat": "Required `known_at`, enough actual previous pivots; no retroactive ZigZag",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "confirmed_swings",
+          "swing_ladder"
+        ],
+        "necessary_evidence": "Closed OHLC; 2/2 confirmed pivots; two highs and lows",
+        "temporal_sequence": "Pivot at k becomes known only at close k+r",
+        "valid_interpretation": "Confirmed ladder or protected high/low; structure near a consequential reference",
+        "false_positive_traps": "Hindsight pivots, terminal unconfirmed pivot",
+        "competing_explanations": "Range noise, opposing ladder",
+        "invalidation_conditions": "New close beyond defended swing; reference expiry",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M02",
+      "name": "BOS / CHoCH / MSS",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "First accepted buffered close through a pre-known comparable swing; opposing break suggests shift, displacement + prior context qualifies MSS trial",
+      "caveat": "Wick/noise is not BOS; multi-timeframe and ladder context required",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "swing_breaks"
+        ],
+        "necessary_evidence": "Preknown comparable swing; ladder; buffered close",
+        "temporal_sequence": "Swing confirmation precedes break; MSS needs later qualified context",
+        "valid_interpretation": "First accepted buffered close through a pre-known comparable swing; opposing break suggests shift, displacement + prior context qualifies MSS trial",
+        "false_positive_traps": "Wicks, mixing hierarchy, unqualified MSS",
+        "competing_explanations": "Continuation, CHoCH candidate, ordinary noise",
+        "invalidation_conditions": "Reclaim or reference invalidation",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M03",
+      "name": "Horizontal S/R, supply/demand",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "Separated pre-known visits, impulsive response, approach to still-valid area",
+      "caveat": "Zone source/age/confirmed events; do not assume hidden orders",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "Reference",
+          "touch_episodes"
+        ],
+        "necessary_evidence": "Frozen bounds; distinct visits; original ATR and tick",
+        "temporal_sequence": "Known reference before touch and response",
+        "valid_interpretation": "Separated pre-known visits, impulsive response, approach to still-valid area",
+        "false_positive_traps": "Rolling extrema mistaken for significant levels",
+        "competing_explanations": "Range edge, unstructured clustering",
+        "invalidation_conditions": "Expiry, accepted breach, consumed obstacle",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M04",
+      "name": "EQH/EQL / inferred liquidity pool",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "At least two separated confirmed pivots within frozen ATR/tick tolerance; revisit/sweep proximity",
+      "caveat": "Inferred stop concentration, not recorded stop orders",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "IMPLEMENTED_TRIAL",
+        "execution_scope": "TARGETED_ONLY; TWO_CONFIRMED_PIVOTS_WITH_FROZEN_FIRST_ATR_AND_INTERVENING_RETREAT",
+        "dependencies": [
+          "confirmed_swings",
+          "touch_episodes"
+        ],
+        "necessary_evidence": "Two separated confirmed pivots, frozen tolerance and retreat",
+        "temporal_sequence": "Second pivot confirmation establishes pool",
+        "valid_interpretation": "At least two separated confirmed pivots within frozen ATR/tick tolerance; revisit/sweep proximity",
+        "false_positive_traps": "Consecutive equal candles are not separated pivots",
+        "competing_explanations": "Ordinary repeated highs; no actual stop orders observed",
+        "invalidation_conditions": "Accepted breach or expiry",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M05",
+      "name": "Liquidity sweep / reclaim",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "Excursion and ordered close back through same frozen boundary",
+      "caveat": "F4/F5/F6 rivals; intrabar ordering not inferred from OHLC",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "IMPLEMENTED_TRIAL",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "boundary_events"
+        ],
+        "necessary_evidence": "Preknown boundary, excursion, reclaim, later response",
+        "temporal_sequence": "Same original reference and chronologically later opposing attempt",
+        "valid_interpretation": "Excursion and ordered close back through same frozen boundary",
+        "false_positive_traps": "OHLC intrabar sequence and stop-volume inference",
+        "competing_explanations": "F2,F4,F5,F6,NULL",
+        "invalidation_conditions": "Outside acceptance contradicts reversal branch",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M06",
+      "name": "Order Block (OB) candidate",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "Last opposite candle in a small predeclared base immediately preceding meaningful displacement + BOS; birth known **at BOS**, then unconsumed zone approach",
+      "caveat": "Pre-register wick/body/full-candle bounds and base length; pattern does not prove an institutional order",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "NOT_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "swing_breaks",
+          "displacement"
+        ],
+        "necessary_evidence": "Predeclared 1–4 bar base; last opposite full candle; meaningful displacement and BOS",
+        "temporal_sequence": "Birth only at later BOS completion",
+        "valid_interpretation": "Last opposite candle in a small predeclared base immediately preceding meaningful displacement + BOS; birth known **at BOS**, then unconsumed zone approach",
+        "false_positive_traps": "Hindsight best-candle selection; institutional intent",
+        "competing_explanations": "Ordinary impulse/base, failed breakout",
+        "invalidation_conditions": "Accepted distal breach, expiry, consumption",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M07",
+      "name": "Breaker / role-flip",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "Existing valid OB/reference **accepted through**, followed by later opposite-side approach/retest",
+      "caveat": "Requires same original zone ID and failure order, not a newly invented box",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "NOT_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "Reference",
+          "lifecycle"
+        ],
+        "necessary_evidence": "Existing OB or valid zone, accepted breach, later other-side retest",
+        "temporal_sequence": "Original zone birth before failure before retest",
+        "valid_interpretation": "Existing valid OB/reference **accepted through**, followed by later opposite-side approach/retest",
+        "false_positive_traps": "Inventing replacement boxes after outcome",
+        "competing_explanations": "Ordinary retest, renewed old-zone response",
+        "invalidation_conditions": "Accepted return through flipped zone",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M08",
+      "name": "Fair Value Gap (FVG)",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "Bullish 3-bar **non-overlap** `L_t > H_(t-2)`, bearish `H_t < L_(t-2)`; middle displacement and min width qualify meaningful subclass",
+      "caveat": "Zone born at close `t`, not a promise of future fill, no inference of absent trades",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "IMPLEMENTED_TRIAL",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "gap_lifecycle"
+        ],
+        "necessary_evidence": "Three closed bars with exact non-overlap; tick and optional ATR/displacement",
+        "temporal_sequence": "Born at third close, later mitigation and accepted failure",
+        "valid_interpretation": "Bullish 3-bar **non-overlap** `L_t > H_(t-2)`, bearish `H_t < L_(t-2)`; middle displacement and min width qualify meaningful subclass",
+        "false_positive_traps": "Gap geometry does not prove absent trades or future fill",
+        "competing_explanations": "Ordinary gap, shock, continuation",
+        "invalidation_conditions": "Two buffered distal closes in trial model",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M09",
+      "name": "Inverse FVG (iFVG)",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "Previously established FVG accepted through distal edge, then later tested from other side",
+      "caveat": "Must reference same gap, not arbitrary inverse color",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "IMPLEMENTED_TRIAL",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "gap_lifecycle"
+        ],
+        "necessary_evidence": "Existing FVG; two distal closes; subsequent other-side test",
+        "temporal_sequence": "Original gap before accepted breach before later retest",
+        "valid_interpretation": "Previously established FVG accepted through distal edge, then later tested from other side",
+        "false_positive_traps": "Changed candle color is not inverse gap",
+        "competing_explanations": "Original gap failure without inverse response",
+        "invalidation_conditions": "Accepted close back across opposite gap edge",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M10",
+      "name": "Mitigation/zone revisits",
+      "roles": "SHARED, DISCRIMINATE",
+      "observable_definition": "First/subsequent visits to a pre-known OB/FVG/S&D zone; penetration, response, accepted failure",
+      "caveat": "Touch ≠ unfilled institutional orders; accepted breach changes rival setup",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "gap_lifecycle",
+          "boundary_events"
+        ],
+        "necessary_evidence": "Preknown frozen zone; actual later bar overlap and response",
+        "temporal_sequence": "Birth before visit; same original zone ID",
+        "valid_interpretation": "First/subsequent visits to a pre-known OB/FVG/S&D zone; penetration, response, accepted failure",
+        "false_positive_traps": "Touch is not evidence of unfilled institutional orders",
+        "competing_explanations": "Simple price revisit, continuation, failure",
+        "invalidation_conditions": "Distal accepted breach or expiry",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M11",
+      "name": "OTE",
+      "roles": "CONTEXT, targeted INITIATE only when independent structure",
+      "observable_definition": "Frozen confirmed impulse `[A,B]`, price retraces trial `62%–79%` band **plus** real zone/structure",
+      "caveat": "Fibonacci alone adds no independent proof, no self-fulfilling claim",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "NOT_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "confirmed_swings"
+        ],
+        "necessary_evidence": "Frozen confirmed impulse plus independent zone; 62–79 percent trial band",
+        "temporal_sequence": "Endpoints confirmed before retracement evaluation",
+        "valid_interpretation": "Frozen confirmed impulse `[A,B]`, price retraces trial `62%–79%` band **plus** real zone/structure",
+        "false_positive_traps": "Fibonacci alone is not independent evidence",
+        "competing_explanations": "F1 pullback, ordinary range drift",
+        "invalidation_conditions": "Protected impulse start broken",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M12",
+      "name": "Candle Range Theory (CRT) variant",
+      "roles": "INITIATE, DISCRIMINATE",
+      "observable_definition": "**Preselected** completed 1H/4H reference candle `[L0,H0]`; later edge excursion, reclaim and structural initiative toward opposite reference",
+      "caveat": "Exact reference selection must precede outcome; variants differ; do not label all candle sweeps universally CRT",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "NOT_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "Reference",
+          "boundary_events"
+        ],
+        "necessary_evidence": "Reference candle explicitly selected before outcome; excursion/reclaim/initiative",
+        "temporal_sequence": "Reference selection precedes later excursion",
+        "valid_interpretation": "**Preselected** completed 1H/4H reference candle `[L0,H0]`; later edge excursion, reclaim and structural initiative toward opposite reference",
+        "false_positive_traps": "Post-hoc candle selection; conflicting CRT variants",
+        "competing_explanations": "Generic sweep or range rotation",
+        "invalidation_conditions": "Accepted continuation outside or expiry",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M13",
+      "name": "PO3 / AMD prototype",
+      "roles": "TARGETED/INITIATE when qualified",
+      "observable_definition": "Predeclared session balance → boundary excursion → reclaim → later opposing displacement/acceptance",
+      "caveat": "Crypto session definition is experimental; “manipulation” is a label for measured excursion, **not intent**",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "NOT_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "boundary_events"
+        ],
+        "necessary_evidence": "Predeclared session; balance then excursion/reclaim then opposing displacement",
+        "temporal_sequence": "Session bounds known before excursion and later initiative",
+        "valid_interpretation": "Predeclared session balance → boundary excursion → reclaim → later opposing displacement/acceptance",
+        "false_positive_traps": "Manipulation label is not intent",
+        "competing_explanations": "Ordinary balance resolution, shock",
+        "invalidation_conditions": "Outside acceptance, stale/unobserved session history",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M14",
+      "name": "Silver Bullet",
+      "roles": "TARGETED method subclass",
+      "observable_definition": "Credible primary-source time window + independent FVG/displacement/liquidity sequence, strict timezone/DST",
+      "caveat": "Do not invent canonical window or assume US equities schedule predictive for 24/7 crypto; C1 trial of 10–11am NY is **not validated**; outside-window generic FVG remains eligible",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "BLOCKED_DEFINITION",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "gap_lifecycle"
+        ],
+        "necessary_evidence": "Primary-source window, timezone/DST and independent FVG/liquidity sequence",
+        "temporal_sequence": "Verified window and local structure; no invented crypto schedule",
+        "valid_interpretation": "Credible primary-source time window + independent FVG/displacement/liquidity sequence, strict timezone/DST",
+        "false_positive_traps": "Assuming illustrative NY window is canonical",
+        "competing_explanations": "Generic FVG remains separately eligible",
+        "invalidation_conditions": "Window/sequence definition unavailable",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M15",
+      "name": "Keepssy Reversal Model",
+      "roles": "DEFINITION_PENDING",
+      "observable_definition": "None until primary-source exact rules supplied and reconciled",
+      "caveat": "Do not manufacture formula, rank, or method-specific signals",
+      "status": "DEFINITION_PENDING",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "DEFINITION_PENDING",
+        "execution_scope": "UNSUPPORTED",
+        "dependencies": [],
+        "necessary_evidence": "Primary-source exact rules unavailable",
+        "temporal_sequence": "Unspecified; no fabricated predicate",
+        "valid_interpretation": "None until primary-source exact rules supplied and reconciled",
+        "false_positive_traps": "Invented Keepssy rules",
+        "competing_explanations": "UNKNOWN",
+        "invalidation_conditions": "Unspecified pending source definition",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "DATA_UNAVAILABLE",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M16",
+      "name": "Auction Market Theory",
+      "roles": "INITIATE, SHARED, DISCRIMINATE",
+      "observable_definition": "Balance/imbalance, value-edge test, acceptance/rejection, failed auction, price discovery, value migration",
+      "caveat": "Auction language should identify actually measured price/value processes",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "formation_candidates",
+          "boundary_events"
+        ],
+        "necessary_evidence": "Price-only balance references and causal acceptance/rejection; true value needs tape",
+        "temporal_sequence": "Known balance before edge visit and response",
+        "valid_interpretation": "Balance/imbalance, value-edge test, acceptance/rejection, failed auction, price discovery, value migration",
+        "false_positive_traps": "Auction words mistaken for true value profile",
+        "competing_explanations": "Price-only rotation, F2, F4, NULL",
+        "invalidation_conditions": "Accepted out-of-range movement refutes old rotation",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M17",
+      "name": "Volume Profile POC/VAH/VAL",
+      "roles": "INITIATE where TRUE, TARGETED",
+      "observable_definition": "Verified price-bin executed-volume distribution and zone approach; compare fixed complete sessions",
+      "caveat": "Composite vs Binance-only and true vs proxy must appear in field name; complete window/binning required",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "BLOCKED_DATA",
+        "execution_scope": "UNSUPPORTED",
+        "dependencies": [],
+        "necessary_evidence": "Actual executed volume by traded price; venue, bins, full interval",
+        "temporal_sequence": "Prior complete declared profile before later interaction",
+        "valid_interpretation": "Verified price-bin executed-volume distribution and zone approach; compare fixed complete sessions",
+        "false_positive_traps": "OHLC allocation cannot be true profile",
+        "competing_explanations": "Price-only range or profile proxy explicitly labeled",
+        "invalidation_conditions": "Invalid/missing profile scope or superseding value",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "DATA_UNAVAILABLE",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M18",
+      "name": "HVN/LVN / naked POC",
+      "roles": "INITIATE if TRUE, TARGETED",
+      "observable_definition": "Documented node extremum/local minima and first visit to pre-known unfinished reference",
+      "caveat": "Smoothing, tie, interval, venue/time changes; a table of POC/VAH/VAL alone cannot certify nodes",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "BLOCKED_DATA",
+        "execution_scope": "UNSUPPORTED",
+        "dependencies": [],
+        "necessary_evidence": "True price-bin tape, smoothing, node/tie/separation convention",
+        "temporal_sequence": "Node known before first future visit; fixed session",
+        "valid_interpretation": "Documented node extremum/local minima and first visit to pre-known unfinished reference",
+        "false_positive_traps": "POC/VA table cannot prove nodes",
+        "competing_explanations": "Ordinary price level",
+        "invalidation_conditions": "Incomplete tape, changed scope, consumed naked reference",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "DATA_UNAVAILABLE",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M19",
+      "name": "Session/anchored VWAP",
+      "roles": "INITIATE, SHARED",
+      "observable_definition": "Valid anchor, later price/value extension/reclaim, value migration or rejection",
+      "caveat": "Exact Q/V first moment for complete bars where qualified; genuine anchor known-at and reset; proxy kept separate",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "anchored_value"
+        ],
+        "necessary_evidence": "Complete exact Q/V and predeclared whole-bar anchor",
+        "temporal_sequence": "Anchor known before included interval in current implementation",
+        "valid_interpretation": "Valid anchor, later price/value extension/reclaim, value migration or rejection",
+        "false_positive_traps": "HLC3 proxy or unknown vendor reset treated as exact",
+        "competing_explanations": "Trending migrating mean, balanced mean",
+        "invalidation_conditions": "Incomplete interval or superseded anchor",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M20",
+      "name": "Statistical reversion",
+      "roles": "DISCRIMINATE, INITIATE only with conditional regime",
+      "observable_definition": "Past-only distribution of residuals, excursion, later failed progress, space to actual value",
+      "caveat": "Normalized extension alone not a standalone fade; no fake normality assumption",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "NOT_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "anchored_value",
+          "efficiency"
+        ],
+        "necessary_evidence": "Past-only residual distribution and compatible regime plus failed progress",
+        "temporal_sequence": "Baseline before extension before later return attempt",
+        "valid_interpretation": "Past-only distribution of residuals, excursion, later failed progress, space to actual value",
+        "false_positive_traps": "z alone does not imply normality or reversal",
+        "competing_explanations": "F1/F3 continuation, catalyst repricing",
+        "invalidation_conditions": "Accepted repricing away from old mean",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M21",
+      "name": "Real trade-side delta/CVD",
+      "roles": "INITIATE on supported sources, DISCRIMINATE otherwise",
+      "observable_definition": "Timed, anchored price-vs-flow divergence, initiative/resistance at pre-known reference",
+      "caveat": "Bar-delta vs true price-bin/sequence separated; spot/perp and venue identity",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "bar_delta",
+          "anchored_value"
+        ],
+        "necessary_evidence": "Verified base/quote taker bars; complete same-anchor CVD; swings for divergence",
+        "temporal_sequence": "Closed taker bars and causal pivot availability",
+        "valid_interpretation": "Timed, anchored price-vs-flow divergence, initiative/resistance at pre-known reference",
+        "false_positive_traps": "Bar delta is not footprint; candle color is not delta",
+        "competing_explanations": "Ordinary participation without reversal",
+        "invalidation_conditions": "Missing bars, reset, mismatch in venue or units",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M22",
+      "name": "Footprint diagonal imbalance",
+      "roles": "TARGETED, specialist INITIATE on supported instruments",
+      "observable_definition": "Valid price-bin executed buy vs adjacent-bin executed sell ratio, declared min volume and ≥3 adjacent bins as **trial** stack",
+      "caveat": "Full coverage/bin/tick and zero denominator policy. Vendor may use different diagonal convention",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "BLOCKED_DATA",
+        "execution_scope": "UNSUPPORTED",
+        "dependencies": [],
+        "necessary_evidence": "Complete price-bin executed buy/sell, adjacent-bin convention, min volume",
+        "temporal_sequence": "Declared fully observed tape interval before stacked imbalance",
+        "valid_interpretation": "Valid price-bin executed buy vs adjacent-bin executed sell ratio, declared min volume and ≥3 adjacent bins as **trial** stack",
+        "false_positive_traps": "Bar delta mistaken for footprint; infinite ratios",
+        "competing_explanations": "Ordinary aggressive flow",
+        "invalidation_conditions": "Partial bins or zero denominator without min-volume policy",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "DATA_UNAVAILABLE",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M23",
+      "name": "Absorption",
+      "roles": "TARGETED, DISCRIMINATE",
+      "observable_definition": "Repeated aggressive executed activity near a level **with limited price progress**, adequate tape, later response",
+      "caveat": "Cannot infer from OI or static book wall; requires real executed trade/price response and complete enough window",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "BLOCKED_DATA",
+        "execution_scope": "UNSUPPORTED",
+        "dependencies": [],
+        "necessary_evidence": "Repeated executed aggression at level with limited progress and later response",
+        "temporal_sequence": "Comparable tape attempts precede subsequent response",
+        "valid_interpretation": "Repeated aggressive executed activity near a level **with limited price progress**, adequate tape, later response",
+        "false_positive_traps": "Static wall or OI cannot prove absorption",
+        "competing_explanations": "Delayed breakout, ordinary liquidity",
+        "invalidation_conditions": "Missing tape or sustained progress through reference",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "DATA_UNAVAILABLE",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M24",
+      "name": "Aggression exhaustion",
+      "roles": "TARGETED, DISCRIMINATE",
+      "observable_definition": "Declining price progress and aggressive flow across comparable repeated attempts under valid tape history",
+      "caveat": "Decline in volume alone not exhaustion; possible delayed breakout remains rival",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "BLOCKED_DATA",
+        "execution_scope": "UNSUPPORTED",
+        "dependencies": [],
+        "necessary_evidence": "Comparable repeated attempts with executed aggression and limited progress",
+        "temporal_sequence": "Observed attempts and declining flow before consequence",
+        "valid_interpretation": "Declining price progress and aggressive flow across comparable repeated attempts under valid tape history",
+        "false_positive_traps": "Falling volume alone is not exhaustion",
+        "competing_explanations": "Temporary lull, continuation",
+        "invalidation_conditions": "New aggressive expansion or inadequate history",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "DATA_UNAVAILABLE",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M25",
+      "name": "Order-book depth / walls",
+      "roles": "CONTEXT, TARGETED",
+      "observable_definition": "Current displayed depth within stated bps, imbalance, spread/wall appearance/removal if time series complete",
+      "caveat": "Static snapshot does not show historical replenishment; no spoof/iceberg intent claim",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "OfficialResearchAPI.pulse"
+        ],
+        "necessary_evidence": "Fresh official bid/ask; deeper wall claims need depth time series",
+        "temporal_sequence": "Current quote timestamp; no historical wall claim",
+        "valid_interpretation": "Current displayed depth within stated bps, imbalance, spread/wall appearance/removal if time series complete",
+        "false_positive_traps": "Top of book is not full depth or replenishment",
+        "competing_explanations": "Normal displayed liquidity; no spoof intent",
+        "invalidation_conditions": "Stale/crossed book or incomplete depth",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M26",
+      "name": "Open interest",
+      "roles": "CONTEXT, DISCRIMINATE, specialist INITIATE for shocks",
+      "observable_definition": "Native/unit-aligned ΔOI with price, funding and actual structure",
+      "caveat": "Does not identify newly opening longs vs shorts; coin-wide aggregates are not exact Binance perps",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "BLOCKED_DATA",
+        "execution_scope": "UNSUPPORTED",
+        "dependencies": [],
+        "necessary_evidence": "Native/base/USD OI and aligned marks/multiplier",
+        "temporal_sequence": "Comparable timestamps and units before delta",
+        "valid_interpretation": "Native/unit-aligned ΔOI with price, funding and actual structure",
+        "false_positive_traps": "OI sign does not reveal new long/short direction",
+        "competing_explanations": "Mark repricing, offsetting participants",
+        "invalidation_conditions": "Scope/unit discontinuity or stale source",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "DATA_UNAVAILABLE",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M27",
+      "name": "Funding / basis",
+      "roles": "CONTEXT, TARGETED",
+      "observable_definition": "Source rate/interval percentile, extreme changes, basis dislocations and timing",
+      "caveat": "Carry varies by venue/time, crowding can persist; no automatic reversal rule",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "OfficialResearchAPI.pulse"
+        ],
+        "necessary_evidence": "Official mark/funding context; interval and settled history remain unknown",
+        "temporal_sequence": "Actual source time and predicted funding timing retained",
+        "valid_interpretation": "Source rate/interval percentile, extreme changes, basis dislocations and timing",
+        "false_positive_traps": "Predicted rate is not settled; extreme can persist",
+        "competing_explanations": "Persistent carry, transient repricing",
+        "invalidation_conditions": "Stale or mismatched interval/venue",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M28",
+      "name": "Reported liquidations",
+      "roles": "INITIATE F9 when covered, TARGETED",
+      "observable_definition": "Covered forced-order observations during shock, source sampling and currency units",
+      "caveat": "Sampled/not complete; modeled liquidation level ≠ actual execution",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "BLOCKED_DATA",
+        "execution_scope": "UNSUPPORTED",
+        "dependencies": [],
+        "necessary_evidence": "Covered observed forced orders and sampling/notional units",
+        "temporal_sequence": "Observed liquidation window aligned with shock",
+        "valid_interpretation": "Covered forced-order observations during shock, source sampling and currency units",
+        "false_positive_traps": "Modeled maps mistaken for observed executions",
+        "competing_explanations": "Price-only shock without witnessed liquidation",
+        "invalidation_conditions": "Partial feed cannot establish total cascade",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "DATA_UNAVAILABLE",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M29",
+      "name": "Relative strength and sectors",
+      "roles": "INITIATE, CONTEXT",
+      "observable_definition": "Persistent lag-trained residual, or broad cheap proxy followed by local structure",
+      "caveat": "Independent strength needs aligned data, not only top-% gain",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "relative_return",
+          "lag_trained_beta"
+        ],
+        "necessary_evidence": "Aligned historical bars; prior training; dated sector maps n>=5 for sectors",
+        "temporal_sequence": "Train ends before evaluated return; later local consequence needed",
+        "valid_interpretation": "Persistent lag-trained residual, or broad cheap proxy followed by local structure",
+        "false_positive_traps": "Beta is not correlation; raw gain is not independent strength",
+        "competing_explanations": "Market beta, sector effect, thin trading",
+        "invalidation_conditions": "Missing alignment, zero benchmark variance, stale sector membership",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M30",
+      "name": "Volatility/market breadth",
+      "roles": "CONTEXT, SHARED, INITIATE for shock/expansion",
+      "observable_definition": "BTC/ETH regime, cross-sectional dispersion, unusual own historic quietness and shock",
+      "caveat": "Macro context guides attention, never disables an altcoin method",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "PARTIAL_IMPLEMENTED",
+        "execution_scope": "LOCAL_SELECTED_VERIFICATION_ONLY",
+        "dependencies": [
+          "true_ranges",
+          "wilder_atr",
+          "compression"
+        ],
+        "necessary_evidence": "Exact closed history; sufficient past-only baseline; fresh eligible breadth denominator",
+        "temporal_sequence": "Quiet baseline before expansion; ticker breadth only rolling snapshot",
+        "valid_interpretation": "BTC/ETH regime, cross-sectional dispersion, unusual own historic quietness and shock",
+        "false_positive_traps": "Inverted compression percentile; context veto",
+        "competing_explanations": "Contrary alt structures remain eligible",
+        "invalidation_conditions": "Missing warmup, stale or contradictory source scopes",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "PRICE_OR_BAR_FIELDS_ONLY",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    },
+    {
+      "id": "M31",
+      "name": "News/events/catalysts",
+      "roles": "CONTEXT, targeted INITIATE",
+      "observable_definition": "Source-verified scheduled event or asset-specific announcement with usable time",
+      "caveat": "External text is untrusted; no causal proof solely from temporal coincidence",
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "spec": "blueprint §9.1–9.2",
+      "implementation": {
+        "state": "BLOCKED_DATA",
+        "execution_scope": "UNSUPPORTED",
+        "dependencies": [],
+        "necessary_evidence": "Original publisher, publication/availability time and exact contract mapping",
+        "temporal_sequence": "Known publication before research interpretation",
+        "valid_interpretation": "Source-verified scheduled event or asset-specific announcement with usable time",
+        "false_positive_traps": "Untrusted text instructions; coincidence is not causality",
+        "competing_explanations": "Unrelated contemporaneous event",
+        "invalidation_conditions": "Unverified publisher, stale mapping or unknown timestamp",
+        "provider_requirements": "Official Binance selected klines/current data for price/bar fields; qualified remote pack required for broad execution; true specialists require separately qualified tape",
+        "fidelity": "DATA_UNAVAILABLE",
+        "production_enabled": false,
+        "remote_qualification": "UNVERIFIED",
+        "definition_source": "blueprint §9.1–9.2"
+      }
+    }
+  ],
+  "qualification_formulas": {
+    "close": {
+      "expression": "close",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "high": {
+      "expression": "high",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "low": {
+      "expression": "low",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "volume": {
+      "expression": "volume",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "width": {
+      "expression": "(highest(high,3)-lowest(low,3))/close",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "prior_high": {
+      "expression": "highest(high[1],3)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "prior_low": {
+      "expression": "lowest(low[1],3)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "lag": {
+      "expression": "lag(close,1)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "median": {
+      "expression": "median(close,3)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "quantile": {
+      "expression": "quantile(close,3,0.5)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "atr": {
+      "expression": "atr(14)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "prior_compare": {
+      "expression": "close>close[1]",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "no_event_bars": {
+      "expression": "bars_since(close<0)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "no_event_value": {
+      "expression": "value_when(close<0,close,0)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "flow_identity": {
+      "expression": "delta-(2*buy_volume-volume)",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "bounded qualification probes only",
+      "includeForming": false
+    },
+    "delta": {
+      "expression": "delta",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "SELECTED_SOURCE_ORACLE_ONLY",
+      "source": "Session1 variable catalog; independently verify against official kline"
+    },
+    "buy_volume": {
+      "expression": "buy_volume",
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "scope": "SELECTED_SOURCE_ORACLE_ONLY",
+      "source": "Session1 variable catalog; independently verify against official kline"
+    }
+  },
+  "packs": {
+    "CORE_1H": {
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "reason": "quiet-tail and independent exchange oracle blocked",
+      "version": "2.0.0-partial.1",
+      "timeframe": "1h",
+      "provider": "basis",
+      "scope": "EXPLICIT_PROVIDER_OBSERVED_SYMBOLS_ONLY; EXCHANGE_ELIGIBILITY_UNVERIFIED",
+      "output_mode": "BROAD_FEATURE_EXPORT",
+      "lookback": 300,
+      "cutoff_convention": "observationTime is last closed bar OPEN; end=open+tf; frozen run cutoff",
+      "null_semantics": "UNKNOWN; never numeric zero; no sparse columns in baseline",
+      "failure_isolation": "bounded bisection for tool errors/truncation; stop denials/quota",
+      "full_core_qualified": false,
+      "observation_columns": [
+        {
+          "id": "NORMALIZED_WIDTH_3",
+          "expression": "(highest(high,3)-lowest(low,3))/close",
+          "required_closed_bars": 3,
+          "units": "DIMENSIONLESS_PRICE_WIDTH_RATIO",
+          "schema_test": "PASS_SESSION1",
+          "arithmetic_test": "PASS_SAME_SOURCE_18_COMPARISONS_1H",
+          "source_semantics": "PROVIDER_REPORTED_CLOSED_OHLC_WINDOW",
+          "independent_source_accuracy": "UNVERIFIED",
+          "production_enabled": false,
+          "observation_probe_enabled": true,
+          "oracle_evidence": "tests/fixtures/session1/oracle_btc_1h.json",
+          "precision_absolute": "0.00005",
+          "cannot_certify": [
+            "historical compression percentile",
+            "significant structural boundary",
+            "SMC/ICT sequence"
+          ]
+        }
+      ],
+      "required_outputs": {
+        "ATR_SCALE": {
+          "status": "UNVERIFIED",
+          "reason": "independent ATR seed/warmup unqualified"
+        },
+        "PAST_ONLY_BOUNDS": {
+          "status": "UNVERIFIED",
+          "reason": "prior3 arithmetic passed; structural window/source qualification pending"
+        },
+        "EFFICIENCY_PROGRESSION": {
+          "status": "UNVERIFIED",
+          "reason": "remote denominator/constant-series semantics unqualified"
+        },
+        "HISTORICAL_COMPRESSION": {
+          "status": "INCOMPLETE_HISTORY",
+          "reason": "past percentile convention and full baseline unqualified"
+        },
+        "RELATIVE_QUOTE_VOLUME": {
+          "status": "UNVERIFIED",
+          "reason": "quote-volume units and baseline unqualified"
+        },
+        "LEVEL_DISTANCE": {
+          "status": "UNVERIFIED",
+          "reason": "frozen reference evidence belongs to Session3"
+        },
+        "TREND_PULLBACK": {
+          "status": "UNVERIFIED",
+          "reason": "causal swing/impulse sequence not implemented"
+        },
+        "SHOCK_DISPLACEMENT": {
+          "status": "UNVERIFIED",
+          "reason": "ATR baseline and historical outlier not qualified"
+        }
+      }
+    },
+    "CORE_15M": {
+      "enabled": false,
+      "status": "UNVERIFIED",
+      "reason": "quiet-tail and independent exchange oracle blocked",
+      "version": "2.0.0-partial.1",
+      "timeframe": "15m",
+      "provider": "basis",
+      "scope": "EXPLICIT_PROVIDER_OBSERVED_SYMBOLS_ONLY; EXCHANGE_ELIGIBILITY_UNVERIFIED",
+      "output_mode": "BROAD_FEATURE_EXPORT",
+      "lookback": 300,
+      "cutoff_convention": "observationTime is last closed bar OPEN; end=open+tf; frozen run cutoff",
+      "null_semantics": "UNKNOWN; never numeric zero; no sparse columns in baseline",
+      "failure_isolation": "bounded bisection for tool errors/truncation; stop denials/quota",
+      "full_core_qualified": false,
+      "observation_columns": [
+        {
+          "id": "NORMALIZED_WIDTH_3",
+          "expression": "(highest(high,3)-lowest(low,3))/close",
+          "required_closed_bars": 3,
+          "units": "DIMENSIONLESS_PRICE_WIDTH_RATIO",
+          "schema_test": "PASS_SESSION1",
+          "arithmetic_test": "PASS_SAME_SOURCE_18_COMPARISONS_1H",
+          "source_semantics": "PROVIDER_REPORTED_CLOSED_OHLC_WINDOW",
+          "independent_source_accuracy": "UNVERIFIED",
+          "production_enabled": false,
+          "observation_probe_enabled": true,
+          "oracle_evidence": "tests/fixtures/session1/oracle_btc_1h.json",
+          "precision_absolute": "0.00005",
+          "cannot_certify": [
+            "historical compression percentile",
+            "significant structural boundary",
+            "SMC/ICT sequence"
+          ]
+        }
+      ],
+      "required_outputs": {
+        "ATR_SCALE": {
+          "status": "UNVERIFIED",
+          "reason": "independent ATR seed/warmup unqualified"
+        },
+        "PAST_ONLY_BOUNDS": {
+          "status": "UNVERIFIED",
+          "reason": "prior3 arithmetic passed; structural window/source qualification pending"
+        },
+        "EFFICIENCY_PROGRESSION": {
+          "status": "UNVERIFIED",
+          "reason": "remote denominator/constant-series semantics unqualified"
+        },
+        "HISTORICAL_COMPRESSION": {
+          "status": "INCOMPLETE_HISTORY",
+          "reason": "past percentile convention and full baseline unqualified"
+        },
+        "RELATIVE_QUOTE_VOLUME": {
+          "status": "UNVERIFIED",
+          "reason": "quote-volume units and baseline unqualified"
+        },
+        "LEVEL_DISTANCE": {
+          "status": "UNVERIFIED",
+          "reason": "frozen reference evidence belongs to Session3"
+        },
+        "TREND_PULLBACK": {
+          "status": "UNVERIFIED",
+          "reason": "causal swing/impulse sequence not implemented"
+        },
+        "SHOCK_DISPLACEMENT": {
+          "status": "UNVERIFIED",
+          "reason": "ATR baseline and historical outlier not qualified"
+        },
+        "APPROACH_REJECTION": {
+          "status": "UNVERIFIED",
+          "reason": "reference and causal events pending"
+        },
+        "BAR_AGGRESSOR_DELTA": {
+          "status": "UNVERIFIED",
+          "reason": "independent volume definitions unqualified"
+        }
+      }
+    },
+    "METHOD_STRUCTURE": {
+      "enabled": false,
+      "status": "UNVERIFIED"
+    },
+    "METHOD_AUCTION_VALUE": {
+      "enabled": false,
+      "status": "UNVERIFIED"
+    },
+    "RELATIONSHIP": {
+      "enabled": false,
+      "status": "UNVERIFIED"
+    },
+    "DERIV_SPECIALIST": {
+      "enabled": false,
+      "status": "UNVERIFIED"
+    }
+  },
+  "qualification_failure_expression": "quantile(close[1],1000,0.2)",
+  "frameworks": {
+    "SMC_ICT": {
+      "status": "UNVERIFIED",
+      "enabled": false,
+      "method_ids": [
+        "M01",
+        "M02",
+        "M03",
+        "M04",
+        "M05",
+        "M06",
+        "M07",
+        "M08",
+        "M09",
+        "M10",
+        "M11",
+        "M12",
+        "M13",
+        "M14",
+        "M15"
+      ],
+      "spec": "blueprint §9.1–9.2; observable components only, no intent claims"
+    }
+  },
+  "external_discovery": {
+    "version": "2.0.0",
+    "release": "R0_ON_DEMAND_OBSERVATION",
+    "partition_size": 50,
+    "concurrency": 1,
+    "max_screen_requests": 8,
+    "max_http_requests": 16,
+    "min_request_interval_seconds": 1,
+    "retry_budget": 2,
+    "inventory_max_age_seconds": 86400,
+    "independent_source_accuracy": "UNVERIFIED",
+    "quiet_tail_qualification": "BLOCKED_CURRENT_INVENTORY",
+    "qualified_alternative_inventories": [],
+    "observed_symbols": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "SOLUSDT",
+      "FILUSDT",
+      "1000PEPEUSDT"
+    ],
+    "observed_scope_evidence": "evidence/external-first/session1/runtime-samples-001.json",
+    "screen_fidelity": "EXACT_REPORTED",
+    "screen_precision_absolute": "0.00005",
+    "source_semantics": "PROVIDER_REPORTED_BINANCE_FUTURES_CLOSED_WINDOW_ONLY",
+    "scheduling_enabled": false,
+    "nomination_routes": {
+      "BOUNDARY_PRESSURE": [
+        "F2",
+        "F4",
+        "F5",
+        "F6"
+      ],
+      "COMPRESSION_EXPANSION": [
+        "F3",
+        "F2"
+      ],
+      "TREND_PULLBACK": [
+        "F1"
+      ],
+      "BREAKOUT_SWEEP_REGION": [
+        "F2",
+        "F4",
+        "F5",
+        "F6"
+      ],
+      "RELATIVE_ANOMALY": [
+        "F8"
+      ],
+      "TRANSITION_SHOCK": [
+        "F9"
+      ],
+      "PREVIOUS_WATCH": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "QUIET_TAIL": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "NEW_LISTING": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "SPECIALIST": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "VALUE_LOCATION": [
+        "F6",
+        "F7"
+      ]
+    },
+    "observed_scope_sha256": "a738381eda170f27ee0b5ada90dd101b2fd2f43ab1b36bfdf551aef18e822184",
+    "arithmetic_evidence": "evidence/external-first/session1/oracle-results.json",
+    "arithmetic_sha256": "262e142c2d5c88eb8220a699577f1aa8bf8bdb671ad8178475e8e79f51c5c3de"
+  },
+  "session3": {
+    "version": "3.0.0",
+    "environment": "CODEX_LOCAL_EXCEPTION",
+    "max_selected_symbols": 5,
+    "max_sample_bars": 300,
+    "max_kline_calls": 10,
+    "ledger_scope": "IMMUTABLE_METADATA_EVENTS_ONLY",
+    "production_detectors_enabled": false,
+    "qualification_only_broadening": true,
+    "live_command": "python -m researcher scan now",
+    "qualification_command": "python -m researcher scan qualify",
+    "public_binance_hosts": [
+      "fapi.binance.com"
+    ],
+    "redirects": false,
+    "proxies": false,
+    "measurement_semantics": "docs/implementation/SESSION_03_NUMERICS.md",
+    "numerical_oracle_status": "SAMPLED_SOURCE_VERIFIED_EXCEPT_BLUEPRINT_ATR_SEED"
+  },
+  "session4": {
+    "release": "PARTIAL_RESEARCH_REVIEW_AND_REMOTE_PRECURSOR_TRIALS",
+    "default_llm_calls": 0,
+    "optional_llm_provider_enabled": false,
+    "max_horizon_seconds": 54000,
+    "max_shortlist": 5,
+    "atr_remote_status": "ATR_REMOTE_UNQUALIFIED",
+    "full_core_enabled": false,
+    "specialist_runtime_sources": {},
+    "context_status": "IMPLEMENTED_SOURCE_GATED; LIVE_4H_AND_SYNC_BREADTH_UNQUALIFIED",
+    "readiness_scope": "QUALIFIED_CURRENT_EVIDENCE_ONLY; CURRENT_CAPTURE_TRIALS_CANNOT_PROMOTE",
+    "budget_pools": [
+      "broad",
+      "targeted",
+      "exception",
+      "watch"
+    ],
+    "max_remote_selected_bars": 300,
+    "max_live_probe_requests": 45,
+    "quiet_trial_percentile_max": "0.25",
+    "scheduling_enabled": false,
+    "source_evidence": "evidence/external-first/session4/qualification.json",
+    "deployment_host_observation": {
+      "environment": "CODEX_CLOUD",
+      "binance": "BLOCKED_HTTP_451",
+      "basis": "LIVE_TESTED_NARROW",
+      "production_methods": "DISABLED_UNVERIFIED",
+      "specialists": "NO_QUALIFIED_RUNTIME_SOURCE"
+    },
+    "explicit_atr_trial": "EXACT_SEED_AND_RECURRENCE_MATCH_BTC_1H_15M_ONLY"
+  },
+  "session5": {
+    "release": "PARTIAL_ON_DEMAND_REMOTE_PRICE_PRECURSORS_AND_TARGETED_CAUSAL_RESEARCH",
+    "environment": "CODEX_LOCAL",
+    "qualification_evidence": "evidence/external-first/session5/core-qualification.json",
+    "qualification_sha256": "ce3bebb8f247978d0611fba1f8d962c2ad11714a3e07cc9faa19843f7aea6638",
+    "qualified_price_columns": [
+      "atr_explicit",
+      "width16",
+      "quiet_percentile",
+      "efficiency16",
+      "progress16",
+      "prior_high16",
+      "prior_low16",
+      "upper_distance",
+      "lower_distance",
+      "tr_fraction",
+      "close",
+      "displacement",
+      "body_fraction",
+      "pressure_upper",
+      "pressure_lower",
+      "quote_rvol32"
+    ],
+    "full_core_enabled": false,
+    "remote_quote_rvol": "QUALIFIED_SAMPLED_QUOTE_VOLUME; ZERO_BASELINE_UNKNOWN",
+    "production_remote_family_detectors_enabled": false,
+    "targeted_causal_scope": "SELECTED_ONLY; CURRENT_HISTORICAL_RECONSTRUCTION",
+    "max_screen_requests": 26,
+    "max_targeted_alt_symbols": 2,
+    "max_http_requests": 40,
+    "cache_ttl_seconds": 300,
+    "max_horizon_seconds": 54000,
+    "scheduling_enabled": false,
+    "specialist_runtime_sources": {},
+    "default_llm_calls": 0,
+    "gap_policy": "GAP_UNOBSERVED_UNLESS_CAUSALLY_SOURCE_COVERED",
+    "source_availability_delay_seconds": 0,
+    "availability_delay_status": "ACTUAL_SOURCE_CUTOFF_VALIDATION; PUBLISH_LAG_UNKNOWN"
+  },
+  "session55": {
+    "enabled": true,
+    "revision": "session55.0",
+    "qualification_evidence": "evidence/external-first/session55/causal-qualification.json",
+    "qualification_sha256": "08247bdcf936019b9e779e4e9225ce2947791e52c032085ad9ed7109c5baa0cf",
+    "screen_schema_sha256": "afddba4ce7b0a06855421392da3f5c9d2f2658ed869dc2752d255d380899b02c",
+    "causal_timeframes": [
+      "1h"
+    ],
+    "method_screen_requests": 14,
+    "method_recovery_requests": 2,
+    "qualified_bits": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "full_core_enabled": false,
+    "all_methods_enabled": false,
+    "llm_status": "LLM_DISABLED_NO_APPROVED_PROVIDER",
+    "economics": {
+      "probe_notional_usdt": "100",
+      "round_trip_fee_assumption_bps": "20",
+      "additional_slippage_assumption_bps": "10",
+      "funding_assumption_bound_bps": "100",
+      "max_horizon_seconds": 54000,
+      "fee_source": "https://www.binance.com/en/support/faq/detail/360033544231",
+      "bound_status": "CONFIGURED_CONSERVATIVE_RESEARCH_SCENARIO; NOT_ACCOUNT_FEES_OR_GUARANTEED_FUTURE_BOUNDS"
+    }
+  }
+}

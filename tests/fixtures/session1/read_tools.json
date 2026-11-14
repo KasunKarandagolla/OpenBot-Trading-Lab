@@ -1,0 +1,423 @@
+[
+  {
+    "name": "catalog_search",
+    "description": "Search what Basis can do: indicators, formula functions, built-in strategies, the extra series available inside strategy expressions, and the drawing tools with the number of anchors each one takes. This is a catalogue of chart objects, not callable agent functions: use tools_load for function groups. Exact counts are in the system prompt catalogue. Use this before assuming something does or does not exist \u2014 and always before drawing a new type, because a drawing tool id you guessed is refused. Reuse a type already verified in this conversation. An empty query lists a kind; no kind searches them all.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "One of indicator, formula, strategy, variable, drawing, workflow, chartType."
+        },
+        "query": {
+          "type": "string",
+          "description": "Free text; matches name, description and category."
+        },
+        "limit": {
+          "type": "number",
+          "description": "Default 25, max 100."
+        }
+      }
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "catalog_describe",
+    "description": "Full detail for one catalogue entry: an indicator's parameters and defaults, a formula function's signature, a strategy's parameters, or drawing anchor order/text/style. Call this before passing parameters you have not seen.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "indicator, formula, strategy or drawing. Optional."
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "market_candles",
+    "description": "Load price history and return a handle to it, plus a summary. The bars themselves are deliberately not returned \u2014 pass the handle to the compute tools instead. lastClosedCandle is one exact OHLC bar; high/low are WHOLE-WINDOW wick extremes with highAt/lowAt timestamps; from/to are window boundaries, not swing anchors. bars includes a possible forming bar: request N+1 for N closed bars and check closedBars. Defaults to whatever is on the chart.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "description": "Default: the chart."
+        },
+        "timeframe": {
+          "type": "string",
+          "description": "e.g. 15m, 1h, 4h, 1d."
+        },
+        "market": {
+          "type": "string",
+          "enum": [
+            "spot",
+            "futures"
+          ],
+          "description": "Default: the chart."
+        },
+        "exchange": {
+          "type": "string",
+          "enum": [
+            "binance",
+            "bybit",
+            "okx",
+            "hyperliquid"
+          ]
+        },
+        "bars": {
+          "type": "number",
+          "description": "Default 1000, max 50000."
+        },
+        "withDerivatives": {
+          "type": "boolean",
+          "description": "Also load funding, open interest and positioning for this contract."
+        }
+      }
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "formula_evaluate",
+    "description": "Evaluate a Basis formula expression over a loaded window. Functions are listed by catalog_search kind=formula; series named open, high, low, close, volume, returns and more. Multi-line with `let` bindings is supported; the last expression is the result.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "expression": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string",
+          "description": "Default: the chart."
+        },
+        "timeframe": {
+          "type": "string",
+          "description": "e.g. 1h, 4h. Default: the chart."
+        },
+        "market": {
+          "type": "string",
+          "enum": [
+            "spot",
+            "futures"
+          ],
+          "description": "Default: the chart."
+        },
+        "exchange": {
+          "type": "string",
+          "enum": [
+            "binance",
+            "bybit",
+            "okx",
+            "hyperliquid"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "description": "Reuse a handle from market_candles instead of loading."
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "reduce": {
+          "type": "string",
+          "enum": [
+            "last",
+            "summary",
+            "tail",
+            "crossings"
+          ]
+        },
+        "includeForming": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "expression"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "screener_run",
+    "description": "Scan the venue's listed instruments for ones matching conditions, instead of looking at the open chart. Rules combine price fields, any indicator plot, or a formula expression, with ALL/ANY matching. This is the tool for \"which coins are doing X right now\". It fetches history for every instrument in the universe, so use exactly the requested filters. For \"5 coins with RSI above 50\", call rules: [{left:{kind:\"indicator\",studyId:\"rsi\"},operator:\"above\",right:50}], limit:5. Use above for a current state; crossesAbove only for a fresh crossing. limit controls returned matches, universeSize controls how many markets are searched.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "exchange": {
+          "type": "string",
+          "enum": [
+            "binance",
+            "bybit",
+            "okx",
+            "hyperliquid"
+          ],
+          "description": "Defaults to the chart."
+        },
+        "market": {
+          "type": "string",
+          "enum": [
+            "spot",
+            "futures"
+          ],
+          "description": "Defaults to the chart. Perpetuals are futures."
+        },
+        "logic": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ],
+          "description": "Default all."
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "left": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "field",
+                      "indicator",
+                      "formula",
+                      "strategy"
+                    ]
+                  },
+                  "field": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "high",
+                      "low",
+                      "close",
+                      "volume",
+                      "quoteVolume",
+                      "trades",
+                      "change1",
+                      "change5",
+                      "rangePercent"
+                    ]
+                  },
+                  "studyId": {
+                    "type": "string",
+                    "description": "Indicator id, e.g. rsi or ema."
+                  },
+                  "plotKey": {
+                    "type": "string",
+                    "description": "Optional; defaults to the first indicator output."
+                  },
+                  "params": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": [
+                        "number",
+                        "string",
+                        "boolean"
+                      ]
+                    }
+                  },
+                  "expression": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "parameters": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "number"
+                    }
+                  },
+                  "strategyId": {
+                    "type": "string"
+                  }
+                },
+                "description": "e.g. {\"kind\":\"field\",\"field\":\"change5\"}, {\"kind\":\"indicator\",\"studyId\":\"rsi\",\"plotKey\":\"rsi\"}, or {\"kind\":\"formula\",\"name\":\"atrPct\",\"expression\":\"atr(14)/close*100\"}"
+              },
+              "operator": {
+                "type": "string",
+                "enum": [
+                  "above",
+                  "atOrAbove",
+                  "below",
+                  "atOrBelow",
+                  "equal",
+                  "notEqual",
+                  "crossesAbove",
+                  "crossesBelow",
+                  "rising",
+                  "falling"
+                ]
+              },
+              "right": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "constant",
+                          "operand"
+                        ]
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "operand": {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "field",
+                              "indicator",
+                              "formula",
+                              "strategy"
+                            ]
+                          },
+                          "field": {
+                            "type": "string"
+                          },
+                          "studyId": {
+                            "type": "string"
+                          },
+                          "plotKey": {
+                            "type": "string"
+                          },
+                          "params": {
+                            "type": "object"
+                          },
+                          "expression": {
+                            "type": "string"
+                          },
+                          "strategyId": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "description": "Use a number for a threshold: RSI >50 is {left:{kind:\"indicator\",studyId:\"rsi\"},operator:\"above\",right:50}. To compare with an indicator use {kind:\"operand\",operand:{kind:\"indicator\",studyId:\"ema\",params:{period:20}}}."
+              }
+            },
+            "required": [
+              "left",
+              "operator",
+              "right"
+            ]
+          }
+        },
+        "timeframe": {
+          "type": "string",
+          "description": "Defaults to the chart."
+        },
+        "universeSize": {
+          "type": "number",
+          "enum": [
+            20,
+            50,
+            100,
+            200
+          ],
+          "description": "Default 50."
+        },
+        "lookback": {
+          "type": "number",
+          "enum": [
+            300,
+            500,
+            1000,
+            1500
+          ],
+          "description": "Bars. Default 300."
+        },
+        "quote": {
+          "type": "string",
+          "enum": [
+            "USDT",
+            "USDC",
+            "FDUSD",
+            "BTC",
+            "ETH",
+            "ALL"
+          ],
+          "description": "Default USDC on Hyperliquid, USDT elsewhere."
+        },
+        "manualSymbols": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional symbols forced into the universe before current-volume ranking."
+        },
+        "limit": {
+          "type": "number",
+          "description": "Matches to return. Default 25, max 60."
+        },
+        "sortBy": {
+          "type": "string",
+          "enum": [
+            "change24h",
+            "volume24h"
+          ],
+          "description": "Order the matches before the limit, e.g. change24h for top movers. Default: universe order (volume)."
+        },
+        "order": {
+          "type": "string",
+          "enum": [
+            "desc",
+            "asc"
+          ],
+          "description": "With sortBy. Default desc; asc for the biggest losers."
+        }
+      },
+      "required": [
+        "rules"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  }
+]

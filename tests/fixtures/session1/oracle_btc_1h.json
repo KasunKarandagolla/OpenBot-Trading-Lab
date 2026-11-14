@@ -1,0 +1,1091 @@
+{
+  "classification": "SAME_SOURCE_INDEPENDENT_ARITHMETIC_ONLY",
+  "receipts": {
+    "atr": {
+      "bytes": 1008,
+      "elapsed_ms": 859,
+      "label": "formula_atr",
+      "received_at_utc": "2026-11-13T05:18:55.981351+00:00",
+      "request": {
+        "id": "formula_atr",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "atr(14)",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "4b95db40ea1b0a4a6adc067de726d0565fab01741d2c5a826f2fe7f4ae07d804",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:55 GMT"
+      },
+      "status": 200
+    },
+    "close": {
+      "bytes": 800,
+      "elapsed_ms": 747,
+      "label": "formula_close",
+      "received_at_utc": "2026-11-13T05:18:39.073085+00:00",
+      "request": {
+        "id": "formula_close",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "close",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "639d1ab0f1cf8945958dc2f080a2b175092a0dd4644a61f362e315d895f71e6c",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:38 GMT"
+      },
+      "status": 200
+    },
+    "flow_identity": {
+      "bytes": 779,
+      "elapsed_ms": 741,
+      "label": "formula_flow_identity",
+      "received_at_utc": "2026-11-13T05:19:02.827555+00:00",
+      "request": {
+        "id": "formula_flow_identity",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "delta-(2*buy_volume-volume)",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "087ce5104d5a4179705189487deb9c34631af57af19d1a04176d4e321ba76030",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:19:02 GMT"
+      },
+      "status": 200
+    },
+    "high": {
+      "bytes": 797,
+      "elapsed_ms": 727,
+      "label": "formula_high",
+      "received_at_utc": "2026-11-13T05:18:40.800381+00:00",
+      "request": {
+        "id": "formula_high",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "high",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "6c3818f52b8c4cd71deeba99cecf2aef7468ccc5b15cafba49fff2cdb88e7d87",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:40 GMT"
+      },
+      "status": 200
+    },
+    "lag": {
+      "bytes": 798,
+      "elapsed_ms": 774,
+      "label": "formula_lag",
+      "received_at_utc": "2026-11-13T05:18:50.962401+00:00",
+      "request": {
+        "id": "formula_lag",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "lag(close,1)",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "6d242fda05621743ec102970189290ef0b84217e74be41f692a4b5d2a5110b9f",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:50 GMT"
+      },
+      "status": 200
+    },
+    "low": {
+      "bytes": 788,
+      "elapsed_ms": 714,
+      "label": "formula_low",
+      "received_at_utc": "2026-11-13T05:18:42.514344+00:00",
+      "request": {
+        "id": "formula_low",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "low",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "79669a9c35b9a9e0daf69ad19ef363019ebcc4987a375026fd7bfddc2d2a3ed7",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:42 GMT"
+      },
+      "status": 200
+    },
+    "median": {
+      "bytes": 801,
+      "elapsed_ms": 559,
+      "label": "formula_median",
+      "received_at_utc": "2026-11-13T05:18:52.523953+00:00",
+      "request": {
+        "id": "formula_median",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "median(close,3)",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "5efb6929fca1801b10752ebfac24e8cf0e43b3347b43327d21a496dd88776378",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:52 GMT"
+      },
+      "status": 200
+    },
+    "no_event_bars": {
+      "bytes": 406,
+      "elapsed_ms": 805,
+      "label": "formula_no_event_bars",
+      "received_at_utc": "2026-11-13T05:18:59.372793+00:00",
+      "request": {
+        "id": "formula_no_event_bars",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "bars_since(close<0)",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "55bc3a5530c32a73e204bd928d054009bf2703ddd18bf1f956eae3d65e5d0fab",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:59 GMT"
+      },
+      "status": 200
+    },
+    "no_event_value": {
+      "bytes": 407,
+      "elapsed_ms": 712,
+      "label": "formula_no_event_value",
+      "received_at_utc": "2026-11-13T05:19:01.086009+00:00",
+      "request": {
+        "id": "formula_no_event_value",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "value_when(close<0,close,0)",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "8c0198929bb9c47975646cfdee48763dfcd85d216568c28a698341811e5c0849",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:19:00 GMT"
+      },
+      "status": 200
+    },
+    "prior_compare": {
+      "bytes": 694,
+      "elapsed_ms": 585,
+      "label": "formula_prior_compare",
+      "received_at_utc": "2026-11-13T05:18:57.566836+00:00",
+      "request": {
+        "id": "formula_prior_compare",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "close>close[1]",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "c7ff4ba212bcf7cdf0c60974fbbd03515cb3ebd9039610004ccded4dcbaab717",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:57 GMT"
+      },
+      "status": 200
+    },
+    "prior_high": {
+      "bytes": 805,
+      "elapsed_ms": 747,
+      "label": "formula_prior_high",
+      "received_at_utc": "2026-11-13T05:18:47.540382+00:00",
+      "request": {
+        "id": "formula_prior_high",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "highest(high[1],3)",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "64081c2095f4bf8f9c00150a59930e85eaeb6254bbba54107a771d5aef8123f4",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:47 GMT"
+      },
+      "status": 200
+    },
+    "prior_low": {
+      "bytes": 796,
+      "elapsed_ms": 645,
+      "label": "formula_prior_low",
+      "received_at_utc": "2026-11-13T05:18:49.185983+00:00",
+      "request": {
+        "id": "formula_prior_low",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "lowest(low[1],3)",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "3f5e1895cdb58f68fa9366ca5edee6378048a078c48b82f3b30f750675189d54",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:49 GMT"
+      },
+      "status": 200
+    },
+    "quantile": {
+      "bytes": 803,
+      "elapsed_ms": 594,
+      "label": "formula_quantile",
+      "received_at_utc": "2026-11-13T05:18:54.120678+00:00",
+      "request": {
+        "id": "formula_quantile",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "quantile(close,3,0.5)",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "7bdab5ee4ff3d1aad7eec04de52b2dac01e9785515c890ae3339a9e5bc3f631e",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:54 GMT"
+      },
+      "status": 200
+    },
+    "volume": {
+      "bytes": 831,
+      "elapsed_ms": 675,
+      "label": "formula_volume",
+      "received_at_utc": "2026-11-13T05:18:44.189580+00:00",
+      "request": {
+        "id": "formula_volume",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "volume",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "e440e8c59638bca3778167090c3f9c726271c5529d35e9c579d9fff287ef3c9a",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:44 GMT"
+      },
+      "status": 200
+    },
+    "width": {
+      "bytes": 1061,
+      "elapsed_ms": 603,
+      "label": "formula_width",
+      "received_at_utc": "2026-11-13T05:18:45.792763+00:00",
+      "request": {
+        "id": "formula_width",
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+          "arguments": {
+            "expression": "(highest(high,3)-lowest(low,3))/close",
+            "includeForming": false,
+            "reduce": "tail",
+            "ref": "binance.futures.BTCUSDT.1h.65"
+          },
+          "name": "formula_evaluate"
+        }
+      },
+      "response_sha256": "fe87bf018219e5ab58035e497b2cf74e1d95b627358d7c9879e969b09a51b8a7",
+      "safe_headers": {
+        "content-type": "application/json",
+        "date": "Fri, 13 Nov 2026 05:18:45 GMT"
+      },
+      "status": 200
+    }
+  },
+  "scope": "provider-reported Binance BTCUSDT futures 1h; source independently UNVERIFIED",
+  "series": {
+    "atr": {
+      "bars": 64,
+      "defined": 51,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        401.8269179121677,
+        392.7964237755849,
+        414.6038220773282,
+        414.5249776432333,
+        437.7231935258597,
+        499.25010827401195,
+        498.69652911158255,
+        514.789634175041,
+        506.14037459110926,
+        505.2089192631733,
+        493.2868536015183,
+        478.43064977283865,
+        462.2713176462071,
+        446.9376521000499,
+        446.1278198071896,
+        475.3686898209618,
+        475.30664054803594,
+        519.2133090803192,
+        610.7480727174391,
+        607.6874960947644
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "close": {
+      "bars": 64,
+      "defined": 64,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        73465.3,
+        73430.2,
+        72930,
+        72886.4,
+        72476.1,
+        71609.8,
+        71677.4,
+        71726.9,
+        71878.4,
+        71729.6,
+        71663.4,
+        71422.3,
+        71535.6,
+        71392,
+        71423.3,
+        71096.3,
+        70915,
+        70209.8,
+        68930.4,
+        68552.7
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "flow_identity": {
+      "bars": 64,
+      "defined": 64,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        0,
+        0,
+        4.547473508864641e-13,
+        0,
+        -9.094947017729282e-13,
+        -1.8189894035458565e-12,
+        0,
+        0,
+        0,
+        -2.2737367544323206e-13,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "high": {
+      "bars": 64,
+      "defined": 64,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        73561.3,
+        73607.8,
+        73450.9,
+        73131.5,
+        72949.7,
+        72551.9,
+        71709.6,
+        72194,
+        72025.3,
+        72048.1,
+        71745.8,
+        71674.1,
+        71613.4,
+        71535.5,
+        71517.6,
+        71490.7,
+        71200,
+        70940,
+        70290,
+        69117.9
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "lag": {
+      "bars": 64,
+      "defined": 63,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        73561.3,
+        73465.3,
+        73430.2,
+        72930,
+        72886.4,
+        72476.1,
+        71609.8,
+        71677.4,
+        71726.9,
+        71878.4,
+        71729.6,
+        71663.4,
+        71422.3,
+        71535.6,
+        71392,
+        71423.3,
+        71096.3,
+        70915,
+        70209.8,
+        68930.4
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "low": {
+      "bars": 64,
+      "defined": 64,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        73221,
+        73332.4,
+        72752.8,
+        72718,
+        72210.4,
+        71252.8,
+        71218.1,
+        71470,
+        71631.6,
+        71555,
+        71407.5,
+        71388.8,
+        71361.2,
+        71288,
+        71082,
+        70635.2,
+        70725.5,
+        69850,
+        68489.3,
+        68550
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "median": {
+      "bars": 64,
+      "defined": 62,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        73561.3,
+        73465.3,
+        73430.2,
+        72930,
+        72886.4,
+        72476.1,
+        71677.4,
+        71677.4,
+        71726.9,
+        71729.6,
+        71729.6,
+        71663.4,
+        71535.6,
+        71422.3,
+        71423.3,
+        71392,
+        71096.3,
+        70915,
+        70209.8,
+        68930.4
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "no_event_bars": {
+      "bars": 64,
+      "defined": 0,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "timeframe": "1h"
+    },
+    "no_event_value": {
+      "bars": 64,
+      "defined": 0,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "timeframe": "1h"
+    },
+    "prior_compare": {
+      "bars": 64,
+      "defined": 63,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "prior_high": {
+      "bars": 64,
+      "defined": 61,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        73708.5,
+        73659.4,
+        73659.4,
+        73607.8,
+        73607.8,
+        73450.9,
+        73131.5,
+        72949.7,
+        72551.9,
+        72194,
+        72194,
+        72048.1,
+        72048.1,
+        71745.8,
+        71674.1,
+        71613.4,
+        71535.5,
+        71517.6,
+        71490.7,
+        71200
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "prior_low": {
+      "bars": 64,
+      "defined": 61,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        73386.2,
+        73221,
+        73221,
+        72752.8,
+        72718,
+        72210.4,
+        71252.8,
+        71218.1,
+        71218.1,
+        71218.1,
+        71470,
+        71407.5,
+        71388.8,
+        71361.2,
+        71288,
+        71082,
+        70635.2,
+        70635.2,
+        69850,
+        68489.3
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "quantile": {
+      "bars": 64,
+      "defined": 62,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        73561.3,
+        73465.3,
+        73430.2,
+        72930,
+        72886.4,
+        72476.1,
+        71677.4,
+        71677.4,
+        71726.9,
+        71729.6,
+        71729.6,
+        71663.4,
+        71535.6,
+        71422.3,
+        71423.3,
+        71392,
+        71096.3,
+        70915,
+        70209.8,
+        68930.4
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "volume": {
+      "bars": 64,
+      "defined": 64,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        4369.019,
+        2024.671,
+        9067.246,
+        8343.142,
+        17653.694,
+        32700.537,
+        14009.526,
+        13652.087,
+        5242.005,
+        3796.325,
+        4257.51,
+        3649.317,
+        2122.7,
+        2272.984,
+        5731.98,
+        10594.676,
+        8021.011,
+        19194.934,
+        38081.763,
+        17073.799
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    },
+    "width": {
+      "bars": 64,
+      "defined": 62,
+      "exchange": "binance",
+      "market": "futures",
+      "symbol": "BTCUSDT",
+      "tail": [
+        0.00596744313301646,
+        0.005970295600447693,
+        0.011723570547099958,
+        0.012208038811081396,
+        0.01711598720129808,
+        0.026235235959323963,
+        0.02415824234696001,
+        0.018595533893141742,
+        0.013577096874721672,
+        0.010093462113269835,
+        0.008939012103807605,
+        0.009231010482720424,
+        0.0053763440860215865,
+        0.005408168982519132,
+        0.007440149083002244,
+        0.012663106237596089,
+        0.012443065641965857,
+        0.02336853259801334,
+        0.03932517437879364,
+        0.03574913898358485
+      ],
+      "tailTimes": [
+        1794474000,
+        1794477600,
+        1794481200,
+        1794484800,
+        1794488400,
+        1794492000,
+        1794495600,
+        1794499200,
+        1794502800,
+        1794506400,
+        1794510000,
+        1794513600,
+        1794517200,
+        1794520800,
+        1794524400,
+        1794528000,
+        1794531600,
+        1794535200,
+        1794538800,
+        1794542400
+      ],
+      "timeframe": "1h"
+    }
+  },
+  "source_cutoff": "2026-11-13T05:00:00Z"
+}

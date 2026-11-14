@@ -1,0 +1,20 @@
+{
+  "classification": "LOCAL_READ_ONLY_STORAGE_VERIFICATION; NOT_MODEL_INVOCATION",
+  "Windows_native_database_probes": {
+    "queries": 20,
+    "failures": 0,
+    "scope": "Ten read-only schema queries on each of the native app/provider databases"
+  },
+  "Windows_complete_reader_passes": {
+    "passes": 5,
+    "failures": 0,
+    "storage_read_retries": 0,
+    "result": "AWAITING_OWNER_NATIVE_APP_SUBMISSION",
+    "scope": "Exact task lookup and prepared request validation; no matching new owner submission, no model invoked"
+  },
+  "earlier_WSL_wait": {
+    "storage_read_retries": 591,
+    "safe_deterministic_fallback": true
+  },
+  "latest_final_native_acceptance": "PENDING_OWNER_READINESS_AND_FRESH_APP_SUBMISSION"
+}

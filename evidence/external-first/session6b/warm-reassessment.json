@@ -1,0 +1,199 @@
+{
+  "classification": "SYNTHETIC_TEST; ZERO_HTTP; NO_PROSPECTIVE_CLAIM",
+  "runs": [
+    {
+      "as_of": "2026-11-14T10:00:10+00:00",
+      "cached": false,
+      "consumed_obstacles": [],
+      "history_calls": 8,
+      "late": 0,
+      "mode": "SYNTHETIC_TEST",
+      "persistence": {
+        "database_bytes": 405504,
+        "event": 28,
+        "hypothesis": 30,
+        "interrupted_attempts": 0,
+        "lifecycle": 0,
+        "reference": 8,
+        "run_snapshots": 1,
+        "schema_version": 5,
+        "watch_revisions": 8
+      },
+      "shortlist": 2,
+      "source_faults": []
+    },
+    {
+      "as_of": "2026-11-14T10:00:20+00:00",
+      "cached": true,
+      "consumed_obstacles": [],
+      "history_calls": 0,
+      "late": 0,
+      "mode": "SYNTHETIC_TEST",
+      "persistence": {
+        "database_bytes": 479232,
+        "event": 28,
+        "hypothesis": 30,
+        "interrupted_attempts": 0,
+        "lifecycle": 0,
+        "reference": 8,
+        "run_snapshots": 2,
+        "schema_version": 5,
+        "watch_revisions": 8
+      },
+      "shortlist": 2,
+      "source_faults": []
+    },
+    {
+      "as_of": "2026-11-14T10:00:25+00:00",
+      "cached": true,
+      "consumed_obstacles": [
+        {
+          "candidate_reference_id": "46b7fe8c1a0a3856dd485d4e32bc577a7848f84cd88cbaba35e4895ab4d6f4c8",
+          "event_window_start": "2026-11-14T07:00:00+00:00",
+          "fact": {
+            "available_at": "2026-11-14T10:00:25+00:00",
+            "cluster": "EXECUTION_FRICTION",
+            "complete": true,
+            "fidelity": "EXACT_REPORTED",
+            "id": "d7cc0905701bfec62867749804b6859c30c57151b46988bd8718f95f0e1dbefd",
+            "instrument": {
+              "captured_at_utc": "2026-11-14T10:00:10+00:00",
+              "contract_multiplier": null,
+              "contract_type": "PERPETUAL",
+              "exchange_rules": [
+                {
+                  "filterType": "MIN_NOTIONAL",
+                  "notional": "5"
+                }
+              ],
+              "identity_status": "EXCHANGE_VERIFIED",
+              "listing_metadata": {},
+              "metadata_hash": "SYNTHETIC_6B",
+              "native_symbol": "CONTROLUSDT",
+              "onboard_at_utc": "2025-01-01T00:00:00+00:00",
+              "quantity_rules": {
+                "LOT_SIZE": {
+                  "maxQty": "100000",
+                  "minQty": ".01",
+                  "stepSize": ".01"
+                }
+              },
+              "quote": "USDT",
+              "settlement": "USDT",
+              "source_id": "SYNTHETIC_6B",
+              "tick_size": "0.01",
+              "trading_status": "TRADING",
+              "underlying_class": "CRYPTO",
+              "unsupported_fields": [],
+              "venue": "BINANCE_USDM"
+            },
+            "known_at": "2026-11-14T10:00:25+00:00",
+            "max_age_seconds": 604800,
+            "measurement": "OBSTACLE_LIFECYCLE",
+            "mode": "SYNTHETIC",
+            "qualification": "QUALIFIED",
+            "reason": null,
+            "received_at": "2026-11-14T10:00:25+00:00",
+            "response_hash": "30c9c3a25f6bfc2e7e388fc09d3fd1f4e3a71e9287307f1ec45c14515543ceec",
+            "source_id": "OFFICIAL_BINANCE_TOP_OF_BOOK",
+            "timeframe": "CURRENT",
+            "units": "REFERENCE_STATE",
+            "value": {
+              "after": "2026-11-14T07:00:00+00:00",
+              "consumed": true,
+              "reference_id": "14865358633c6b5a1499cc5f2698a3e31fcef8de963f35f2496fd317d5b20a4a",
+              "witnessed_at": "2026-11-14T10:00:25+00:00"
+            },
+            "verdict": "SUPPORTED",
+            "window_end": "2026-11-14T10:00:25+00:00"
+          },
+          "identity_hash": "b373145a1294ac09cd768839b3fd81cf9c59c23428ef9bfeccd04e2d8c822dc8",
+          "native_symbol": "CONTROLUSDT",
+          "obstacle_id": "14865358633c6b5a1499cc5f2698a3e31fcef8de963f35f2496fd317d5b20a4a",
+          "valid_until": "2026-11-21T04:00:00+00:00"
+        },
+        {
+          "candidate_reference_id": "12cc28b003e1ede25fcf213596fa821a9091e32fbdecd8d36ec002ca4e4f9e19",
+          "event_window_start": "2026-11-14T09:15:00+00:00",
+          "fact": {
+            "available_at": "2026-11-14T10:00:25+00:00",
+            "cluster": "EXECUTION_FRICTION",
+            "complete": true,
+            "fidelity": "EXACT_REPORTED",
+            "id": "15c2f06d67878aaf7078c74301243ce81b40ecf5fd3f37e75f164649c5127a78",
+            "instrument": {
+              "captured_at_utc": "2026-11-14T10:00:10+00:00",
+              "contract_multiplier": null,
+              "contract_type": "PERPETUAL",
+              "exchange_rules": [
+                {
+                  "filterType": "MIN_NOTIONAL",
+                  "notional": "5"
+                }
+              ],
+              "identity_status": "EXCHANGE_VERIFIED",
+              "listing_metadata": {},
+              "metadata_hash": "SYNTHETIC_6B",
+              "native_symbol": "CONTROLUSDT",
+              "onboard_at_utc": "2025-01-01T00:00:00+00:00",
+              "quantity_rules": {
+                "LOT_SIZE": {
+                  "maxQty": "100000",
+                  "minQty": ".01",
+                  "stepSize": ".01"
+                }
+              },
+              "quote": "USDT",
+              "settlement": "USDT",
+              "source_id": "SYNTHETIC_6B",
+              "tick_size": "0.01",
+              "trading_status": "TRADING",
+              "underlying_class": "CRYPTO",
+              "unsupported_fields": [],
+              "venue": "BINANCE_USDM"
+            },
+            "known_at": "2026-11-14T10:00:25+00:00",
+            "max_age_seconds": 604800,
+            "measurement": "OBSTACLE_LIFECYCLE",
+            "mode": "SYNTHETIC",
+            "qualification": "QUALIFIED",
+            "reason": null,
+            "received_at": "2026-11-14T10:00:25+00:00",
+            "response_hash": "30c9c3a25f6bfc2e7e388fc09d3fd1f4e3a71e9287307f1ec45c14515543ceec",
+            "source_id": "OFFICIAL_BINANCE_TOP_OF_BOOK",
+            "timeframe": "CURRENT",
+            "units": "REFERENCE_STATE",
+            "value": {
+              "after": "2026-11-14T09:15:00+00:00",
+              "consumed": true,
+              "reference_id": "14865358633c6b5a1499cc5f2698a3e31fcef8de963f35f2496fd317d5b20a4a",
+              "witnessed_at": "2026-11-14T10:00:25+00:00"
+            },
+            "verdict": "SUPPORTED",
+            "window_end": "2026-11-14T10:00:25+00:00"
+          },
+          "identity_hash": "b373145a1294ac09cd768839b3fd81cf9c59c23428ef9bfeccd04e2d8c822dc8",
+          "native_symbol": "CONTROLUSDT",
+          "obstacle_id": "14865358633c6b5a1499cc5f2698a3e31fcef8de963f35f2496fd317d5b20a4a",
+          "valid_until": "2026-11-21T08:30:00+00:00"
+        }
+      ],
+      "history_calls": 0,
+      "late": 2,
+      "mode": "SYNTHETIC_TEST",
+      "persistence": {
+        "database_bytes": 552960,
+        "event": 28,
+        "hypothesis": 30,
+        "interrupted_attempts": 0,
+        "lifecycle": 0,
+        "reference": 8,
+        "run_snapshots": 3,
+        "schema_version": 5,
+        "watch_revisions": 8
+      },
+      "shortlist": 0,
+      "source_faults": []
+    }
+  ]
+}
