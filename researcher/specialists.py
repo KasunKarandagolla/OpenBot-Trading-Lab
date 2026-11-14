@@ -96,7 +96,9 @@ class TapeWindow:
 
     @property
     def id(self):
-        return digest(encode(self).encode())
+        identity={k:v for k,v in self.__dict__.items()
+            if k not in {'received_at','available_at','source_hash','mode'}}
+        return digest(encode(identity).encode())
 
 
 def adapt_tape(raw):
@@ -140,6 +142,16 @@ def trade_value(tape):
         'units':'PRICE_USDT_PER_BASE; VARIANCE_PRICE_SQUARED','coverage':tape.coverage}
 
 
+def trade_delta(tape):
+    tape.require_complete();cvd_base=cvd_quote=D(0);path=[]
+    for t in tape.trades:
+        side=1 if t.aggressor=='BUY' else -1
+        cvd_base+=side*t.base;cvd_quote+=side*t.base*t.price
+        path.append({'trade_id':t.id,'at':t.at,'cvd_base':cvd_base,'cvd_quote':cvd_quote})
+    return {'anchor':tape.start,'delta_base':cvd_base,'delta_quote':cvd_quote,
+        'path':path,'scope':'EXACT_EXECUTED_TAPE_NOT_BAR_DELTA','tape_id':tape.id}
+
+
 def true_profile(tape, *, width, origin=D(0), units='BASE_ASSET'):
     bins = price_bins(tape, width=width, origin=origin, units=units)
     v = {k:r['BUY']+r['SELL'] for k,r in bins.items()}; total = sum(v.values(),D(0))
@@ -157,7 +169,9 @@ def true_profile(tape, *, width, origin=D(0), units='BASE_ASSET'):
         'bin_origin':origin,'bin_width':width,'units':units,'coverage':tape.coverage,
         'source_hash':tape.source_hash,'mode':tape.mode,
         'va_algorithm':'CONTIGUOUS_70_PERCENT_GREEDY_ADJACENT_TIE_LOWER; POC_TIE_LOWER'}
-    return {**definition,'id':digest(encode(definition).encode()),'poc_bin':poc,
+    identity={k:v for k,v in definition.items() if k not in {'received_at','available_at','source_hash','mode'}}
+    identity['tape_id']=tape.id
+    return {**definition,'id':digest(encode(identity).encode()),'tape_id':tape.id,'poc_bin':poc,
         'poc_interval':(origin+poc*width,origin+(poc+1)*width),
         'val':origin+lo*width,'vah':origin+(hi+1)*width,'value_volume':covered,
         'total_volume':total,'bins':v,'true_profile':True,'production_supported':False}
@@ -268,4 +282,5 @@ def liquidations(rows, *, native_symbol, venue, start, end, coverage, source_has
         total+=number(r['price'],positive=True)*number(r['base'],positive=True);ids.add(r['id'])
     return {'classification':'OBSERVED_FORCED_EXECUTIONS','observed_notional_usdt':total,
             'coverage':coverage,'notional_units':'USDT','source_hash':source_hash,
-            'market_total_estimate':None,'known_at':end}
+            'market_total_estimate':None,'known_at':end,'window_start':start,
+            'native_symbol':native_symbol,'venue':venue}

@@ -18,9 +18,9 @@ from researcher.structures import Reference, swing_references, gap_lifecycle
 from researcher.measurements import (tick_price,value_extension,flow_divergence,
     persistent_residual,sector_strength,oi_decomposition,funding_basis,catalyst)
 from researcher.specialists import (Trade,TapeWindow,adapt_tape,true_profile,profile_nodes,
-    first_profile_revisit,footprint,aggression_attempts,liquidations,trade_value,SpecialistEnvelope,adapt_specialist)
+    first_profile_revisit,footprint,aggression_attempts,liquidations,trade_value,trade_delta,SpecialistEnvelope,adapt_specialist)
 from researcher.family_engine import (boundary_family,continuation,compression_family,
-    balance_references,value_reversion,relative_family,shock_family,evaluate_families,closed_prefix)
+    balance_references,value_reversion,profile_rotation,relative_family,shock_family,evaluate_families,closed_prefix)
 from researcher.method_engine import (zone_lifecycle,order_blocks,ote,crt,amd,
     TimingDefinition,timed_subclass,auction,depth_walls,evaluate_methods,specialist_method,analyze_specialist_envelope)
 from researcher.pack_contracts import (CORE_COLUMNS,OPTIONAL_COLUMNS,Expr,Column,
@@ -133,6 +133,13 @@ class MeasurementOracles(unittest.TestCase):
         self.assertLess(abs(r['log_usdt_change']-r['log_base_contribution']-r['log_mark_contribution']),D('1e-25'))
         self.assertIsNone(r['opening_side'])
         with self.assertRaises(ContractError):oi_decomposition(a,{**b,'mark_at':a['at']},multiplier=1000)
+        base_a={**a,'native_units':'BASE_ASSET'};base_b={**b,'native_units':'BASE_ASSET'}
+        self.assertEqual(oi_decomposition(base_a,base_b)['delta_base'],D(10))
+        self.assertEqual(oi_decomposition(base_a,base_b)['delta_usdt'],D(130))
+        with self.assertRaises(ContractError):oi_decomposition(base_a,base_b,multiplier=1000)
+        notional_a={**a,'native_units':'USDT_NOTIONAL','native':200}
+        notional_b={**b,'native_units':'USDT_NOTIONAL','native':330}
+        self.assertEqual(oi_decomposition(notional_a,notional_b)['delta_base'],D(10))
 
     def test_funding_prediction_settlement_and_interval(self):
         r={'rate_kind':'NEXT_PREDICTED','units':'PERCENT','interval_seconds':14400,'mark_at':iso_seconds(START),
@@ -153,6 +160,13 @@ class MeasurementOracles(unittest.TestCase):
 
 
 class ExecutedSpecialistOracles(unittest.TestCase):
+    def test_profile_and_tape_ids_freeze_content_not_retrieval_time(self):
+        t=tape([4,4,2]);p=true_profile(t,width=D(1))
+        later=replace(t,received_at=iso_seconds(START+120),available_at=iso_seconds(START+90),source_hash='RETRIEVED_LATER_SAME_TRADES')
+        self.assertEqual(t.id,later.id);self.assertEqual(p['id'],true_profile(later,width=D(1))['id'])
+        changed=replace(t,trades=(replace(t.trades[0],base=D(5)),*t.trades[1:]))
+        self.assertNotEqual(t.id,changed.id);self.assertNotEqual(p['id'],true_profile(changed,width=D(1))['id'])
+
     def test_strict_specialist_envelope_scope_and_time_before_reduction(self):
         t=tape([4,4,2])
         e=SpecialistEnvelope('TESTUSDT','BINANCE_USDM','LINEAR_USDT_PERPETUAL','EXECUTED_BASE',
@@ -229,6 +243,39 @@ class ExecutedSpecialistOracles(unittest.TestCase):
 
 
 class FamilyChronologyOracles(unittest.TestCase):
+    def test_f6_true_profile_branch_requires_complete_exact_venue_and_later_rotation(self):
+        b=flat(21)+bars([(101,102,100,101),(100,102,98,101),(101,105,100,104)],start=START+21*3600)
+        p=true_profile(tape([4,4,2],start=START+20*3600,duration=3600),width=D(1))
+        branches=profile_rotation(p,b,TICK,as_of=b[-1].end)
+        self.assertTrue(all(h['details']['true_profile'] for h in branches))
+        self.assertTrue(any(e['kind']=='ROTATION' for h in branches for e in h['timeline']))
+        with self.assertRaises(ContractError):profile_rotation({**p,'venue':'SPOT'},b,TICK,as_of=b[-1].end)
+        with self.assertRaises(ContractError):profile_rotation({**p,'coverage':'SAMPLED'},b,TICK,as_of=b[-1].end)
+
+    def test_f7_causal_event_anchor_whole_bar_window_and_post_hoc_rejection(self):
+        prices=[100,103,105,103,100,97,95,97]*4+[100]*12+[110,109,107,104]
+        b=bars([(p,p+.5,p-.5,p) for p in prices],tf='15m',start=START+3600)
+        balance=balance_references(b,TICK,baseline_end=32)
+        x=value_reversion(b,TICK,balance,anchor_ms=b[0].open_ms,anchor_known_at=iso_seconds(START+3600))
+        self.assertEqual(x['reference']['kind'],'EVENT_VWAP_ANCHOR')
+        self.assertTrue(any(e['kind']=='FAILED_FURTHER_PROGRESS_RETURN' for e in x['timeline']))
+        with self.assertRaises(ContractError):value_reversion(b,TICK,balance,
+            anchor_ms=b[0].open_ms,anchor_known_at=b[0].end)
+
+    def test_f9_only_witnessed_scoped_liquidations_can_add_observed_subclass(self):
+        b=flat(40)+bars([(100,112,99,111),(110,111,105,108),(108,110,106,109)],start=START+40*3600)
+        start=iso_seconds(START+40*3600);end=b[40].end
+        row={'id':'SYNTHETIC_FORCE','native_symbol':'TESTUSDT','venue':'BINANCE_USDM',
+            'kind':'OBSERVED_FORCED_EXECUTION','at':iso_seconds(START+40*3600+5),'price':110,'base':2}
+        args={'native_symbol':'TESTUSDT','venue':'BINANCE_USDM','start':start,'end':end,'coverage':'SAMPLED','source_hash':'SYNTHETIC'}
+        observed=liquidations([row],**args)
+        x=shock_family(b,TICK,liquidation=observed)
+        self.assertEqual(x['details']['classification'],'POST_SHOCK_WITH_OBSERVED_LIQUIDATIONS')
+        self.assertEqual(x['details']['observed_liquidation_coverage'],'SAMPLED')
+        modeled=liquidations([],**{**args,'coverage':'MODELED'})
+        self.assertEqual(shock_family(b,TICK,liquidation=modeled)['details']['classification'],'POST_SHOCK')
+        with self.assertRaises(ContractError):shock_family(b,TICK,liquidation={**observed,'native_symbol':'OTHERUSDT'})
+
     def boundary(self,which):
         prefix=[(96,97,95,96),(99,100,99,99.8),(97,98,96,97),(99,100,99,99.8)]
         if which=='F2':tail=[(100,102,100,101),(101,103,101,102),(102,104,102,103)]
@@ -379,6 +426,15 @@ class FamilyChronologyOracles(unittest.TestCase):
 
 
 class NamedMethodOracles(unittest.TestCase):
+    def test_m21_true_trade_delta_and_cvd_keep_bar_and_tape_scopes_separate(self):
+        t=tape([1,2,1],prices=[100,101,102])
+        t=replace(t,trades=(t.trades[0],replace(t.trades[1],aggressor='SELL'),t.trades[2]))
+        r=trade_delta(t)
+        self.assertEqual(r['delta_base'],D(0));self.assertEqual(r['delta_quote'],D(0))
+        self.assertEqual([x['cvd_base'] for x in r['path']],[D(1),D(-1),D(0)])
+        self.assertEqual(specialist_method('M21',tape=t)['value']['scope'],'EXACT_EXECUTED_TAPE_NOT_BAR_DELTA')
+        with self.assertRaises(ContractError):trade_delta(replace(t,coverage='PARTIAL'))
+
     def test_m02_mss_needs_prior_sweep_opposing_context_and_displacement(self):
         b=FamilyChronologyOracles().continuation_sample()
         tail=bars([(110,113,108,109),(109,110,106,107),(107,108,94,95)],start=b[-1].end_ms//1000)
@@ -519,6 +575,12 @@ class RemotePackAndRuntimeOracles(unittest.TestCase):
         self.assertEqual(x['efficiency16']['value'],D(1))
         self.assertEqual(x['width16']['value'],D(18)/280)
         self.assertEqual(x['quiet_percentile']['value'],compression(b)['past_percentile'])
+        expected={'close':D(280),'tr':D(3),'atr14':D(3),'width16':D(18)/280,
+            'quiet_percentile':D(0),'efficiency16':D(1),'progress16':D(280)/264,
+            'prior_high16':D(280),'prior_low16':D(262),'tr_fraction':D(3)/279,
+            'displacement':D(1),'body_fraction':D(1)/3}
+        self.assertEqual({k:v['value'] for k,v in x.items()},expected)
+        self.assertEqual(evaluate_core(b,optional=True)['quote_rvol32']['value'],D(560)/527)
         for c in CORE_COLUMNS:
             if len(b)>=c.history:self.assertIsNotNone(evaluate_expr(c.expr,b)[-1])
         short=evaluate_core(b[:5]);self.assertEqual(short['quiet_percentile']['status'],'INSUFFICIENT_HISTORY')
@@ -553,6 +615,27 @@ class RemotePackAndRuntimeOracles(unittest.TestCase):
         setbar(0,106,107,106,106)
         self.assertEqual(early_oracle(source)['approach_8_upper'],D(0))
         self.assertTrue(all('[0]' not in expression for expression in EARLY.values()))
+
+    def test_every_registered_pivot_age_and_direction_has_early_and_quiet_positive_negative(self):
+        for age in (8,12,16):
+            source=flat(180)
+            raw={age:(104,105,103,104),5:(104,105,104,104),4:(100,101,99,100),
+                 3:(104,105,104,104),2:(103,104,102,103),1:(104,104.5,103,104),0:(104,105,104,104.8)}
+            for k,row in raw.items():
+                o,h,l,c=map(D,map(str,row));source[-1-k]=replace(source[-1-k],open=o,high=h,low=l,close=c)
+            quiet=bars([(100,110,90,100)]*158+[(104.5,105,104,104.5)]*22)
+            quiet[-1-age]=replace(quiet[-1-age],high=D('105.5'))
+            quiet[-1]=replace(quiet[-1],close=D(105))
+            for suffix,series,qseries in [('upper',source,quiet),('lower',mirror(source),mirror(quiet))]:
+                label=f'{age}_{suffix}'
+                self.assertEqual(early_oracle(series)['approach_'+label],D(1))
+                self.assertEqual(early_oracle(series)['pressure_'+label],D(1))
+                self.assertEqual(quiet_near_oracle(qseries)['quiet_near_'+label],D(1))
+                self.assertEqual(quiet_near_oracle(flat(180))['quiet_near_'+label],D(0))
+                bad=list(series);c=D(106) if suffix=='upper' else D(94)
+                bad[-1]=replace(bad[-1],open=c,high=c+1,low=c-1,close=c)
+                self.assertEqual(early_oracle(bad)['approach_'+label],D(0))
+                self.assertEqual(early_oracle(bad)['pressure_'+label],D(0))
 
     def test_remote_controlled_correction_pre_response_symmetric(self):
         source=flat(80)

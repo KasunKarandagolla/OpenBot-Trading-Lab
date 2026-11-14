@@ -17,7 +17,7 @@ from .family_engine import (closed_prefix, boundary_family, balance_references,
 from .measurements import (value_extension, flow_divergence, persistent_residual,
     sector_strength, oi_decomposition, funding_basis, catalyst)
 from .specialists import (true_profile, profile_nodes, first_profile_revisit,
-    footprint, aggression_attempts, liquidations, profile_analysis, SpecialistEnvelope)
+    footprint, aggression_attempts, liquidations, profile_analysis, SpecialistEnvelope,trade_delta)
 
 VERSION='method-engine-6a.1'
 DEPENDENCIES={
@@ -194,7 +194,7 @@ def depth_walls(snapshot,*,bps=D(10),minimum_notional=D(1000)):
 def specialist_method(method,**inputs):
     """Typed adapters are callable now; absent external inputs remain explicit."""
     if not inputs:return result(method)
-    reducers={'M17':true_profile,'M18':profile_analysis,'M22':footprint,
+    reducers={'M17':true_profile,'M18':profile_analysis,'M21':trade_delta,'M22':footprint,
         'M23':aggression_attempts,'M24':aggression_attempts,'M25':depth_walls,
         'M26':oi_decomposition,'M27':funding_basis,'M28':liquidations,'M31':catalyst}
     if method not in reducers:raise ContractError('SPECIALIST_METHOD_ADAPTER_REQUIRED')
@@ -319,6 +319,10 @@ def evaluate_methods(bars,tick,*,cutoff,as_of,benchmark=None,references=(),famil
     from .observations import iso_seconds
     results['M21']=result('M21',{'anchor_ms':anchor,'fidelity':'BAR_AGGRESSOR_NOT_FOOTPRINT',
         'divergences':flow_divergence(bars,anchor_ms=anchor,anchor_known_at=iso_seconds(anchor//1000))})
+    if 'M19' in inputs:
+        params=inputs['M19'];anchored=[b for b in bars if b.open_ms>=params['anchor_ms']]
+        results['M19']=result('M19',anchored_value(anchored,**params))
+    if 'M21' in inputs:results['M21']=specialist_method('M21',**inputs['M21'])
     if benchmark is not None and len(bars)>=36:
         bench=closed_prefix(benchmark,cutoff=cutoff,as_of=as_of)
         if len(bench)==len(bars):results['M29']=result('M29',{

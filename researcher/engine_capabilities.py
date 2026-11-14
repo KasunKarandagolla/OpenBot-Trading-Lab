@@ -15,7 +15,7 @@ METHOD_PATHS={
     'M15':None,'M16':'method_engine.auction','M17':'specialists.true_profile',
     'M18':'specialists.profile_nodes/first_profile_revisit','M19':'numerics.anchored_value',
     'M20':'measurements.value_extension/family_engine.value_reversion',
-    'M21':'measurements.flow_divergence','M22':'specialists.footprint',
+    'M21':'measurements.flow_divergence/specialists.trade_delta','M22':'specialists.footprint',
     'M23':'specialists.aggression_attempts','M24':'specialists.aggression_attempts',
     'M25':'method_engine.depth_walls','M26':'measurements.oi_decomposition',
     'M27':'measurements.funding_basis','M28':'specialists.liquidations',
@@ -51,7 +51,10 @@ def manifest(config):
 def analyze_selected(bars,tick,*,cutoff,as_of,benchmark=None,references=(),inputs=None):
     from .family_engine import evaluate_families
     from .method_engine import evaluate_methods
-    families=evaluate_families(bars,tick,cutoff=cutoff,as_of=as_of,benchmark=benchmark,references=references)
+    inputs=inputs or {}
+    families=evaluate_families(bars,tick,cutoff=cutoff,as_of=as_of,benchmark=benchmark,references=references,
+        profiles=inputs.get('true_profiles',()),event_anchor=inputs.get('event_anchor'),
+        liquidation=inputs.get('observed_liquidation'))
     methods=evaluate_methods(bars,tick,cutoff=cutoff,as_of=as_of,benchmark=benchmark,
         references=references,families=families,inputs=inputs)
     return {'families':families,'methods':methods,'execution_scope':'BOUNDED_SELECTED_ORACLE_RECONSTRUCTION',

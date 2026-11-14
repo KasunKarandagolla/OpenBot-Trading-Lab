@@ -155,7 +155,7 @@
       "required_input": "exact matching kline buy quote/base volumes",
       "definition": "deltaQ=2BQ-Q; deltaB=2BV-V; imbalanceQ=deltaQ/Q; anchored sum deltaQ",
       "prior_anchor": "predeclared/reset anchor and complete bars",
-      "code_path": "numerics.bar_delta/anchored_value",
+      "code_path": "numerics.bar_delta/anchored_value; specialists.trade_delta",
       "test_oracle": "Inherited unit arithmetic and source pairs",
       "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
       "unknown": "Bar aggressor facts are not footprint"
@@ -233,7 +233,7 @@
     {
       "id": "DER1",
       "required_input": "native OI multiplier/mark and funding kind/actual interval/index",
-      "definition": "native/base/USDT deltas; exact logUSDT=logbase+logmark; fractional funding and aligned mark/index basis",
+      "definition": "native CONTRACTS*multiplier, BASE_ASSET unchanged, or USDT_NOTIONAL/mark; exact logUSDT=logbase+logmark; fractional funding and aligned mark/index basis",
       "prior_anchor": "synchronized mark/OI; predicted versus settled explicitly",
       "code_path": "measurements.oi_decomposition/funding_basis",
       "test_oracle": "1000 multiplier decomposition/no side; interval and mark mismatch",
@@ -597,7 +597,7 @@
       {
         "id": "M21",
         "name": "Real trade-side delta/CVD",
-        "code_path": "measurements.flow_divergence",
+        "code_path": "measurements.flow_divergence/specialists.trade_delta",
         "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
         "implemented_code": true,
         "source_supported": false,

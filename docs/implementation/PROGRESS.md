@@ -21,9 +21,12 @@ remains disabled pending real qualification. Quote-RVOL is isolated from price
 packs; both price TFs run first under the unchanged 26-call ceiling, with explicit
 optional omissions. Frozen IDs are memoized without changing hashes. No extra
 broad local history, feature warehouse, order, scheduler or downstream connection.
+The source-gated F6 true-profile, F7 event-anchor, F9 witnessed-liquidation and
+M21 executed-tape branches are wired into the same analyzer. Tape/profile IDs
+bind content across retrievals; OI native/base/notional conversions remain distinct.
 
-**Verification:** inherited 237 tests passed before edits; final **289 passed,
-0 failed, 0 skipped** (52 new), 147.867 seconds on this Cloud run. All 14 genuine
+**Verification:** inherited 237 tests passed before edits; final **295 passed,
+0 failed, 0 skipped** (58 new), 147.46 seconds on this Cloud run. All 14 genuine
 Session 5.5 selected histories execute through the new analyzer with recorded
 ticks and original availability; this is retrospective reconstruction, not a
 prospective shortlist. Added arithmetic/event positives and negatives, strict tape,

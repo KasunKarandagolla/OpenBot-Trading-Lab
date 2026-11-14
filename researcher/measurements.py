@@ -116,18 +116,24 @@ def sector_strength(native_symbol, residuals, memberships, *, at, minimum=5):
     return result or [{'status': 'SOURCE_CAPABILITY_REQUIRED', 'reason': 'DATED_CONTRACT_MEMBERSHIP_REQUIRED'}]
 
 
-def oi_decomposition(before, after, *, multiplier):
+def oi_decomposition(before, after, *, multiplier=None):
     """Linear base-per-native units only; exact log mark contribution."""
     keys = ('venue', 'native_symbol', 'contract_type', 'native_units')
     if (any(before[k] != after[k] for k in keys) or before['contract_type'] != 'LINEAR_USDT_PERPETUAL'
-            or before['native_units'] != 'CONTRACTS' or utc(before['at']) >= utc(after['at'])
+            or before['native_units'] not in {'CONTRACTS','BASE_ASSET','USDT_NOTIONAL'}
+            or utc(before['at']) >= utc(after['at'])
             or any(r['at'] != r['mark_at'] for r in (before, after))):
         raise ContractError('OI_IDENTITY_UNITS_OR_MARK_ALIGNMENT')
-    symbol(before['native_symbol']); multiplier = number(multiplier, positive=True)
+    symbol(before['native_symbol']);units=before['native_units']
+    if units=='CONTRACTS':multiplier=number(multiplier,positive=True)
+    elif multiplier not in (None,1,D(1)):
+        raise ContractError('OI_IDENTITY_UNITS_OR_MARK_ALIGNMENT')
     native = [number(r['native'], positive=True) for r in (before, after)]
     marks = [number(r['mark'], positive=True) for r in (before, after)]
-    base = [x*multiplier for x in native]; usd = [x*p for x,p in zip(base, marks)]
-    return {'delta_native': native[1]-native[0], 'delta_base': base[1]-base[0],
+    base = [x*multiplier for x in native] if units=='CONTRACTS' else native if units=='BASE_ASSET' else [x/p for x,p in zip(native,marks)]
+    usd = [x*p for x,p in zip(base, marks)]
+    return {'native_units':units,'base_units':'BASE_ASSET','notional_units':'USDT',
+        'delta_native': native[1]-native[0], 'delta_base': base[1]-base[0],
         'delta_usdt': usd[1]-usd[0], 'log_base_contribution': (base[1]/base[0]).ln(),
         'log_mark_contribution': (marks[1]/marks[0]).ln(), 'log_usdt_change': (usd[1]/usd[0]).ln(),
         'opening_side': None, 'position_direction': 'NOT_IDENTIFIABLE_FROM_AGGREGATE_OI'}

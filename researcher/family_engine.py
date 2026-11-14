@@ -228,24 +228,57 @@ def balance_references(bars,tick,*,window=32,baseline_end=None):
         for p,kind,side in [(lo,'RANGE_BOTTOM',-1),(hi,'RANGE_TOP',1)])
 
 
-def value_reversion(bars,tick,balance):
+def profile_rotation(profile,bars,tick,*,as_of):
+    """F6 value-edge branch only from a complete true executed profile."""
+    if (not profile.get('true_profile') or profile.get('coverage')!='COMPLETE'
+            or profile.get('venue')!='BINANCE_USDM' or profile.get('native_symbol')!=bars[0].native_symbol
+            or profile.get('units') not in {'BASE_ASSET','USDT_QUOTE'}
+            or utc(profile['available_at'])>utc(as_of)):
+        raise ContractError('TRUE_COMPLETE_PROFILE_REQUIRED')
+    known=[i for i,b in enumerate(bars) if utc(b.end)<=utc(profile['window_end'])]
+    if not known or known[-1]<14:return [hypothesis('F6',state='INSUFFICIENT_HISTORY')]
+    if utc(profile['available_at'])>utc(profile['window_end'])+timedelta(days=7):
+        return [hypothesis('F6',state='STALE',details={'profile_id':profile['id']})]
+    k=known[-1];scale=wilder_atr(bars[:k+1])[-1]
+    if not scale:return [hypothesis('F6',state='SOURCE_UNKNOWN')]
+    result=[]
+    for edge,side in [(profile['val'],-1),(profile['vah'],1)]:
+        r=Reference(bars[0].native_symbol,bars[0].timeframe,'TRUE_VA_EDGE',edge,edge,scale,tick,side,
+            profile['window_start'],profile['window_end'],profile['available_at'],
+            (utc(profile['window_end'])+timedelta(days=7)).isoformat(),(profile['id'],),
+            stable_id('TRUE_PROFILE_EDGE',profile['id'],side),fidelity='TRUE_EXECUTED_PRICE_BIN_PROFILE')
+        h=boundary_family('F6',r,bars,as_of=as_of,balance=True)
+        h['details'].update({'true_profile':True,'profile_id':profile['id'],
+            'profile_window':(profile['window_start'],profile['window_end']),
+            'bin_width':profile['bin_width'],'volume_units':profile['units']})
+        result.append(h)
+    return result
+
+
+def value_reversion(bars,tick,balance,*,anchor_ms=None,anchor_known_at=None):
     if not balance:return hypothesis('F7',state='SOURCE_UNKNOWN',details={'reason':'MEASURED_BALANCE_REQUIRED'})
     # The anchor is declared by UTC, never selected using the later extension.
     from .observations import iso_seconds
-    start=bars[-1].open_ms//86400000*86400000
-    session=[b for b in bars if start<=b.open_ms<start+86400000]
+    event_anchor=anchor_ms is not None
+    if event_anchor and type(anchor_ms) is not int:raise ContractError('ANCHOR_NOT_PREDECLARED_OR_INCOMPLETE')
+    start=anchor_ms if event_anchor else bars[-1].open_ms//86400000*86400000
+    anchor_known_at=anchor_known_at if event_anchor else iso_seconds(start//1000)
+    if anchor_known_at is None:raise ContractError('ANCHOR_NOT_PREDECLARED_OR_INCOMPLETE')
+    session=[b for b in bars if start<=b.open_ms and (event_anchor or b.open_ms<start+86400000)]
     if not session or session[0].open_ms!=start:
         return hypothesis('F7',state='INSUFFICIENT_HISTORY',details={'reason':'COMPLETE_UTC_SESSION_REQUIRED'})
     for i in range(17,len(session)):
         if int(utc(balance[0].known_at).timestamp()*1000)>session[i-1].open_ms:continue
         atr=wilder_atr(session[:i])[-1]
         if not atr:continue
-        value=value_extension(session[:i],anchor_ms=start,anchor_known_at=iso_seconds(start//1000),atr_ref=atr)
+        value=value_extension(session[:i],anchor_ms=start,anchor_known_at=anchor_known_at,atr_ref=atr)
         ext=value['distance_atr']
         if ext is None or abs(ext)<1:continue
         side=-1 if ext>0 else 1;mean=value['vwap_whole_bars'];b=session[i-1]
-        r=reference(session,i-1,kind='SESSION_VWAP_ANCHOR',lo=mean,hi=mean,direction=side,tick=tick,
-            origin=stable_id('UTC_SESSION',start,b.id),defining=tuple(session[:i]));tl=[]
+        r=reference(session,i-1,kind='EVENT_VWAP_ANCHOR' if event_anchor else 'SESSION_VWAP_ANCHOR',
+            lo=mean,hi=mean,direction=side,tick=tick,
+            origin=stable_id('EVENT_ANCHOR' if event_anchor else 'UTC_SESSION',start,anchor_known_at,b.id),
+            defining=tuple(session[:i]));tl=[]
         transition(tl,r,b,'CONDITIONAL_VALUE_EXTENSION','EARLY');prior=b
         for later in session[i:]:
             if side*(later.close-prior.close)>0 and side*(later.close-b.close)>0:
@@ -255,7 +288,8 @@ def value_reversion(bars,tick,balance):
             if side*(later.close-mean)>=0:
                 transition(tl,r,later,'PRIOR_VALUE_REACHED','LATE');break
             prior=later
-        return hypothesis('F7',r,state='COMPUTED',direction=side,timeline=tl,details=value)
+        return hypothesis('F7',r,state='COMPUTED',direction=side,timeline=tl,
+            details={**value,'anchor_ms':start,'anchor_known_at':anchor_known_at})
     return hypothesis('F7',state='NO_EVENT_IN_COMPLETE_WINDOW')
 
 
@@ -286,7 +320,7 @@ def relative_family(bars,benchmark,refs):
     return hypothesis('F8',state='NO_EVENT_IN_COMPLETE_WINDOW')
 
 
-def shock_family(bars,tick):
+def shock_family(bars,tick,*,liquidation=None):
     if len(bars)<35:return hypothesis('F9')
     atr=wilder_atr(bars);trs=true_ranges(bars)
     expired=0
@@ -311,13 +345,23 @@ def shock_family(bars,tick):
                 if stable>=2:transition(tl,r,later,'STABILIZATION_CANDIDATE','DEVELOPING')
             if side*(later.close-(b.open+b.close)/2)<0:
                 transition(tl,r,later,'SHOCK_MIDPOINT_RECLAIM','DEVELOPING')
+        observed=False
+        if liquidation and liquidation.get('classification')=='OBSERVED_FORCED_EXECUTIONS':
+            if liquidation.get('native_symbol')!=b.native_symbol or liquidation.get('venue')!='BINANCE_USDM':
+                raise ContractError('FORCED_ORDER_IDENTITY_OR_WINDOW')
+            observed=(liquidation['coverage'] in {'COMPLETE','SAMPLED'}
+                and utc(liquidation['window_start']).timestamp()*1000<=b.open_ms
+                and utc(b.end)<=utc(liquidation['known_at'])<=utc(bars[-1].end)
+                and liquidation['observed_notional_usdt']>0)
         return hypothesis('F9',r,state='COMPUTED',direction=side,timeline=tl,
-            details={'classification':'POST_SHOCK','confirmed_liquidation':False,'tr_atr_previous':trs[i]/atr[i-1]})
+            details={'classification':'POST_SHOCK_WITH_OBSERVED_LIQUIDATIONS' if observed else 'POST_SHOCK',
+                'confirmed_liquidation':False,'observed_liquidation_coverage':liquidation['coverage'] if observed else None,
+                'causal_liquidation_cascade':None,'tr_atr_previous':trs[i]/atr[i-1]})
     return hypothesis('F9',state='STALE' if expired else 'NO_EVENT_IN_COMPLETE_WINDOW',
         details={'expired_before_first_available':expired})
 
 
-def evaluate_families(bars,tick,*,cutoff,as_of,benchmark=None,references=()):
+def evaluate_families(bars,tick,*,cutoff,as_of,benchmark=None,references=(),profiles=(),event_anchor=None,liquidation=None):
     bars=closed_prefix(bars,cutoff=cutoff,as_of=as_of)
     if not bars:return [hypothesis('F'+str(i)) for i in range(1,10)]
     tick=D(tick)
@@ -330,7 +374,9 @@ def evaluate_families(bars,tick,*,cutoff,as_of,benchmark=None,references=()):
         raise ContractError('REFERENCE_BAR_IDENTITY')
     balance=balance_references(bars,tick)
     result=[continuation(bars,tick),compression_family(bars,tick,refs),
-            value_reversion(bars,tick,balance),relative_family(bars,benchmark,refs),shock_family(bars,tick)]
+            value_reversion(bars,tick,balance,**(event_anchor or {})),relative_family(bars,benchmark,refs),
+            shock_family(bars,tick,liquidation=liquidation)]
+    for profile in profiles:result.extend(profile_rotation(profile,bars,tick,as_of=as_of))
     for f in ('F2','F4','F5','F6'):
         candidates=balance if f=='F6' else refs
         if candidates:

@@ -28,13 +28,19 @@ not fresh live provider qualification or a prospective opportunity report.
   directions and rivals/NULL, early stages before confirmation, original frozen
   references, later response/acceptance, invalidation/expiry and explicit unknowns.
   F2 and F5 cannot both certify the same no-reclaim impulse. F9 remains POST_SHOCK
-  absent witnessed coverage. Fixed seven-day reference TTLs are declared research
+  absent witnessed coverage; matching witnessed data adds an explicitly sampled
+  observed-liquidation subclass, never a causal cascade assertion. F6 has a strict
+  complete true-profile value-edge branch; F7 accepts predeclared causal event
+  anchors as well as UTC sessions. Fixed seven-day reference TTLs are declared research
   definitions, not calibrated lifetime claims.
 - `method_engine.py`: all 31 method contracts, including actual BOS/CHoCH/MSS,
   compact full-candle OB base → displacement → later BOS birth, same-ID breaker,
   FVG/iFVG/revisit, contextual OTE, preselected CRT, experimental 00–08 UTC crypto
   AMD, auction/value and strict specialist reducers. M14 has a tested timezone/DST
   adapter but no fabricated canonical timing; M15 has no invented rule.
+  Trade-tape delta/CVD is separate from bar aggressor CVD; tape/profile identities
+  bind content and remain stable across later retrievals. OI native contracts,
+  already-base units and USDT-notional sources have distinct conversions.
 - `pack_contracts.py`: restricted typed expression DAG with arity/field/lag/window
   validation, exact closed cutoff, fixed seed/warm-up, units/encoding/precision,
   finite null handling and dependency ordering. Two 12-column CORE contracts,
