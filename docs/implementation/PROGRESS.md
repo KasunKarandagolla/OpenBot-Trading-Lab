@@ -23,6 +23,10 @@ late historical reconstruction preserves later availability and earlier reports;
 incomplete gaps remain unobserved. Existing ledger/one-current-cache/atomic
 recovery is preserved, with compact nested warm deltas. An actual retained pivot
 before ATR warm-up exposed and fixed an early-history exception.
+Later warm runs refresh point quotes/depth against the frozen export without
+replaying history. Witnessed obstacle consumption persists across reconstruction;
+changed independent envelopes invalidate the cache. Extended ordinary-runtime
+tests verify later-UTC admission and a current crossing becoming LATE.
 
 Ordinary CLI SYNTHETIC_TEST: **two conditional F4 hypotheses for one native
 control contract**, 8 watches, 4 near misses, 2 invalidations; all cited exports

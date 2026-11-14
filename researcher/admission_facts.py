@@ -64,3 +64,74 @@ def attach(card,facts,references,bars,instrument,source,depth,assumptions,*,as_o
             source_hash=digest(encode(assumptions).encode()),end=card.cutoff)
     return tuple(ids),{**cost,'assumptions':assumptions,'room':room,
         'horizon_scope':'RESEARCH_QUESTION_EXPIRES_WITHIN_15H; NO_PREDICTED_PRICE_ARRIVAL'}
+
+
+def refresh_cached(export,api,pulse,members,assumptions,*,clock,sources,refresh=True):
+    """Reassess frozen admissions with current point sources, without history.
+
+    The existing export is the single typed cache contract. New point evidence
+    cannot manufacture new closed events or move their original availability.
+    """
+    from dataclasses import replace,asdict
+    from .handoff import decode_export
+    from .economic_sources import depth_snapshot
+    from .candidate_review import remaining_room
+    from .contracts import ContractError
+    from .screening import safe_error
+    cards=[];facts={};references={};faults=[];depths={};consumed=[]
+    for card,own,refs in decode_export(export):
+        n=card.native_symbol;inst=members[n]
+        if card.formation and card.primary_family not in sources.qualified(n,card.timeframe,card.cutoff,as_of=clock()):
+            card=replace(card,qualification='TRIAL')
+        ids=list(card.evidence_ids)
+        def add(measurement,value,units,end,received,provider,source_hash,age=30):
+            fid=fact_id(card.id,measurement,value,source_hash)
+            own[fid]=Fact(fid,inst,measurement,value,units,'CURRENT',end,end,received,received,
+                provider,source_hash,'EXACT_REPORTED',True,'QUALIFIED',card.mode,age,cluster='EXECUTION_FRICTION')
+            ids.append(fid);return own[fid]
+        if refresh:
+            changed={'RESEARCH_PRICE','SPREAD_BPS','DEPTH_USDT_WITHIN_ROOM','SLIPPAGE_BOUND_BPS','HORIZON_RELEVANT'}
+            ids=[i for i in ids if own[i].measurement not in changed]
+            books=[o for p in pulse if p['kind']=='book' for o in p['observations'] if o['native_symbol']==n]
+            if len(books)==1:
+                b=books[0];end=b['source_time_utc'];received=b['received_at_utc'];sha=b['source_response_sha256']
+                add('RESEARCH_PRICE',(b['values']['bid']+b['values']['ask'])/2,'USDT_PER_BASE',end,received,'OFFICIAL_BINANCE_TOP_OF_BOOK',sha)
+                add('SPREAD_BPS',b['values']['spread_bps'],'BPS',end,received,'OFFICIAL_BINANCE_TOP_OF_BOOK',sha)
+            else:faults.append({'phase':'cached_quote','symbol':n,'code':'FRESH_BOOK_UNAVAILABLE_OR_AMBIGUOUS'})
+            at=clock();latest=card.formation['families'][card.primary_family]['timeline'][-1] if card.formation else card.events[-1]
+            add('HORIZON_RELEVANT',(utc(at)-utc(latest['known_at'])).total_seconds()<=54000,'BOOLEAN',at,at,
+                'DECLARED_RESEARCH_SCENARIO:CURRENT_RESEARCH_HORIZON',digest(encode([latest['id'],at]).encode()))
+            card=replace(card,evidence_ids=tuple(ids))
+            room=remaining_room(card,own,refs,as_of=clock())
+            if room['status']=='ROOM_EXHAUSTED' and books:
+                b=books[0]
+                witness=add('OBSTACLE_LIFECYCLE',{'reference_id':room['first_obstacle_id'],
+                    'after':card.window_start,'consumed':True,'witnessed_at':b['source_time_utc']},
+                    'REFERENCE_STATE',b['source_time_utc'],b['received_at_utc'],'OFFICIAL_BINANCE_TOP_OF_BOOK',
+                    b['source_response_sha256'],age=7*86400)
+                consumed.append({'native_symbol':n,'candidate_reference_id':card.reference.id,
+                    'event_window_start':card.window_start,'obstacle_id':room['first_obstacle_id'],
+                    'valid_until':card.reference.valid_until,'fact':asdict(witness)})
+            if room['status']=='ROOM_OBSERVED':
+                if n not in depths:
+                    try:depths[n]=depth_snapshot(api,inst)
+                    except (ContractError,OSError,KeyError,ValueError,TypeError) as e:
+                        depths[n]=None;faults.append({'phase':'cached_native_depth','symbol':n,'code':safe_error(e)})
+                depth=depths[n]
+                if depth:
+                    side=next(h.direction for h in card.hypotheses if h.family==card.primary_family)
+                    direction=1 if side=='BULLISH' else -1
+                    obstacle=next(r for r in refs if r.id==room['first_obstacle_id'])
+                    cost=book_cost(depth,inst,notional=assumptions['probe_notional_usdt'],
+                        obstacle=obstacle.lo if direction==1 else obstacle.hi,direction=direction)
+                    if cost['status']=='OBSERVED':
+                        add('DEPTH_USDT_WITHIN_ROOM',cost['depth_usdt_within_room'],'USDT',depth['time'],
+                            depth['received'],'OFFICIAL_BINANCE_DISPLAYED_DEPTH',depth['source_hash'])
+                        add('SLIPPAGE_BOUND_BPS',cost['slippage_excluding_spread_bps']+
+                            D(assumptions['additional_slippage_assumption_bps']),'BPS',depth['time'],depth['received'],
+                            'DECLARED_RESEARCH_SCENARIO:'+assumptions['fee_source'],
+                            digest(encode([depth['source_hash'],assumptions]).encode()))
+                    else:faults.append({'phase':'cached_native_depth','symbol':n,'code':cost.get('reason','DEPTH_UNASSESSABLE')})
+            card=replace(card,evidence_ids=tuple(dict.fromkeys(ids)))
+        cards.append(card);facts.update(own);references.update({r.id:r for r in refs})
+    return cards,facts,list(references.values()),faults,consumed

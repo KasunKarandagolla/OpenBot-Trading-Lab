@@ -117,7 +117,14 @@ the default strict `ResearchLedger.record` API is unchanged. Earlier snapshots,
 event identities and availability are never rewritten. Complete qualified selected
 history can mark interval reconstruction; it never certifies timely past action.
 Incomplete history remains GAP_UNOBSERVED. Nested warm-report deltas avoid copying
-the full report repeatedly. Crash rollback, identity quarantine and read-only
+the full report repeatedly. Later warm invocations hydrate the same frozen export
+and refresh only current quotes/depth before re-evaluating admission; they do not
+drop a valid hypothesis merely because UTC advanced, or replay closed history.
+A point-witnessed first-obstacle crossing is persisted with its actual receipt,
+reference/event interval and identity, so an intrabar return cannot resurrect the
+same consumed opportunity on a later reconstruction. Changed independent source
+envelopes invalidate the cache, and normalized specialist inputs cannot leak from
+a previous invocation. Crash rollback, identity quarantine and read-only
 inspection remain tested.
 
 ## Source activation and resource gates

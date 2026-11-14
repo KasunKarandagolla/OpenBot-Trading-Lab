@@ -105,6 +105,26 @@ class IntegratedControl(unittest.TestCase):
         self.assertEqual([x['card_id'] for x in repeat['shortlist']],[x['card_id'] for x in self.result['shortlist']])
         for k in ('reference','event','hypothesis','watch_revisions'):
             self.assertEqual(self.result['persistence'][k],repeat['persistence'][k])
+        # A later manual invocation refreshes point evidence, without repeating
+        # history or dropping otherwise valid admissions solely due to a cache.
+        later=(utc(at)+timedelta(seconds=10)).isoformat()
+        api,client,sources,_,_=synthetic_6b();api.at=later
+        advanced=scan_market_research(api=api,client=client,sources=sources,clock=lambda:later,
+            mode='SYNTHETIC',ledger_path=self.db)
+        self.assertTrue(advanced['costs']['cached_snapshot_reused'])
+        self.assertEqual(advanced['costs']['targeted_kline_calls'],0)
+        self.assertEqual([x['card_id'] for x in repeat['shortlist']],[x['card_id'] for x in advanced['shortlist']])
+        self.assertTrue(advanced['reuse']['admission_revalidated_from_frozen_export'])
+        for packet in advanced['handoff_export']['research_handoffs']:
+            quotes=[f for f in packet['evidence'].values() if f['measurement']=='RESEARCH_PRICE']
+            self.assertTrue(any(f['window_end']==later for f in quotes))
+        # A witnessed first-obstacle crossing remains a late near miss.
+        crossed=(utc(at)+timedelta(seconds=15)).isoformat()
+        api,client,sources,_,_=synthetic_6b();api.at=crossed;api.prices['CONTROLUSDT']=D(94)
+        late=scan_market_research(api=api,client=client,sources=sources,clock=lambda:crossed,
+            mode='SYNTHETIC',ledger_path=self.db)
+        self.assertEqual(late['shortlist'],[]);self.assertTrue(late['consumed_obstacles'])
+        self.assertTrue(late['late']);self.assertEqual(late['costs']['targeted_kline_calls'],0)
 
     def test_source_certificates_cannot_leak_into_live_mode(self):
         with self.assertRaisesRegex(ContractError,'SOURCE_QUALIFICATION_CONTRACT'):

@@ -42,13 +42,13 @@ def make_export(report,cards,facts,references):
     return {**body,'payload_sha256':digest(encode(body).encode())}
 
 
-def replay_export(export,*,as_of):
-    """Pure local review replay, with no provider/database/consumer callback."""
+def decode_export(export):
+    """Validate and hydrate existing export evidence; no I/O or consumer call."""
     from decimal import Decimal as D
     from .contracts import Instrument
     from .research import Fact
     from .structures import Reference
-    from .candidate_review import StructureCard,Hypothesis,review_card
+    from .candidate_review import StructureCard,Hypothesis
     body={k:v for k,v in export.items() if k!='payload_sha256'}
     if (export.get('schema_version')!='openbot.research-handoff.v1' or export.get('order_authority') is not False
             or export.get('trade_authorization') is not False or export.get('execution_connection') is not None
@@ -68,5 +68,11 @@ def replay_export(export,*,as_of):
         for key,f in packet['evidence'].items():
             facts[key]=Fact(**{**f,'instrument':Instrument(**f['instrument'])})
             if facts[key].id!=key:raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
-        result.append(review_card(card,facts,[reference(r) for r in packet['obstacles']],as_of=as_of))
+        result.append((card,facts,[reference(r) for r in packet['obstacles']]))
     return result
+
+
+def replay_export(export,*,as_of):
+    """Pure local review replay, with no provider/database/consumer callback."""
+    from .candidate_review import review_card
+    return [review_card(c,f,refs,as_of=as_of) for c,f,refs in decode_export(export)]

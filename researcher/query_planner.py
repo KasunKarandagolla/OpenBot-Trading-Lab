@@ -181,7 +181,7 @@ class ResearchSources:
         self.adapters=dict(adapters or {});self.nominations=tuple(nominations)
         self.selected_inputs=dict(selected_inputs or {});self.screen_source=screen_source
         self.gap_histories=tuple(gap_histories)
-        self.normalized_facts={}
+        self.normalized_facts={};self.normalized_inputs={}
         from .pack_contracts import contracts
         packs=contracts()
         for c in self.certificates:
@@ -297,7 +297,7 @@ class ResearchSources:
 
     def independent(self, *, as_of, eligible):
         from .method_engine import analyze_specialist_envelope
-        accepted=[];faults=[]
+        accepted=[];faults=[];self.normalized_facts={};self.normalized_inputs={}
         for n in self.nominations:
             try:
                 e=n['envelope'];mid=n['method_id'];fam=n['family']
@@ -309,14 +309,15 @@ class ResearchSources:
                 if (not cert or e.mode!=self.mode or e.native_symbol not in eligible
                         or e.coverage!='COMPLETE' or not n.get('question')):
                     raise ContractError('SPECIALIST_SOURCE_SCOPE_UNQUALIFIED')
+                if mid=='M25' and not 0<=(utc(as_of)-utc(e.end)).total_seconds()<=30:
+                    raise ContractError('STALE_DEPTH')
                 result=analyze_specialist_envelope(mid,e,as_of=as_of)
                 if result['status']!='COMPUTED':raise ContractError('SPECIALIST_NOMINATION_UNKNOWN')
                 key=(e.native_symbol,n['timeframe'])
-                self.selected_inputs.setdefault(key,{})[mid]=e.payload
+                self.normalized_inputs.setdefault(key,{})[mid]=e.payload
                 if mid=='M17':
                     profile=result['value']
-                    self.selected_inputs.setdefault(key,{}).setdefault('true_profiles',[]).append(profile)
-                    self.selected_inputs[key][mid]=e.payload
+                    self.normalized_inputs.setdefault(key,{}).setdefault('true_profiles',[]).append(profile)
                     self.normalized_facts[profile['id']]=Fact(profile['id'],eligible[e.native_symbol],
                         'TRUE_EXECUTED_PROFILE',profile,profile['units'],n['timeframe'],e.end,
                         e.known_at,e.available_at,e.received_at,n['source_id'],e.source_hash,
@@ -331,7 +332,7 @@ class ResearchSources:
 
     def inputs_for(self,symbol,tf,cutoff,as_of):
         mids=self.qualified(symbol,tf,cutoff,field='methods',as_of=as_of)
-        raw=self.selected_inputs.get((symbol,tf),{})
+        raw={**self.selected_inputs.get((symbol,tf),{}),**self.normalized_inputs.get((symbol,tf),{})}
         # Caller-provided candle proxies cannot enter specialist reducers.
         return {k:v for k,v in raw.items() if k in mids or
             k=='true_profiles' and 'M17' in mids or k=='event_anchor' and 'M19' in mids or

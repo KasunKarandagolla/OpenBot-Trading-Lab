@@ -344,7 +344,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
     report={'schema_version':'openbot.market-research.v5','environment':'CODEX_LOCAL' if mode=='LIVE' else 'OFFLINE_REPLAY_HOST','mode':mode,
         'created_at_utc':start,'frozen_cutoffs':cutoffs,'operation_status':'BLOCKED_OR_UNQUALIFIED',
         'release_status':'PARTIAL','operating_mode':'PAUSE_UNQUALIFIED','shortlist':[],'watches':[],
-        'near_misses':[],'invalidations':[],'not_reviewed_budget':[],'time_gaps':[],
+        'near_misses':[],'invalidations':[],'not_reviewed_budget':[],'time_gaps':[],'consumed_obstacles':[],
         'source_health':[],'packs':[],'optional_packs':[],'nominations':[],'selected_research':[],'planner':[],
         'causal_packs':[],'specialist_observations':[],'economic_observations':[],
         'llm_status':completion.get('llm_status','LLM_DISABLED_NO_APPROVED_PROVIDER'),
@@ -382,6 +382,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
     try:
         with ledger.writer(start) as attempt:
             previous=ledger.latest();prior_watches={w['id']:w for w in previous['watches']} if previous else {}
+            report['consumed_obstacles']=[x for x in previous.get('consumed_obstacles',())
+                if utc(x['valid_until'])>=utc(start)] if previous else []
             if previous:observed_times.append(previous['completed_at_utc'])
             old_cutoffs=ledger.cutoffs()
             try:
@@ -409,7 +411,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 report['source_health']=[{**{k:v for k,v in p.items() if k!='observations'},
                     'accepted':len(p['observations']),'eligible':len(members)} for p in pulse]
                 report['operation_status']='PARTIAL';report['operating_mode']='REMOTE_WIDE_PARTIAL'
-                key=digest(encode([cutoffs,identity,spec,completion,mode,sources.certificates,route_ablation,context_prioritized,'interpretation-6b.1']).encode())
+                key=digest(encode([cutoffs,identity,spec,completion,mode,sources.certificates,
+                    sources.nominations,sources.selected_inputs,route_ablation,context_prioritized,'interpretation-6b.1']).encode())
                 # Fresh official access/identity is mandatory even for unchanged
                 # bars. Reuse preserves first knowledge and original receipts.
                 previous_reusable=previous and previous.get('numeric_cache_available',True) and len(previous.get('packs',()))==2 and all(
@@ -432,11 +435,27 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     same_source_admission=(utc(start)==utc(previous['completed_at_utc']) and all(
                         f['response_hash'] in unchanged_quote_hashes for packet in report.get('handoff_export',{}).get('research_handoffs',())
                         for f in packet['evidence'].values() if f['measurement']=='RESEARCH_PRICE'))
-                    if report['shortlist'] and not same_source_admission:
-                        report['near_misses']=[*report['near_misses'],*[
-                            {**r,'stage':'UNKNOWN','reason_code':'CACHED_HANDOFF_REQUIRES_FRESH_ADMISSION_REVIEW'} for r in report['shortlist']]]
-                        report['shortlist']=[]
-                        report['empty_shortlist_reason']='CACHED_HANDOFF_REQUIRES_FRESH_ADMISSION_REVIEW'
+                    if report['shortlist']:
+                        from .admission_facts import refresh_cached
+                        cards,facts,references,refresh_faults,consumed=refresh_cached(report['handoff_export'],api,pulse,
+                            members,completion['economics'],clock=evaluation_time,sources=sources,
+                            refresh=not same_source_admission)
+                        for observation in consumed:
+                            observation['identity_hash']=identity[observation['native_symbol']]
+                            if not any(x['fact']['id']==observation['fact']['id'] for x in report['consumed_obstacles']):
+                                report['consumed_obstacles'].append(observation)
+                        report['source_faults'].extend(refresh_faults)
+                        fresh_reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],
+                            as_of=evaluation_time()) for c in cards]
+                        refreshed=shortlist(fresh_reviews,coverage=report['coverage'])
+                        report['shortlist']=refreshed['shortlist']
+                        for r in fresh_reviews:
+                            if r['stage'] not in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}:
+                                report['near_misses'].append({**r,'admission_reason':'CACHED_ADMISSION_REASSESSED_WITH_CURRENT_POINT_SOURCES'})
+                                if r['stage']=='LATE':report.setdefault('late',[]).append(r)
+                        report['empty_shortlist_reason']=refreshed['empty_shortlist_reason']
+                        report['reuse']['admission_revalidated_from_frozen_export']=True
+                        report['reuse']['closed_history_replayed']=False
                 else:
                     report['cache_key']=key
                     for scope,old in old_cutoffs.items():
@@ -826,6 +845,18 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         'agenda':context.agenda,'raw_nomination_set_unchanged':True,
                         'verification_allowance':dict(planner.budgets),'eligibility_or_direction_veto':False}
                     for index,c in enumerate(cards):
+                        # A quoted crossing witnessed in an earlier voluntary
+                        # run remains consumed even if price later returns before
+                        # another completed candle. Never skip that obstacle.
+                        carried=[]
+                        for observation in report['consumed_obstacles']:
+                            if (observation['candidate_reference_id']==c.reference.id
+                                    and observation['event_window_start']==c.window_start
+                                    and observation['identity_hash']==identity[c.native_symbol]):
+                                from .contracts import Instrument
+                                raw=observation['fact'];witness=Fact(**{**raw,'instrument':Instrument(**raw['instrument'])})
+                                facts[witness.id]=witness;carried.append(witness.id)
+                        if carried:c=replace(c,evidence_ids=tuple(dict.fromkeys((*c.evidence_ids,*carried))))
                         refs_for=[r for r in references if r.native_symbol==c.native_symbol]
                         before=review_card(c,facts,refs_for,as_of=as_of)
                         own_ids=set(c.evidence_ids)|set(c.reference.source_ids)|{i for e in c.events for i in e['source_ids']}
@@ -1011,7 +1042,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         'next_review':'Source recovery required; retain last viable frozen reference'} for w in previous['watches']]
             receipts=[*api.http.receipts,*client.http.receipts];durations=sorted(r['elapsed_ms'] for r in receipts)
             report['request_receipts']=receipts;report['completed_at_utc']=evaluation_time()
-            if report['shortlist'] and not cached:
+            if report['shortlist'] and cards:
                 # Admission evidence may age while the remaining cards are
                 # reviewed. Validate the exported shortlist at completion too.
                 by_card={c.id:c for c in cards};fresh_handoffs=[]
@@ -1038,7 +1069,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 for r in report['shortlist']:
                     report['near_misses'].append({**r,'stage':'UNKNOWN','reason_code':'CLOCK_COHERENCE_UNQUALIFIED'})
                 report['shortlist']=[]
-            if not cached:report['handoff_export']=make_export(report,cards,facts,references)
+            if not cached or cards:report['handoff_export']=make_export(report,cards,facts,references)
             elif not report['shortlist']:
                 report['handoff_export']=make_export(report,(),{},())
             report['costs']={'http_requests':len(receipts),'response_bytes':sum(r.get('response_bytes') or 0 for r in receipts),
@@ -1081,7 +1112,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     'source_provenance':report['offline_source_provenance']},'parameter_versions':report['parameter_versions'],
                 **{k:report.get(k) for k in ('shortlist','near_misses','invalidations','late',
                     'not_reviewed_budget','context','research_coverage','route_coverage','resource_plan',
-                    'source_faults','clock_anomalies','time_gaps','question_audit','costs')},
+                    'source_faults','clock_anomalies','time_gaps','question_audit','consumed_obstacles','costs')},
                 'watches':[{k:v for k,v in w.items() if k!='review'} for w in report['watches']],
                 'trade_authorization':False,'new_orders_created':0}
             report['research_shortlist']={**body,'payload_sha256':digest(encode(body).encode())}
