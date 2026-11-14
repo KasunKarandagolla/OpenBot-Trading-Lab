@@ -5,9 +5,16 @@ The typed engine can review qualified facts; current recorded trials stay gated.
 """
 from dataclasses import dataclass, asdict, replace
 from decimal import Decimal as D
+from functools import lru_cache
 from .contracts import ContractError, utc, number
 from .research import cited, fact_id
 from .structures import Reference
+
+
+@lru_cache(maxsize=1)
+def _method_contracts():
+    from .settings import load_config
+    return {m['id']:m for m in load_config()['methods']}
 
 SEQUENCES={
     'F2':('PRESSURE','CLOSE_OUTSIDE','OUTSIDE_HOLD'),
@@ -56,6 +63,7 @@ class StructureCard:
     trigger_to_investigate: str
     invalidating_evidence: str
     exposure_cluster: str = 'UNKNOWN'
+    formation: dict | None = None
 
     def __post_init__(self):
         r=self.reference
@@ -74,7 +82,9 @@ class StructureCard:
             raise ContractError('NULL_AND_OPPOSING_RIVAL_REQUIRED')
         times=[];ids=[]
         for e in self.events:
-            if (e['reference_id']!=r.id or utc(e['occurred_from'])<utc(r.known_at)
+            defining=(self.formation is not None and utc(e['known_at'])==utc(r.known_at)
+                and bool(set(e['source_ids']) & set(r.source_ids)))
+            if (e['reference_id']!=r.id or utc(e['occurred_from'])<utc(r.known_at) and not defining
                     or not utc(e['occurred_from'])<utc(e['occurred_to'])<=utc(e['known_at'])<=utc(e['available_at'])
                     or utc(e['known_at'])>utc(self.cutoff) or not e['source_ids']):
                 raise ContractError('EVENT_CAUSAL_TIME')
@@ -86,7 +96,9 @@ class StructureCard:
                 raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
 
     @property
-    def id(self): return fact_id(self.native_symbol,self.reference.id,self.window_start,self.cutoff)
+    def id(self):
+        parts=(self.native_symbol,self.reference.id,self.window_start,self.cutoff)
+        return fact_id(*parts,self.primary_family) if self.formation else fact_id(*parts)
 
     @property
     def material_hash(self): return fact_id(self)
@@ -128,6 +140,84 @@ def union_cards(cards):
     return tuple(merged[k] for k in sorted(merged))
 
 
+FAMILY_METHODS={
+    'F1':('M01','M02','M03','M06','M07','M08','M10','M11'),
+    'F2':('M01','M02','M03','M04','M06','M08','M13','M21'),
+    'F3':('M03','M08','M19','M21','M30'), 'F4':('M02','M04','M05','M09','M12','M13','M21'),
+    'F5':('M02','M03','M05','M07','M09'), 'F6':('M03','M16','M17','M18','M19'),
+    'F7':('M16','M17','M19','M20','M21'), 'F8':('M01','M26','M29','M31'),
+    'F9':('M21','M23','M24','M26','M27','M28','M30','M31')}
+DISCRIMINATORS={
+    'F1':'Does the protected ladder survive the next counterleg, or does accepted loss invalidate continuation?',
+    'F2':'Does later acceptance hold this same boundary, or does reclaim favor F4/F6?',
+    'F3':'Does expansion retain progress with room, or return to quiet balance after a late impulse?',
+    'F4':'Does opposite initiative persist after reclaim, or does F5 rebreak the original level?',
+    'F5':'Does acceptance survive the failed reversal, or does another reclaim restore F4?',
+    'F6':'Does rejection rotate within the original balance, or does accepted escape migrate value?',
+    'F7':'Does failed extension return toward the frozen value anchor, or does accepted repricing defeat reversion?',
+    'F8':'Does lag-trained relative persistence retain local consequence, or is this common beta/sector noise?',
+    'F9':'Does stabilization survive the next extreme, or is this a second shock/fundamental repricing?'}
+
+
+def formation_cards(bundle, instrument, facts, *, cutoff, as_of, mode,
+                    qualified_families=(), origins=(), freeze=lambda r:r,initiator_methods=()):
+    """Interpret the actual 6A graph, retaining all same-reference rivals.
+
+    No new detector or numeric score. Qualification is supplied only by the
+    caller's independently scoped source registry; raw analyzer flags stay intact.
+    """
+    from .research import Fact
+    groups={};methods={m['method_id']:m for m in bundle['methods']}
+    for h in bundle['families']:
+        if h['reference'] and h['timeline']:
+            groups.setdefault(h['reference_id'],[]).append(h)
+    cards=[];refs=[];bundles=[]
+    for rid,hs in sorted(groups.items()):
+        raw=dict(hs[0]['reference']);raw['source_ids']=tuple(raw['source_ids'])
+        r=freeze(Reference(**raw));refs.append(r)
+        # Family states are independent. An invalidated rival cannot invalidate
+        # a surviving primary. Keep every event and its original chronology.
+        events={e['id']:{k:v for k,v in e.items() if k!='stage'} for h in hs for e in h['timeline']}
+        ordered=tuple(sorted(events.values(),key=lambda e:(utc(e['known_at']),utc(e['occurred_from']),e['id'])))
+        fams={h['family']:h for h in hs}
+        start=max((r.known_at,min((e['occurred_from'] for e in ordered),key=utc)),key=utc)
+        for h in hs:
+            fam=h['family'];side='BULLISH' if h['direction']==1 else 'BEARISH' if h['direction']==-1 else 'UNDETERMINED'
+            hys=[]
+            for f in (fam,*h['rivals']):
+                other=fams.get(f)
+                direction=('BULLISH' if other['direction']==1 else 'BEARISH' if other['direction']==-1 else 'UNDETERMINED') if other else (
+                    'UNDETERMINED' if f=='NULL' else 'BEARISH' if side=='BULLISH' else 'BULLISH')
+                support=tuple(e['id'] for e in other['timeline'] if e['stage']!='INVALIDATED') if other else ()
+                against=tuple(e['id'] for e in other['timeline'] if e['stage']=='INVALIDATED') if other else ()
+                hys.append(Hypothesis(f,direction,other['verdict'] if other else 'UNKNOWN',support,against,
+                    DISCRIMINATORS.get(f,'Can the NULL/no-economic-opportunity explanation survive current room and source checks?')))
+            # A primary can coexist with multiple family interpretations. Each
+            # hypothesis has its own identity inside the shared reference graph.
+            fid=fact_id(rid,fam,cutoff,'FORMATION_6B')
+            availability=max([r.available_at,*(e['available_at'] for e in ordered),cutoff],key=utc)
+            qualified=fam in qualified_families
+            facts[fid]=Fact(fid,instrument,'CAUSAL_SEQUENCE',True,'BOOLEAN',r.timeframe,cutoff,
+                availability,availability,availability,'SELECTED_FORMATION_6B',
+                fact_id(sorted({facts[i].response_hash for i in r.source_ids if i in facts}),h),
+                'SYNCHRONIZED_REMOTE_RECONSTRUCTION',True,'QUALIFIED' if qualified else 'TRIAL',mode,7200)
+            mids=tuple(dict.fromkeys((*FAMILY_METHODS[fam],*initiator_methods)))
+            formation={'version':'interpretation-6b.1','families':fams,
+                'primary':fam,'methods':{m:{'status':methods[m]['status'],'reason':methods[m]['reason'],
+                    'version':methods[m]['version'],'role':'APPLICABLE_INTERPRETER; NOT_INDEPENDENT_CONFIRMATION'} for m in mids},
+                'necessary_source_ids':list(r.source_ids),
+                'unknowns':h['unknowns'],'source_qualification_scope':'OFFLINE_ONLY' if mode!='LIVE' else 'REGISTERED_SOURCE_ONLY'}
+            c=StructureCard(r.native_symbol,'BINANCE_USDM',r.timeframe,r,start,cutoff,fam,
+                tuple(dict.fromkeys([fam,*(f for f in h['rivals'] if f.startswith('F') and f[1:].isdigit())])),
+                mids,tuple(origins) or ('C_SELECTED_FORMATION',),ordered,tuple(hys),(fid,),
+                'QUALIFIED' if qualified else 'TRIAL',mode,DISCRIMINATORS[fam],
+                'Accepted contrary sequence at the original reference, or frozen expiry',
+                exposure_cluster='NATIVE_CONTRACT:'+r.native_symbol,formation=formation)
+            cards.append(c)
+        bundles.append((r,list(ordered),[]))
+    return cards,refs,bundles
+
+
 def _one(card, facts, measurement, as_of, units, *, qualified=True):
     rows=[facts[i] for i in card.evidence_ids if i in facts and facts[i].measurement==measurement
         and facts[i].usable(as_of=as_of,native_symbol=card.native_symbol,units=units,qualified=qualified)]
@@ -150,12 +240,15 @@ def remaining_room(card, facts, references, *, as_of):
     for r in references:
         if r.id==card.reference.id:continue
         if r.native_symbol!=card.native_symbol:raise ContractError('OBSTACLE_IDENTITY_MISMATCH')
-        opposing_kinds=({'SWING_HIGH','RANGE_TOP','DAILY_HIGH','WEEKLY_HIGH'} if direction==1
-            else {'SWING_LOW','RANGE_BOTTOM','DAILY_LOW','WEEKLY_LOW'})
-        if r.kind not in opposing_kinds and not (r.kind in {'FVG_CANDIDATE','IFVG_CANDIDATE'}
-                and r.direction==-direction):continue
+        opposing_kinds=({'SWING_HIGH','RANGE_TOP','DAILY_HIGH','WEEKLY_HIGH','EQH_POOL_INFERRED'} if direction==1
+            else {'SWING_LOW','RANGE_BOTTOM','DAILY_LOW','WEEKLY_LOW','EQL_POOL_INFERRED'})
+        profile_edge=r.kind=='TRUE_VA_EDGE' and r.direction==direction
+        profile_node=r.kind in {'TRUE_POC','TRUE_HVN_LVN'}
+        if r.kind not in opposing_kinds and not (r.kind in {'FVG_CANDIDATE','IFVG_CANDIDATE',
+                'ORDER_BLOCK_CANDIDATE','SUPPLY_DEMAND_CANDIDATE'}
+                and r.direction==-direction) and not profile_edge and not profile_node:continue
         if (utc(r.known_at)>utc(card.window_start) or utc(r.available_at)>utc(card.window_start)
-                or utc(r.valid_until)<utc(as_of)):continue
+                or utc(r.valid_until)<utc(card.window_start)):continue
         edge=r.lo if direction==1 else r.hi
         if direction*(edge-number(origin.value))>0:
             choices.append((direction*(edge-number(origin.value)),r.id,edge,r))
@@ -168,7 +261,10 @@ def remaining_room(card, facts, references, *, as_of):
         and facts[i].usable(as_of=as_of,native_symbol=card.native_symbol,qualified=True)
         and utc(facts[i].value['after'])<=utc(card.window_start)]
     consumed=any(f.value.get('consumed') is True for f in lifecycle)
-    return {'status':'ROOM_EXHAUSTED' if gross==0 or consumed else 'ROOM_OBSERVED','first_obstacle_id':rid,
+    expired=utc(r.valid_until)<utc(as_of)
+    return {'status':'ROOM_EXHAUSTED' if gross==0 or consumed else 'ROOM_UNKNOWN' if expired else 'ROOM_OBSERVED',
+        'reason':'FIRST_PREKNOWN_OBSTACLE_EXPIRED; FARTHER_OBSTACLE_NOT_SUBSTITUTED' if expired and not consumed else None,
+        'first_obstacle_id':rid,
         'obstacle_known_at':r.known_at,'obstacle_available_at':r.available_at,'gross_room':gross,
         'units':'USDT_PER_BASE','room_bps':gross/number(current.value,positive=True)*10000,
         'evidence_ids':[origin.id,current.id,*r.source_ids,*(f.id for f in lifecycle)],
@@ -188,16 +284,37 @@ def economics(card, facts, room, *, as_of):
     if found['HORIZON_RELEVANT'].value is not True or not 0<vals['HORIZON_SECONDS']<=15*3600:
         return {'status':'HORIZON_UNCERTAIN','evidence_ids':[f.id for f in found.values()]}
     friction=sum((vals[k] for k in ('SPREAD_BPS','ROUND_TRIP_FEE_BPS','SLIPPAGE_BOUND_BPS','FUNDING_BOUND_BPS')),D(0))
+    price=_one(card,facts,'RESEARCH_PRICE',as_of,'USDT_PER_BASE')
+    cushion=card.reference.buffer/number(price.value,positive=True)*10000 if price else D(0)
     status='ECONOMICS_UNKNOWN' if room['status']=='ROOM_UNKNOWN' else (
-        'ECONOMICS_FAVORABLE_FOR_RESEARCH' if room['room_bps']>friction else 'ECONOMICS_UNFAVORABLE')
+        'ECONOMICS_FAVORABLE_FOR_RESEARCH' if room['room_bps']>friction+cushion else 'ECONOMICS_UNFAVORABLE')
     assumptions=[f.id for f in found.values() if f.source_id.startswith('DECLARED_RESEARCH_')]
     if status=='ECONOMICS_FAVORABLE_FOR_RESEARCH' and assumptions:status='ECONOMICS_CONDITIONAL_RESEARCH_SCENARIO'
     return {'status':status,'observed_friction_bound_bps':friction,'assumption_evidence_ids':assumptions,
+        'resolution_cushion_bps':cushion,'buffered_room_bps':max(D(0),room.get('room_bps',D(0))-cushion),
+        'price_arrival_within_horizon':'UNKNOWN; HORIZON_IS_SOURCEABLE_RESEARCH_DISCRIMINATOR_NOT_FORECAST',
         'horizon_seconds':vals['HORIZON_SECONDS'],'evidence_ids':[f.id for f in found.values()],
         'scope':'SOURCE_DECLARED_BOUNDS; EXECUTION_NOT_CERTIFIED'}
 
 
 def _sequence(card):
+    if card.formation:
+        h=card.formation['families'][card.primary_family]
+        kinds=[e['kind'] for e in h['timeline']]
+        paths={
+            'F1':('CONTROLLED_COUNTERLEG','DEFENDED_RESPONSE'),
+            'F2':('SEPARATED_PRESSURE','BUFFERED_OUTSIDE_CLOSE','LATER_OUTSIDE_ACCEPTANCE'),
+            'F3':('QUIET_AT_KNOWN_DECISION','FIRST_DISPLACEMENT','RETAINED_PROGRESS'),
+            'F4':('RECLAIM','OPPOSING_INITIATIVE'),
+            'F5':('RECLAIM','OPPOSING_REVERSAL_ATTEMPT','REVERSAL_FAILED_REBREAK_SAME_REFERENCE','LATER_OUTSIDE_ACCEPTANCE'),
+            'F6':('ROTATION',), 'F7':('CONDITIONAL_VALUE_EXTENSION','FAILED_FURTHER_PROGRESS_RETURN'),
+            'F8':('PERSISTENT_RESIDUAL_AT_LOCAL_DECISION','LOCAL_STRUCTURAL_CONSEQUENCE'),
+            # Stabilization alone establishes neither directional recovery nor continuation.
+            'F9':('POST_SHOCK','STABILIZATION_CANDIDATE','RENEWED_EXTREME_SECOND_LEG')}
+        path=paths[card.primary_family];cursor=0;ids=[]
+        for e in h['timeline']:
+            if cursor<len(path) and e['kind']==path[cursor]:ids.append(e['id']);cursor+=1
+        return cursor==len(path) and h['stage'] not in {'INVALIDATED','LATE'} and h['direction']!=0,ids
     sequence=SEQUENCES.get(card.primary_family)
     if sequence is None:return False,[]
     cursor=0;ids=[];last=None
@@ -234,18 +351,25 @@ def review_card(card, facts, references, *, as_of):
         and cited(raw_ids,facts,as_of=as_of,native_symbol=card.native_symbol,qualified=True))
     from .screening import closed_cutoff
     current=current and utc(card.cutoff)==utc(closed_cutoff(as_of,card.timeframe))
+    formation=card.formation['families'][card.primary_family] if card.formation else None
     if utc(card.reference.valid_until)<utc(as_of) or primary.contradicting_ids:
         stage='INVALIDATED';reason='REFERENCE_EXPIRED_OR_CAUSAL_PREMISE_CONTRADICTED'
+    elif formation and formation['stage']=='LATE':stage='LATE';reason='FORMATION_REACHED_PRIOR_VALUE_OR_EXHAUSTED'
     elif room['status']=='ROOM_EXHAUSTED':stage='LATE';reason='FIRST_PREKNOWN_OBSTACLE_CONSUMED'
     elif not cited(card.evidence_ids,facts,as_of=as_of,native_symbol=card.native_symbol):
         stage='UNKNOWN';reason='MISSING_STALE_OR_INCOMPLETE_SOURCE'
     elif complete and current and primary.verdict=='SUPPORTED' and card.qualification=='QUALIFIED' and significance and significance.value in {'HIGH','MED'} and room['status']=='ROOM_OBSERVED' and eco['status']=='ECONOMICS_FAVORABLE_FOR_RESEARCH':
         stage='READY_FOR_DEEP';reason='NECESSARY_PRESENT_STAGE_FACTS_VERIFIED'
-        event_age=(utc(as_of)-utc(card.events[-1]['known_at'])).total_seconds()
+        latest=formation['timeline'][-1] if formation else card.events[-1]
+        event_age=(utc(as_of)-utc(latest['known_at'])).total_seconds()
         if event_age<=900 and proximity and proximity.value is True:
             stage='FAST_WITH_ROOM';reason='RECENT_VERIFIED_EVENT_WITH_ROOM_AND_FRICTION'
     elif complete and current and primary.verdict=='SUPPORTED' and card.qualification=='QUALIFIED' and significance and significance.value in {'HIGH','MED'} and room['status']=='ROOM_OBSERVED' and eco['status']=='ECONOMICS_CONDITIONAL_RESEARCH_SCENARIO':
         stage='CONDITIONAL_FOR_DEEP';reason='CAUSAL_RESEARCH_QUESTION_WITH_EXPLICIT_ECONOMIC_ASSUMPTIONS; ANALYST_MAY_DECLINE'
+    elif formation and formation['stage']=='EARLY':
+        stage='EARLY';reason='FORMED_REFERENCE_AND_EARLY_EVENT; LATER_CONFIRMATION_NOT_REQUIRED_FOR_WATCH'
+    elif formation and formation['stage']=='APPROACHING_DECISION':
+        stage='APPROACHING_DECISION';reason='MEASURED_APPROACH_TO_FROZEN_DECISION'
     elif sequence_ids and significance and proximity and proximity.value is True:
         stage='APPROACHING_DECISION';reason='CAUSAL_SEQUENCE_AND_SIGNIFICANT_DECISION_AREA'
     elif sequence_ids or primary.supporting_ids:
@@ -259,8 +383,7 @@ def review_card(card, facts, references, *, as_of):
     if room['status']=='ROOM_UNKNOWN':missing.append('PREKNOWN_FIRST_OBSTACLE_AND_FRESH_PRICE')
     if eco['status']!='ECONOMICS_FAVORABLE_FOR_RESEARCH':missing.append(eco['status'])
     clusters=tuple(sorted({facts[i].cluster for i in card.evidence_ids}))
-    from .settings import load_config
-    methods={m['id']:m for m in load_config()['methods']}
+    methods=_method_contracts()
     citation_ids=set(card.evidence_ids)|raw_ids|set(room.get('evidence_ids',()))
     return {'card_id':card.id,'instrument':card.native_symbol,'scope':card.venue+'_PERPETUAL',
         'stage':stage,'reason_code':reason,'side_hypothesis':primary.direction,
@@ -283,7 +406,17 @@ def review_card(card, facts, references, *, as_of):
             'age_seconds':int((utc(as_of)-utc(facts[i].window_end)).total_seconds()),
             'fidelity':facts[i].fidelity,'qualification':facts[i].qualification} for i in sorted(citation_ids)},
         'trigger_to_investigate':card.trigger_to_investigate,'invalidating_evidence':card.invalidating_evidence,
-        'exposure_cluster':card.exposure_cluster,'trade_authorization':False}
+        'exposure_cluster':card.exposure_cluster,'trade_authorization':False,
+        'formation_contract':{'version':card.formation['version'],'primary':card.primary_family,
+            'families':{f:{k:h[k] for k in ('id','reference_id','stage','status','direction','unknowns','details')}
+                for f,h in card.formation['families'].items()},'methods':card.formation['methods'],
+            'source_qualification_scope':card.formation['source_qualification_scope']} if card.formation else None,
+        'why_now':{'family':card.primary_family,'latest_event':card.events[-1]['kind'] if card.events else None,
+            'reference_id':card.reference.id,'present_stage':stage,'qualification':card.qualification},
+        'strongest_rival':next((asdict(h) for h in card.hypotheses if h.family not in {card.primary_family,'NULL'}),None),
+        'null_rival':next(asdict(h) for h in card.hypotheses if h.family=='NULL'),
+        'next_deep_analyst_question':primary.next_discriminator,
+        'expiry':card.reference.valid_until}
 
 
 def shortlist(reviews, *, coverage, max_count=5, not_reviewed=()):
@@ -293,8 +426,17 @@ def shortlist(reviews, *, coverage, max_count=5, not_reviewed=()):
     eligible=[r for r in rows if r['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}]
     def dimensions(r):
         return (2 if r['historical_significance']=='HIGH' else 1,
-                1 if r['stage']=='FAST_WITH_ROOM' else 0,-r['contradiction_load'])
+                1 if r['stage']=='FAST_WITH_ROOM' else 0,
+                0 if r['economics'].get('assumption_evidence_ids') else 1,
+                number(r['economics'].get('buffered_room_bps',r['room']['room_bps']))-
+                    number(r['economics']['observed_friction_bound_bps']),-r['contradiction_load'])
     comparisons=[];fronts=[];remaining=list(eligible)
+    family_fronts={f:[] for f in sorted({r['primary_family'] for r in eligible})}
+    for f in family_fronts:
+        peers=[r for r in eligible if r['primary_family']==f]
+        family_fronts[f]=[r['card_id'] for r in peers if not any(
+            all(x>=y for x,y in zip(dimensions(b),dimensions(r))) and dimensions(b)!=dimensions(r)
+            for b in peers)]
     while remaining:
         front=[]
         for a in remaining:
@@ -306,21 +448,34 @@ def shortlist(reviews, *, coverage, max_count=5, not_reviewed=()):
                 if better:dominated=True
                 if a['card_id']<b['card_id']:comparisons.append({'a':a['card_id'],'b':b['card_id'],
                     'relation':'B_DOMINATES' if better else 'A_DOMINATES' if all(x>=y for x,y in zip(da,db)) and da!=db else 'INCOMPARABLE_OR_EQUAL',
-                    'dimensions':['historical_significance','urgency','contradiction_load'],
+                    'dimensions':['historical_significance','urgency','observed_vs_declared_economics',
+                        'room_after_resolution_and_declared_friction_bps','contradiction_load'],
+                    'a_values':da,'b_values':db,
                     'family_relative':bool(set(a['family_ids'])&set(b['family_ids'])),
-                    'room_economics':'Both passed necessary safeguards; unlike distances not forced into a score'})
+                    'room_economics':'Comparable bps are research geometry, not expected profit; each source/window/first obstacle remains cited'})
             if not dominated:front.append(a)
         fronts.append(front);remaining=[r for r in remaining if r not in front]
     selected=[];clusters=set()
+    selected_structures=set()
     for front in fronts:
         while front and len(selected)<max_count:
             a=min(front,key=lambda r:(r['exposure_cluster']!='UNKNOWN' and r['exposure_cluster'] in clusters,r['card_id']))
-            front.remove(a);selected.append(a);clusters.add(a['exposure_cluster'])
+            front.remove(a)
+            structure=(a['instrument'],a['reference']['id'])
+            if structure in selected_structures:continue
+            selected.append(a);clusters.add(a['exposure_cluster']);selected_structures.add(structure)
     selected_ids={r['card_id'] for r in selected}
     return {'schema_version':'openbot.research-review.v1','shortlist':selected,
         'watches':[r for r in rows if r['stage'] in {'PREMATURE','EARLY','DEVELOPING','APPROACHING_DECISION','UNKNOWN'}],
-        'near_misses':[dict(r,admission_reason='RESEARCH_CAPACITY_OR_DIVERSITY') for r in eligible if r['card_id'] not in selected_ids],
+        'near_misses':[*[dict(r,admission_reason='RESEARCH_CAPACITY_OR_DIVERSITY') for r in eligible if r['card_id'] not in selected_ids],
+            *[dict(r,admission_reason='LATE_OR_NECESSARY_FACT_UNASSESSABLE') for r in rows if r['stage']=='LATE' or
+                r['stage'] in {'UNKNOWN','DEVELOPING','APPROACHING_DECISION'} and
+                'COMPLETE_FAMILY_SEQUENCE' not in r['missing_necessary_inputs']]],
         'invalidations':[r for r in rows if r['stage']=='INVALIDATED'],
         'late':[r for r in rows if r['stage']=='LATE'],'not_reviewed':list(not_reviewed),
-        'pairwise_comparison':comparisons,'coverage':coverage,'llm_calls':0,'trade_authorization':False,
+        'pairwise_comparison':comparisons,'family_fronts':family_fronts,
+        'selection_tiebreak':'PARETO_FRONT; DISTINCT_KNOWN_EXPOSURE; STABLE_ID; NO_CONTEXT_SIDE_VETO',
+        'exposure_groups':{cluster:[r['card_id'] for r in selected if r['exposure_cluster']==cluster]
+            for cluster in sorted({r['exposure_cluster'] for r in selected})},
+        'coverage':coverage,'llm_calls':0,'trade_authorization':False,
         'new_orders_created':0,'empty_shortlist_reason':None if selected else 'NO_QUALIFIED_HANDOFF_WITHIN_OBSERVED_COVERAGE; NOT_A_NO_OPPORTUNITIES_CLAIM'}

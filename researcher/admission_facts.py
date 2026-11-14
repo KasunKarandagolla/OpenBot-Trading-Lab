@@ -15,7 +15,8 @@ def attach(card,facts,references,bars,instrument,source,depth,assumptions,*,as_o
             max((available,received),key=utc),provider,source_hash or source['source_response_sha256'],
             'EXACT_REPORTED',True,'QUALIFIED',card.mode,age or 300*WIDTHS[card.timeframe])
         facts[f.id]=f;ids.append(f.id)
-    add('DECISION_PRICE',(ref.lo+ref.hi)/2,'USDT_PER_BASE',end=ref.known_at,available=ref.available_at)
+    add('DECISION_PRICE',(ref.lo+ref.hi)/2,'USDT_PER_BASE',end=ref.known_at,available=ref.available_at,
+        provider='FROZEN_REFERENCE_LEDGER:'+ref.id,source_hash=digest(encode(ref).encode()))
     # Significance is a declared measured pivot subclass, never a rolling level.
     pivots=[j for j,b in enumerate(bars) if b.open_ms//1000==int(utc(ref.created_at).timestamp())]
     if pivots:
@@ -56,7 +57,9 @@ def attach(card,facts,references,bars,instrument,source,depth,assumptions,*,as_o
         ('SLIPPAGE_BOUND_BPS',cost['slippage_excluding_spread_bps']+D(assumptions['additional_slippage_assumption_bps']),'BPS'),
         ('FUNDING_BOUND_BPS',D(assumptions['funding_assumption_bound_bps']),'BPS'),
         ('HORIZON_SECONDS',D(assumptions['max_horizon_seconds']),'SECONDS'),
-        ('HORIZON_RELEVANT',bool(card.events) and (utc(as_of)-utc(card.events[-1]['known_at'])).total_seconds()<=54000,'BOOLEAN')):
+        ('HORIZON_RELEVANT',bool(card.events) and (utc(as_of)-utc(
+            card.formation['families'][card.primary_family]['timeline'][-1]['known_at'] if card.formation else
+            card.events[-1]['known_at'])).total_seconds()<=54000,'BOOLEAN')):
         add(measurement,value,units,provider='DECLARED_RESEARCH_SCENARIO:'+assumptions['fee_source'],
             source_hash=digest(encode(assumptions).encode()),end=card.cutoff)
     return tuple(ids),{**cost,'assumptions':assumptions,'room':room,

@@ -21,14 +21,16 @@ def allocate(nominations,context,cutoffs,*,limit=2):
         x['families'].update(n['families']);x['routes'].update(n['routes'])
     agenda=set(context.agenda);seed=cutoffs['15m'];epoch=int(utc(seed).timestamp())//900
     pools={'causal':[n for n,x in by.items() if 'A_REMOTE_CAUSAL' in x['routes']],
+        'specialist':[n for n,x in by.items() if any(r.startswith('B_') for r in x['routes'])],
         'watch':[n for n,x in by.items() if 'C_SAVED_WATCH' in x['routes']],
         'quiet_contrary':[n for n,x in by.items() if {'C_QUIET','C_NEW_LISTING','C_RELATIVE_EXCEPTION'}&x['routes']],
         'audit':[n for n,x in by.items() if 'C_STRATIFIED_AUDIT' in x['routes']],
         'fallback':list(by)}
-    protected=('watch','quiet_contrary','audit')[epoch%3]
+    protected=(('specialist','watch','quiet_contrary','audit') if pools['specialist'] else
+        ('watch','quiet_contrary','audit'))[epoch%(4 if pools['specialist'] else 3)]
     lanes=['causal',protected]
     # Empty lanes pass to the next protected pool; no trend approval or veto.
-    lanes+=['audit','watch','quiet_contrary','causal','fallback','fallback']
+    lanes+=['specialist','audit','watch','quiet_contrary','causal','fallback','fallback']
     def schedule(prioritized):
         picked=[];receipts=[]
         for lane in lanes:

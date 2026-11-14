@@ -1,0 +1,537 @@
+{
+  "environment": "CODEX_CLOUD",
+  "production_status": "PARTIAL",
+  "runs": {
+    "authentic_retained": {
+      "as_of_utc": "2026-11-13T21:53:43.373002+00:00",
+      "candidates": [],
+      "classification": "AUTHENTIC_RETAINED_REPLAY",
+      "costs": {
+        "basis_charged_units": null,
+        "by_provider": {
+          "basis": {
+            "http_requests": 0,
+            "p50_ms": null,
+            "p95_ms": null,
+            "request_body_bytes": 0,
+            "request_url_bytes": 0,
+            "response_bytes": 0
+          },
+          "binance": {
+            "http_requests": 0,
+            "p50_ms": null,
+            "p95_ms": null,
+            "request_body_bytes": 0,
+            "request_url_bytes": 0,
+            "response_bytes": 0
+          }
+        },
+        "cached_snapshot_reused": false,
+        "http_requests": 0,
+        "llm_calls": 0,
+        "p50_ms": null,
+        "p95_ms": null,
+        "process_resources": {
+          "process_peak_rss_kib": 134248,
+          "scan_cpu_system_seconds": 0.23946799999999996,
+          "scan_cpu_user_seconds": 15.442281,
+          "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+        },
+        "quota": "UNKNOWN",
+        "request_body_bytes": 0,
+        "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+        "request_url_bytes": 0,
+        "response_bytes": 0,
+        "sum_latency_ms": 0,
+        "sustainable_cadence": "UNQUALIFIED",
+        "targeted_kline_calls": 8,
+        "wall_ms": 15848
+      },
+      "counts": {
+        "invalidations": 713,
+        "near_misses": 89,
+        "not_reviewed_budget": 2,
+        "planner": 81,
+        "question_audit": 40,
+        "shortlist": 0,
+        "watches": 404
+      },
+      "full_report_sha256": "5559d3d63dd9fd31a0e90cdd8a72004c09ab8dbc5718a261cf6157314f8bdae2",
+      "hypothesis_question_links": 4239,
+      "packs": [
+        {
+          "evaluated": 5,
+          "failed": 0,
+          "missing": 0,
+          "requested": 5,
+          "returned": 5,
+          "timeframe": "15m"
+        },
+        {
+          "evaluated": 5,
+          "failed": 0,
+          "missing": 0,
+          "requested": 5,
+          "returned": 5,
+          "timeframe": "1h"
+        }
+      ],
+      "persistence": {
+        "database_bytes": 17485824,
+        "event": 3733,
+        "hypothesis": 240,
+        "interrupted_attempts": 0,
+        "lifecycle": 0,
+        "reference": 546,
+        "run_snapshots": 1,
+        "schema_version": 5,
+        "watch_revisions": 404
+      },
+      "research_shortlist_sha256": "83403d6bade6380f9e83c7f219e2f2d8a667050a5226baee5eb8b50208034c58",
+      "run_id": "2bffb400b3d57335e682b4347f59de4bb13edcfa324cfb899b028ca066272221",
+      "source_faults": [
+        {
+          "code": "OFFLINE_SOURCE_UNAVAILABLE",
+          "phase": "targeted_history",
+          "symbol": "BTCUSDT",
+          "timeframe": "4h"
+        },
+        {
+          "code": "OFFLINE_SOURCE_UNAVAILABLE",
+          "phase": "targeted_history",
+          "symbol": "ETHUSDT",
+          "timeframe": "4h"
+        }
+      ],
+      "source_provenance": {
+        "artifact": "evidence/external-first/session5/core-qualification.json",
+        "exact_selected_contracts": [
+          "BTCUSDT",
+          "ETHUSDT",
+          "1000PEPEUSDT",
+          "FRAXUSDT",
+          "\u6211\u8e0f\u9a6c\u6765\u4e86USDT"
+        ],
+        "historical_eligible_denominator": 519,
+        "network_requests": 0,
+        "projection": "EXACT_COLUMNS_FROM_RETAINED_RESPONSE; ORIGINAL_HASH_PRESERVED",
+        "scope": "RETAINED_FIVE; NO_CURRENT_OR_FULL_UNIVERSE_CLAIM",
+        "sha256": "ce3bebb8f247978d0611fba1f8d962c2ad11714a3e07cc9faa19843f7aea6638"
+      }
+    },
+    "synthetic_cold": {
+      "as_of_utc": "2026-11-14T10:00:10+00:00",
+      "candidates": [
+        {
+          "card_id": "238d9db7c220aff1c22a10d6f4306a898bb893240ee01a523c1d8e5b9a412560",
+          "economics": {
+            "assumption_evidence_ids": [
+              "1fd54e1638bb9b42062f5a2e07513d10fc7d318b8686c63246e00823e52bbcc9",
+              "c93c0dfec87d3d2718578fc836931a452c9f515ea8e9a0dc410d83eee823f713",
+              "05ba3dcabd77bedf9c1c85e02a42fe3c9eaf16dccfdf8ad400cf9566edb728b1",
+              "16892930e05ee22963aa896ef491810bbaced523c7a5d4d6c963cdbf57dbc346",
+              "87b702a958ef52acb1b6fba5268a99934970936b3a16a260e0f7e14d6ba6fa58"
+            ],
+            "buffered_room_bps": "864.1289493139889764499483894",
+            "evidence_ids": [
+              "227791ee57d36d1a3f28345c9ef0feee61290f3bb8f9161fdaf1aefce0eb6782",
+              "a591e1e7c90a406be9920f4a662ee9b739b09cb2adf6f0fce8be397651149a8f",
+              "1fd54e1638bb9b42062f5a2e07513d10fc7d318b8686c63246e00823e52bbcc9",
+              "c93c0dfec87d3d2718578fc836931a452c9f515ea8e9a0dc410d83eee823f713",
+              "05ba3dcabd77bedf9c1c85e02a42fe3c9eaf16dccfdf8ad400cf9566edb728b1",
+              "16892930e05ee22963aa896ef491810bbaced523c7a5d4d6c963cdbf57dbc346",
+              "87b702a958ef52acb1b6fba5268a99934970936b3a16a260e0f7e14d6ba6fa58"
+            ],
+            "horizon_seconds": "54000",
+            "observed_friction_bound_bps": "131.9138755980861244019138756",
+            "price_arrival_within_horizon": "UNKNOWN; HORIZON_IS_SOURCEABLE_RESEARCH_DISCRIMINATOR_NOT_FORECAST",
+            "resolution_cushion_bps": "44.96195977692011445914251975",
+            "scope": "SOURCE_DECLARED_BOUNDS; EXECUTION_NOT_CERTIFIED",
+            "status": "ECONOMICS_CONDITIONAL_RESEARCH_SCENARIO"
+          },
+          "instrument": "CONTROLUSDT",
+          "next_deep_analyst_question": "Does opposite initiative persist after reclaim, or does F5 rebreak the original level?",
+          "origins": [
+            "A_FIXED_WINDOW_PRESSURE_PRECURSOR",
+            "C_RELATIVE_EXCEPTION",
+            "C_STRATIFIED_AUDIT"
+          ],
+          "primary_family": "F4",
+          "room": {
+            "consumed_since_initiation": false,
+            "evidence_ids": [
+              "a4a0ae9b00019666f83ac1639b3c2447095d67b5ccdf761f509742d9d35f5b4a",
+              "17e42822706dfe5b11b60fc3a34e11b8e00f0597ea43fc8b78dd31dba46f0166",
+              "cd9512da775fdd77ef65e1a4383f7cd1c770231c23c53dff5ce48711315abbeb",
+              "9fec7294b7c7dac0b55b21f12013590b5ccc8d88f8ef9d4c226d4809f1c894af",
+              "47ade52c6031559b5e0906bd4599f40960013354ddbcc4573fd76d7b2ee5b9e2"
+            ],
+            "first_obstacle_id": "14865358633c6b5a1499cc5f2698a3e31fcef8de963f35f2496fd317d5b20a4a",
+            "gross_room": "9.50",
+            "interpretation": "RESEARCH_GEOMETRY; NO_EXECUTABLE_TARGET_OR_PROFIT_ESTIMATE",
+            "obstacle_available_at": "2026-11-13T17:00:00+00:00",
+            "obstacle_known_at": "2026-11-13T17:00:00+00:00",
+            "reason": null,
+            "room_bps": "909.0909090909090909090909091",
+            "status": "ROOM_OBSERVED",
+            "units": "USDT_PER_BASE"
+          },
+          "side_hypothesis": "BEARISH",
+          "stage": "CONDITIONAL_FOR_DEEP"
+        },
+        {
+          "card_id": "f5a4c539e4906dfad0f94343d0383469f233772f7d0f0dd17ee7187fb64ea149",
+          "economics": {
+            "assumption_evidence_ids": [
+              "fc2849ceca428b512d8ee33e8e9783573042bfb8d6c6b8e40c8f2d34e9ba5616",
+              "5ccea7f503501af43d02451dd508baf24fecc1c7bbcd047fbebe1594bb821c24",
+              "3b6164e3707659610f86c881aa69078d333dbe78273ab9f6fb4314f2d868c691",
+              "c00fdc50306dc1b4095dac971237a27ad4f1b4bf73cfbb2e9302ad0b81d9d3b6",
+              "ea8185479a7bb77cc486bc7854fe8208f5cb8e83c9a3dedb32ff1b2705750971"
+            ],
+            "buffered_room_bps": "864.1289493139889764499483894",
+            "evidence_ids": [
+              "227791ee57d36d1a3f28345c9ef0feee61290f3bb8f9161fdaf1aefce0eb6782",
+              "5de81a5d2b56aeafd03e4df543f632698d8344b309fe115a09e4c4363b36ad58",
+              "fc2849ceca428b512d8ee33e8e9783573042bfb8d6c6b8e40c8f2d34e9ba5616",
+              "5ccea7f503501af43d02451dd508baf24fecc1c7bbcd047fbebe1594bb821c24",
+              "3b6164e3707659610f86c881aa69078d333dbe78273ab9f6fb4314f2d868c691",
+              "c00fdc50306dc1b4095dac971237a27ad4f1b4bf73cfbb2e9302ad0b81d9d3b6",
+              "ea8185479a7bb77cc486bc7854fe8208f5cb8e83c9a3dedb32ff1b2705750971"
+            ],
+            "horizon_seconds": "54000",
+            "observed_friction_bound_bps": "131.9138755980861244019138756",
+            "price_arrival_within_horizon": "UNKNOWN; HORIZON_IS_SOURCEABLE_RESEARCH_DISCRIMINATOR_NOT_FORECAST",
+            "resolution_cushion_bps": "44.96195977692011445914251975",
+            "scope": "SOURCE_DECLARED_BOUNDS; EXECUTION_NOT_CERTIFIED",
+            "status": "ECONOMICS_CONDITIONAL_RESEARCH_SCENARIO"
+          },
+          "instrument": "CONTROLUSDT",
+          "next_deep_analyst_question": "Does opposite initiative persist after reclaim, or does F5 rebreak the original level?",
+          "origins": [
+            "A_FIXED_WINDOW_PRESSURE_PRECURSOR",
+            "C_RELATIVE_EXCEPTION"
+          ],
+          "primary_family": "F4",
+          "room": {
+            "consumed_since_initiation": false,
+            "evidence_ids": [
+              "9f0dd6412057c7892a2fa4d466f616a5bf233f82857d56123d651bd95990efac",
+              "17e42822706dfe5b11b60fc3a34e11b8e00f0597ea43fc8b78dd31dba46f0166",
+              "cd9512da775fdd77ef65e1a4383f7cd1c770231c23c53dff5ce48711315abbeb",
+              "9fec7294b7c7dac0b55b21f12013590b5ccc8d88f8ef9d4c226d4809f1c894af"
+            ],
+            "first_obstacle_id": "14865358633c6b5a1499cc5f2698a3e31fcef8de963f35f2496fd317d5b20a4a",
+            "gross_room": "9.50",
+            "interpretation": "RESEARCH_GEOMETRY; NO_EXECUTABLE_TARGET_OR_PROFIT_ESTIMATE",
+            "obstacle_available_at": "2026-11-13T17:00:00+00:00",
+            "obstacle_known_at": "2026-11-13T17:00:00+00:00",
+            "reason": null,
+            "room_bps": "909.0909090909090909090909091",
+            "status": "ROOM_OBSERVED",
+            "units": "USDT_PER_BASE"
+          },
+          "side_hypothesis": "BEARISH",
+          "stage": "CONDITIONAL_FOR_DEEP"
+        }
+      ],
+      "classification": "SYNTHETIC_TEST",
+      "costs": {
+        "basis_charged_units": null,
+        "by_provider": {
+          "basis": {
+            "http_requests": 0,
+            "p50_ms": null,
+            "p95_ms": null,
+            "request_body_bytes": 0,
+            "request_url_bytes": 0,
+            "response_bytes": 0
+          },
+          "binance": {
+            "http_requests": 0,
+            "p50_ms": null,
+            "p95_ms": null,
+            "request_body_bytes": 0,
+            "request_url_bytes": 0,
+            "response_bytes": 0
+          }
+        },
+        "cached_snapshot_reused": false,
+        "http_requests": 0,
+        "llm_calls": 0,
+        "p50_ms": null,
+        "p95_ms": null,
+        "process_resources": {
+          "process_peak_rss_kib": 36544,
+          "scan_cpu_system_seconds": 0.005863999999999994,
+          "scan_cpu_user_seconds": 1.7634980000000002,
+          "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+        },
+        "quota": "UNKNOWN",
+        "request_body_bytes": 0,
+        "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+        "request_url_bytes": 0,
+        "response_bytes": 0,
+        "sum_latency_ms": 0,
+        "sustainable_cadence": "UNQUALIFIED",
+        "targeted_kline_calls": 8,
+        "wall_ms": 1816
+      },
+      "counts": {
+        "invalidations": 2,
+        "near_misses": 4,
+        "not_reviewed_budget": 0,
+        "planner": 9,
+        "question_audit": 4,
+        "shortlist": 2,
+        "watches": 8
+      },
+      "full_report_sha256": "c34b7fdd832ce7e55ea7f5cdbf5ab93cbfa79c8a8b53fcf549c180ac6c514d90",
+      "hypothesis_question_links": 36,
+      "packs": [
+        {
+          "evaluated": 3,
+          "failed": 0,
+          "missing": 0,
+          "requested": 3,
+          "returned": 3,
+          "timeframe": "15m"
+        },
+        {
+          "evaluated": 3,
+          "failed": 0,
+          "missing": 0,
+          "requested": 3,
+          "returned": 3,
+          "timeframe": "1h"
+        }
+      ],
+      "persistence": {
+        "database_bytes": 405504,
+        "event": 28,
+        "hypothesis": 30,
+        "interrupted_attempts": 0,
+        "lifecycle": 0,
+        "reference": 8,
+        "run_snapshots": 1,
+        "schema_version": 5,
+        "watch_revisions": 8
+      },
+      "research_shortlist_sha256": "dc493cda5d70b2b48ec60dd772e87e99821fe2d7ce1354f5fd9bde07fe350384",
+      "run_id": "6d08a7b3017996a90494b480d941aa827069c6a3a19ab469a270265c3e1f8380",
+      "source_faults": [],
+      "source_provenance": {
+        "classification": "SYNTHETIC_TEST",
+        "network_requests": 0,
+        "source_qualification": "CONTROLLED_OFFLINE_ONLY; DOES_NOT_ENABLE_REAL_PROVIDER"
+      }
+    },
+    "synthetic_warm": {
+      "as_of_utc": "2026-11-14T10:00:10+00:00",
+      "candidates": [
+        {
+          "card_id": "238d9db7c220aff1c22a10d6f4306a898bb893240ee01a523c1d8e5b9a412560",
+          "economics": {
+            "assumption_evidence_ids": [
+              "1fd54e1638bb9b42062f5a2e07513d10fc7d318b8686c63246e00823e52bbcc9",
+              "c93c0dfec87d3d2718578fc836931a452c9f515ea8e9a0dc410d83eee823f713",
+              "05ba3dcabd77bedf9c1c85e02a42fe3c9eaf16dccfdf8ad400cf9566edb728b1",
+              "16892930e05ee22963aa896ef491810bbaced523c7a5d4d6c963cdbf57dbc346",
+              "87b702a958ef52acb1b6fba5268a99934970936b3a16a260e0f7e14d6ba6fa58"
+            ],
+            "buffered_room_bps": "864.1289493139889764499483894",
+            "evidence_ids": [
+              "227791ee57d36d1a3f28345c9ef0feee61290f3bb8f9161fdaf1aefce0eb6782",
+              "a591e1e7c90a406be9920f4a662ee9b739b09cb2adf6f0fce8be397651149a8f",
+              "1fd54e1638bb9b42062f5a2e07513d10fc7d318b8686c63246e00823e52bbcc9",
+              "c93c0dfec87d3d2718578fc836931a452c9f515ea8e9a0dc410d83eee823f713",
+              "05ba3dcabd77bedf9c1c85e02a42fe3c9eaf16dccfdf8ad400cf9566edb728b1",
+              "16892930e05ee22963aa896ef491810bbaced523c7a5d4d6c963cdbf57dbc346",
+              "87b702a958ef52acb1b6fba5268a99934970936b3a16a260e0f7e14d6ba6fa58"
+            ],
+            "horizon_seconds": "54000",
+            "observed_friction_bound_bps": "131.9138755980861244019138756",
+            "price_arrival_within_horizon": "UNKNOWN; HORIZON_IS_SOURCEABLE_RESEARCH_DISCRIMINATOR_NOT_FORECAST",
+            "resolution_cushion_bps": "44.96195977692011445914251975",
+            "scope": "SOURCE_DECLARED_BOUNDS; EXECUTION_NOT_CERTIFIED",
+            "status": "ECONOMICS_CONDITIONAL_RESEARCH_SCENARIO"
+          },
+          "instrument": "CONTROLUSDT",
+          "next_deep_analyst_question": "Does opposite initiative persist after reclaim, or does F5 rebreak the original level?",
+          "origins": [
+            "A_FIXED_WINDOW_PRESSURE_PRECURSOR",
+            "C_RELATIVE_EXCEPTION",
+            "C_STRATIFIED_AUDIT"
+          ],
+          "primary_family": "F4",
+          "room": {
+            "consumed_since_initiation": false,
+            "evidence_ids": [
+              "a4a0ae9b00019666f83ac1639b3c2447095d67b5ccdf761f509742d9d35f5b4a",
+              "17e42822706dfe5b11b60fc3a34e11b8e00f0597ea43fc8b78dd31dba46f0166",
+              "cd9512da775fdd77ef65e1a4383f7cd1c770231c23c53dff5ce48711315abbeb",
+              "9fec7294b7c7dac0b55b21f12013590b5ccc8d88f8ef9d4c226d4809f1c894af",
+              "47ade52c6031559b5e0906bd4599f40960013354ddbcc4573fd76d7b2ee5b9e2"
+            ],
+            "first_obstacle_id": "14865358633c6b5a1499cc5f2698a3e31fcef8de963f35f2496fd317d5b20a4a",
+            "gross_room": "9.50",
+            "interpretation": "RESEARCH_GEOMETRY; NO_EXECUTABLE_TARGET_OR_PROFIT_ESTIMATE",
+            "obstacle_available_at": "2026-11-13T17:00:00+00:00",
+            "obstacle_known_at": "2026-11-13T17:00:00+00:00",
+            "reason": null,
+            "room_bps": "909.0909090909090909090909091",
+            "status": "ROOM_OBSERVED",
+            "units": "USDT_PER_BASE"
+          },
+          "side_hypothesis": "BEARISH",
+          "stage": "CONDITIONAL_FOR_DEEP"
+        },
+        {
+          "card_id": "f5a4c539e4906dfad0f94343d0383469f233772f7d0f0dd17ee7187fb64ea149",
+          "economics": {
+            "assumption_evidence_ids": [
+              "fc2849ceca428b512d8ee33e8e9783573042bfb8d6c6b8e40c8f2d34e9ba5616",
+              "5ccea7f503501af43d02451dd508baf24fecc1c7bbcd047fbebe1594bb821c24",
+              "3b6164e3707659610f86c881aa69078d333dbe78273ab9f6fb4314f2d868c691",
+              "c00fdc50306dc1b4095dac971237a27ad4f1b4bf73cfbb2e9302ad0b81d9d3b6",
+              "ea8185479a7bb77cc486bc7854fe8208f5cb8e83c9a3dedb32ff1b2705750971"
+            ],
+            "buffered_room_bps": "864.1289493139889764499483894",
+            "evidence_ids": [
+              "227791ee57d36d1a3f28345c9ef0feee61290f3bb8f9161fdaf1aefce0eb6782",
+              "5de81a5d2b56aeafd03e4df543f632698d8344b309fe115a09e4c4363b36ad58",
+              "fc2849ceca428b512d8ee33e8e9783573042bfb8d6c6b8e40c8f2d34e9ba5616",
+              "5ccea7f503501af43d02451dd508baf24fecc1c7bbcd047fbebe1594bb821c24",
+              "3b6164e3707659610f86c881aa69078d333dbe78273ab9f6fb4314f2d868c691",
+              "c00fdc50306dc1b4095dac971237a27ad4f1b4bf73cfbb2e9302ad0b81d9d3b6",
+              "ea8185479a7bb77cc486bc7854fe8208f5cb8e83c9a3dedb32ff1b2705750971"
+            ],
+            "horizon_seconds": "54000",
+            "observed_friction_bound_bps": "131.9138755980861244019138756",
+            "price_arrival_within_horizon": "UNKNOWN; HORIZON_IS_SOURCEABLE_RESEARCH_DISCRIMINATOR_NOT_FORECAST",
+            "resolution_cushion_bps": "44.96195977692011445914251975",
+            "scope": "SOURCE_DECLARED_BOUNDS; EXECUTION_NOT_CERTIFIED",
+            "status": "ECONOMICS_CONDITIONAL_RESEARCH_SCENARIO"
+          },
+          "instrument": "CONTROLUSDT",
+          "next_deep_analyst_question": "Does opposite initiative persist after reclaim, or does F5 rebreak the original level?",
+          "origins": [
+            "A_FIXED_WINDOW_PRESSURE_PRECURSOR",
+            "C_RELATIVE_EXCEPTION"
+          ],
+          "primary_family": "F4",
+          "room": {
+            "consumed_since_initiation": false,
+            "evidence_ids": [
+              "9f0dd6412057c7892a2fa4d466f616a5bf233f82857d56123d651bd95990efac",
+              "17e42822706dfe5b11b60fc3a34e11b8e00f0597ea43fc8b78dd31dba46f0166",
+              "cd9512da775fdd77ef65e1a4383f7cd1c770231c23c53dff5ce48711315abbeb",
+              "9fec7294b7c7dac0b55b21f12013590b5ccc8d88f8ef9d4c226d4809f1c894af"
+            ],
+            "first_obstacle_id": "14865358633c6b5a1499cc5f2698a3e31fcef8de963f35f2496fd317d5b20a4a",
+            "gross_room": "9.50",
+            "interpretation": "RESEARCH_GEOMETRY; NO_EXECUTABLE_TARGET_OR_PROFIT_ESTIMATE",
+            "obstacle_available_at": "2026-11-13T17:00:00+00:00",
+            "obstacle_known_at": "2026-11-13T17:00:00+00:00",
+            "reason": null,
+            "room_bps": "909.0909090909090909090909091",
+            "status": "ROOM_OBSERVED",
+            "units": "USDT_PER_BASE"
+          },
+          "side_hypothesis": "BEARISH",
+          "stage": "CONDITIONAL_FOR_DEEP"
+        }
+      ],
+      "classification": "SYNTHETIC_TEST",
+      "costs": {
+        "basis_charged_units": null,
+        "by_provider": {
+          "basis": {
+            "http_requests": 0,
+            "p50_ms": null,
+            "p95_ms": null,
+            "request_body_bytes": 0,
+            "request_url_bytes": 0,
+            "response_bytes": 0
+          },
+          "binance": {
+            "http_requests": 0,
+            "p50_ms": null,
+            "p95_ms": null,
+            "request_body_bytes": 0,
+            "request_url_bytes": 0,
+            "response_bytes": 0
+          }
+        },
+        "cached_snapshot_reused": true,
+        "http_requests": 0,
+        "llm_calls": 0,
+        "p50_ms": null,
+        "p95_ms": null,
+        "process_resources": {
+          "process_peak_rss_kib": 33588,
+          "scan_cpu_system_seconds": 0.008509000000000003,
+          "scan_cpu_user_seconds": 0.02965000000000001,
+          "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+        },
+        "quota": "UNKNOWN",
+        "request_body_bytes": 0,
+        "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+        "request_url_bytes": 0,
+        "response_bytes": 0,
+        "sum_latency_ms": 0,
+        "sustainable_cadence": "UNQUALIFIED",
+        "targeted_kline_calls": 0,
+        "wall_ms": 71
+      },
+      "counts": {
+        "invalidations": 2,
+        "near_misses": 4,
+        "not_reviewed_budget": 0,
+        "planner": 9,
+        "question_audit": 4,
+        "shortlist": 2,
+        "watches": 8
+      },
+      "full_report_sha256": "a1a0b1fa12cdcbd44df86c5a07fb775ef1ac2a2296c02bb0c2356c5146d712b2",
+      "hypothesis_question_links": 36,
+      "packs": [
+        {
+          "evaluated": 3,
+          "failed": 0,
+          "missing": 0,
+          "requested": 3,
+          "returned": 3,
+          "timeframe": "15m"
+        },
+        {
+          "evaluated": 3,
+          "failed": 0,
+          "missing": 0,
+          "requested": 3,
+          "returned": 3,
+          "timeframe": "1h"
+        }
+      ],
+      "persistence": {
+        "database_bytes": 413696,
+        "event": 28,
+        "hypothesis": 30,
+        "interrupted_attempts": 0,
+        "lifecycle": 0,
+        "reference": 8,
+        "run_snapshots": 2,
+        "schema_version": 5,
+        "watch_revisions": 8
+      },
+      "research_shortlist_sha256": "161659a0c8cae3c98ac742dff9d9914a7f1ff3580f9e5f42ac928a0c10eff753",
+      "run_id": "3bef2c8c46e436c671d977aab0b90d23367fdcbd59711b584d152cf1ca8e208f",
+      "source_faults": [],
+      "source_provenance": {
+        "classification": "SYNTHETIC_TEST",
+        "network_requests": 0,
+        "source_qualification": "CONTROLLED_OFFLINE_ONLY; DOES_NOT_ENABLE_REAL_PROVIDER"
+      }
+    }
+  }
+}

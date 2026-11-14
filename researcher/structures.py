@@ -493,7 +493,7 @@ class ResearchLedger:
         self.db.execute(f"INSERT INTO {table} (id,{columns},body) VALUES ({','.join('?' for _ in range(len(values)+2))})",
                         (key,*values,body))
 
-    def record(self,ref,events,*,hypotheses=(),cutoff,snapshot_cutoff=None):
+    def record(self,ref,events,*,hypotheses=(),cutoff,snapshot_cutoff=None,allow_historical_insert=False):
         utc(cutoff)
         if utc(ref.available_at)>utc(cutoff):raise ContractError("REFERENCE_NOT_AVAILABLE")
         with self.transaction():
@@ -503,8 +503,9 @@ class ResearchLedger:
             for raw in events:
                 e=raw if isinstance(raw,StructuralEvent) else StructuralEvent(**{k:v for k,v in raw.items() if k!="id"})
                 existing=self.db.execute("SELECT 1 FROM event WHERE id=?",(e.id,)).fetchone()
+                historical=(allow_historical_insert and utc(e.available_at)>prior)
                 if (e.reference_id!=ref.id or utc(e.known_at)<utc(ref.known_at)
-                        or utc(e.available_at)>utc(cutoff) or (not existing and utc(e.known_at)<prior)):
+                        or utc(e.available_at)>utc(cutoff) or (not existing and utc(e.known_at)<prior and not historical)):
                     raise ContractError("LEDGER_NONCHRONOLOGICAL_EVENT")
                 self._immutable("event",e.id,"reference_id,known_at",(ref.id,e.known_at),encode(asdict(e)))
                 prior=max(prior,utc(e.known_at))

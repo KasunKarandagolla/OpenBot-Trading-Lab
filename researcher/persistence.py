@@ -9,6 +9,35 @@ from .contracts import ContractError, digest, encode, utc
 from .structures import ResearchLedger, Reference
 
 
+def read_latest_report(path):
+    """Operator inspection uses SQLite mode=ro, with no schema/write side effect."""
+    from .settings import ROOT
+    p=Path(path).absolute()
+    if '..' in p.parts or not p.is_relative_to(ROOT/'work') or any(x.is_symlink() for x in (p,*p.parents)):
+        raise ContractError('LEDGER_MUST_BE_UNDER_WORK')
+    try:
+        db=sqlite3.connect(p.as_uri()+'?mode=ro',uri=True)
+        try:
+            if db.execute('PRAGMA user_version').fetchone()[0]!=5:raise ContractError('RESEARCH_DB_VERSION_UNSUPPORTED')
+            def read(key,depth=0):
+                if depth>2:raise ContractError('RESEARCH_SNAPSHOT_CORRUPT')
+                row=db.execute('SELECT body,output_hash FROM run_snapshot WHERE run_key=?',(key,)).fetchone()
+                if row is None:raise ContractError('RESEARCH_SNAPSHOT_CORRUPT')
+                raw=zlib.decompress(row[0])
+                if digest(raw)!=row[1]:raise ContractError('RESEARCH_SNAPSHOT_CORRUPT')
+                result=json.loads(raw)
+                if result.get('snapshot_delta_version')==1:
+                    base=read(result['base_snapshot'],depth+1);base.update(result['overrides'])
+                    for key,value in result.get('nested_overrides',{}).items():base[key].update(value)
+                    return base
+                return result
+            row=db.execute('SELECT run_key FROM run_snapshot ORDER BY completed DESC,rowid DESC LIMIT 1').fetchone()
+            if not row:raise ContractError('NO_SAVED_RESEARCH_REPORT')
+            return read(row[0])
+        finally:db.close()
+    except (sqlite3.DatabaseError,zlib.error,ValueError):raise ContractError('RESEARCH_SNAPSHOT_CORRUPT') from None
+
+
 class RunLedger(ResearchLedger):
     def __init__(self,path=':memory:'):
         self.path=str(path)
@@ -81,7 +110,9 @@ class RunLedger(ResearchLedger):
             if value.get('snapshot_delta_version')==1:
                 base=self.cached(value['base_snapshot'],depth+1)
                 if base is None:raise ValueError()
-                base.update(value['overrides']);return base
+                base.update(value['overrides'])
+                for key,changes in value.get('nested_overrides',{}).items():base[key].update(changes)
+                return base
             return value
         except (zlib.error,ValueError,TypeError):raise ContractError('RESEARCH_SNAPSHOT_CORRUPT') from None
 
@@ -119,6 +150,10 @@ class RunLedger(ResearchLedger):
         if base:
             stored={'snapshot_delta_version':1,'base_snapshot':base_key,
                 'overrides':{k:v for k,v in compact.items() if k not in base or encode(v)!=encode(base[k])}}
+            if isinstance(base.get('research_shortlist'),dict) and isinstance(compact.get('research_shortlist'),dict):
+                stored['overrides'].pop('research_shortlist',None)
+                stored['nested_overrides']={'research_shortlist':{k:v for k,v in compact['research_shortlist'].items()
+                    if k not in base['research_shortlist'] or encode(v)!=encode(base['research_shortlist'][k])}}
         raw=encode(stored).encode()
         if old is None:
             if report.get('cache_key') and not report.get('reuse'):
@@ -127,7 +162,7 @@ class RunLedger(ResearchLedger):
                     (report['cache_key'],zlib.compress(current),digest(current)))
             for ref,events,hypotheses in bundles:
                 self.record(ref,events,hypotheses=hypotheses,cutoff=report['completed_at_utc'],
-                    snapshot_cutoff=report['frozen_cutoffs'][ref.timeframe])
+                    snapshot_cutoff=report['frozen_cutoffs'][ref.timeframe],allow_historical_insert=True)
             for ref,state,at in terminals:self.transition(ref,state=state,at=at)
             if crash_hook:crash_hook()
             self.db.execute('INSERT INTO run_snapshot VALUES(?,?,?,?)',

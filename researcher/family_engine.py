@@ -150,6 +150,7 @@ def continuation(bars,tick):
         start=starts[-1];amplitude=side*(s['price']-start['price'])
         if amplitude<=2*tick:continue
         k=s['known_index']
+        if k<14:continue  # An early pivot can precede the first defined ATR.
         scale=wilder_atr(bars[:k+1])[-1]
         if not scale:continue
         if utc(bars[k].available_at or bars[k].received_at)>utc(bars[k].end)+timedelta(days=7):

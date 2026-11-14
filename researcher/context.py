@@ -3,7 +3,7 @@ from dataclasses import dataclass, asdict
 from decimal import Decimal as D
 from statistics import median
 from .contracts import ContractError, utc
-from .numerics import validate_bars, confirmed_swings, swing_ladder, wilder_atr, efficiency
+from .numerics import validate_bars, confirmed_swings, swing_ladder, wilder_atr, efficiency,compression
 from .research import Fact, fact_id
 from .screening import closed_cutoff
 
@@ -54,11 +54,19 @@ def benchmark_fact(bars, instrument, *, as_of, mode, qualification='TRIAL'):
     er=efficiency(bars)
     state='TREND_UP' if ladder=='HH_HL' else 'TREND_DOWN' if ladder=='LH_LL' else 'TRANSITION'
     labels=[state]
+    from .family_engine import balance_references
+    if balance_references(bars,instrument.tick_size):labels.append('RANGE')
+    quiet=compression(bars,tick=instrument.tick_size) if len(bars)>=159 else None
+    if quiet and quiet['past_percentile']<=D('.2'):labels.append('COMPRESSION')
+    if atr[-1] and any(abs(last.close-s['price'])<=D('2.5')*atr[-1] for s in swings[-4:]):
+        labels.append('HTF_DECISION')
     if shock: labels.append('SHOCK')
     if er is not None and er>=D('.7'): labels.append('IMPULSE')
     refs=[{'id':s['id'],'price':s['price'],'known_at':s['known_at']} for s in swings[-4:]]
     return Fact(fact_id([b.id for b in bars],'CONTEXT'),instrument,'BENCHMARK_STRUCTURE',
-        {'labels':labels,'ladder':ladder,'efficiency16':er,'preknown_references':refs},
+        {'labels':labels,'ladder':ladder,'efficiency16':er,'preknown_references':refs,
+            'closed_log_return_16':(last.close/bars[-17].close).ln(),
+            'past_only_quiet_percentile':quiet['past_percentile'] if quiet else None},
         'STRUCTURE',last.timeframe,last.end,last.end,last.available_at or last.received_at,
         last.received_at,'OFFICIAL_BINANCE_SELECTED',last.source_hash,
         'SYNCHRONIZED_REMOTE_RECONSTRUCTION',True,qualification,mode,
@@ -81,7 +89,7 @@ def build_context(facts, *, as_of, eligible_symbols=(), eligible_known=False,
             if f:
                 if not isinstance(value,dict) or not isinstance(value.get('labels'),list):
                     raise ContractError('CONTEXT_STRUCTURE_SCHEMA')
-                if not set(value['labels'])<={'TREND_UP','TREND_DOWN','TRANSITION','RANGE','COMPRESSION','SHOCK','IMPULSE'}:
+                if not set(value['labels'])<={'TREND_UP','TREND_DOWN','TRANSITION','RANGE','COMPRESSION','SHOCK','IMPULSE','HTF_DECISION'}:
                     raise ContractError('CONTEXT_STRUCTURE_SCHEMA')
                 labels.extend(value['labels']);bench[(name,tf)]=tuple(value['labels'])
             claims.append(ContextClaim(name+'_'+tf,value,'SUPPORTED' if f else 'UNKNOWN',
@@ -106,13 +114,22 @@ def build_context(facts, *, as_of, eligible_symbols=(), eligible_known=False,
     if len(windows)>1: raise ContractError('INCOHERENT_TEMPORAL_JOIN')
     missing=tuple(sorted(eligible-set(rows)));values=list(rows.values())
     n=len(values);m=median(values) if values else None;btc=rows.get('BTCUSDT')
+    ordered=sorted(values)
+    q1=median(ordered[:n//2] or ordered) if n else None
+    q3=median(ordered[(n+1)//2:] or ordered) if n else None
     stats={'up_fraction':D(sum(v>0 for v in values))/n if n else None,'median':m,
         'mad':median(abs(v-m) for v in values) if n else None,
+        'iqr':q3-q1 if n else None,'quartile_definition':'MEDIAN_SPLIT_EXCLUDES_CENTRAL_ODD',
         'outperform_btc_fraction':D(sum(v>btc for name,v in rows.items() if name!='BTCUSDT'))/(n-1)
             if btc is not None and n>1 else None}
     claims.append(ContextClaim('BREADTH_1H_16',stats if n else None,'SUPPORTED' if n else 'UNKNOWN',
         tuple(used),len(eligible) if eligible_known else None,n,missing,
         'PARTIAL_CONSTITUENT_HISTORY' if missing else None if n else 'SYNCHRONIZED_HISTORY_UNAVAILABLE'))
+    leadership=rows.get('ETHUSDT')-rows['BTCUSDT'] if {'ETHUSDT','BTCUSDT'}<=set(rows) else None
+    leadership_ids=tuple(i for i in used if facts[i].instrument.native_symbol in {'ETHUSDT','BTCUSDT'})
+    claims.append(ContextClaim('ETH_MINUS_BTC_1H_16_LOG_RETURN',leadership,
+        'SUPPORTED' if leadership is not None else 'UNKNOWN',leadership_ids,
+        reason=None if leadership is not None else 'ALIGNED_COMPLETED_BENCHMARK_RETURNS_UNAVAILABLE'))
     # No dated exact-perp taxonomy is installed. Supplied mappings must be
     # verified by a future registered adapter; never guess categories from text.
     claims.append(ContextClaim('SECTOR_HEAT',None,'UNKNOWN',(),len(eligible) if eligible_known else None,

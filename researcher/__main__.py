@@ -47,6 +47,11 @@ def main():
     scan.add_argument("--inventory-provenance", help="required provenance manifest for --inventory")
     scan.add_argument('--db',help='research metadata SQLite below work/; default work/research-metadata.sqlite')
     scan.add_argument('--json',action='store_true',help='print full machine-readable report instead of the concise research summary')
+    scan.add_argument('--replay',choices=['retained-session5','synthetic-6b'],
+        help='offline sources through the ordinary scan now pipeline; zero provider network')
+    scan.add_argument('--qualifications',help='operator-reviewed Local source manifest and hashed oracle proofs under work/')
+    show=sub.add_parser('show');show.add_argument('action',choices=['results','watches','coverage'])
+    show.add_argument('--db',default=str(ROOT/'work/research-metadata.sqlite'))
     args = parser.parse_args()
     try:
         config = load_config()
@@ -62,6 +67,11 @@ def main():
                 from .analytical_probe import qualify_selected
                 report=qualify_selected(environment=args.environment,native_symbol=args.symbol,timeframe=args.timeframe)
             if args.output:write_report(args.output,report)
+        elif args.command=='show':
+            from .persistence import read_latest_report
+            saved=read_latest_report(args.db)
+            report=saved if args.action=='results' else {args.action:saved.get(args.action if args.action=='watches' else 'research_coverage'),
+                'mode':saved['mode'],'as_of_utc':saved['completed_at_utc'],'trade_authorization':False}
         elif args.command == 'review':
             from .session4 import replay_session3,probe_precursors
             report=replay_session3() if args.action=='replay-session3' else probe_precursors()
@@ -71,8 +81,17 @@ def main():
                 raise ContractError("INVENTORY_PROVENANCE_REQUIRED")
             inventory = (OwnerOfficialSnapshot(Path(args.inventory), Path(args.inventory_provenance)).load(now_utc())
                          if args.inventory else None)
-            if args.action in {'now','live'} and inventory is None:
-                report=scan_market_research(config=config,ledger_path=args.db)
+            if args.replay:
+                if args.action!='now' or inventory is not None or args.qualifications:raise ContractError('OFFLINE_REPLAY_SCOPE')
+                from .replay import retained_session5,synthetic_6b
+                api,client,sources,at,provenance=(retained_session5 if args.replay=='retained-session5' else synthetic_6b)()
+                report=scan_market_research(config=config,api=api,client=client,sources=sources,clock=lambda:at,
+                    mode=sources.mode,ledger_path=args.db)
+                report['offline_source_provenance']=provenance
+            elif args.action in {'now','live'} and inventory is None:
+                from .query_planner import ResearchSources
+                sources=ResearchSources.from_file(args.qualifications) if args.qualifications else None
+                report=scan_market_research(config=config,ledger_path=args.db,sources=sources)
             elif args.action == 'qualify':
                 from .qualification5 import qualify_core
                 report = qualify_core()

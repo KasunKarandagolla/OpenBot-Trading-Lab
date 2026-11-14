@@ -92,6 +92,9 @@ def validate_config(config):
 def provider_status(config):
     # Only presence is exposed. Environment values never become requests/logs.
     return {"status_kind": "RECORDED_CAPABILITIES_NOT_LIVE_HEALTH",
+            'readiness':{'deterministic_code':'IMPLEMENTED',
+                'new_core_source_qualified':False,'live_ready':False,
+                'production_status':'PARTIAL; LOCAL_SOURCE_CLOCK_QUOTA_GATES_REQUIRED'},
             "providers": config["providers"],
             "external_discovery": config["external_discovery"],
             "session4": config['session4'],

@@ -49,6 +49,22 @@ This is reasoning guidance, not executable detector code or a deployment skill.
 
 Default LLM calls: zero. There is no enabled model provider or subagent workflow.
 
+Session 6B runtime: ordinary `scan now` uses the selected family/method graph,
+`formation_cards`, bounded `QueryPlanner`, first-obstacle economics and Pareto
+review. `--replay retained-session5` is AUTHENTIC_RETAINED_REPLAY on a dated
+five-contract subset; `--replay synthetic-6b` is SYNTHETIC_TEST. Neither proves
+current inventory, prospective recall or a new live provider capability.
+Read `research_shortlist.payload_sha256`, `research_coverage`, `route_coverage`,
+the resource plan and exact omissions together. Compact watch/negative records
+resolve their original ordered event IDs through the atomic metadata ledger;
+admitted handoff packets carry the complete cited evidence for pure replay.
+Two hypotheses on the same native contract share exposure even across TFs.
+Unanswerable equivalent source questions may reuse an explicit source-gap state;
+budget omissions remain distinct. Numeric Local oracle receipts alone cannot
+enable a live certificate: formation chronology, scope, rights and current pack
+hashes need independent proof. A late historical insertion retains actual later
+availability and cannot modify an earlier saved report or invent past READY.
+
 Historical reasoning references reviewed at PR #23 SHA
 `2f9ebc7b86a99c4519278ced2287a449ed4b2822`: the Researcher's v3 research-contract,
 market-regime-structure/current-contract, and orderflow-volume-profile skills.

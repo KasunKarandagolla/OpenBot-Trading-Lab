@@ -1,3 +1,55 @@
+# Session 6B — deterministic research completion (CODEX_CLOUD / SOL)
+
+Owner completion Session 2 of 3. Started from fetched feature remote
+`9b8128abc0868ff9e086c85b07c79367c27bd5af`; same integration branch, one writer,
+PR #24 draft. **Ordinary on-demand research now works offline; production remains
+PARTIAL pending the authorized Local source/clock/economics/coverage gates.**
+
+The ordinary `scan_market_research` now consumes all F1–F9 timelines into causal
+cards, simultaneous rivals/NULL, applicable method roles, bounded equivalent
+questions, first-obstacle/cushion/economics, family fronts/Pareto comparison and
+0–5 research output. A/B/C initiators union before advisory context; independent
+strict specialist envelopes and rotating protected review are exercised. All31
+method/TF rows remain explicit (18 offline-oracle, 11 source-dependent, M14/M15
+definition-pending). Source receipts can qualify exact packs/families/methods
+without changing interpretation; no new live certificate is shipped.
+
+Added a versioned exact-partition resource plan (historical519: CORE22,
+participation+22, approach+22; 26 cap cannot run66), explicit partial fallback,
+remaining-transport cap for causal work, BTC/ETH multi-label context/breadth/IQR,
+source-aware equivalent fact/absence caching, normal CLI replay injection,
+read-only saved views and hashed serialized report. Original watches reopen;
+late historical reconstruction preserves later availability and earlier reports;
+incomplete gaps remain unobserved. Existing ledger/one-current-cache/atomic
+recovery is preserved, with compact nested warm deltas. An actual retained pivot
+before ATR warm-up exposed and fixed an early-history exception.
+
+Ordinary CLI SYNTHETIC_TEST: **two conditional F4 hypotheses for one native
+control contract**, 8 watches, 4 near misses, 2 invalidations; all cited exports
+replay. Cold/warm offline scan wall1.816s/0.071s; DB405,504→413,696 bytes with
+8/28/30/8 references/events/hypotheses/watch revisions unchanged; no market HTTP.
+AUTHENTIC_RETAINED_REPLAY: dated five-name source subset, price5/5 on both TFs,
+8 selected histories, **zero admissions**, 404 watches, 89 near misses, 713
+invalidated hypothesis records, 2 symbol/TF budget omissions. Forty distinct
+source-gap audits are reused across4,239 hypothesis links (81 planner records).
+No4H/quote/depth/fee fabrication, current-universe claim or prospective recall.
+All14 genuine Session5.5 histories separately traverse interpretation in tests.
+
+Verification preserves the inherited295 tests and adds36 substantive tests;
+final complete/clean-checkout receipts, immutable hashes, config and publication
+readback are retained in [Session6B evidence](../../evidence/external-first/session6b/README.md).
+The [runbook](SESSION_06B_RUNBOOK.md) contains the actual code path, limitations,
+exact registered Local probes and single dependency-ready Session3 checklist;
+the [27/9/31 matrix](SESSION_06B_MATRIX.md) reuses unchanged6A definitions.
+Runtime source gating is not qualification, and offline positives are not live
+opportunities. Sustainable source rights/quota/p95, full new CORE/method live
+scope, optional specialist feeds, canonical definitions and the retained ~6s
+clock problem remain explicit. LLM calls0, Cloud Binance0, market-provider HTTP0;
+no paid dependency, bulk candle store, scheduler, order, trading DB/config change
+or Deep Analyst connection. Final SHA/CI are verified in the publication handoff.
+
+---
+
 # Session 6A — analytical engine implementation (CODEX_CLOUD / SOL)
 
 **Production release remains PARTIAL; offline implementation checkpoint.** Started
