@@ -352,6 +352,11 @@ class AuthenticAndSpecialist(unittest.TestCase):
             'method_id':'M17','family':'F6','timeframe':'1h','question':'True complete profile?'}])
         accepted,faults=s.independent(as_of=t.end,eligible={t.native_symbol:api.instruments[0]})
         self.assertEqual(accepted,[]);self.assertTrue(faults)
+        from researcher.method_engine import analyze_specialist_envelope
+        complete=replace(e,coverage='COMPLETE',payload={'tape':t})
+        self.assertEqual(analyze_specialist_envelope('M21',complete,as_of=t.end)['status'],'COMPUTED')
+        with self.assertRaisesRegex(ContractError,'SPECIALIST_ENVELOPE_SCOPE_OR_TIME'):
+            analyze_specialist_envelope('M21',replace(complete,mode='AUTHENTIC_REPLAY'),as_of=t.end)
 
     def test_complete_covered_gap_and_incomplete_interval_are_distinct(self):
         api,client,sources,at,_=synthetic_6b();bars=api.samples['CONTROLUSDT','1h'][0][-10:]

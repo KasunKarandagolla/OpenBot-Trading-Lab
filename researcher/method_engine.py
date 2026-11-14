@@ -203,7 +203,7 @@ def specialist_method(method,**inputs):
 
 def analyze_specialist_envelope(method,envelope,*,as_of):
     """Provider integration boundary; qualified source status stays external."""
-    expected={'M17':'EXECUTED_BASE','M18':'EXECUTED_BASE','M22':'EXECUTED_BASE',
+    expected={'M17':'EXECUTED_BASE','M18':'EXECUTED_BASE','M21':'EXECUTED_BASE','M22':'EXECUTED_BASE',
         'M23':'EXECUTED_BASE','M24':'EXECUTED_BASE','M25':'DISPLAYED_NATIVE_BASE',
         'M26':'CONTRACTS_BASE_USDT_MARK','M27':'FUNDING_RATE_AND_BASIS',
         'M28':'OBSERVED_FORCED_BASE','M31':'DATED_ORIGINAL_SOURCE'}
@@ -223,7 +223,7 @@ def analyze_specialist_envelope(method,envelope,*,as_of):
     for key in ('tape','later','response'):
         if key in payload:tapes.append(payload[key])
     tapes.extend(payload.get('attempts',()))
-    if any(t.native_symbol!=envelope.native_symbol or t.venue!=envelope.venue
+    if any(t.native_symbol!=envelope.native_symbol or t.venue!=envelope.venue or t.mode!=envelope.mode
             or utc(t.start)<utc(envelope.start) or utc(t.end)>utc(envelope.end)
             or utc(t.received_at)>utc(envelope.received_at) for t in tapes):
         raise ContractError('SPECIALIST_ENVELOPE_SCOPE_OR_TIME')
