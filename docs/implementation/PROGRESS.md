@@ -1,3 +1,40 @@
+# Session 6C — existing native Researcher checkpoint (Phase B)
+
+A `8a7e61b43abe4f0add5cf5c164f92cfa25ff29e2` pushed/verified, both CI success;
+owner approved strict-bound Phase B. Existing **Trading Lab Market Researcher**,
+`opencode/deepseek-v4.1-flash-free`, actually ran through the native application.
+Scoped skill version `6c-native-review.1`, SHA256
+`c2b50794113ea9561c0f38f3d99e9ad063e5f1e6517e1e9f5ca716b551b3ced9`; complete
+skill-tool content and all2139 input lines independently verified in scoped
+read-only app/provider records. All182 preexisting native skill files unchanged.
+No profile/model/key/permission/trading edit or replacement agent.
+
+Two native turns/six provider assistant attempts, two transport failures; one
+skill load/two evidence reads, no other tools. Initial malformed whole JSON
+rejected; explicit owner format correction5009 bytes validates12/12 rows/citations.
+Four authentic frozen episodes/eight synthetic controls; both matched arms0
+external requests/0 current handoffs. Added4 WATCH/8 DECLINE priorities and narrow
+questions; injection detected, gaps retained. All contradicting-ID arrays empty;
+0 numeric claims, so richer challenge and numeric accuracy remain unproved.
+Genuine complete profile/witnessed-liquidation source positives NOT_RUN.
+Original fixture rival-direction inconsistencies are explicitly disclosed.
+
+Native wall778.943s +61.015s; app reports188781 total tokens and estimated$0 on
+API-equivalent basis; quota/future cost/timely live response remain unqualified.
+Optional ordinary scan exchange deduplicates changed inputs, consumes only
+matching separately audited advice, and falls back on invalid/missing/stale
+responses. No automatic invocation/retry; native application submission is the
+owner's supported mechanism. Default scanner model calls remain0; hard source/
+clock/economic gates unchanged. Frozen review cannot create live admission.
+
+Isolated B snapshot353 passed552.658s; final fingerprint fixes12 focused pass;
+config VALID. Exact pushed CI and final clean-checkout acceptance follow. See
+[native review](SESSION_06C_NATIVE_REVIEW.md), impact list and compact public
+native receipts. Phase C pending, downstream unconnected, source scope PARTIAL;
+no source-limited final published.
+
+---
+
 # Session 6C — standalone Local checkpoint (Phase A; programme continues)
 
 CODEX_LOCAL / SOL, 2026-11-14. Fetched/fast-forwarded to actual feature remote

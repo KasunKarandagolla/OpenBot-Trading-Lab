@@ -1,8 +1,14 @@
-# Session 6C Phase A public evidence
+# Session 6C public evidence — standalone and native review
+
+Phase B records under `native-review/` contain the bounded frozen request,
+actual rejected whole reply, actual corrected reply, independently scoped
+app/provider audit and matched-arm comparison. Two real native turns reuse the
+existing agent/model. No private session IDs, paths or model reasoning appear.
+Source gates remain unchanged; original Phase A records below are preserved.
 
 This is the standalone checkpoint, not a final programme release. Read the 6C
 runbook and full capability matrix. Public Local source calls were real; zero
-runtime LLM calls occurred. No production formation/method certificate is enabled.
+runtime LLM calls occurred **in Phase A**. No production formation/method certificate is enabled.
 
 Selected oracle reports summarize independent same-window comparisons and preserve
 exact formula/response hashes, original failures and unknowns. Whole-universe CORE

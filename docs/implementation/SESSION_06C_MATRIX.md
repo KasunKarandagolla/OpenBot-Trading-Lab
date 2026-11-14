@@ -1,5 +1,12 @@
 # Session 6C Local capability and source matrix
 
+Phase B adds actual native interpretation on4 AUTHENTIC_REPLAY/8 SYNTHETIC_TEST
+cards,0 LIVE. Corrected reply12/12 citations pass after one rejected whole reply.
+No source/27/9/31 row changes: advice is not a certificate or admission. Real
+true-profile/witnessed-force positive cases remain NOT_RUN; richer challenge,
+sustainable native timing and prospective benefit remain PARTIAL. See
+[native review](SESSION_06C_NATIVE_REVIEW.md) for measured calls, cost and limits.
+
 CODEX_LOCAL / SOL. Starting fetched feature SHA `0034faec6a15690c67a3526eafdf94cd46490b62`. This is a Phase A checkpoint, not final acceptance. No new production certificate has been enabled. Exact formulas, roles and oracle definitions remain in [6B](SESSION_06B_MATRIX.md) and [6A](SESSION_06A_MATRIX.md).
 
 ## All 27 measurements

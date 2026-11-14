@@ -303,7 +303,8 @@ def scan_live(*, qualification=False, api=None, client=None, config=None, ledger
 
 
 def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clock=now_utc,
-                         mode='LIVE',crash_hook=None,sources=None,context_prioritized=True,route_ablation=None):
+                         mode='LIVE',crash_hook=None,sources=None,context_prioritized=True,route_ablation=None,
+                         native_review_dir=None):
     """One on-demand read-only path: live sources → remote packs → saved research.
 
     Historical price precursors nominate questions independently. Only two
@@ -363,7 +364,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
             'CURRENT_RECONSTRUCTION_IS_NOT_PROSPECTIVE_HISTORICAL_DISCOVERY',
             'FEES_DEPTH_SLIPPAGE_FUNDING_BOUNDS_AND_HORIZON_UNVERIFIED; NO_FAKE_READY',
             'PUBLISH_LAG_AND_SUSTAINABLE_QUOTA_UNKNOWN; SCHEDULING_DISABLED']}
-    bundles=[];verified=[];terminals=[];facts={};cards=[];references=[];cached=False
+    bundles=[];verified=[];terminals=[];facts={};cards=[];references=[];reviews=[];cached=False
     observed_times=[start]
     def evaluation_time():
         # Local UTC can step backwards between completed HTTP requests. Preserve
@@ -447,6 +448,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         report['source_faults'].extend(refresh_faults)
                         fresh_reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],
                             as_of=evaluation_time()) for c in cards]
+                        reviews=fresh_reviews
                         refreshed=shortlist(fresh_reviews,coverage=report['coverage'])
                         report['shortlist']=refreshed['shortlist']
                         for r in fresh_reviews:
@@ -1063,7 +1065,14 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             'interpretation':'SHORT_ELAPSED_POINT_OBSERVATIONS; NOT_PROFITABILITY_OR_FULL_UNIVERSE_RECALL'})
                 report['prospective_follow_up']=follow
             from .handoff import make_export,consult_changed_cards
-            report['consultant']=consult_changed_cards(cards)
+            if native_review_dir is None:
+                report['consultant']=consult_changed_cards(cards)
+            else:
+                from .agent_review import exchange
+                report['consultant']=exchange(native_review_dir,cards,facts,as_of=report['completed_at_utc'],
+                    context=report.get('context'),reviews=reviews,cached=cached,
+                    previous=previous.get('consultant') if previous else None)
+                report['llm_status']=report['consultant']['status']
             report['time_integrity_status']='CLOCK_UNCERTAINTY; NO_READY' if report.get('clock_anomalies') else 'NORMAL'
             if report.get('clock_anomalies') and report['shortlist']:
                 for r in report['shortlist']:
@@ -1113,6 +1122,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 **{k:report.get(k) for k in ('shortlist','near_misses','invalidations','late',
                     'not_reviewed_budget','context','research_coverage','route_coverage','resource_plan',
                     'source_faults','clock_anomalies','time_gaps','question_audit','consumed_obstacles','costs')},
+                'research_advice':report['consultant'],
                 'watches':[{k:v for k,v in w.items() if k!='review'} for w in report['watches']],
                 'trade_authorization':False,'new_orders_created':0}
             report['research_shortlist']={**body,'payload_sha256':digest(encode(body).encode())}

@@ -1,4 +1,11 @@
-# Session 6C Local completion programme — Phase A checkpoint
+# Session 6C Local completion programme — Phases A/B
+
+Current: A pushed/verified at `8a7e61b`, both CI success; owner approved strict
+Phase B bounds. Actual existing native Researcher/model and complete skill load
+are verified;12/12 corrected response citations validate. Combined acceptance
+remains Phase C, source scope PARTIAL. Read the [native review and operator
+steps](SESSION_06C_NATIVE_REVIEW.md) and [impact inventory](SESSION_06C_INTEGRATION_IMPACT.md).
+The original standalone checkpoint record below is retained as history.
 
 CODEX_LOCAL / SOL, 2026-11-14. Started from fetched feature SHA
 `0034faec6a15690c67a3526eafdf94cd46490b62`, fast-forwarded from the older Local
