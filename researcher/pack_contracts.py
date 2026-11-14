@@ -5,12 +5,14 @@ selected oracle, never a universe scanner. New expressions require Local source
 oracle qualification before the operational registry can dispatch them.
 """
 from dataclasses import dataclass, asdict
+from functools import cached_property,lru_cache
 from decimal import Decimal as D
 from statistics import median
 from .contracts import ContractError, digest, encode, number
 from .numerics import validate_bars, wilder_atr, compression
+from .core import export_expression
 
-VERSION='packs-6a.1'
+VERSION='packs-6c.1'
 SCHEMA='evidence/external-first/session55/provider-schema.json'
 
 
@@ -35,7 +37,7 @@ def window(op,x,n):return node(op,x,n)
 def positive_ratio(a,b):return choose(node('>',b,const(0)),add(const(1),div(a,b)),const(0))
 
 
-def compile_expr(e):
+def _inline_expr(e):
     if not isinstance(e,Expr):raise ContractError('REGISTERED_DSL_NODE_REQUIRED')
     op,a=e.op,e.args
     arities={'field':1,'constant':1,'lag':2,'+':2,'-':2,'*':2,'/':2,'>':2,'<':2,
@@ -48,14 +50,53 @@ def compile_expr(e):
     if op=='constant':return str(number(a[0]))
     if op=='lag':
         if type(a[1]) is not int or not 1<=a[1]<=160:raise ContractError('DSL_POSITIVE_LAG')
-        return '('+compile_expr(a[0])+')['+str(a[1])+']'
+        return '('+_inline_expr(a[0])+')['+str(a[1])+']'
     if op in {'+','-','*','/','>','<','==','>=','<='}:
-        return '('+compile_expr(a[0])+op+compile_expr(a[1])+')'
+        return '('+_inline_expr(a[0])+op+_inline_expr(a[1])+')'
     if op in {'highest','lowest','median','sum','rma'}:
         if type(a[1]) is not int or not 1<=a[1]<=160:raise ContractError('DSL_BOUNDED_WINDOW')
-        return op+'('+compile_expr(a[0])+','+str(a[1])+')'
-    if op in {'if','max','abs'}:return op+'('+','.join(compile_expr(x) for x in a)+')'
+        return op+'('+_inline_expr(a[0])+','+str(a[1])+')'
+    if op in {'if','max','abs'}:return op+'('+','.join(_inline_expr(x) for x in a)+')'
     raise ContractError('UNREGISTERED_DSL_OPERATION')
+
+
+def compile_expr(e):
+    """Keep repeated large DAG branches in provider-supported local bindings.
+
+    The past-only percentile formerly expanded a repeated width into 26,079
+    characters. The Local probe exposed a provider nesting-limit error on it.
+    Bind only repeated nontrivial branches; validation still covers the full DAG.
+    Small registered expressions retain their exact historical bytes.
+    """
+    raw=_inline_expr(e)
+    if len(raw)<=16000:return raw
+    counts={};order=[]
+    def visit(x):
+        counts[x]=counts.get(x,0)+1
+        if counts[x]>1:return
+        for arg in x.args:
+            if isinstance(arg,Expr):visit(arg)
+        order.append(x)
+    visit(e)
+    aliases={};bindings=[]
+    def render(x):
+        if x in aliases:return aliases[x]
+        op,a=x.op,x.args
+        if op in {'field','constant'}:return _inline_expr(x)
+        if op=='lag':return '('+render(a[0])+')['+str(a[1])+']'
+        if op=='+':
+            terms=[]
+            def collect(v):
+                if v.op=='+' and v not in aliases:
+                    collect(v.args[0]);collect(v.args[1])
+                else:terms.append(render(v))
+            collect(a[0]);collect(a[1]);return '('+'+'.join(terms)+')'
+        if op in {'+','-','*','/','>','<','==','>=','<='}:return '('+render(a[0])+op+render(a[1])+')'
+        return op+'('+','.join(render(v) if isinstance(v,Expr) else str(v) for v in a)+')'
+    for x in order:
+        if counts[x]>=3 and len(_inline_expr(x))>=24:
+            name='v'+str(len(aliases));bindings.append('let '+name+'='+render(x)+'; ');aliases[x]=name
+    return ''.join(bindings)+render(e)
 
 
 def evaluate_expr(e,bars,cache=None):
@@ -114,7 +155,7 @@ class Column:
     encoding: str='DIRECT'
     dependencies: tuple=()
 
-    @property
+    @cached_property
     def expression(self):return compile_expr(self.expr)
 
 
@@ -151,7 +192,7 @@ def compile_columns(columns):
         visiting.remove(c.id);visited.add(c.id);ordered.append(c.id)
     for c in columns:visit(c)
     return {'dependency_order':ordered,'columns':[{**{k:v for k,v in asdict(c).items() if k!='expr'},
-        'expression':c.expression,'export_expression':'('+c.expression+')*100000000',
+        'expression':c.expression,'export_expression':export_expression(c.expression),
         'formula_sha256':digest(c.expression.encode()),'output_absolute_precision':'1e-10',
         'small_price_scale':100000000} for c in columns]}
 
@@ -246,8 +287,11 @@ def correction_columns():
             pivot += [f'{field}[{age}]{cmp}{f}({field}[{age+1}],2)',
                       f'{field}[{age}]{cmp}={f}({field}[{age-2}],2)']
         trend=[f'{end}[8]{op}{end}[16]',f'{start}[12]{op}{start}[20]']
-        prefix=f'let a=rma({tr},14)[10]; let s={start}[12]; let e={end}[8]; let amp=abs(e-s); '
-        rho='abs(e-close)/amp'
+        prefix=f'let a=rma({tr},14)[10]; let s={start}[12]; let endpoint={end}[8]; let amp=abs(endpoint-s); '
+        # Basis propagates a zero-division NULL even through nested false guards.
+        # The amp>0 predicate still rejects degenerate legs; make its unused
+        # denominator finite so a quiet flat leg remains a defined no-event.
+        rho='abs(endpoint-close)/if(amp>0,amp,1)'
         guards=['a>0','amp>0',rho+'>=0.15',rho+'<=0.70','abs(close-s)<=2.5*a',
             'median(high-low,3)<=median((high-low)[8],4)']
         defended=[f'{source_lag("close",j)}{op}s' for j in range(6)]
@@ -324,14 +368,19 @@ def contracts():
     return out
 
 
+@lru_cache(maxsize=1)
+def _registered_expressions():
+    return frozenset(set(EARLY.values()) | set(QUIET_NEAR.values()) | set(CORRECTIONS.values()) | {v
+        for c in (*CORE_COLUMNS,*OPTIONAL_COLUMNS) for v in (c.expression,export_expression(c.expression))})
+
+
 def registered(expression):
-    return expression in set(EARLY.values()) | set(QUIET_NEAR.values()) | set(CORRECTIONS.values()) | {v for cols in (CORE_COLUMNS,OPTIONAL_COLUMNS)
-        for c in cols for v in (c.expression,'('+c.expression+')*100000000')}
+    return expression in _registered_expressions()
 
 
 def column_by_export(expression):
     return next((c for c in (*CORE_COLUMNS,*OPTIONAL_COLUMNS)
-        if expression=='('+c.expression+')*100000000'),None)
+        if expression==export_expression(c.expression)),None)
 
 
 def make_remote_pack(pack_id,names):

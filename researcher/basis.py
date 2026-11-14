@@ -41,6 +41,12 @@ def rpc_result(body, request_id):
     if "error" in envelope or "result" not in envelope:
         raise ProviderError("MCP_RPC_ERROR")
     result = envelope["result"]
+    if isinstance(result,dict) and result.get('isError'):
+        blocks=result.get('content',[])
+        if isinstance(blocks,list) and any(isinstance(b,dict) and isinstance(b.get('text'),str)
+                and b['text'].startswith('Basis is reading a lot of exchange data right now, so this exchange read is waiting.')
+                and 'Try again in about a minute.' in b['text'] for b in blocks):
+            raise ProviderError('PROVIDER_BUSY_COOLDOWN')
     if not isinstance(result, dict) or result.get("isError"):
         raise ProviderError("MCP_TOOL_ERROR")
     return result
@@ -84,6 +90,8 @@ class BasisMCP:
         self.session4 = session4
         self.session5 = session5
         self.session6a = session6a
+        self.blocked_reason = None
+        self.blocked_receipt = None
 
     def _rpc(self, method, params, *, notification=False):
         self.counter += 1
@@ -102,7 +110,14 @@ class BasisMCP:
             if response.body:
                 raise ProviderError("MCP_NOTIFICATION_BODY_UNEXPECTED")
             return {}
-        return rpc_result(response.body, self.counter)
+        try:return rpc_result(response.body, self.counter)
+        except ProviderError as error:
+            receipt=dict(response.receipt)
+            if str(error)=='PROVIDER_BUSY_COOLDOWN':
+                # Advisory is from the tool payload, not an HTTP Retry-After.
+                receipt['provider_advised_wait_seconds']=60
+                self.blocked_reason='PROVIDER_BUSY_COOLDOWN';self.blocked_receipt=receipt
+            raise ProviderError(str(error),receipt) from None
 
     def connect(self):
         result = self._rpc("initialize", {"protocolVersion": PROTOCOL, "capabilities": {},
@@ -134,6 +149,8 @@ class BasisMCP:
         raise ProviderError("TOOLS_LIST_PAGINATION_LIMIT")
 
     def call(self, name, arguments):
+        if self.blocked_reason:
+            raise ProviderError(self.blocked_reason,self.blocked_receipt)
         if not self.initialized or name not in READ_TOOLS or name not in self.tools:
             raise ProviderError("RESEARCH_TOOL_NOT_ALLOWED")
         schema = self.tools[name]["inputSchema"]

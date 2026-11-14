@@ -37,10 +37,11 @@ def normalize_market(rows, *, kind, inventory, captured_at, response_hash):
             if kind == "ticker":
                 start = milliseconds(row["openTime"])
                 window_seconds = (utc(source_time) - utc(start)).total_seconds()
-                # Official rolling ticker openTime is minute-aligned; actual
-                # windows extend up to one minute beyond a nominal 24 hours.
-                # Preserve the returned interval, never relabel synchronized bars.
-                if not 86399 <= window_seconds < 86460:
+                # Genuine Local ACU/SPELL receipts also have minute-aligned
+                # starts producing windows up to one minute SHORTER than 24h.
+                # Preserve both endpoints; these approximate rolling windows
+                # must never be substituted for synchronized closed-bar breadth.
+                if not 86340 <= window_seconds < 86460:
                     raise ContractError("ROLLING_24H_WINDOW_MISMATCH")
                 values = {k: number(row[k]) for k in ["priceChangePercent", "quoteVolume", "volume"]}
                 values["lastPrice"] = number(row["lastPrice"], positive=True)

@@ -1,3 +1,55 @@
+# Session 6C — standalone Local checkpoint (Phase A; programme continues)
+
+CODEX_LOCAL / SOL, 2026-11-14. Fetched/fast-forwarded to actual feature remote
+`0034faec6a15690c67a3526eafdf94cd46490b62`; one writer, PR24 draft, main unchanged.
+**PARTIAL standalone scope; no Phase B/C activation or final completion claimed.**
+
+Actual public Binance/Basis qualification: fresh519 eligible of946 native records.
+Registered full CORE15M519/519; CORE1H200 initial +319 serial same-cutoff recovery
+=519/519. Independent quiet50, medium50 and footer7 pass with fillers excluded.
+Selected BTC1H/ETH15M/1000PEPE1H/FRAX15M each33 fields/660 aligned comparisons on
+recorded revisions. Corrected zero-amplitude correction was rechecked on FRAX.
+Ten independently labeled authentic F2/F4/F5 historical positive/prefix-negative
+cases preserve later availability; not complete family certification or live READY.
+Unicode screen/official klines work; Basis targeted market_candles remains a
+source-specific tool failure. No eligible listing under30 days; multiplier fields
+absent, never inferred. All27/9/31 remain present;18 offline,11 source-dependent,
+M14/M15 pending; no new production source flags manually enabled.
+
+Repaired genuine nesting-limit/scaled-let/reserved-variable/zero-division failures,
+explicit300-bar oracle validation, independent per-column isolation and provenance,
+versioned scale decoding, minute-rounded shorter official ticker windows and
+HTTP200/isError busy cooldown stopping. Original failed receipts retained and hashed.
+Owner Windows time sync settled: three Windows and three later WSL server-time
+request brackets contain Binance time; no restart or rewritten timestamps.
+
+Clean final-code ordinary live cold:519 inventory,15M519/519,1H300/519 then provider
+busy;0 admissions/385 watches/96 near misses/731 invalidations;41 HTTP,4,353,867 bytes,
+117.310s. Warm4 official/0 Basis/0 history calls,6.100s, unchanged watch first-seen.
+Later actual14:45 restart: both precursor TFs519/519;0 admissions,451 watches,
+210 GAP_UNOBSERVED;361 common watch identities/times unchanged;47 HTTP,150.728s.
+Actual abrupt SQLite process exit on copied real research DB rolled back its
+uncommitted cache deletion; later restart records1 interrupted attempt. No trades.
+Historical404 watches are404 reference IDs/396 exact directed levels/588 rival
+interpretations on four watched names of five eligible.321 references are over15h
+old. No calibrated false-alert evidence warrants fitting new thresholds.
+
+Inherited331 baseline passed544.180s. Final standalone341 passed572.722s with zero
+failures/skips, config valid; focused new10 regressions preserve all inherited tests.
+Actual source responses/selected histories/SQLite remain ignored; compact public
+receipts, failed artifacts hashes, full27/9/31 matrix and operator steps are in
+`evidence/external-first/session6c/`, SESSION_06C_MATRIX.md and
+SESSION_06C_FINAL_LOCAL_RUNBOOK.md. Only six Researcher files + focused tests/docs
+and evidence change. No subagent/skill/trading edits,0 LLM calls.
+
+Next: push/verify standalone checkpoint and both CI triggers; obtain explicit owner
+approval of residual formation/specialist/quota limitations before Phase B. Then
+inspect the actual existing OpenBot subagent/backend, produce tiny impact list,
+and request secure model setup immediately if truly missing. No source-limited
+final has been published. Phase B/C remain pending; no unsafe gate crossing.
+
+---
+
 # Session 6B — deterministic research completion (CODEX_CLOUD / SOL)
 
 Owner completion Session 2 of 3. Started from fetched feature remote

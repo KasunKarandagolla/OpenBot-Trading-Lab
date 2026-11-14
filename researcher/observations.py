@@ -11,13 +11,15 @@ def iso_seconds(value):
     return datetime.fromtimestamp(value, timezone.utc).isoformat()
 
 
-def candle_observation(data, *, requested_symbol, timeframe, received_at, schema_hash, response_hash):
+def candle_observation(data, *, requested_symbol, timeframe, received_at, schema_hash, response_hash, max_bars=65):
     symbol(requested_symbol)
     width = WIDTHS[timeframe]
     if (data.get("symbol") != requested_symbol or data.get("exchange") != "binance"
             or data.get("market") != "futures" or data.get("timeframe") != timeframe):
         raise ContractError("PROVIDER_INSTRUMENT_MISMATCH")
-    if type(data.get("closedBars")) is not int or not 1 <= data["closedBars"] <= 65:
+    if type(max_bars) is not int or not 1<=max_bars<=300:
+        raise ContractError("CLOSED_HISTORY_REQUIRED")
+    if type(data.get("closedBars")) is not int or not 1 <= data["closedBars"] <= max_bars:
         raise ContractError("CLOSED_HISTORY_REQUIRED")
     bar = data["lastClosedCandle"]
     start = utc(iso_seconds(bar["time"]))

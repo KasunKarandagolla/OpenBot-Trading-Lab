@@ -250,6 +250,7 @@ def normalize_columns(names,data,metadata,*,pack,instruments,cutoff):
             or len(data['rules'])!=len(pack.columns) or not isinstance(data.get('results'),list)):
         raise ContractError('SCREEN_SCHEMA')
     from .core import CORE, EXPORT_SCALE, export_expression
+    from .pack_contracts import VERSION as ANALYTICAL_PACK_VERSION
     closes=[j for j,c in enumerate(pack.columns) if c[0]=='close' and c[1]==export_expression(CORE['close'].expression)]
     receipts=[];observed=[]
     for j,(label,expression,units,history) in enumerate(pack.columns):
@@ -282,7 +283,7 @@ def normalize_columns(names,data,metadata,*,pack,instruments,cutoff):
                     'verdict':'SUPPORTED' if o['value']>0 else 'UNKNOWN',
                     'null_reason':None if o['value']>0 else 'ZERO_QUOTE_VOLUME_BASELINE',
                     'participation_not_required_for_price_family':True} for o in values]
-        elif pack.version=='packs-6a.1':
+        elif pack.version in {'packs-6a.1',ANALYTICAL_PACK_VERSION}:
             from .pack_contracts import column_by_export
             column=column_by_export(expression)
             if column:
@@ -344,7 +345,7 @@ class PartitionEngine:
                     if acquired:
                         self.budget.record(metadata)
                 receipt, values = failed_receipt(names, pack, code, metadata), []
-                if code in {"HTTP_403", "HTTP_451", "HTTP_429", "ROUTE_DISABLED", "REQUEST_BUDGET_EXHAUSTED"}:
+                if code in {"HTTP_403", "HTTP_451", "HTTP_429", "ROUTE_DISABLED", "REQUEST_BUDGET_EXHAUSTED", "PROVIDER_BUSY_COOLDOWN"}:
                     self.budget.stop(code)
             counts = ({key: data[key] if type(data.get(key)) is int and data[key] >= 0 else None
                        for key in ["screened", "evaluated", "matched", "returned", "couldNotEvaluate"]}
@@ -417,6 +418,8 @@ def safe_error(error):
     # exception's text unless it is one of those fixed codes.
     code = str(error)
     allowed = {
+        'PROVIDER_BUSY_COOLDOWN',
+        'CLOSED_HISTORY_REQUIRED','CLOSED_BAR_CUTOFF_MISMATCH','ORACLE_FORMULA_NOT_IMPLEMENTED',
         'OFFLINE_SOURCE_UNAVAILABLE','OFFLINE_REPLAY_SCOPE','SOURCE_QUALIFICATION_CONTRACT',
         'LIVE_SOURCE_QUALIFICATION_REQUIRED','RESOURCE_PLAN_CONTRACT','NO_SAVED_RESEARCH_REPORT',
         'LOCAL_ONLY_ANALYTICAL_PROBE','EXACT_ELIGIBLE_CONTRACT_REQUIRED',
