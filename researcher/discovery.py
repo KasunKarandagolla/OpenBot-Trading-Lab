@@ -304,7 +304,7 @@ def scan_live(*, qualification=False, api=None, client=None, config=None, ledger
 
 def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clock=now_utc,
                          mode='LIVE',crash_hook=None,sources=None,context_prioritized=True,route_ablation=None,
-                         native_review_dir=None):
+                         native_review_dir=None,native_audit_config=None,native_wait_seconds=0):
     """One on-demand read-only path: live sources → remote packs → saved research.
 
     Historical price precursors nominate questions independently. Only two
@@ -330,6 +330,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
     from .structures import Reference,swing_references,equal_level_references,boundary_events,selected_family_facts,gap_lifecycle
     from .transport import PublicHTTP
     if mode not in {'LIVE','SYNTHETIC','AUTHENTIC_REPLAY'}:raise ContractError('FACT_PROVENANCE')
+    if native_audit_config and (mode!='LIVE' or native_review_dir is None):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     if route_ablation is not None and (mode!='SYNTHETIC' or not set(route_ablation)<={'A','B','C'}):
         raise ContractError('OFFLINE_REPLAY_SCOPE')
     sources=sources or ResearchSources(mode=mode)
@@ -1065,13 +1066,39 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             'interpretation':'SHORT_ELAPSED_POINT_OBSERVATIONS; NOT_PROFITABILITY_OR_FULL_UNIVERSE_RECALL'})
                 report['prospective_follow_up']=follow
             from .handoff import make_export,consult_changed_cards
+            report['llm_calls']=0
             if native_review_dir is None:
                 report['consultant']=consult_changed_cards(cards)
             else:
                 from .agent_review import exchange
-                report['consultant']=exchange(native_review_dir,cards,facts,as_of=report['completed_at_utc'],
+                native_cards=() if cached and same_source_admission else cards
+                report['consultant']=exchange(native_review_dir,native_cards,facts,as_of=report['completed_at_utc'],
                     context=report.get('context'),reviews=reviews,cached=cached,
                     previous=previous.get('consultant') if previous else None)
+                if native_audit_config and report['consultant']['status'] in {'AWAITING_NATIVE_APP_RESPONSE','NATIVE_REPLY_UNAUDITED_DETERMINISTIC_FALLBACK'}:
+                    import sqlite3
+                    try:
+                        from .native_app import wait_for_reply
+                        receipt=wait_for_reply(native_review_dir,report['consultant']['material_sha256'],
+                            native_audit_config,wait_seconds=native_wait_seconds,clock=evaluation_time)
+                        report['completed_at_utc']=evaluation_time()
+                        report['consultant']=exchange(native_review_dir,(),{},as_of=report['completed_at_utc'],
+                            previous=report['consultant'],cached=True)
+                        report['consultant']['native_collector']=receipt
+                        if receipt['status']=='NATIVE_RECEIPT_COLLECTED' and report['consultant']['status']=='VALIDATED_ADVISORY_ONLY':
+                            report['llm_calls']=receipt['observed_model_attempts']
+                    except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError):
+                        report['consultant']['native_collector']={'status':'NATIVE_RECEIPT_UNAVAILABLE_DETERMINISTIC_FALLBACK'}
+                    report['completed_at_utc']=evaluation_time()
+                    # Native waiting never freezes an earlier economic admission.
+                    current=[]
+                    for old in report['shortlist']:
+                        c=next(c for c in cards if c.id==old['card_id'])
+                        checked=review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],
+                            as_of=report['completed_at_utc'])
+                        if checked['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}:current.append(checked)
+                        else:report['near_misses'].append({**checked,'admission_reason':'EVIDENCE_AGED_DURING_NATIVE_REVIEW'})
+                    report['shortlist']=current
                 report['llm_status']=report['consultant']['status']
             report['time_integrity_status']='CLOCK_UNCERTAINTY; NO_READY' if report.get('clock_anomalies') else 'NORMAL'
             if report.get('clock_anomalies') and report['shortlist']:
@@ -1088,7 +1115,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 'wall_ms':round((time.monotonic()-wall)*1000),'sum_latency_ms':sum(durations),
                 'p50_ms':durations[(len(durations)-1)//2] if durations else None,
                 'p95_ms':durations[math.ceil(.95*len(durations))-1] if durations else None,
-                'basis_charged_units':None,'quota':'UNKNOWN','sustainable_cadence':'UNQUALIFIED','llm_calls':0,
+                'basis_charged_units':None,'quota':'UNKNOWN','sustainable_cadence':'UNQUALIFIED','llm_calls':report['llm_calls'],
+                'llm_call_semantics':'NATIVE_PROVIDER_ASSISTANT_ATTEMPTS_OBSERVED_DURING_OPT_IN_WAIT; THIS_PROCESS_INVOKES_ZERO_MODELS',
                 'cached_snapshot_reused':cached,'targeted_kline_calls':api.sample_calls}
             cpu=resource.getrusage(resource.RUSAGE_SELF)
             report['costs']['process_resources']={'scan_cpu_user_seconds':cpu.ru_utime-cpu_start.ru_utime,
@@ -1146,6 +1174,8 @@ def research_summary(report):
         lines.append(f"{p['timeframe']} causal nomination templates: evaluated {p['evaluated']}/{p['eligible_contracts']}; failed {p['failed']}; positive contracts {len(p['positive_observations'])}; full-method coverage remains partial")
     lines.append(f"Watches: {len(report['watches'])}; near misses: {len(report['near_misses'])}; invalidations: {len(report['invalidations'])}; not reviewed within budget: {len(report['not_reviewed_budget'])}")
     lines.append(f"Unobserved gaps: {len(report['time_gaps'])}; HTTP calls: {report['costs']['http_requests']}; bytes: {report['costs']['response_bytes']}; wall: {report['costs']['wall_ms']/1000:.1f}s")
+    if report.get('consultant',{}).get('status') not in {None,'LLM_DISABLED_NO_APPROVED_PROVIDER'}:
+        lines.append(f"Native review: {report['consultant']['status']}; validated cards: {report['consultant'].get('accepted',0)}; observed model attempts this scan: {report.get('llm_calls',0)}.")
     if report.get('reuse'):lines.append('Reused unchanged closed-bar evidence; refreshed official inventory and current economics.')
     if not report['shortlist']:lines.append('No qualified handoff: causal/admission coverage is incomplete. This does not establish that no opportunities exist.')
     lines.append('Full CORE/all-method coverage remains unqualified; narrow causal templates and selected public depth/OI are separate. Read-only; no orders or scheduling.')

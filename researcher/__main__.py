@@ -51,6 +51,8 @@ def main():
         help='offline sources through the ordinary scan now pipeline; zero provider network')
     scan.add_argument('--qualifications',help='operator-reviewed Local source manifest and hashed oracle proofs under work/')
     scan.add_argument('--native-review-dir',help='optional bounded request/reply exchange below work/; native OpenBot application invokes the existing agent')
+    scan.add_argument('--native-audit-config',help='opt-in local native read-only receipt paths under work/; never invokes an agent')
+    scan.add_argument('--native-wait-seconds',type=int,default=0,help='interactive receipt wait,0..600 seconds; default0')
     show=sub.add_parser('show');show.add_argument('action',choices=['results','watches','coverage'])
     show.add_argument('--db',default=str(ROOT/'work/research-metadata.sqlite'))
     args = parser.parse_args()
@@ -80,6 +82,9 @@ def main():
         else:
             if args.native_review_dir and (args.action not in {'now','live'} or args.inventory):
                 raise ContractError('NATIVE_REVIEW_REQUIRES_ORDINARY_SCAN')
+            if (not 0<=args.native_wait_seconds<=600 or (args.native_audit_config or args.native_wait_seconds)
+                    and (not args.native_review_dir or args.replay or not args.native_audit_config)):
+                raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
             if bool(args.inventory) != bool(args.inventory_provenance) or (args.action != "now" and args.inventory):
                 raise ContractError("INVENTORY_PROVENANCE_REQUIRED")
             inventory = (OwnerOfficialSnapshot(Path(args.inventory), Path(args.inventory_provenance)).load(now_utc())
@@ -95,7 +100,8 @@ def main():
                 from .query_planner import ResearchSources
                 sources=ResearchSources.from_file(args.qualifications) if args.qualifications else None
                 report=scan_market_research(config=config,ledger_path=args.db,sources=sources,
-                    native_review_dir=args.native_review_dir)
+                    native_review_dir=args.native_review_dir,native_audit_config=args.native_audit_config,
+                    native_wait_seconds=args.native_wait_seconds)
             elif args.action == 'qualify':
                 from .qualification5 import qualify_core
                 report = qualify_core()

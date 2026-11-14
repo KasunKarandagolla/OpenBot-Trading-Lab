@@ -53,6 +53,10 @@ class NativeReviewContract(unittest.TestCase):
     def test_duplicate_json_keys_nonfinite_and_oversize_are_rejected(self):
         with self.assertRaisesRegex(ContractError,'DUPLICATE_KEY'):parse_reply('{"x":1,"x":2}')
         with self.assertRaisesRegex(ContractError,'NONFINITE'):parse_reply('{"x":NaN}')
+        with self.assertRaisesRegex(ContractError,'NONFINITE'):parse_reply('{"x":1e999}')
+        for depth in (64,1024):
+            with self.assertRaisesRegex(ContractError,'REPLY_JSON'):
+                parse_reply('['*depth+'0'+']'*depth)
         with self.assertRaisesRegex(ContractError,'REPLY_SIZE'):parse_reply(' '*32769)
         # Actual native transport failure: unfinished prefix + full continuation.
         with self.assertRaisesRegex(ContractError,'REPLY_JSON'):
@@ -76,6 +80,13 @@ class NativeReviewContract(unittest.TestCase):
         wrong=replace(self.facts['seq'],timeframe='CURRENT')
         with self.assertRaisesRegex(ContractError,'EVIDENCE_IDENTITY'):
             make_request([self.card],{**self.facts,'seq':wrong},as_of=self.bars[-1].end,skill_sha256='a'*64)
+        huge=replace(self.facts['seq'],value={'nested_source_graph':'x'*5000})
+        bounded=make_request([self.card],{**self.facts,'seq':huge},as_of=self.bars[-1].end,skill_sha256='a'*64)
+        f=bounded['cards'][0]['evidence']['seq']
+        self.assertIsNone(f['value']);self.assertIn('value_sha256',f)
+        bad=copy.deepcopy(self.reply);bad['material_sha256']=bounded['material_sha256']
+        bad['interpretations'][0]['claims']=[{k:f[k] for k in ('value','units','native_symbol','timeframe','known_at')}|{'evidence_id':'seq'}]
+        with self.assertRaisesRegex(ContractError,'AGENT_REPLY_CLAIM'):validate_reply(bad,bounded)
 
     def test_input_budget_is_explicit_and_unchanged_time_is_not_new_material(self):
         r=make_request([self.card]*20,self.facts,as_of=self.bars[-1].end,skill_sha256='a'*64)
@@ -89,6 +100,18 @@ class NativeReviewContract(unittest.TestCase):
         after=make_request([self.card],self.facts,as_of=later['as_of_utc'],skill_sha256='a'*64,
             context={'as_of':later['as_of_utc'],'policy':'ADVISORY_NON_VETO'})
         self.assertEqual(before['material_sha256'],after['material_sha256'])
+        breadth={'policy':'ADVISORY_NON_VETO','claims':[{'name':'BREADTH_1H_16',
+            'eligible':519,'evaluated':519,'evidence_ids':[str(i).zfill(64) for i in range(519)],
+            'missing':[],'status':'SUPPORTED','value':{'up_fraction':'.5'}}]}
+        breadth['claims']=tuple(breadth['claims']) # Native dataclass asdict preserves tuples.
+        compact=make_request([self.card]*80,self.facts,as_of=self.bars[-1].end,
+            skill_sha256='a'*64,context=breadth)
+        self.assertLessEqual(len(encode(compact).encode()),131072)
+        claim=compact['context']['claims'][0]
+        self.assertEqual(len(claim['evidence_ids']),8)
+        self.assertEqual(claim['evidence_ids_summary']['total'],519)
+        self.assertEqual(claim['evaluated'],519)
+        self.assertEqual(compact['omission_summary']['total'],79)
 
     def test_fixture_json_is_not_a_native_invocation_receipt(self):
         with self.assertRaisesRegex(ContractError,'NATIVE_AGENT_RECEIPT_REQUIRED'):
@@ -130,6 +153,9 @@ class NativeReviewContract(unittest.TestCase):
             audit['unauthorized_tool_operations']=1;auditfile.write_text(encode(audit))
             rejected=exchange(tmp,[],{},as_of=self.bars[-1].end,cached=True,previous=first)
             self.assertEqual(rejected['status'],'NATIVE_REVIEW_INVALID_OR_UNAVAILABLE_DETERMINISTIC_FALLBACK')
+            auditfile.write_text('[]')
+            rejected=exchange(tmp,[],{},as_of=self.bars[-1].end,cached=True,previous=first)
+            self.assertEqual(rejected['status'],'NATIVE_REVIEW_INVALID_OR_UNAVAILABLE_DETERMINISTIC_FALLBACK')
 
     def test_ordinary_pipeline_optional_exchange_preserves_deterministic_shortlist(self):
         from researcher.discovery import scan_market_research
@@ -142,6 +168,12 @@ class NativeReviewContract(unittest.TestCase):
             self.assertEqual(len(result['shortlist']),2);self.assertEqual(result['llm_calls'],0)
             self.assertFalse(result['trade_authorization']);self.assertEqual(result['new_orders_created'],0)
             self.assertTrue((Path(tmp)/'exchange'/result['consultant']['request_file']).is_file())
+            api,client,sources,at,_=synthetic_6b()
+            warm=scan_market_research(api=api,client=client,sources=sources,clock=lambda:at,
+                mode='SYNTHETIC',ledger_path=Path(tmp)/'research.sqlite',native_review_dir=Path(tmp)/'exchange')
+            self.assertTrue(warm['costs']['cached_snapshot_reused'])
+            self.assertEqual(warm['consultant']['material_sha256'],result['consultant']['material_sha256'])
+            self.assertEqual(warm['llm_calls'],0)
 
 
 if __name__=='__main__':unittest.main()

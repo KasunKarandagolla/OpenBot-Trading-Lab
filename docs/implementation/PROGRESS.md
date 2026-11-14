@@ -1,3 +1,38 @@
+# Session 6C — combined implementation checkpoint (Phase C acceptance pending)
+
+A `8a7e61b` and B `4c3b88f` pushed/verified; both push/PR CI success for each.
+Owner approved strict source gates. Actual existing Researcher/model ran3 native
+turns/10 provider assistant attempts;14 rows validate across frozen/live-partial
+cases,1 malformed whole reply rejected,0 current handoffs. The live model reply
+completed within600s, but manual auditing/import passed the deadline; stale
+fallback preserved actual time. No source-limited final is published.
+
+Added optional exact-task read-only receipt collection to the ordinary scan,
+with complete skill/request/tool/model proof, immediate import and final-time
+admission recheck. No automatic model submission, new agent, model/key or
+permission change. Native skill version2 hash
+`96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb`.
+All182 preexisting native specialist skill files unchanged. Fixed context budget/
+tuple overflow, explicit nested-value transport omissions, strict numeric claim
+validation, excessive JSON depth/exponents/audit roots and cached input reuse.
+
+Actual WSL wait observed591 Windows WAL read failures and safely persisted
+fallback. Existing Windows Python subsequently passed20 native DB probes and
+five complete reader passes, all0 failures. Only the fixed data-only reader uses
+that runtime; no Windows UI helper, app restart, native DB mutation or model call.
+Latest16 focused tests pass; clean snapshots357 pass/no failures/skips; latest
+exact-source clean full suite/CI publication are recorded separately.
+
+Final corrected ordinary native collection requires one coordinated owner app
+submission. Old timed prompt expired; owner readiness requested before another
+window. Do not claim C completion from fixtures or native metadata reads alone.
+Source/27/9/31 flags unchanged, downstream NOT_INTEGRATED, PR24 draft/main intact.
+Read [combined acceptance](SESSION_06C_COMBINED_ACCEPTANCE.md) and
+[operator steps](SESSION_06C_OPERATOR.md). Preserve this safe implementation
+checkpoint while awaiting the final external acceptance action.
+
+---
+
 # Session 6C — existing native Researcher checkpoint (Phase B)
 
 A `8a7e61b43abe4f0add5cf5c164f92cfa25ff29e2` pushed/verified, both CI success;

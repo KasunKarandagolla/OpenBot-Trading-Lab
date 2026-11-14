@@ -1,4 +1,11 @@
-# Session 6C Local completion programme — Phases A/B
+# Session 6C Local completion programme — A/B verified, C acceptance pending
+
+Current C code/real failure/verification record:
+[combined acceptance](SESSION_06C_COMBINED_ACCEPTANCE.md). Interactive operation:
+[operator steps](SESSION_06C_OPERATOR.md). The corrected native Windows receipt
+reader awaits one coordinated owner app submission; no final completion or
+source-limited final publication is claimed. Earlier phase records below remain
+historical evidence, not current activation permission.
 
 Current: A pushed/verified at `8a7e61b`, both CI success; owner approved strict
 Phase B bounds. Actual existing native Researcher/model and complete skill load

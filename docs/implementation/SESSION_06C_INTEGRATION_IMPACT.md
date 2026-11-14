@@ -14,6 +14,7 @@ Allowed changes, recorded before native installation or further integration:
 | Component | Smallest change and purpose |
 |---|---|
 | `researcher/agent_review.py` | Bounded precomputed evidence request; strict source-citation reply validation; explicit native invocation audit separate from JSON validity |
+| `researcher/native_app.py` (Phase C) | Narrow opt-in read-only collector for this exact owner-submitted task; verifies current native records and imports without manual audit delay; no agent invocation |
 | `.agents/skills/market-research-review/SKILL.md` | Versioned research-only task for the existing agent; preserve older packet behavior |
 | Existing Researcher's skill discovery directories | Install only this scoped new skill, with identical bytes in the existing discovery mirrors; no registry/model/access edit |
 | Existing Researcher's research workspace | One bounded request file; no histories, account data or credentials |
