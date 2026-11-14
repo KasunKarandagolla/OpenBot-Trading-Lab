@@ -32,6 +32,12 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     config = sub.add_parser("config"); config.add_argument("action", choices=["validate"])
     provider = sub.add_parser("provider"); provider.add_argument("action", choices=["status"])
+    analytics=sub.add_parser('analytics')
+    analytics.add_argument('action',choices=['contracts','local-oracle'])
+    analytics.add_argument('--environment',choices=['CODEX_LOCAL'])
+    analytics.add_argument('--symbol',default='BTCUSDT')
+    analytics.add_argument('--timeframe',choices=['1h','15m'],default='1h')
+    analytics.add_argument('--output',help='new JSON below work/; never overwrites')
     review = sub.add_parser('review')
     review.add_argument('action',choices=['replay-session3','probe-precursors'])
     review.add_argument('--output',help='new JSON file below work/; never overwrites')
@@ -48,6 +54,14 @@ def main():
             report = validate_config(config)
         elif args.command == "provider":
             report = provider_status(config)
+        elif args.command=='analytics':
+            if args.action=='contracts':
+                from .engine_capabilities import manifest
+                report=manifest(config)
+            else:
+                from .analytical_probe import qualify_selected
+                report=qualify_selected(environment=args.environment,native_symbol=args.symbol,timeframe=args.timeframe)
+            if args.output:write_report(args.output,report)
         elif args.command == 'review':
             from .session4 import replay_session3,probe_precursors
             report=replay_session3() if args.action=='replay-session3' else probe_precursors()

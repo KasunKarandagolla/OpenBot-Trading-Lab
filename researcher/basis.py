@@ -74,7 +74,7 @@ def tool_object(result):
 
 
 class BasisMCP:
-    def __init__(self, http=None, *, qualification=False, session4=False, session5=False):
+    def __init__(self, http=None, *, qualification=False, session4=False, session5=False, session6a=False):
         self.http = http or PublicHTTP()
         self.session = None
         self.counter = 0
@@ -83,6 +83,7 @@ class BasisMCP:
         self.qualification = qualification
         self.session4 = session4
         self.session5 = session5
+        self.session6a = session6a
 
     def _rpc(self, method, params, *, notification=False):
         self.counter += 1
@@ -136,7 +137,7 @@ class BasisMCP:
         if not self.initialized or name not in READ_TOOLS or name not in self.tools:
             raise ProviderError("RESEARCH_TOOL_NOT_ALLOWED")
         schema = self.tools[name]["inputSchema"]
-        if self.session5 and name=='formula_evaluate' and 'ref' not in arguments:
+        if (self.session5 or self.session6a) and name=='formula_evaluate' and 'ref' not in arguments:
             raise ContractError('TARGETED_BOUNDED_REF_REQUIRED')
         if set(arguments) - set(schema.get("properties", {})) or not set(schema.get("required", [])) <= set(arguments):
             raise ContractError("TOOL_ARGUMENT_SCHEMA")
@@ -155,10 +156,14 @@ class BasisMCP:
                 registered.update(EXPRESSIONS)
                 from .remote_structure import EXPRESSIONS as structure_expressions
                 registered.update(structure_expressions)
+            if self.session6a:
+                from .pack_contracts import registered as registered_6a
+            else:
+                registered_6a = lambda expression: False
             expressions = ([arguments["expression"]] if name == "formula_evaluate" else
                            [r.get("left", {}).get("expression") for r in arguments.get("rules", [])])
             from .remote_structure import registered as registered_structure
-            if not expressions or any(e not in registered and not (self.session5 and registered_structure(e)) for e in expressions):
+            if not expressions or any(e not in registered and not registered_6a(e) and not (self.session5 and registered_structure(e)) for e in expressions):
                 raise ContractError("UNREGISTERED_FORMULA")
         if name in {"market_candles", "formula_evaluate", "screener_run"}:
             if name != "formula_evaluate" or "ref" not in arguments:
@@ -166,7 +171,7 @@ class BasisMCP:
                     raise ContractError("EXPLICIT_SOURCE_REQUIRED")
             if "symbol" in arguments:
                 symbol(arguments["symbol"])
-            if "bars" in arguments and (type(arguments["bars"]) is not int or not 1 <= arguments["bars"] <= (300 if (self.session4 or self.session5) and self.qualification else 65)):
+            if "bars" in arguments and (type(arguments["bars"]) is not int or not 1 <= arguments["bars"] <= (300 if (self.session4 or self.session5 or self.session6a) and self.qualification else 65)):
                 raise ContractError("TARGETED_HISTORY_LIMIT")
             if name == "formula_evaluate" and arguments.get("includeForming") is not False:
                 raise ContractError("CLOSED_FORMULA_REQUIRED")

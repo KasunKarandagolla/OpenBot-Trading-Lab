@@ -1,3 +1,56 @@
+# Session 6A — analytical engine implementation (CODEX_CLOUD / SOL)
+
+**Production release remains PARTIAL; offline implementation checkpoint.** Started
+from fetched remote `ed0f63e8610ba2b34d734ff449d2de6156cfad2c` on the same integration
+branch; PR #24 stays draft. Main and the immutable blueprint/plan are unchanged.
+
+Implemented shared measurement gaps, strict executed-tape/profile/footprint/
+aggression/specialist adapters, all F1–F9 selected formation reducers, actual
+named price-method lifecycles and all 31 explicit method contracts. M14 canonical
+rules and M15 Keepssy remain definition dependencies; no invented signals.
+Added two finite 12-column CORE contracts, isolated participation and registered
+pre-break approach/pressure, quiet-location and controlled-correction packs:
+33 distinct column definitions / 10 compiled TF packs plus 3 typed source-adapter
+contracts. No new live source gate was promoted. Legacy 16 scalars and 3 narrow
+masks retain their narrower prior qualifications.
+
+The ordinary scan now calls the capability-registered analytical engine on its
+existing bounded selected histories; every family/method's independent code,
+source, formation, coverage and empirical flags are visible. Source-gated Route A
+remains disabled pending real qualification. Quote-RVOL is isolated from price
+packs; both price TFs run first under the unchanged 26-call ceiling, with explicit
+optional omissions. Frozen IDs are memoized without changing hashes. No extra
+broad local history, feature warehouse, order, scheduler or downstream connection.
+
+**Verification:** inherited 237 tests passed before edits; final **289 passed,
+0 failed, 0 skipped** (52 new), 147.867 seconds on this Cloud run. All 14 genuine
+Session 5.5 selected histories execute through the new analyzer with recorded
+ticks and original availability; this is retrospective reconstruction, not a
+prospective shortlist. Added arithmetic/event positives and negatives, strict tape,
+MSS/OB/breaker/iFVG traps, F5-without-reclaim, zero/no-event/short history,
+append-future invariance across all families and methods, TF/identity/clock and
+runtime optional-failure isolation. Native ATR/precision/pressure/Unicode/provider
+failure regressions and all original fixtures remain intact. Config, immutable
+hashes and diff checks pass. **Zero market-provider HTTP and zero Cloud Binance
+requests**; only Git/GitHub publication uses live network.
+
+See [Session 6A runbook](SESSION_06A_RUNBOOK.md), [complete 27/9/31 matrix](SESSION_06A_MATRIX.md)
+and [compact evidence](../../evidence/external-first/session6a/README.md).
+Source qualification/rights, exact funding/multiplier metadata, complete specialist
+tape, witnessed liquidation sampling, dated sectors, original publishers and
+canonical M14/M15 definitions remain open. The owner was asked for Keepssy's
+primary rules; no key or purchase is requested for the enabled public subset.
+
+Next Cloud Session 2 can use these algorithms for professional interpretation,
+multi-route questions, specialist orchestration, economics and intelligent
+shortlisting. The exact Local-only registered oracle CLI is in the runbook;
+Session 3 retains live source/clock/semantic proof and conditional integration.
+No claim of new live all-coin coverage, useful forecast, profitable performance
+or real new handoff. Final pushed SHA/remote equality and CI are in the publication
+handoff; this commit cannot contain its own SHA.
+
+---
+
 # Session 5.5 — source-qualified causal nominations and defect closure
 
 **CODEX_LOCAL; integration branch; start remote b330b20c4f7ff5d1558ed98fe0aa5b8cd36fa836. Release remains PARTIAL.**

@@ -29,7 +29,16 @@ def validate_method_contracts(config):
 
 def capability_coverage(config):
     validate_method_contracts(config)
+    from .engine_capabilities import manifest
+    analytical=manifest(config)
+    methods={m['id']:m for m in analytical['methods']}
+    families={f['id']:f for f in analytical['families']}
     return {"methods":[{"id":m["id"],"name":m["name"],"roles":m["roles"],**m["implementation"],
+                        "legacy_state_scope":"INHERITED_PRODUCTION_SOURCE_GATE",
+                        "analytical_implementation":methods[m['id']],
                         "qualified_market_wide_evaluations":0} for m in config["methods"]],
             "families":[{"id":f["id"],"name":f["name"],**f["implementation"],
-                         "qualified_market_wide_evaluations":0} for f in config["families"]]}
+                         "legacy_state_scope":"INHERITED_PRODUCTION_SOURCE_GATE",
+                         "analytical_implementation":families[f['id']],
+                         "qualified_market_wide_evaluations":0} for f in config["families"]],
+            "analytical_engine":analytical}

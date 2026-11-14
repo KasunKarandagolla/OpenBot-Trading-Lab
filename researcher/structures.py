@@ -8,13 +8,18 @@ from decimal import Decimal as D
 import json
 import sqlite3
 from pathlib import Path
+from functools import cached_property
 from .contracts import ContractError, digest, encode, symbol, utc
 from .numerics import (validate_bars, confirmed_swings, swing_ladder, wilder_atr,
                        displacement, efficiency, compression, distance)
 
 VERSION="causal-trial-3.0.0"
 REFERENCE_KINDS={"SWING_HIGH","SWING_LOW","RANGE_TOP","RANGE_BOTTOM","DAILY_HIGH","DAILY_LOW",
-                 "WEEKLY_HIGH","WEEKLY_LOW","FVG_CANDIDATE","IFVG_CANDIDATE","CRT_CANDLE"}
+                 "WEEKLY_HIGH","WEEKLY_LOW","FVG_CANDIDATE","IFVG_CANDIDATE","CRT_CANDLE",
+                 "SUPPLY_DEMAND_CANDIDATE","ORDER_BLOCK_CANDIDATE","BREAKER_CANDIDATE",
+                 "SESSION_VWAP_ANCHOR","EVENT_VWAP_ANCHOR","SHOCK_BOUNDARY",
+                 "EQH_POOL_INFERRED","EQL_POOL_INFERRED","TRUE_VA_EDGE","TRUE_POC",
+                 "TRUE_HVN_LVN","PROFILE_PROXY_LEVEL"}
 
 
 def stable_id(*parts):
@@ -50,7 +55,7 @@ class Reference:
         if not utc(self.created_at)<=utc(self.known_at)<=utc(self.available_at)<=utc(self.valid_until):
             raise ContractError("REFERENCE_CAUSAL_TIME")
 
-    @property
+    @cached_property
     def id(self):
         identity=asdict(self)
         for field in ('available_at','atr','tick'):
@@ -80,7 +85,7 @@ class StructuralEvent:
             raise ContractError("EVENT_CAUSAL_TIME")
         if not self.reference_id or not self.source_ids:raise ContractError("EVENT_SOURCE_REQUIRED")
 
-    @property
+    @cached_property
     def id(self):
         identity=asdict(self)
         identity.pop('available_at')

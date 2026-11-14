@@ -340,7 +340,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
         'created_at_utc':start,'frozen_cutoffs':cutoffs,'operation_status':'BLOCKED_OR_UNQUALIFIED',
         'release_status':'PARTIAL','operating_mode':'PAUSE_UNQUALIFIED','shortlist':[],'watches':[],
         'near_misses':[],'invalidations':[],'not_reviewed_budget':[],'time_gaps':[],
-        'source_health':[],'packs':[],'nominations':[],'selected_research':[],'planner':[],
+        'source_health':[],'packs':[],'optional_packs':[],'nominations':[],'selected_research':[],'planner':[],
         'causal_packs':[],'specialist_observations':[],'economic_observations':[],
         'llm_status':completion.get('llm_status','LLM_DISABLED_NO_APPROVED_PROVIDER'),
         'source_faults':[],'capability_revision':REVISION,'method_coverage':capability_coverage(config),
@@ -400,7 +400,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 report['source_health']=[{**{k:v for k,v in p.items() if k!='observations'},
                     'accepted':len(p['observations']),'eligible':len(members)} for p in pulse]
                 report['operation_status']='PARTIAL';report['operating_mode']='REMOTE_WIDE_PARTIAL'
-                key=digest(encode([cutoffs,identity,spec,completion,mode]).encode())
+                key=digest(encode([cutoffs,identity,spec,completion,mode,'analytical-engine-6a.1']).encode())
                 # Fresh official access/identity is mandatory even for unchanged
                 # bars. Reuse preserves first knowledge and original receipts.
                 previous_reusable=previous and previous.get('numeric_cache_available',True) and len(previous.get('packs',()))==2 and all(
@@ -447,7 +447,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     engine=PartitionEngine(BasisScreenSource(client),budget,deferred_tool_recovery=True)
                     rows_by_tf={}
                     for tf in ('15m','1h'):
-                        pack=make_pack(tf,inventory.eligible_symbols,spec['qualified_price_columns'])
+                        price_columns=[c for c in spec['qualified_price_columns'] if c!='quote_rvol32']
+                        pack=make_pack(tf,inventory.eligible_symbols,price_columns)
                         result=engine.run(inventory,pack,cutoffs[tf]);rows={}
                         for o in result.pop('observations'):
                             n=o['instrument']['native_symbol'];r=rows.setdefault(n,{'values':{},'evidence_ids':[],
@@ -460,7 +461,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             # redundant random hashes per symbol per snapshot.
                             r['evidence_ids']=[digest(encode([n,pack.formula_hash,cutoffs[tf],r['source_hashes']]).encode())]
                         result['evidence_id_scope']='EXACT_SYMBOL_ROW; ALL_DECLARED_COLUMNS; SOURCE_HASH_AND_PACK_HASH'
-                        result['measurements']=rows;result['column_ids']=list(spec['qualified_price_columns'])
+                        result['measurements']=rows;result['column_ids']=price_columns
                         result['operating_scope']='QUALIFIED_SAMPLED_PRICE_PRECURSORS; NOT_FULL_CORE_OR_METHODS'
                         result['numerical_qualification']={'scope':'SELECTED_SOURCE_ORACLE; NOT_EVERY_SYMBOL_HISTORY',
                             'evidence':spec['qualification_evidence'],'sha256':spec['qualification_sha256']}
@@ -472,9 +473,34 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             'returned':result['returned'],'missing':result['missing'],
                             'failed':result['failed'],'unavailable':sum(r['values'].get(f) is None for r in rows.values()),
                             'unavailable_symbols':[n for n,r in rows.items() if r['values'].get(f) is None],
-                            'unsupported':0,'units':CORE[f].units} for f in spec['qualified_price_columns']}
+                            'unsupported':0,'units':CORE[f].units} for f in price_columns}
                         report['packs'].append(result);rows_by_tf[tf]=rows
                         if rows:verified.append(('PRICE_PRECURSORS:'+tf,cutoffs[tf],tuple(rows)))
+                    # Spend the existing ceiling on mandatory price packs first.
+                    # Optional participation faults and budget omissions cannot
+                    # erase price rows or starve the second timeframe.
+                    if 'quote_rvol32' in spec['qualified_price_columns']:
+                        for tf in ('15m','1h'):
+                            optional=engine.run(inventory,make_pack(tf,inventory.eligible_symbols,
+                                ('quote_rvol32',)),cutoffs[tf])
+                            values=optional.pop('observations');rows=rows_by_tf[tf]
+                            for o in values:
+                                n=o['instrument']['native_symbol']
+                                if n in rows:
+                                    rows[n]['values']['quote_rvol32']=o['value']
+                                    rows[n]['evidence_ids'].append(o['id'])
+                                    rows[n].setdefault('optional_source_hashes',[]).append(o['source_response_hash'])
+                            optional['isolation']='OPTIONAL_ONLY; NEVER_INTERSECTS_PRICE_EVALUABILITY'
+                            report['optional_packs'].append(optional)
+                            parent=next(p for p in report['packs'] if p['timeframe']==tf)
+                            parent['per_formula']['quote_rvol32']={'eligible':len(members),
+                                'requested':len(optional['requested_symbols']),
+                                'evaluated':sum(o['value'] is not None for o in values),
+                                'returned':len(optional['returned_symbols']),
+                                'failed':len(optional['failed_symbols']),'missing':len(optional['missing_symbols']),
+                                'not_requested':len(optional.get('not_requested_symbols',())),
+                                'unavailable':sum(o['value'] is None for o in values),'units':'QUOTE_VOLUME_RATIO',
+                                'scope':'SEPARATE_OPTIONAL_PARTICIPATION_PACK'}
                     report['broad_budget']=budget.report()
                     # Separate finite event packs from long quiet/RVOL columns.
                     # The current qualified manual envelope adds ONE broad 1H
@@ -643,6 +669,16 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 'EXACT_REPORTED',True,'QUALIFIED',mode,300*WIDTHS[tf])
                         terminal_ids={r[0] for r in ledger.db.execute('SELECT reference_id FROM lifecycle WHERE at<=?',(as_of,))}
                         all_swings=swing_references(bars,members[n].tick_size,as_of=as_of)
+                        from .engine_capabilities import analyze_selected,qualified_route_a
+                        report['selected_research'][-1]['analytical_engine']=analyze_selected(
+                            bars,members[n].tick_size,cutoff=cutoffs[tf],as_of=as_of,
+                            benchmark=bench[0] if bench and len(bench[0])==len(bars) else None,
+                            references=all_swings)
+                        # The registered adapter is exercised in ordinary scans,
+                        # while current new full-family source gates stay closed.
+                        report['selected_research'][-1]['analytical_route_a']=qualified_route_a(
+                            report['selected_research'][-1]['analytical_engine'],None,
+                            native_symbol=n,timeframe=tf,cutoff=cutoffs[tf])
                         # Wider selected reference metadata supplies the actual
                         # first opposing obstacle; no universe history download.
                         obstacle_refs=[ledger.freeze_reference(r) for r in all_swings if r.id not in terminal_ids]

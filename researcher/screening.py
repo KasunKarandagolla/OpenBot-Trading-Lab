@@ -282,6 +282,18 @@ def normalize_columns(names,data,metadata,*,pack,instruments,cutoff):
                     'verdict':'SUPPORTED' if o['value']>0 else 'UNKNOWN',
                     'null_reason':None if o['value']>0 else 'ZERO_QUOTE_VOLUME_BASELINE',
                     'participation_not_required_for_price_family':True} for o in values]
+        elif pack.version=='packs-6a.1':
+            from .pack_contracts import column_by_export
+            column=column_by_export(expression)
+            if column:
+                decoded=[]
+                for o in values:
+                    value=number(o['value'])/EXPORT_SCALE
+                    if column.encoding=='POSITIVE_MINUS_ONE':value=value-1 if value>0 else None
+                    decoded.append({**o,'value':value,'encoded_provider_value':o['value'],
+                        'export_scale':EXPORT_SCALE,'verdict':'UNKNOWN' if value is None else 'SUPPORTED',
+                        'null_reason':column.null if value is None else None,'production_qualified':False})
+                values=decoded
         receipts.append(receipt);observed.extend(values)
     valid=set.intersection(*(set(r.evaluated_symbols) for r in receipts))
     errors={n:reason for r in receipts for n,reason in r.failed_symbols.items()}
@@ -405,6 +417,27 @@ def safe_error(error):
     # exception's text unless it is one of those fixed codes.
     code = str(error)
     allowed = {
+        'LOCAL_ONLY_ANALYTICAL_PROBE','EXACT_ELIGIBLE_CONTRACT_REQUIRED',
+        'CUTOFF_AFTER_EVALUATION','SOURCE_NOT_AVAILABLE_AT_EVALUATION',
+        'ZERO_OR_UNDEFINED_REFERENCE_ATR','BALANCE_BASELINE_WINDOW',
+        'TAPE_SCOPE_OR_PROVENANCE','EXECUTED_TAPE_SEQUENCE_REQUIRED','TRADE_TICK_ALIGNMENT',
+        'STRICT_TAPE_SCHEMA_REQUIRED','SOURCE_CAPABILITY_REQUIRED_COMPLETE_EXECUTED_TAPE',
+        'PROFILE_BIN_OR_UNITS','NO_EXECUTED_TRADES_IN_WINDOW','BOUNDED_PROFILE_BIN_COUNT_REQUIRED',
+        'SPECIALIST_ENVELOPE_SCOPE_OR_TIME','STRICT_SPECIALIST_ENVELOPE_SCHEMA',
+        'TRUE_COMPLETE_PROFILE_REQUIRED','NAKED_POC_CONTIGUOUS_HISTORY_REQUIRED',
+        'FOOTPRINT_TRIAL_PARAMETERS','COMPARABLE_REPEATED_ATTEMPTS_REQUIRED',
+        'AGGRESSION_REFERENCE_BOUNDS','ATTEMPT_SCOPE_OR_ORDER','ATTEMPTS_DURATION_MISMATCH',
+        'LIQUIDATION_COVERAGE_REQUIRED','FORCED_ORDER_IDENTITY_OR_WINDOW',
+        'RESIDUAL_BASELINE_REQUIRED','OI_IDENTITY_UNITS_OR_MARK_ALIGNMENT',
+        'FUNDING_KIND_OR_UNITS','FUNDING_ACTUAL_INTERVAL_REQUIRED','BASIS_CLOCK_ALIGNMENT',
+        'CATALYST_SOURCE_OR_TIMES','UNKNOWN_METHODOLOGY','INDEPENDENT_CONFIRMED_IMPULSE_REQUIRED',
+        'ZERO_IMPULSE','PRESELECTED_COMPLETED_CRT_REFERENCE_REQUIRED','PREDECLARED_SESSION_REQUIRED',
+        'INCOMPLETE_SESSION_BALANCE','PRIMARY_TIMING_SOURCE_REQUIRED','TIMING_WINDOW',
+        'PROFILE_MIGRATION_SCOPE_MISMATCH','DEPTH_IDENTITY_UNITS','STALE_DEPTH',
+        'ORDERED_DEPTH_REQUIRED','SPECIALIST_METHOD_ADAPTER_REQUIRED','UNQUALIFIED_ANALYTICAL_ROUTE_A',
+        'REGISTERED_DSL_NODE_REQUIRED','DSL_FIELD','DSL_POSITIVE_LAG','DSL_BOUNDED_WINDOW',
+        'UNREGISTERED_DSL_OPERATION','DUPLICATE_PACK_COLUMN','PACK_DEPENDENCY_CYCLE',
+        'PACK_DEPENDENCY_MISSING','SOURCE_CAPABILITY_REQUIRED','BUDGET_SCENARIO',
         'SESSION5_CAPABILITY_BOUNDARY','SOURCE_PRICE_MISMATCH','RESEARCH_DB_CORRUPT',
         'RESEARCH_DB_CORRUPT_OR_BUSY','RESEARCH_DB_VERSION_UNSUPPORTED','NOT_A_RESEARCH_DATABASE',
         'RESEARCH_WRITER_BUSY','RESEARCH_SNAPSHOT_CORRUPT','RESEARCH_CUTOFF_REGRESSION',

@@ -6,6 +6,7 @@ missing history raises an explicit ContractError instead of inventing a value.
 from dataclasses import dataclass
 from decimal import Decimal
 from statistics import median
+from functools import cached_property
 from .contracts import ContractError, digest, encode, number, symbol, utc
 from .observations import WIDTHS, iso_seconds
 
@@ -40,7 +41,7 @@ class Bar:
     def end(self):
         return iso_seconds(self.end_ms // 1000)
 
-    @property
+    @cached_property
     def id(self):
         # Stable across retrievals and appended future data, with exact identity.
         return digest(encode([self.native_symbol, self.timeframe, self.open_ms,
