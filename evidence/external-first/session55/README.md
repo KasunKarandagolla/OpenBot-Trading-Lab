@@ -9,3 +9,7 @@ Selected public native price histories and real remote scalar reductions, not a 
 - `source-rights.json`: dated primary documentation, advertised allowance versus measured unknown charges/remaining entitlement. Manual operation only.
 
 The 213-test baseline is retained. Failed new regression attempts were corrected; final test/clean-checkout/interrupt/prospective evidence is added after verification. No simulated event or availability is described as a live opportunity.
+
+Final clean pushed-code run: each price column 519/519 on 15M/1H, each narrow causal mask 519/519 on 1H; zero final failures. Two causal nominations, positive CTK selected match plus negative matches; full CORE/complete methods still unqualified. 237 passed / 0 failed / 0 skipped from clean checkout.
+
+`clean-operational-runs.json`, `entrypoint-receipt.json` and `process-resources.json` retain cold/interrupted/warm/later proof and exact costs. `method-capabilities.json` covers all 31 methods and timeframes. `prospective-audit.json` is a dated real short-session audit, not historical full-universe replay or a recall study. `simulated-scenarios.json` distinguishes contract positives from live opportunities. `safety.json` records the real clock uncertainty and NO_GO integration gate. `provider-schema.json` and `source-rights.json` distinguish observed operations from advertised allowance/unknown billed quota. Session-wide measured market HTTP: 201 (Git/GitHub/web docs and prior Session 5 excluded).

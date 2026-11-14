@@ -1,0 +1,38 @@
+{
+  "classification": "DEVELOPMENT_FAILURES_AND_REPAIRS; NOT_LIVE_SIGNALS",
+  "preserved_original_tests": 213,
+  "provider_failures": "Old 69 and development 319 price faults remain retained; later repeat and final complete pass are evidence of variable availability, not proof of a permanently repaired provider.",
+  "repairs": [
+    {
+      "cause": "The first new allocator could leave the second history slot empty when only one protected lane was nonempty.",
+      "fix": "Fallback over remaining unique symbols, still at the same two-alt cap.",
+      "regression": "Original Session5 first-run test again requires ten total selected kline calls."
+    },
+    {
+      "cause": "New obstacle-only references were not covered by watch-only delisting retirement.",
+      "fix": "Retire all active references for delisted/quarantined exact identities.",
+      "regression": "Original Session5 delisting test passes without modification."
+    },
+    {
+      "cause": "New conditional stage was absent from the canonical nomination enum.",
+      "fix": "Add the actual stage and its necessary inputs to the shared contract.",
+      "regression": "Original Session4 stage-contract equality test passes unchanged."
+    },
+    {
+      "cause": "Independent causal oracle called Wilder ATR before short-history handling.",
+      "fix": "Return explicit UNKNOWN for fewer than fifteen bars; never zero-event.",
+      "regression": "New short/flat/tied-pivot tests pass."
+    },
+    {
+      "cause": "Initial simulated OHLC fixtures had receipts before their appended bar closes.",
+      "fix": "Correct simulated publication timestamps; retain production provenance validation unchanged.",
+      "regression": "F2/F4/F5 ordered positive/negative simulations pass."
+    },
+    {
+      "cause": "Potential export clock/freshness and cached admission hazards identified in review.",
+      "fix": "Block under clock uncertainty, clear cached handoffs, recheck source/cutoff freshness at completion and preserve raw receipts.",
+      "regression": "Original clock/restart and new source-timing/conditional/hashed-export tests pass."
+    }
+  ],
+  "source_trials": "480+30+5 independent causal checks passed; Unicode targeted errors remain errors. Rejected native atr(14) and Session5 failed pressure/precision trials remain unchanged."
+}
