@@ -181,7 +181,8 @@ scaled multi-column export, filler/clock mismatch, atomic file/DB rollback,
 restart/cache idempotency, bounded scalar retention, gaps/outage/recovery,
 delisting/changed identity, new listings, zero ATR/volume and EQH confirmation.
 
-**Owner assistance now: GitHub Git sign-in to publish the local checkpoint.** No provider/exchange key is required for the supported subset. Do not collect an exchange
+**Owner assistance now: NONE.** GitHub publication authentication is resolved.
+No provider/exchange key is required for the supported subset. Do not collect an exchange
 key to hide absent fees/specialists. Full CORE and remote ordered family/method
 compiler/source qualification, actual source-backed admission facts, genuine
 specialists and sustainable provider rights remain Sol responsibilities. They

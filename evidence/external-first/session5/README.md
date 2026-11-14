@@ -27,6 +27,8 @@ the client date is 14 November 2026 in Asia/Colombo.
   processes; cold/warm statuses and process wall time.
 - `simulated-gaps.json`: deterministic first-run, multi-day gap, source outage and
   recovery records; zero real HTTP and no claim of measured live downtime.
+- `publication-readback.json`: owner sign-in resolution, verified matching remote/local
+  checkpoint and successful push/PR CI; release remains PARTIAL.
 - `resources.json`: retained measured HTTP calls only, bytes/latencies/weight-header
   observations, exclusions and clearly assumed cadence scenarios.
 - `baseline-tests.txt`, `test-results.txt`, `config-validation.json`, `safety.json`:

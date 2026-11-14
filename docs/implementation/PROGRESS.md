@@ -114,9 +114,10 @@ no automatic schedule was enabled. No orders, account/admin/trading DB access,
 credentials, whole-market candle store or external messages outside the authorized
 GitHub workflow.
 
-**Owner assistance now: GitHub Git sign-in for publication.** Both WSL HTTPS and
-Windows Git lack usable non-interactive credentials; a normal Git Credential
-Manager sign-in was opened. No exchange/provider key is needed. Local checkpoint
+**Publication interruption during implementation (resolved):** WSL HTTPS and
+Windows Git initially lacked usable non-interactive credentials; the owner
+completed normal Git Credential Manager sign-in. No exchange/provider key was
+needed. The first local checkpoint
 `747da48c1cb9af859fe8096ae010ecc24bbf836c` was committed; remote publication/CI
 must not be claimed until verified. A clean checkout of it passed 212 tests but
 its live metadata write found receipt/host UTC skew. The repaired run preserves
@@ -139,7 +140,7 @@ qualification remain Sol work; do not move those blockers to Luna. Session 6
 Luna may do bounded operator help/status/report presentation and housekeeping
 while preserving the exact capability gates. Keep PR #24 draft and do not merge.
 
-## Final clean-checkout verification (local publication pending)
+## Final clean-checkout verification
 
 Clean detached checkout `1985543a59aab066120f00b5e26669b07c433579`, initially
 unmodified, Python 3.12.3, no manual market input: both actual CLI processes exited
@@ -177,13 +178,17 @@ measured totals explicitly exclude their unknown requests/bytes/latencies. A
 complete 16-column 519/519 pass on both tf is separately recorded from the repaired
 run; it does not overwrite this final clean run's 69 failed 1H names.
 
-**Publication remains blocked by GitHub Git authentication.** The connected
-GitHub reader confirms PR #24 is draft and its remote head is still
-`38437c031a007634161edf03f5dde07afd7b9dd0`. Local commits are preserved, no remote
-ref was reset or forced, and new-commit CI is **NOT_TRIGGERED** until push succeeds.
-The PR description is prepared but not published ahead of its code. Complete the
-pending Git Credential Manager sign-in to publish and observe CI in this chat.
-No provider or exchange key is requested. All remaining full CORE/ordered method/
+**Publication verified after owner sign-in (2026-11-14):** fetched remote feature
+head and local HEAD both equal `af3f08a99cf7a65f6e913e8635bff6502749ef78`.
+PR #24 remains draft. Both [push CI](https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/actions/runs/43540413638)
+and [PR CI](https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/actions/runs/43540417127)
+completed successfully for that commit. The earlier publication interruption is
+resolved; no ref was reset/forced and main was not merged. This documentation
+follow-up preserves the tested runtime; its final pushed SHA/CI are verified in
+the delivery handoff and PR description.
+
+**Owner assistance now: NONE. Release gate remains PARTIAL.** No provider or
+exchange key is requested for the supported subset. Full CORE/ordered method/
 specialist/admission source gates remain Sol work; Session 6 Luna gets only bounded
 operator usability and housekeeping, not those unresolved release blockers.
 
