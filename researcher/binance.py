@@ -47,7 +47,11 @@ class OfficialResearchAPI:
         self.sample_calls=0
 
     def inventory(self):
-        return OfficialBinanceInventory(self.http,access_denial=self.access_denial).load(now_utc())
+        source=OfficialBinanceInventory(self.http,access_denial=self.access_denial)
+        try:return source.load(now_utc())
+        except ProviderError as error:
+            if str(error) not in {'NETWORK_OR_TLS_FAILURE','HTTP_502','HTTP_503','HTTP_504'}:raise
+            return source.load(now_utc())
 
     def pulse(self,inventory,*,partial=False,kinds=('ticker','book','premium')):
         if self.access_denial in {403,451}:raise ProviderError("RECORDED_BINANCE_ACCESS_DENIAL")
@@ -80,7 +84,17 @@ class OfficialResearchAPI:
         self.sample_symbols=names;self.sample_calls+=1
         query={"symbol":instrument.native_symbol,"interval":timeframe,"limit":bars,
                "endTime":int(utc(cutoff).timestamp()*1000)-1}
-        response=self.http.request("binance_klines",query=query)
+        try:response=self.http.request("binance_klines",query=query)
+        except ProviderError as error:
+            # A finite retry of the identical endTime query preserves chronology.
+            # Denials/rate limits are never retried or cleared. Physical attempts
+            # consume the existing selected-history and HTTP ceilings.
+            if str(error) not in {'NETWORK_OR_TLS_FAILURE','HTTP_502','HTTP_503','HTTP_504'} or self.sample_calls>=self.max_sample_calls:
+                raise
+            self.sample_calls+=1
+            response=self.http.request('binance_klines',query=query)
+            response.receipt['selected_history_recovery_of']=error.receipt.get('response_sha256')
+            response.receipt['selected_history_recovery_reason']=str(error)
         data=parse_klines(json_document(response.body),native_symbol=instrument.native_symbol,
             timeframe=timeframe,cutoff=cutoff,receipt=response.receipt,requested_bars=bars)
         if instrument.onboard_at_utc and data[0].open_ms<int(utc(instrument.onboard_at_utc).timestamp()*1000):

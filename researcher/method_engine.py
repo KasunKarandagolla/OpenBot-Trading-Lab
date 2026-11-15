@@ -76,9 +76,10 @@ def zone_lifecycle(ref,bars,*,as_of):
         'breaker_candidate':flipped,'intrabar_execution':None}
 
 
-def order_blocks(bars,tick,*,as_of):
+def order_blocks(bars,tick,*,as_of,breaks=None):
     """Full-candle base (1–4), displacement, later BOS; zone born at BOS."""
-    breaks=swing_breaks(bars,tick,as_of=as_of);out=[];atr=wilder_atr(bars) if len(bars)>=15 else []
+    breaks=breaks if breaks is not None else swing_breaks(bars,tick,as_of=as_of)
+    out=[];atr=wilder_atr(bars) if len(bars)>=15 else []
     for e in breaks['events']:
         if e.kind!='BOS':continue
         i=next(j for j,b in enumerate(bars) if b.end==e.known_at);side=e.direction
@@ -241,7 +242,7 @@ def evaluate_methods(bars,tick,*,cutoff,as_of,benchmark=None,references=(),famil
         raise ContractError('REFERENCE_BAR_IDENTITY')
     swings=confirmed_swings(bars);breaks=swing_breaks(bars,tick,as_of=as_of)
     gaps=gap_lifecycle(bars,tick,as_of=as_of)
-    ob=order_blocks(bars,tick,as_of=as_of) if len(bars)>=15 else []
+    ob=order_blocks(bars,tick,as_of=as_of,breaks=breaks) if len(bars)>=15 else []
     zones=[*refs,*(g['reference'] for g in gaps),*(o['reference'] for o in ob)]
     results['M01']=result('M01',{'swings':swings,'ladder':swing_ladder(swings)})
     # MSS requires an opposing significant break + same-side prior sweep + displacement.
@@ -266,10 +267,11 @@ def evaluate_methods(bars,tick,*,cutoff,as_of,benchmark=None,references=(),famil
     results['M04']=result('M04',equal_level_references(bars,tick,as_of=as_of))
     results['M05']=result('M05',[boundary_family('F4',r,bars,as_of=as_of) for r in refs])
     results['M06']=result('M06',ob)
-    results['M07']=result('M07',[zone_lifecycle(r,bars,as_of=as_of) for r in zones])
+    zone_results=[zone_lifecycle(r,bars,as_of=as_of) for r in zones]
+    results['M07']=result('M07',zone_results)
     results['M08']=result('M08',gaps)
     results['M09']=result('M09',[g for g in gaps if any(e['kind']=='IFVG_OPPOSITE_SIDE_RETEST' for e in g['events'])])
-    results['M10']=result('M10',[zone_lifecycle(r,bars,as_of=as_of) for r in zones])
+    results['M10']=result('M10',zone_results)
     if 'M11' in inputs:results['M11']=result('M11',ote(**inputs['M11']))
     elif len(swings)>=2:
         end=swings[-1];starts=[s for s in swings[:-1] if s['kind']!=end['kind'] and s['index']<end['index']]
@@ -300,7 +302,13 @@ def evaluate_methods(bars,tick,*,cutoff,as_of,benchmark=None,references=(),famil
             results['M13']=result('M13',amd(bars,tick,session_start=iso_seconds(day//1000),
                 balance_end=iso_seconds(day//1000+8*3600),as_of=as_of))
     if 'M14' in inputs:results['M14']=result('M14',timed_subclass(cutoff,inputs['M14']),status='DEFINITION_PENDING')
-    balance=balance_references(bars,tick)
+    # Use the actual measured balance selected by the current F6 graph. A
+    # second default-window search must not leave M16/M20 inert when the family
+    # already has a causally known, sourceable balance on another valid prefix.
+    measured={h['reference_id']:Reference(**h['reference']) for h in (families or [])
+        if h['family']=='F6' and h.get('reference') and h['reference']['kind'] in {'RANGE_TOP','RANGE_BOTTOM'}
+        and h.get('details',{}).get('balance_established')}
+    balance=tuple(measured.values()) or balance_references(bars,tick)
     results['M16']=result('M16',auction(balance,bars,as_of=as_of))
     # Only a complete UTC session earns the exact first-moment name.
     day=bars[-1].open_ms//86400000*86400000

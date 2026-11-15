@@ -5,7 +5,7 @@ The typed engine can review qualified facts; current recorded trials stay gated.
 """
 from dataclasses import dataclass, asdict, replace
 from decimal import Decimal as D
-from functools import lru_cache
+from functools import lru_cache,cached_property
 from .contracts import ContractError, utc, number
 from .research import cited, fact_id
 from .structures import Reference
@@ -95,7 +95,7 @@ class StructureCard:
             if not set(h.supporting_ids+h.contradicting_ids)<=set(ids):
                 raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
 
-    @property
+    @cached_property
     def id(self):
         parts=(self.native_symbol,self.reference.id,self.window_start,self.cutoff)
         return fact_id(*parts,self.primary_family) if self.formation else fact_id(*parts)
@@ -201,6 +201,11 @@ def formation_cards(bundle, instrument, facts, *, cutoff, as_of, mode,
                 availability,availability,availability,'SELECTED_FORMATION_6B',
                 fact_id(sorted({facts[i].response_hash for i in r.source_ids if i in facts}),h),
                 'SYNCHRONIZED_REMOTE_RECONSTRUCTION',True,'QUALIFIED' if qualified else 'TRIAL',mode,7200)
+            details_id=fact_id(rid,fam,cutoff,'FAMILY_OBSERVATIONS',h['details'])
+            facts[details_id]=Fact(details_id,instrument,'FAMILY_OBSERVATIONS',h['details'],'STRUCTURAL_OBSERVATIONS',
+                r.timeframe,cutoff,cutoff,availability,availability,'SELECTED_FORMATION_6B',
+                facts[fid].response_hash,'SYNCHRONIZED_REMOTE_RECONSTRUCTION',True,
+                'QUALIFIED' if qualified else 'TRIAL',mode,7200)
             mids=tuple(dict.fromkeys((*FAMILY_METHODS[fam],*initiator_methods)))
             formation={'version':'interpretation-6b.1','families':fams,
                 'primary':fam,'methods':{m:{'status':methods[m]['status'],'reason':methods[m]['reason'],
@@ -209,7 +214,7 @@ def formation_cards(bundle, instrument, facts, *, cutoff, as_of, mode,
                 'unknowns':h['unknowns'],'source_qualification_scope':'OFFLINE_ONLY' if mode!='LIVE' else 'REGISTERED_SOURCE_ONLY'}
             c=StructureCard(r.native_symbol,'BINANCE_USDM',r.timeframe,r,start,cutoff,fam,
                 tuple(dict.fromkeys([fam,*(f for f in h['rivals'] if f.startswith('F') and f[1:].isdigit())])),
-                mids,tuple(origins) or ('C_SELECTED_FORMATION',),ordered,tuple(hys),(fid,),
+                mids,tuple(origins) or ('C_SELECTED_FORMATION',),ordered,tuple(hys),(fid,details_id),
                 'QUALIFIED' if qualified else 'TRIAL',mode,DISCRIMINATORS[fam],
                 'Accepted contrary sequence at the original reference, or frozen expiry',
                 exposure_cluster='NATIVE_CONTRACT:'+r.native_symbol,formation=formation)
@@ -254,7 +259,10 @@ def remaining_room(card, facts, references, *, as_of):
             choices.append((direction*(edge-number(origin.value)),r.id,edge,r))
     if not choices:return {'status':'ROOM_UNKNOWN','reason':'NO_PREKNOWN_OPPOSING_OBSTACLE','evidence_ids':[origin.id,current.id]}
     _,rid,edge,r=min(choices,key=lambda x:(x[0],x[1]))
-    if not all(i in facts for i in r.source_ids):raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
+    if not all(i in facts for i in r.source_ids):
+        return {'status':'ROOM_UNKNOWN','reason':'FIRST_FROZEN_OBSTACLE_SOURCE_OUTSIDE_SELECTED_HISTORY',
+            'first_obstacle_id':rid,'obstacle_known_at':r.known_at,'obstacle_available_at':r.available_at,
+            'evidence_ids':[origin.id,current.id],'missing_source_ids':[i for i in r.source_ids if i not in facts]}
     gross=max(D(0),direction*(edge-number(current.value)))
     lifecycle=[facts[i] for i in card.evidence_ids if i in facts and facts[i].measurement=='OBSTACLE_LIFECYCLE'
         and isinstance(facts[i].value,dict) and facts[i].value.get('reference_id')==rid
@@ -375,6 +383,8 @@ def review_card(card, facts, references, *, as_of):
         stage='EARLY';reason='FORMED_REFERENCE_AND_EARLY_EVENT; LATER_CONFIRMATION_NOT_REQUIRED_FOR_WATCH'
     elif formation and formation['stage']=='APPROACHING_DECISION':
         stage='APPROACHING_DECISION';reason='MEASURED_APPROACH_TO_FROZEN_DECISION'
+    elif formation and formation['stage']=='DEVELOPING':
+        stage='DEVELOPING';reason='SOURCE_BACKED_DEVELOPING_FORMATION; RESPONSE_AND_RIVALS_UNRESOLVED'
     elif sequence_ids and significance and proximity and proximity.value is True:
         stage='APPROACHING_DECISION';reason='CAUSAL_SEQUENCE_AND_SIGNIFICANT_DECISION_AREA'
     elif sequence_ids or primary.supporting_ids:
@@ -525,9 +535,16 @@ def active_coin_watches(reviews,*,as_of):
             distinct.append(r)
         primary=distinct[0]
         def case(r):
-            return {k:r[k] for k in ('card_id','primary_family','side_hypothesis','stage','reference',
+            result={k:r[k] for k in ('card_id','primary_family','side_hypothesis','stage','reference',
                 'distance_atr_at_verification','supporting_evidence_ids','strongest_rival',
                 'trigger_to_investigate','invalidating_evidence','event_window','missing_necessary_inputs')}
+            h=(r.get('formation_contract') or {}).get('families',{}).get(r['primary_family'],{})
+            phase=h.get('details',{}).get('current_response')
+            if r['primary_family']=='F9':
+                result.update(observed_shock_side=r['side_hypothesis'],phase=phase,
+                    attention_scope='POST_SHOCK_OBSERVATION; WIDE_SHOCK_RANGE_IS_NOT_A_DIRECTIONAL_TRIGGER')
+                if phase=='RECOVERY_AGAINST_SHOCK':result['side_hypothesis']='UNDETERMINED'
+            return result
         result.append({'native_symbol':name,'primary':case(primary),'alternatives':[case(r) for r in distinct[1:4]],
             'attention':'NEAR_NOW' if primary['distance_atr_at_verification']<=1 else 'DEVELOPING',
             'source_scope':primary['distance_price_scope'],'as_of':as_of,
@@ -566,6 +583,18 @@ def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5):
         elif r['historical_significance'] not in {'MED','HIGH'}:reason='REFERENCE_SIGNIFICANCE_UNVERIFIED'
         elif d is None or d>D('2.5'):reason='DECISION_ZONE_DISTANT_OR_UNKNOWN'
         elif not c.invalidating_evidence or not r['strongest_rival']:reason='RIVAL_OR_INVALIDATION_MISSING'
+        family_state=c.formation['families'][c.primary_family] if c.formation else None
+        primary_events=family_state['timeline'] if family_state else c.events
+        if not reason and c.primary_family=='F5' and not any(
+                e['kind'] in {'REVERSAL_FAILED_REBREAK_SAME_REFERENCE','REBREAK_SAME_REFERENCE'} for e in primary_events):
+            reason='F5_FAILURE_NOT_OBSERVED; WATCH_RECLAIM_RIVAL'
+        if not reason and c.primary_family=='F9':
+            response=family_state.get('details',{}).get('current_response') if family_state else None
+            reclaim=[e for e in primary_events if e['kind']=='SHOCK_MIDPOINT_RECLAIM']
+            resume=[e for e in primary_events if e['kind'] in {'SHOCK_DIRECTION_REACCEPTED','RENEWED_EXTREME_SECOND_LEG'}]
+            if response=='RECOVERY_AGAINST_SHOCK' or (reclaim and (not resume or
+                    utc(reclaim[-1]['known_at'])>=utc(resume[-1]['known_at']))):
+                reason='F9_ADVERSE_RECOVERY; NEW_DIRECTIONAL_STRUCTURE_REQUIRED'
         raw_ids=set(c.reference.source_ids)|{i for e in c.events for i in e['source_ids']}
         if not reason and not cited(raw_ids,facts,as_of=as_of,native_symbol=c.native_symbol,qualified=True):
             reason='RAW_STRUCTURE_SOURCE_UNQUALIFIED_OR_STALE'
@@ -582,11 +611,12 @@ def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5):
                 # later and is explicitly not prospective prior knowledge.
                 if utc(ref.known_at)>utc(c.window_start) or utc(ref.available_at)>utc(as_of):continue
                 edge=ref.lo if direction==1 else ref.hi
-                if direction*(edge-origin)>0 and all(i in facts for i in ref.source_ids):
+                if direction*(edge-origin)>0:
                     choices.append((direction*(edge-origin),ref.id,edge,ref))
             if not direction:reason='DIRECTION_UNDETERMINED'
             elif choices:
                 _,rid,edge,ref=min(choices,key=lambda v:(v[0],v[1]))
+                source_complete=all(i in facts for i in ref.source_ids)
                 lifecycles=[f for f in own if f.measurement=='OBSTACLE_LIFECYCLE' and isinstance(f.value,dict)
                     and f.value.get('reference_id')==rid and f.usable(as_of=as_of,native_symbol=c.native_symbol)]
                 consumed=any(f.value.get('consumed') is True for f in lifecycles)
@@ -595,8 +625,12 @@ def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5):
                     reason='FIRST_OPPOSING_OBSTACLE_CONSUMED' if consumed else None,
                     first_obstacle_id=rid,level=edge,room_bps=max(D(0),gross/number(price.value)*10000),
                     obstacle_known_at=ref.known_at,obstacle_available_at=ref.available_at,
-                    evidence_ids=[price.id,*ref.source_ids])
+                    evidence_ids=[price.id,*(i for i in ref.source_ids if i in facts)])
                 if consumed or gross<=0:reason='FIRST_OPPOSING_OBSTACLE_CONSUMED'
+                elif not source_complete:
+                    room.update(status='ROOM_UNKNOWN',reason='FIRST_FROZEN_OBSTACLE_SOURCE_OUTSIDE_SELECTED_HISTORY',
+                        missing_source_ids=[i for i in ref.source_ids if i not in facts])
+                    if d>1 or len(primary.supporting_ids)<2:reason='NEAREST_OBSTACLE_SOURCE_GAP'
                 elif utc(ref.valid_until)<utc(as_of) or ref.timeframe!=c.timeframe and not lifecycles:
                     room.update(status='ROOM_UNKNOWN',reason='NEAREST_OBSTACLE_EXPIRED_OR_CROSS_TIMEFRAME_LIFECYCLE_UNVERIFIED')
                     if d>1 or len(primary.supporting_ids)<2:reason='NEAREST_OBSTACLE_LIFECYCLE_UNVERIFIED'
@@ -608,13 +642,15 @@ def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5):
         gaps=list(dict.fromkeys([*r['missing_necessary_inputs'],*r['economics'].get('missing',()),
             'ACCOUNT_FEE_TIER_AND_FUTURE_EXECUTION_COSTS','POTENTIAL_EVENT_WITHIN_15H_NOT_PREDICTED',
             *(['DATED_SECTOR_MEMBERSHIP; PRICE_RELATIVE_BRANCH_ONLY'] if c.primary_family=='F8' else []),
-            *(['FIRST_INDEPENDENT_OPPOSING_OBSTACLE'] if room['status']=='ROOM_UNKNOWN' else [])]))
+            *(['FIRST_INDEPENDENT_OPPOSING_OBSTACLE',room['reason']] if room['status']=='ROOM_UNKNOWN' else [])]))
         item={**r,'stage':'CONDITIONAL_RESEARCH_ONLY','strict_admission_stage':r['stage'],
             'reason_code':'CURRENT_STRUCTURAL_RESEARCH_WITH_EXPLICIT_ANALYST_QUESTIONS',
             'research_room':room,'missing_evidence':gaps,'research_as_of':as_of,
             'source_age_seconds':int((utc(as_of)-utc(c.cutoff)).total_seconds()),
             'source_qualification':'SELECTED_SOURCE_BACKED_TRIAL; FULL_METHOD_PRODUCTION_UNQUALIFIED',
             'first_knowing_time':max((facts[i].received_at for i in raw_ids),key=utc),
+            'current_price':{'value':price.value,'evidence_id':price.id,'source_time':price.window_end,'received_at':price.received_at},
+            'current_spread_bps':{'value':spread.value,'evidence_id':spread.id,'source_time':spread.window_end},
             'prospective_historical_discovery':False,'trade_authorization':False,
             'analyst_question':('Verify the nearest independently confirmed opposing obstacle before any urgent handoff'
                 if room['status']=='ROOM_UNKNOWN' else 'Verify room survives actual fee tier, relevant-price liquidity and the next closed response'),
@@ -628,3 +664,86 @@ def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5):
             decisions.append({'card_id':row['card_id'],'native_symbol':row['instrument'],'disposition':'ALTERNATIVE_CASE_OR_RESEARCH_CAPACITY'});continue
         picked.append(row);seen.add(row['instrument'])
     return picked,decisions
+
+
+def refresh_cached_watches(watches,pulse,*,as_of):
+    """Reprice unchanged closed structures without shrinking to exported finalists."""
+    from .numerics import distance
+    books={o['native_symbol']:o for p in pulse if p['kind']=='book' for o in p['observations']}
+    kept=[];gaps=[]
+    for old in watches:
+        n=old['native_symbol'];b=books.get(n);p=old['primary'];ref=p['reference']
+        if not b or not 0<=(utc(as_of)-utc(b['source_time_utc'])).total_seconds()<=30:
+            gaps.append({'native_symbol':n,'disposition':'SOURCE_GAP','reason':'CACHED_WATCH_FRESH_BOOK_UNAVAILABLE'});continue
+        if utc(ref['valid_until'])<utc(as_of):continue
+        price=(number(b['values']['bid'])+number(b['values']['ask']))/2
+        d=distance(price,number(ref['lo']),number(ref['hi']),number(ref['atr']))
+        if d>D('2.5'):continue
+        kept.append({**old,'as_of':as_of,'primary':{**p,'distance_atr_at_verification':d},
+            'source_scope':'FRESH_TOP_OF_BOOK; UNCHANGED_CLOSED_STRUCTURE_CACHE',
+            'attention':'NEAR_NOW' if d<=1 else 'DEVELOPING'})
+    kept.sort(key=lambda w:(w['attention']!='NEAR_NOW',w['primary']['distance_atr_at_verification'],w['native_symbol']))
+    for rank,w in enumerate(kept,1):w['rank']=rank
+    return kept,gaps
+
+
+def native_review_selection(reviews,cards,facts,references,*,as_of,max_cards):
+    """Review actual conditional finalists, with a protected exception/rival.
+
+    This uses the same current sources and policy as final admission. Watch
+    distance alone cannot silently substitute convenient model-test cards.
+    """
+    finalists,_=conditional_research(reviews,cards,facts,references,as_of=as_of)
+    wanted=[r['card_id'] for r in finalists[:max_cards]]
+    active=active_coin_watches(reviews,as_of=as_of)
+    by={c.id:c for c in cards}
+    exceptions=[r['card_id'] for r in finalists if any(s in by[r['card_id']].origins
+        for s in ('C_RELATIVE_EXCEPTION','C_QUIET','C_STRATIFIED_AUDIT','C_UNOBSERVED_STRATIFIED_SOURCE_RECOVERY'))]
+    fallback=[w['primary']['card_id'] for w in active if w['native_symbol'] not in {'BTCUSDT','ETHUSDT'}]
+    if max_cards>1 and exceptions and exceptions[0] not in wanted:
+        wanted=wanted[:max_cards-1]+[exceptions[0]]
+    for cid in fallback:
+        if len(wanted)>=max_cards:break
+        if cid not in wanted:wanted.append(cid)
+    return wanted,{'policy':'CURRENT_CONDITIONAL_FINALISTS_THEN_PROTECTED_EXCEPTION_AND_CURRENT_RIVALS',
+        'deterministic_control_card_ids':[r['card_id'] for r in finalists],
+        'selected':[{'card_id':cid,'native_symbol':by[cid].native_symbol,
+            'relationship':'PROVISIONAL_FINALIST' if cid in {r['card_id'] for r in finalists} else 'CURRENT_WATCH_RIVAL',
+            'origins':by[cid].origins} for cid in wanted],
+        'omitted_finalists':[r['card_id'] for r in finalists if r['card_id'] not in wanted],
+        'scope':'SOURCE_IDENTICAL_CONTROL; NO_MODEL_CALL_IMPLIED'}
+
+
+def apply_native_research_advice(candidates,dispositions,consultant,*,as_of):
+    """Advice can reorder/defer already eligible research, never admit evidence."""
+    control=[r['card_id'] for r in candidates];picked=[];decisions=list(dispositions);links=[]
+    age=(utc(as_of)-utc(consultant['request_created_at_utc'])).total_seconds() if consultant.get('request_created_at_utc') else None
+    valid=consultant.get('status')=='VALIDATED_ADVISORY_ONLY' and age is not None and 0<=age<=600
+    advice={a['card_id']:a for a in consultant.get('reply',{}).get('interpretations',())} if valid else {}
+    for r in candidates:
+        a=advice.get(r['card_id'])
+        if a:
+            challenge={k:a[k] for k in ('priority','interpretation','strongest_rival','falsifying_question',
+                'supporting_evidence_ids','contradicting_ids','missed_traps','null_hypothesis')}
+            challenge.update(material_sha256=consultant['material_sha256'],
+                confidence_limit='ADVISORY_INTERPRETATION_OF_SUPPLIED_SOURCES; NO_PROBABILITY_OR_METHOD_CERTIFICATE')
+            links.append({'card_id':r['card_id'],'native_symbol':r['instrument'],'challenge':challenge,
+                'disposition':'DEFER_NATIVE_RIVAL_CHALLENGE' if a['priority']=='DECLINE' or a['null_hypothesis'] else 'CONDITIONAL_RESEARCH_ONLY'})
+            if a['priority']=='DECLINE' or a['null_hypothesis']:
+                decisions.append({'card_id':r['card_id'],'native_symbol':r['instrument'],
+                    'disposition':'DEFER_NATIVE_RIVAL_CHALLENGE','challenge':challenge,
+                    'recheck':a['falsifying_question']});continue
+            r={**r,'native_challenge':challenge,'analyst_question':a['falsifying_question']}
+        picked.append(r)
+    picked.sort(key=lambda r:({'INVESTIGATE':0,'WATCH':1,'UNKNOWN':2}.get(
+        advice.get(r['card_id'],{}).get('priority'),1),control.index(r['card_id'])))
+    for rank,r in enumerate(picked,1):
+        r['rank']=rank
+        r['ranking_basis']={'research_room':r['research_room']['status'],
+            'distance_atr':r['distance_atr_at_verification'],'source_age_seconds':r['source_age_seconds'],
+            'ordering':'NATIVE_QUESTION_PRIORITY_WHEN_VALID; OBSERVED_ROOM_THEN_PROXIMITY_THEN_FRESHNESS',
+            'compared_with':[x['instrument'] for x in picked[rank:]],'calibrated_predictive_score':False}
+    return picked,decisions,{'as_of':as_of,'identical_source_deterministic_control':control,
+        'native_assisted_card_ids':[r['card_id'] for r in picked],'linked_decisions':links,
+        'accepted_current_advice':valid,'ranking_or_membership_changed':control!=[r['card_id'] for r in picked],
+        'performance_improvement_established':False,'hard_gates_changed':False}

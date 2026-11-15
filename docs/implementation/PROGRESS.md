@@ -1,4 +1,49 @@
-# One-session functional recovery — CODEX_LOCAL, 15 November 2026
+# Final functional acceptance — CODEX_LOCAL, 15 November 2026
+
+Started from fetched clean `6af2e8db8016688e78878baf4950c7d2c5b710cc` on the same
+integration branch; PR24 remains draft. See
+[final acceptance](FINAL_FUNCTIONAL_ACCEPTANCE_20261115.md) and
+[sanitized receipts](../../evidence/external-first/final-acceptance-20261115/README.md).
+
+The ordinary operator path now freezes its first valid closed remote snapshot,
+preserves valid partitions, shares source time across TFs and turnover quartiles,
+adapts the separate operational-alt capacity to measured costs, preserves old
+nearest obstacles as explicit source gaps, and invalidates caches on code changes.
+F5 requires an observed failed-reversal rebreak for conditional admission; F9
+adverse recovery/recycled stabilization no longer supplies the old directional
+case. Actual measured F6 balance feeds M16; F7 selects the current episode.
+Fresh quotes follow slow depth retrieval. Immutable exports survive report
+updates and real warm decoding. Readable show/results/watch/coverage and UTF-8
+saved Decimal rendering are exercised on actual production-facing outputs.
+
+Distinct live cutoffs: D09:00 accepted200/150 remote15m/1h rows and investigated
+2 alts under poor connectivity; E09:15 accepted450/400 and investigated20; final
+G09:45 accepted519/519 and investigated20. Final G produced5 conditional research
+coins GUN/F8, ATOM/F8, HUMA/F8, MMT/F5, KAT/F8;21 active watch coins and0 strict
+READY. G311.856s/93HTTP/6,536,742B; H25.065s/9publicHTTP/0Basis/0histories preserves
+21 active coins and revalidates the five candidates. No forced positive count.
+
+One owner-submitted native task used the unchanged Researcher/model/skill:
+2 valid ACE F8/F9 cards,3 observed provider attempts, complete reads and0
+unauthorized operations. ACE F8 was the final conditional candidate in that same
+D run; F9 remained deferred despite model INVESTIGATE advice. Matched-source
+membership unchanged; source-gap/first-obstacle questions linked to dispositions.
+No performance improvement or native review of the separate later G cohort is
+claimed. Original Recovery UNI/AAVE arithmetic survives; premature MET/F5 and
+adverse ESPORTS/WIF shock interpretations are independently checked negatives.
+Original snapshots remain unchanged, including their disclosed export hash fault.
+
+All9 families/31 methods and27 measurements retained, with actual selected
+execution and independent price/alternative examples. True profile/footprint,
+executed absorption/liquidation, dated sectors/catalysts and canonical M14/M15
+remain precise source/definition limits. No production certificate promotion,
+orders, scheduling, Freqtrade DB/config, other subagents or Deep Analyst changes.
+Full/focused test receipts, immutable hashes and exact final GitHub delivery/CI
+are recorded in acceptance evidence and the final handoff.
+
+---
+
+# Historical one-session recovery — CODEX_LOCAL, 15 November 2026
 
 Fetched clean feature HEAD `722fe0a6f5232fad23f39f387b475e7476e47be5` before
 implementation; PR24 draft/main untouched. Independently supplied diagnostic ZIP

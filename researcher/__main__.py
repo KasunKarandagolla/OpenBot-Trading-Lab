@@ -28,6 +28,9 @@ def write_report(path, value):
 
 
 def main():
+    import sys
+    for stream in (sys.stdout,sys.stderr):
+        if hasattr(stream,'reconfigure'):stream.reconfigure(encoding='utf-8')
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     config = sub.add_parser("config"); config.add_argument("action", choices=["validate"])
@@ -56,6 +59,7 @@ def main():
     scan.add_argument('--native-max-cards',type=int,choices=range(1,5),default=4,help='native input budget,1..4 cards; default4')
     show=sub.add_parser('show');show.add_argument('action',choices=['results','watches','coverage'])
     show.add_argument('--db',default=str(ROOT/'work/research-metadata.sqlite'))
+    show.add_argument('--json',action='store_true',help='full saved evidence instead of the readable operator view')
     args = parser.parse_args()
     try:
         config = load_config()
@@ -74,6 +78,10 @@ def main():
         elif args.command=='show':
             from .persistence import read_latest_report
             saved=read_latest_report(args.db)
+            if not args.json:
+                from .discovery import research_summary,watch_summary,coverage_summary
+                print({'results':research_summary,'watches':watch_summary,'coverage':coverage_summary}[args.action](saved))
+                return 0
             report=saved if args.action=='results' else {args.action:saved.get(
                 'active_coin_watchlist' if args.action=='watches' and 'active_coin_watchlist' in saved else
                     args.action if args.action=='watches' else 'research_coverage'),
@@ -101,11 +109,13 @@ def main():
                     mode=sources.mode,ledger_path=args.db,native_review_dir=args.native_review_dir,native_max_cards=args.native_max_cards)
                 report['offline_source_provenance']=provenance
             elif args.action in {'now','live'} and inventory is None:
+                import sys
                 from .query_planner import ResearchSources
                 sources=ResearchSources.from_file(args.qualifications) if args.qualifications else None
                 report=scan_market_research(config=config,ledger_path=args.db,sources=sources,
                     native_review_dir=args.native_review_dir,native_audit_config=args.native_audit_config,
-                    native_wait_seconds=args.native_wait_seconds,native_max_cards=args.native_max_cards)
+                    native_wait_seconds=args.native_wait_seconds,native_max_cards=args.native_max_cards,
+                    progress=lambda stage,seconds:print(f'{stage}: {seconds:.1f}s',file=sys.stderr,flush=True))
             elif args.action == 'qualify':
                 from .qualification5 import qualify_core
                 report = qualify_core()

@@ -62,7 +62,7 @@ class Reference:
             identity.pop(field)  # Reuse original frozen scale on later retrieval.
         return stable_id(VERSION,identity)
 
-    @property
+    @cached_property
     def buffer(self):
         return max(2*self.tick,D("0.15")*self.atr)
 

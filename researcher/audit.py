@@ -7,6 +7,24 @@ def lottery(names,seed):
     return sorted(set(names),key=lambda n:(digest(encode([seed,n]).encode()),n))
 
 
+def broad_order(names,tickers,seed,*,active_watches=()):
+    """Interleave all turnover quartiles before bounded remote partition work.
+
+    This changes request order, never eligibility. Quiet-tail contracts remain
+    represented when slow sources permit only a subset; the seed rotates at
+    the next closed cutoff and every unrequested identity remains accounted.
+    """
+    names=list(names);ranked=sorted(names,key=lambda n:(D(str(tickers.get(n,{}).get('values',{}).get('quoteVolume') or 0)),n))
+    groups=[lottery(ranked[len(ranked)*j//4:len(ranked)*(j+1)//4],[seed,j]) for j in range(4)]
+    order=[n for n in ('BTCUSDT','ETHUSDT') if n in names]
+    order.extend(n for n in active_watches if n in names and n not in order)
+    for j in range(max(map(len,groups),default=0)):
+        order.extend(g[j] for g in groups if j<len(g) and g[j] not in order)
+    return order,{'selection':'ACTIVE_WATCH_AND_BENCHMARK_THEN_ROTATING_TURNOVER_QUARTILE_INTERLEAVE',
+        'eligible':len(names),'quartile_sizes':[len(g) for g in groups],'seed':seed,
+        'excluded_by_liquidity':0,'full_order_sha256':digest(encode(order).encode())}
+
+
 def allocate(nominations,context,cutoffs,*,limit=2):
     """One causal slot plus one protected rotating lane, same total history cap.
 

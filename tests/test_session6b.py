@@ -144,9 +144,13 @@ class IntegratedControl(unittest.TestCase):
             r=json.loads(out.read_text());self.assertTrue(r['shortlist']);self.assertEqual(r['costs']['http_requests'],0)
             before=db.read_bytes()
             for action in ('results','watches','coverage'):
-                show=subprocess.run([sys.executable,'-m','researcher','show',action,'--db',str(db)],
+                show=subprocess.run([sys.executable,'-m','researcher','show',action,'--db',str(db),'--json'],
                     cwd=ROOT,capture_output=True,text=True)
                 self.assertEqual(show.returncode,0,show.stdout+show.stderr);json.loads(show.stdout)
+            readable=subprocess.run([sys.executable,'-m','researcher','show','results','--db',str(db)],
+                cwd=ROOT,capture_output=True,text=True)
+            self.assertEqual(readable.returncode,0,readable.stdout+readable.stderr)
+            self.assertIn('OpenBot Market Researcher',readable.stdout)
             self.assertEqual(db.read_bytes(),before)
 
 

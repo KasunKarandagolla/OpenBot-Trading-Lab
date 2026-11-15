@@ -1,5 +1,6 @@
 """Selected source-backed admission facts. No invented missing market data."""
 from decimal import Decimal as D
+import time
 from .contracts import utc,number,digest,encode
 from .research import Fact,fact_id
 from .observations import WIDTHS
@@ -167,11 +168,21 @@ def refresh_selected(cards,facts,references,api,inventory,assumptions,*,clock,ma
         b=books[c.native_symbol];mid=(b['values']['bid']+b['values']['ask'])/2
         d=max(c.reference.lo-mid,mid-c.reference.hi,D(0))/c.reference.atr
         ranking[c.native_symbol]=min(ranking.get(c.native_symbol,D('Infinity')),d)
+    depth_started=time.monotonic()
     for n in sorted(ranking,key=lambda n:(ranking[n],n))[:max_depth]:
         if ranking[n]>D('2.5'):continue
+        if time.monotonic()-depth_started>=30:
+            faults.append({'phase':'current_candidate_depth','symbol':n,'code':'CURRENT_DEPTH_DEFERRED_SOURCE_BUDGET'})
+            continue
         try:depths[n]=depth_snapshot(api,members[n])
         except (ContractError,OSError,ValueError,KeyError,TypeError) as e:
             faults.append({'phase':'current_candidate_depth','symbol':n,'code':safe_error(e)})
+    # Independent depth requests can take longer than quote freshness. Reprice
+    # AFTER them; never let optional book latency erase every valid structure.
+    checked_at=clock()
+    if books and any((utc(checked_at)-utc(b['source_time_utc'])).total_seconds()>15 for b in books.values()):
+        fresh=api.pulse(inventory,partial=True,kinds=('book',))
+        books.update({o['native_symbol']:o for p in fresh for o in p['observations']})
     # Books can age during depth retrieval. The consumer rechecks every point's
     # own timestamp against the actual completion time; no freshness stamping.
     at=clock();updated=[]
@@ -190,6 +201,10 @@ def refresh_selected(cards,facts,references,api,inventory,assumptions,*,clock,ma
             add('SPREAD_BPS',b['values']['spread_bps'],'BPS',b['source_time_utc'],b['received_at_utc'],
                 'OFFICIAL_BINANCE_TOP_OF_BOOK',b['source_response_sha256'])
         d=depths.get(c.native_symbol)
+        if d and not 0<=(utc(at)-utc(d['time'])).total_seconds()<=30:
+            faults.append({'phase':'current_candidate_depth','symbol':c.native_symbol,
+                'code':'CURRENT_DEPTH_EXPIRED_DURING_COLLECTION'})
+            d=None
         if d:
             own_references=[r for r in references if r.native_symbol==c.native_symbol]
             room=remaining_room(replace(c,evidence_ids=tuple(ids)),facts,own_references,as_of=at)

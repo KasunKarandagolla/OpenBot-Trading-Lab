@@ -1,5 +1,10 @@
 # One-session functional recovery — 15 November 2026
 
+**Current operator/acceptance record:**
+[Final functional acceptance](FINAL_FUNCTIONAL_ACCEPTANCE_20261115.md).
+The commands below remain supported. The historical recovery measurements and
+candidate cohort below are preserved; they are not the final acceptance run.
+
 Research only, on demand. The existing integration branch and draft PR24 are
 retained. Immutable blueprint/plan and historical source certificates are
 unchanged. No Deep Analyst connection, order, scheduler or trading DB access.

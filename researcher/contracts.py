@@ -7,6 +7,7 @@ import hashlib
 import json
 import unicodedata
 from typing import Any, TypedDict
+from functools import lru_cache
 
 
 class ContractError(ValueError):
@@ -41,6 +42,12 @@ class ProviderEvidence(StrEnum):
 
 
 def utc(value: str) -> datetime:
+    if not isinstance(value,str):raise ContractError("INVALID_UTC")
+    return _utc(value)
+
+
+@lru_cache(maxsize=16384)
+def _utc(value):
     try:
         result = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except (ValueError, TypeError, AttributeError):

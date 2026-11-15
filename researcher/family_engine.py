@@ -256,7 +256,7 @@ def profile_rotation(profile,bars,tick,*,as_of):
     return result
 
 
-def value_reversion(bars,tick,balance,*,anchor_ms=None,anchor_known_at=None):
+def value_reversion(bars,tick,balance,*,anchor_ms=None,anchor_known_at=None,latest=False):
     if not balance:return hypothesis('F7',state='SOURCE_UNKNOWN',details={'reason':'MEASURED_BALANCE_REQUIRED'})
     # The anchor is declared by UTC, never selected using the later extension.
     from .observations import iso_seconds
@@ -268,7 +268,7 @@ def value_reversion(bars,tick,balance,*,anchor_ms=None,anchor_known_at=None):
     session=[b for b in bars if start<=b.open_ms and (event_anchor or b.open_ms<start+86400000)]
     if not session or session[0].open_ms!=start:
         return hypothesis('F7',state='INSUFFICIENT_HISTORY',details={'reason':'COMPLETE_UTC_SESSION_REQUIRED'})
-    for i in range(17,len(session)):
+    for i in (range(len(session)-1,16,-1) if latest else range(17,len(session))):
         if int(utc(balance[0].known_at).timestamp()*1000)>session[i-1].open_ms:continue
         atr=wilder_atr(session[:i])[-1]
         if not atr:continue
@@ -335,7 +335,7 @@ def shock_family(bars,tick,*,liquidation=None,latest=False):
             expired+=1;continue
         r=reference(bars,i,kind='SHOCK_BOUNDARY',lo=b.low,hi=b.high,direction=side,tick=tick,
             origin=stable_id('SHOCK',b.id),defining=(b,));tl=[]
-        transition(tl,r,b,'POST_SHOCK','EARLY');stable=0
+        transition(tl,r,b,'POST_SHOCK','EARLY');stable=0;prior=b
         for later in bars[i+1:]:
             if utc(later.end)>utc(r.valid_until):transition(tl,r,later,'EXPIRED','INVALIDATED');break
             new_extreme=later.high>b.high if side==1 else later.low<b.low
@@ -343,9 +343,13 @@ def shock_family(bars,tick,*,liquidation=None,latest=False):
                 transition(tl,r,later,'RENEWED_EXTREME_SECOND_LEG','DEVELOPING');stable=0
             elif later.high-later.low<b.high-b.low:
                 stable+=1
-                if stable>=2:transition(tl,r,later,'STABILIZATION_CANDIDATE','DEVELOPING')
-            if side*(later.close-(b.open+b.close)/2)<0:
+                if stable==2:transition(tl,r,later,'STABILIZATION_CANDIDATE','DEVELOPING')
+            midpoint=(b.open+b.close)/2
+            if side*(later.close-midpoint)<0<=side*(prior.close-midpoint):
                 transition(tl,r,later,'SHOCK_MIDPOINT_RECLAIM','DEVELOPING')
+            elif side*(prior.close-midpoint)<0<=side*(later.close-midpoint):
+                transition(tl,r,later,'SHOCK_DIRECTION_REACCEPTED','DEVELOPING')
+            prior=later
         observed=False
         if liquidation and liquidation.get('classification')=='OBSERVED_FORCED_EXECUTIONS':
             if liquidation.get('native_symbol')!=b.native_symbol or liquidation.get('venue')!='BINANCE_USDM':
@@ -357,7 +361,10 @@ def shock_family(bars,tick,*,liquidation=None,latest=False):
         return hypothesis('F9',r,state='COMPUTED',direction=side,timeline=tl,
             details={'classification':'POST_SHOCK_WITH_OBSERVED_LIQUIDATIONS' if observed else 'POST_SHOCK',
                 'confirmed_liquidation':False,'observed_liquidation_coverage':liquidation['coverage'] if observed else None,
-                'causal_liquidation_cascade':None,'tr_atr_previous':trs[i]/atr[i-1]})
+                'causal_liquidation_cascade':None,'tr_atr_previous':trs[i]/atr[i-1],
+                'shock_candle_midpoint':(b.open+b.close)/2,
+                'current_response':'RECOVERY_AGAINST_SHOCK' if side*(bars[-1].close-(b.open+b.close)/2)<0 else 'SHOCK_SIDE_RETAINED',
+                'repeated_unchanged_stabilization_is_not_a_new_event':True})
     return hypothesis('F9',state='STALE' if expired else 'NO_EVENT_IN_COMPLETE_WINDOW',
         details={'expired_before_first_available':expired})
 
@@ -380,7 +387,7 @@ def evaluate_families(bars,tick,*,cutoff,as_of,benchmark=None,references=(),prof
             found=balance_references(bars,tick,baseline_end=end)
             if found:balance=found;break
     result=[continuation(bars,tick,latest=current_episodes),compression_family(bars,tick,refs,latest=current_episodes),
-            value_reversion(bars,tick,balance,**(event_anchor or {})),relative_family(bars,benchmark,refs,latest=current_episodes),
+            value_reversion(bars,tick,balance,latest=current_episodes,**(event_anchor or {})),relative_family(bars,benchmark,refs,latest=current_episodes),
             shock_family(bars,tick,liquidation=liquidation,latest=current_episodes)]
     for profile in profiles:result.extend(profile_rotation(profile,bars,tick,as_of=as_of))
     for f in ('F2','F4','F5','F6'):

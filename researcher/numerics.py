@@ -33,13 +33,28 @@ class Bar:
     volume_units: str = "BASE_ASSET_AND_USDT_QUOTE"
     available_at: str | None = None
 
-    @property
+    @cached_property
     def end_ms(self):
         return self.open_ms + WIDTHS[self.timeframe] * 1000
 
-    @property
+    @cached_property
     def end(self):
         return iso_seconds(self.end_ms // 1000)
+
+    @cached_property
+    def validated(self):
+        # Bar is frozen. Cache only its intrinsic checks; sequence continuity,
+        # cutoff and current-tail checks still run on every supplied sequence.
+        o,h,l,c=[number(v,positive=True) for v in (self.open,self.high,self.low,self.close)]
+        if h<max(o,c,l) or l>min(o,c,h):raise ContractError('OHLC_INCONSISTENT')
+        if self.volume_units!='BASE_ASSET_AND_USDT_QUOTE':raise ContractError('INVALID_VOLUME_UNITS')
+        v,q,bv,bq=[number(x) for x in (self.base_volume,self.quote_volume,self.buy_base,self.buy_quote)]
+        if min(v,q,bv,bq)<0 or bv>v or bq>q or type(self.trades) is not int or self.trades<0 or (v==0)!=(q==0):
+            raise ContractError('INVALID_TAKER_OR_VOLUME')
+        if not self.source_hash or utc(self.received_at)<utc(self.end):raise ContractError('BAR_PROVENANCE_OR_FORMING')
+        if self.available_at and not utc(self.end)<=utc(self.available_at)<=utc(self.received_at):
+            raise ContractError('BAR_AVAILABILITY_ORDER')
+        return True
 
     @cached_property
     def id(self):
@@ -62,20 +77,7 @@ def validate_bars(bars, *, cutoff=None, require_current=False):
                 or type(b.open_ms) is not int or b.open_ms <= 0 or b.open_ms % width
                 or (i and b.open_ms != bars[i-1].end_ms)):
             raise ContractError("MISSING_OR_MISALIGNED_BARS")
-        o, h, l, c = [number(v, positive=True) for v in (b.open, b.high, b.low, b.close)]
-        if h < max(o, c, l) or l > min(o, c, h):
-            raise ContractError("OHLC_INCONSISTENT")
-        if b.volume_units != "BASE_ASSET_AND_USDT_QUOTE":
-            raise ContractError("INVALID_VOLUME_UNITS")
-        v, q, bv, bq = [number(v) for v in (b.base_volume, b.quote_volume, b.buy_base, b.buy_quote)]
-        if (min(v, q, bv, bq) < 0 or bv > v or bq > q
-                or type(b.trades) is not int or b.trades < 0
-                or (v == 0) != (q == 0)):
-            raise ContractError("INVALID_TAKER_OR_VOLUME")
-        if not b.source_hash or utc(b.received_at) < utc(b.end):
-            raise ContractError("BAR_PROVENANCE_OR_FORMING")
-        if b.available_at and not utc(b.end) <= utc(b.available_at) <= utc(b.received_at):
-            raise ContractError("BAR_AVAILABILITY_ORDER")
+        b.validated
         if cutoff and utc(b.end) > utc(cutoff):
             raise ContractError("FUTURE_BAR")
     if require_current and (not cutoff or utc(bars[-1].end) != utc(cutoff)):

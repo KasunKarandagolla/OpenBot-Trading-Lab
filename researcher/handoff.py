@@ -24,6 +24,7 @@ def consult_changed_cards(cards,*,provider=None):
 
 
 def make_export(report,cards,facts,references):
+    from copy import deepcopy
     packets=[];wanted={r['card_id'] for r in report['shortlist']}
     if len(wanted)>5:raise ContractError('MAX_SHORTLIST_FIVE')
     for c in cards:
@@ -43,6 +44,10 @@ def make_export(report,cards,facts,references):
         'trade_authorization':False,'order_authority':False,'execution_connection':None,
         'capabilities':report.get('coverage',{}),'method_registry':report.get('method_coverage',{}),
         'decline_semantics':'Consumer may reject any hypothesis; no callback, state write or execution operation'}
+    # Coverage/review dictionaries continue to acquire report fields. Freeze
+    # their values before hashing; later report updates must not corrupt the
+    # persisted export or make an ordinary warm restart fail hash validation.
+    body=deepcopy(body)
     return {**body,'payload_sha256':digest(encode(body).encode())}
 
 

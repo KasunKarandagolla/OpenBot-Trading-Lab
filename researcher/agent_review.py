@@ -94,10 +94,15 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
             omitted.append({'card_id':card.id,'reason':'NOT_REVIEWED_INPUT_BUDGET'});continue
         ids=set(card.evidence_ids)|set(card.reference.source_ids)
         ids.update(i for e in card.events for i in e['source_ids'])
-        catalog={}
+        review=by_review.get(card.id,{})
+        room=review.get('research_room',review.get('room',{}))
+        catalog={};transport_omissions=[]
         for i in sorted(ids):
             f=facts.get(i)
             if f is None:continue
+            if (f.measurement=='OBSTACLE_LIFECYCLE' and isinstance(f.value,dict)
+                    and f.value.get('reference_id')!=room.get('first_obstacle_id')):
+                transport_omissions.append(i);continue
             point=(f.timeframe=='CURRENT' and f.measurement in {'RESEARCH_PRICE','SPREAD_BPS',
                 'DEPTH_USDT_WITHIN_ROOM','SLIPPAGE_BOUND_BPS','DISPLAYED_BOOK_PROBE'})
             if f.instrument.native_symbol!=card.native_symbol or (f.timeframe!=card.timeframe and not point):
@@ -114,7 +119,6 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
             if len(encode(f.value).encode())>2048:
                 catalog[i].update(value=None,value_sha256=digest(encode(f.value).encode()),
                     value_transport_status='NOT_SENT_INPUT_BUDGET; SOURCE_FACT_RETAINED_LOCALLY')
-        review=by_review.get(card.id,{})
         # Preserve the primary causal chain plus recent rivals under the existing
         # event budget. Explicit omissions never stand for a complete chronology.
         primary=next(h for h in card.hypotheses if h.family==card.primary_family)
@@ -131,10 +135,16 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
                 'complete_graph_sha256':digest(encode(card.events).encode()),
                 'scope':'PRIMARY_CHAIN_AND_RECENT_RIVALS; FULL_GRAPH_RETAINED_LOCALLY' if len(events)<len(card.events) else 'COMPLETE'},
             'rivals':[asdict(h) for h in card.hypotheses],
-            'evidence':catalog,'missing_evidence_ids':sorted(ids-set(catalog)),
+            'evidence':catalog,'missing_evidence_ids':sorted(i for i in ids if i not in facts),
+            'omitted_evidence_transport':{'count':len(transport_omissions),
+                'ids_sha256':digest(encode(transport_omissions).encode()),
+                'reason':'OTHER_OBSTACLE_LIFECYCLES_RETAINED_LOCALLY; FIRST_OBSTACLE_AND_PRIMARY_SEQUENCE_SENT'},
             'deterministic_stage':review.get('stage','UNKNOWN'),
             'missing_necessary_inputs':review.get('missing_necessary_inputs',[]),
-            'room':review.get('room',{}),'economics':review.get('economics',{})}
+            'room':room,'economics':review.get('economics',{}),
+            'research_disposition':review.get('stage','UNKNOWN'),
+            'primary_method_observations':card.formation['families'][card.primary_family].get('details',{}) if card.formation else {},
+            'method_observation_scope':'DERIVED_SELECTED_SOURCE_ANALYSIS; NUMERIC_CLAIMS_MUST_STILL_CITE_EXACT_CATALOG_FACTS'}
         if len(encode(selected+[item]).encode())>card_budget:
             omitted.append({'card_id':card.id,'reason':'NOT_REVIEWED_INPUT_BUDGET'});continue
         selected.append(item)
@@ -219,7 +229,7 @@ def consume_reply(raw,request,*,native_receipt):
         'invocation_verification':'NATIVE_RECEIPT_REQUIRES_SEPARATE_RUNTIME_AUDIT; JSON_VALIDATION_ALONE_IS_NOT_PROOF'}
 
 
-def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None,cached=False,max_cards=4):
+def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None,cached=False,max_cards=4,ordered_card_ids=()):
     """Optional native-app file exchange; never starts a process/model/tool.
 
     An operator separately audits the native turn and puts a matching receipt
@@ -266,7 +276,9 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
             by_review={r['card_id']:r for r in reviews}
             rank={'READY_FOR_DEEP':0,'FAST_WITH_ROOM':0,'CONDITIONAL_FOR_DEEP':0,
                 'APPROACHING_DECISION':1,'DEVELOPING':2,'EARLY':3,'UNKNOWN':4,'PREMATURE':5,'LATE':6,'INVALIDATED':7}
-            ordered=sorted(cards,key=lambda c:(rank.get(by_review.get(c.id,{}).get('stage','UNKNOWN'),4),c.id))
+            priorities={cid:j for j,cid in enumerate(ordered_card_ids)}
+            ordered=sorted(cards,key=lambda c:(priorities.get(c.id,len(priorities)),
+                rank.get(by_review.get(c.id,{}).get('stage','UNKNOWN'),4),c.id))
             request=make_request(ordered,facts,as_of=as_of,skill_sha256=skill,context=context,reviews=reviews,max_cards=max_cards)
             request=publish(root/(request['material_sha256']+'.request.json'),request)
         elif cached and previous and previous.get('material_sha256'):
@@ -281,6 +293,7 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
                 or request['agent_name']!=AGENT or request['model']!=MODEL):
             raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
         result.update(material_sha256=key,skill_sha256=skill,cards=len(request['cards']),
+            request_created_at_utc=request['as_of_utc'],
             omitted=request['omitted'],omission_summary=request.get('omission_summary'),request_file=key+'.request.json',
             cache_policy='ONE_OWNER_INITIATED_BATCH_PER_MATERIAL_FINGERPRINT; NO_AUTOMATIC_RETRY')
         if not request['cards']:return {**result,'status':'NO_CHANGED_NATIVE_REVIEW_CARDS'}

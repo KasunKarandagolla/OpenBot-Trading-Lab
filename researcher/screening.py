@@ -332,30 +332,61 @@ def calculation_report(receipt, pack, *, provider_counts=None):
 
 class PartitionEngine:
     def __init__(self, source: RemoteScreenSource, budget: RequestBudget, *, partition_size=50,deferred_tool_recovery=False,
-                 transient_recovery=False,unavailable_reason=None):
+                 transient_recovery=False,unavailable_reason=None,anchor_first_response=False,max_pack_seconds=None,
+                 minimum_anchor_cutoff=None):
         partitions((), partition_size)
         self.source, self.budget, self.partition_size = source, budget, partition_size
         self.deferred_tool_recovery=deferred_tool_recovery
         self.transient_recovery=transient_recovery
         self.unavailable_reason=unavailable_reason
+        self.anchor_first_response=anchor_first_response
+        self.max_pack_seconds=max_pack_seconds
+        self.minimum_anchor_cutoff=minimum_anchor_cutoff
 
     def run(self, inventory, pack, cutoff):
+        planned_cutoff=cutoff;anchor=None
+        pack_started=self.budget.clock()
         instruments = {i.native_symbol: i for i in inventory.instruments}
         supported = tuple(n for n in inventory.symbols if n in pack.supported_symbols)
         unsupported = tuple(n for n in inventory.symbols if n not in pack.supported_symbols)
         attempts, effective, observations, dispatched, pending = [], [], [], [], []
 
         def execute(names, recovery=False):
+            nonlocal cutoff,anchor
             metadata, data, acquired, sent = {}, None, False, False
             try:
                 if self.unavailable_reason:raise ProviderError(self.unavailable_reason)
+                if (self.max_pack_seconds is not None and
+                        self.budget.clock()-pack_started>=self.max_pack_seconds):
+                    raise ProviderError('PACK_TIME_SLICE_DEFERRED',{'request_dispatched':False})
                 self.budget.acquire(recovery)
                 acquired = True
                 data, metadata = self.source.screen(names, pack)
                 dispatched.extend(names);sent=True
                 self.budget.record(metadata)
+                candidate=cutoff
+                if self.anchor_first_response and anchor is None and isinstance(data,dict):
+                    # screener_run has no historical as_of query. Establish the
+                    # snapshot ONCE from its first valid closed partition, after
+                    # inventory/connection latency. Later partitions can never
+                    # advance it. Mixed/newer partitions remain explicit gaps.
+                    width=WIDTHS[pack.timeframe]
+                    lower=utc(cutoff)-timedelta(seconds=width)
+                    if self.minimum_anchor_cutoff:lower=max(lower,utc(self.minimum_anchor_cutoff))
+                    ends=[datetime.fromtimestamp(r['observationTime']+width,timezone.utc).isoformat()
+                        for r in data.get('results',[]) if isinstance(r,dict) and r.get('symbol') in names
+                        and type(r.get('observationTime')) is int and r['observationTime']%width==0
+                        and lower<=datetime.fromtimestamp(r['observationTime']+width,timezone.utc)
+                        <=utc(metadata['received_at_utc'])]
+                    if ends:candidate=max(ends,key=utc)
                 receipt, values = normalize_screen(names, data, metadata, pack=pack,
-                    instruments=instruments, cutoff=cutoff)
+                    instruments=instruments, cutoff=candidate)
+                if self.anchor_first_response and anchor is None and values:
+                    cutoff=candidate
+                    anchor={'policy':'FIRST_VALID_CLOSED_REMOTE_PARTITION_THEN_IMMUTABLE',
+                        'planning_cutoff':planned_cutoff,'frozen_cutoff':cutoff,
+                        'frozen_at':metadata['received_at_utc'],'source_response_sha256':metadata['response_sha256'],
+                        'historical_asof_query_supported':False,'future_rows_accepted':False}
             except (ContractError, KeyError, TypeError, ValueError, AttributeError, IndexError) as error:
                 # Use fixed internal codes only; never serialize arbitrary remote
                 # error text, session IDs, keys, or raw exception messages.
@@ -418,6 +449,7 @@ class PartitionEngine:
             if (not self.budget.stopped_reason and self.budget.retries<self.budget.retry_limit
                     and self.budget.calls<self.budget.max_calls):execute(names,True)
             else:effective.append(receipt)
+        self.anchor_first_response=False
         evaluated = tuple(n for r in effective for n in r.evaluated_symbols)
         failures = {n: reason for r in effective for n, reason in r.failed_symbols.items()}
         failures.update({n: "UNVERIFIED_PROVIDER_SYMBOL_SCOPE" for n in unsupported})
@@ -428,6 +460,7 @@ class PartitionEngine:
         rejected={n:reason for n,reason in failures.items() if n in requested}
         return {
             "pack_id": pack.id, "timeframe": pack.timeframe, "cutoff_utc": cutoff,
+            "snapshot_anchor":anchor,
             "formula_version": pack.version, "formula_sha256": pack.formula_hash,
             "operating_scope": "NARROW_PROVIDER_REPORTED_OBSERVATION_ONLY",
             "inventory_mode": inventory.mode, "eligible_contracts": inventory.report()["eligible_contracts"],
@@ -466,6 +499,7 @@ def safe_error(error):
     allowed = {
         'OBSTACLE_IDENTITY_MISMATCH',
         'SCREEN_WALL_BUDGET_EXHAUSTED',
+        'PACK_TIME_SLICE_DEFERRED',
         'PROVIDER_PENDING_EMPTY_202',
         'PROVIDER_BUSY_COOLDOWN',
         'CLOSED_HISTORY_REQUIRED','CLOSED_BAR_CUTOFF_MISMATCH','ORACLE_FORMULA_NOT_IMPLEMENTED',
