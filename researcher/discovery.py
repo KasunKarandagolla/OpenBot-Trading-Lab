@@ -1134,7 +1134,9 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     mark_stage('structure_methods_questions_and_point_refresh')
                     if native_review_dir is not None and recovery.get('native_pre_admission_enabled'):
                         from .candidate_review import native_review_selection
-                        from .agent_review import exchange
+                        from .agent_review import exchange as native_exchange
+                        from functools import partial
+                        exchange=partial(native_exchange,audit_config=native_audit_config,require_identity=mode=='LIVE')
                         wanted,selection=native_review_selection(reviews,cards,facts,references,as_of=as_of,max_cards=native_max_cards)
                         from .candidate_review import conditional_research
                         provisional,_=conditional_research(reviews,cards,facts,references,as_of=as_of)
@@ -1354,7 +1356,9 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
             elif native_review_dir is None:
                 report['consultant']=consult_changed_cards(cards)
             else:
-                from .agent_review import exchange
+                from .agent_review import exchange as native_exchange
+                from functools import partial
+                exchange=partial(native_exchange,audit_config=native_audit_config,require_identity=mode=='LIVE')
                 native_cards=() if cached and same_source_admission else cards
                 report['consultant']=exchange(native_review_dir,native_cards,facts,as_of=report['completed_at_utc'],
                     context=report.get('context'),reviews=reviews,cached=cached,

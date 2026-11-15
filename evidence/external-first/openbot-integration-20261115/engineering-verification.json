@@ -1,0 +1,77 @@
+{
+  "checks": {
+    "baseline": {
+      "log_sha256": "866fa17dac74f5f10903e6b1a246e40a5cd169d02f2f7b97bbe59c50bd58b28f",
+      "passed": true,
+      "seconds": 643.037,
+      "tests": 390
+    },
+    "codex_fixtures": {
+      "log_sha256": "82402a1636a91f69affe85d0dd5b079d06f2a29240c1984c4cebe3048b03bd2c",
+      "passed": true,
+      "seconds": 5.035,
+      "tests": 13
+    },
+    "final_owner_gate": {
+      "log_sha256": "2e5437331f392dd364c7333dc441b7ccf6c18de06cac4b7794574f191166de11",
+      "passed": true,
+      "seconds": 8.034,
+      "tests": 12
+    },
+    "final_regression": {
+      "log_sha256": "005738708a5526adb805089f41151dd8fb7435ce161f72018343521128b3496f",
+      "passed": true,
+      "seconds": 385.333,
+      "tests": 416
+    },
+    "integrated_pre_bridge": {
+      "log_sha256": "463dbbbac7475128e097fdcedaa9c7f44a498e1a5be638b7f0aa93ace8861d82",
+      "passed": true,
+      "seconds": 679.385,
+      "tests": 414
+    }
+  },
+  "compatibility": {
+    "autonomous_handoff": "CURRENT_INSPECTED_CODEX_RUNTIME_ONLY; OWNER_APPROVAL_PENDING",
+    "codex": "STORAGE_FIXTURES_CURRENT_AND_SECOND_MODEL; NO_FRESH_NATIVE_INVOCATION",
+    "opencode": "HISTORICAL_COLLECTOR_REGRESSIONS_AND_SECOND_BACKEND_FIXTURE",
+    "unrecognized_providers_versions": "FAIL_CLOSED"
+  },
+  "config": "VALID",
+  "engineering_boundary": {
+    "existing_skill_changes": 0,
+    "local_scripts_enabled": false,
+    "market_scans_initiated_by_codex": 0,
+    "native_llm_reviews_initiated_by_codex": 0,
+    "new_mcp_servers": 0,
+    "profile_permission_changes": 0
+  },
+  "first_blocker": "ORCHESTRATION_SKILL_NOT_INSTALLED; EXPLICIT_OWNER_APPROVAL_OF_DEPENDENT_SAME_AGENT_REVIEW_HANDOFF_PENDING",
+  "full_openbot_end_to_end_verified": false,
+  "live_diagnostic_zip": "NOT_CREATED",
+  "live_funnel": "NOT_RUN",
+  "live_market_resources": "NOT_RUN",
+  "live_native_decisions": "NOT_RUN",
+  "next_action": "OWNER_SETUP_IN_EXISTING_OPENBOT_RESEARCHER; THEN A SEPARATE OWNER-INITIATED NORMAL RUN MESSAGE",
+  "protected_references_and_source_certificates": "UNCHANGED",
+  "real_offline_launcher": {
+    "initial_failure": "SQLITE_DISK_IO_ERROR; CROSS_OS_ACTIVE_WAL",
+    "live_calls": 0,
+    "preflight_status": "OFFLINE_PREFLIGHT_ONLY",
+    "repaired_preflight_exit": 0,
+    "transport": "WINDOWS_PYTHON_TO_EXISTING_WSL; FIXED_WINDOWS_READ_ONLY_SQLITE_READER"
+  },
+  "runtime": {
+    "agent_id": "agent-ddb6c6ee-1d0d-4ed7-92a5-f97ae670d2a7",
+    "app_version": "0.71.0",
+    "configured_model": "gpt-6-luna",
+    "configured_provider": "codex",
+    "prior_matching_session_backend": "openai",
+    "provider_cli_version": "0.169.0",
+    "review_skill_sha256": "96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb"
+  },
+  "source_fingerprint": "ba302835fdd3a5e9fe104374fd68b09f60e66385c2a89893a580e9ffadad4aa2",
+  "starting_remote_head": "54f6e39e994224a56d6459823bd8e32697b7ae11",
+  "status": "PARTIAL",
+  "ui_bridge": "PRE_EXECUTION_FAILURE: sandboxCwd is not a local file URI (WSL path)"
+}

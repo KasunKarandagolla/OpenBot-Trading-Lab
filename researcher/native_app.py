@@ -10,7 +10,7 @@ from contextlib import contextmanager
 from pathlib import Path,PureWindowsPath
 from datetime import datetime,timezone
 from .contracts import ContractError,digest,encode,utc
-from .agent_review import AGENT,MODEL,parse_reply,validate_reply
+from .agent_review import AGENT,parse_reply,validate_reply
 from .settings import ROOT
 
 
@@ -42,6 +42,28 @@ def prepare(directory,material,config_file):
     if set(config)!={'openbot_db','provider_db','agent_workspace'}:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     if os.name=='nt':config={k:_windows(v) for k,v in config.items()}
     request=json.loads((folder/(material+'.request.json')).read_text())
+    if request.get('native_identity',{}).get('provider')=='codex':
+        from .native_identity import load_private,assert_current,local_path
+        from .native_codex import review_brief
+        private=load_private(config_path);assert_current(request['native_identity'],private)
+        installed=local_path(private['agent_workspace'])/'.agents/skills/market-research-review/SKILL.md'
+        if digest(installed.read_bytes())!=request['skill_sha256']:raise ContractError('AGENT_SKILL_HASH')
+        args={'title':'OPENBOT-RESEARCH-'+material,'brief':review_brief(request)}
+        task_path=folder/(material+'.review-task.json')
+        raw=encode(args)
+        if task_path.exists():
+            if task_path.is_symlink() or task_path.read_text(encoding='utf-8')!=raw:
+                raise ContractError('NATIVE_REVIEW_REQUEST_COLLISION')
+        else:
+            import tempfile
+            temporary=None
+            try:
+                with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=folder,delete=False) as stream:
+                    temporary=Path(stream.name);stream.write(raw);stream.flush();os.fsync(stream.fileno())
+                os.link(temporary,task_path)
+            finally:
+                if temporary is not None:temporary.unlink(missing_ok=True)
+        return request,private,None
     workspace=Path(config['agent_workspace']).absolute()
     skill=workspace/'.agents/skills/market-research-review/SKILL.md'
     if any(p.is_symlink() for p in (workspace,*workspace.parents,skill,*skill.parents)):
@@ -73,10 +95,17 @@ def prepare(directory,material,config_file):
 
 def collect(request,config,target,*,as_of):
     """One bounded read of the exact task; never inspect preceding chat history."""
+    if request.get('native_identity',{}).get('provider')=='codex':
+        from .native_runtime import collect as dynamic_collect
+        return dynamic_collect(request,config,as_of=as_of)
+    expected_model=request['model']
+    if request.get('native_identity'):
+        from .native_identity import assert_current
+        assert_current(request['native_identity'],config)
     material=request['material_sha256'];marker='OPENBOT-RESEARCH-'+material
     with _read_db(config['openbot_db']) as app:
         agents=app.execute("SELECT agent_id,model FROM projection_agents WHERE json_extract(agent_json,'$.name')=?",(AGENT,)).fetchall()
-        if len(agents)!=1 or agents[0][1]!=MODEL:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+        if len(agents)!=1 or agents[0][1]!=expected_model:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
         agent=agents[0][0]
         row=app.execute('''SELECT m.thread_id,m.created_at FROM projection_thread_messages m
           JOIN projection_threads t ON t.thread_id=m.thread_id WHERE t.agent_id=? AND m.author='user'
@@ -89,7 +118,7 @@ def collect(request,config,target,*,as_of):
           JOIN projection_provider_sessions p ON p.id=t.provider_session_id
           WHERE m.thread_id=? AND m.created_at>=? AND m.author='assistant' AND m.item_type='final_answer'
           AND m.status='completed' AND t.status='completed' AND p.model=?
-          ORDER BY m.created_at DESC LIMIT 1''',(thread,submitted,MODEL)).fetchone()
+          ORDER BY m.created_at DESC LIMIT 1''',(thread,submitted,expected_model)).fetchone()
         if not final:return None
     message,start,end,session=final
     if not utc(request['as_of_utc'])<=utc(start)<=utc(end)<=utc(as_of):
@@ -108,7 +137,7 @@ def collect(request,config,target,*,as_of):
     skillmirror=str(PureWindowsPath(_windows(Path(config['agent_workspace'])/'.claude/skills/market-research-review/SKILL.md'))).casefold()
     for attempt in attempts:
         model=attempt.get('model',{})
-        if model.get('providerID')!='opencode' or model.get('id')!='deepseek-v4.1-flash-free':
+        if '/' not in expected_model or model.get('providerID')!=expected_model.split('/',1)[0] or model.get('id')!=expected_model.split('/',1)[1]:
             raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
         for part in attempt.get('content',[]):
             if part.get('type')!='tool':continue
@@ -132,6 +161,13 @@ def collect(request,config,target,*,as_of):
     if not loaded or '\n'.join(read_lines[i] for i in sorted(read_lines))+'\n'!=source:
         raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     raw=json.loads(message)['text']
+    if request.get('native_identity'):
+        identity=request['native_identity']
+        from .native_identity import ref
+        if agents[0][0]!=identity['agent_id']:raise ContractError('NATIVE_AGENT_MISMATCH')
+        if ref(session)!=identity['external_session_ref']:raise ContractError('NATIVE_SESSION_MISMATCH')
+        provider_text=''.join(p.get('text','') for a in attempts for p in a.get('content',[]) if p.get('type')=='text')
+        if provider_text!=raw:raise ContractError('NATIVE_REPLY_PROVENANCE')
     try:
         validated=validate_reply(parse_reply(raw),request)
         validation={'reply_validation_status':'VALIDATED','validated_rows':validated['accepted']}
@@ -143,7 +179,7 @@ def collect(request,config,target,*,as_of):
         if code not in REJECTION_CODES:raise
         validation={'reply_validation_status':'REJECTED','reply_rejection_reason':code,'validated_rows':0}
     audit={'schema_version':'openbot.native-review.audit.v1','audit_source':'OPENBOT_APP_SCOPED_READ_ONLY_AUDIT',
-        'agent_name':AGENT,'model':MODEL,'skill_sha256':request['skill_sha256'],'material_sha256':material,
+        'agent_name':AGENT,'model':expected_model,'skill_sha256':request['skill_sha256'],'material_sha256':material,
         'reply_sha256':digest(raw.encode()),'native_invocation_verified':True,'model_requests':len(attempts),
         'native_app_turns':1,'tool_operations':operations,'unauthorized_tool_operations':0,
         'read_methods':methods,'search_scope':'EXACT_REQUEST_OR_SCOPED_SKILL_FILE_ONLY; NO_DIRECTORY_SEARCH',
@@ -152,6 +188,8 @@ def collect(request,config,target,*,as_of):
         'authority':'ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM',
         'provider_usage':[{'finish':a.get('finish'),'tokens':a.get('tokens'),'reported_cost_usd':a.get('cost')} for a in attempts],
         **validation}
+    if request.get('native_identity'):
+        audit.update(native_identity=request['native_identity'],provider=request['native_identity']['provider'],agent_id=request['native_identity']['agent_id'])
     return raw,audit
 
 
@@ -159,6 +197,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None):
     """Interactive on-demand wait, bounded to600s; owner submits in the app."""
     if type(wait_seconds) is not int or not 0<=wait_seconds<=600:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     config_path=Path(config_file).absolute()
+    if not config_path.is_file():raise ContractError('NATIVE_AUDIT_CONFIG_MISSING')
     if (not config_path.is_relative_to(ROOT/'work') or '..' in config_path.parts
             or any(p.is_symlink() for p in (config_path,*config_path.parents)) or config_path.stat().st_size>4096):
         raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
@@ -185,9 +224,15 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None):
     request,config,target=prepare(directory,material,config_file);folder=Path(directory)
     if wait_seconds:
         print(f'Native review input ready: {folder/(material+".prompt.txt")}; waiting up to{wait_seconds}s for owner submission in the existing OpenBot agent.',file=sys.stderr,flush=True)
-    deadline=time.monotonic()+wait_seconds;storage_retries=0
+    deadline=time.monotonic()+wait_seconds;storage_retries=0;pending_status=None
     while True:
         try:found=collect(request,config,target,as_of=clock())
+        except ContractError as error:
+            from .native_identity import ERRORS
+            if str(error) not in ERRORS:raise
+            if str(error) not in {'NATIVE_REVIEW_INCOMPLETE','NATIVE_HANDOFF_UNATTESTED'} or not wait_seconds:
+                return {'status':str(error),'storage_read_retries':storage_retries}
+            pending_status=str(error);found=None
         except sqlite3.OperationalError as error:
             if str(error).lower() not in {'disk i/o error','database is locked','database is busy','unable to open database file'}:raise
             # Windows can briefly hold its WAL during a native turn. Retry only
@@ -195,7 +240,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None):
             storage_retries+=1;found=None
         if found:
             raw,audit=found
-            audit['submission_transport']='OWNER_OPENBOT_APPLICATION_UI'
+            audit.setdefault('submission_transport','OWNER_OPENBOT_APPLICATION_UI')
             for suffix,value in [('reply.json',raw),('audit.json',encode(audit)+'\n')]:
                 path=folder/(material+'.'+suffix)
                 if path.is_symlink():raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
@@ -206,7 +251,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None):
                 'reply_validation_status':audit['reply_validation_status'],
                 'reply_rejection_reason':audit.get('reply_rejection_reason'),
                 'storage_read_retries':storage_retries}
-        if time.monotonic()>=deadline:return {'status':'AWAITING_OWNER_NATIVE_APP_SUBMISSION','storage_read_retries':storage_retries}
+        if time.monotonic()>=deadline:return {'status':(pending_status or ('NATIVE_REVIEW_TIMED_OUT' if wait_seconds else 'NATIVE_NOT_INVOKED')) if request.get('native_identity') else 'AWAITING_OWNER_NATIVE_APP_SUBMISSION','storage_read_retries':storage_retries}
         time.sleep(min(1,max(0,deadline-time.monotonic())))
 
 

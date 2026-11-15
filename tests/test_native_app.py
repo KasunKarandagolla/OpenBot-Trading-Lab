@@ -54,6 +54,27 @@ class NativeReceiptCollector(unittest.TestCase):
         with sqlite3.connect(self.config['provider_db']) as db:
             db.execute('DELETE FROM session_message');db.execute('INSERT INTO session_message VALUES(?,?,?,?,?)',('TEST_EXTERNAL','assistant',int(utc(self.at).timestamp()*1000),1,json.dumps(data)))
 
+    def test_schema_compatible_second_opencode_backend_uses_trusted_app_model(self):
+        from researcher.agent_review import _material
+        other='fixture-vendor/second-model'
+        self.request['model']=other
+        self.request['material_sha256']=digest(encode(_material(self.request)).encode())
+        self.key=self.request['material_sha256'];self.reply['material_sha256']=self.key
+        with sqlite3.connect(self.config['openbot_db']) as db:
+            db.execute('UPDATE projection_agents SET model=?',(other,))
+            db.execute('UPDATE projection_provider_sessions SET model=?',(other,))
+            db.execute("UPDATE projection_thread_messages SET message_json=? WHERE author='user'",
+                (encode({'text':'OPENBOT-RESEARCH-'+self.key}),))
+            db.execute("UPDATE projection_thread_messages SET message_json=? WHERE author='assistant'",
+                (encode({'text':encode(self.reply)}),))
+        self.tools[1]['state']['content'][0]['text']='\n'.join(f'{i}: {line}' for i,line in enumerate((encode(self.request)+'\n').splitlines(),1))
+        data={'model':{'providerID':'fixture-vendor','id':'second-model'},'content':self.tools}
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute('DELETE FROM session_message')
+            db.execute('INSERT INTO session_message VALUES(?,?,?,?,?)',('TEST_EXTERNAL','assistant',int(utc(self.at).timestamp()*1000),1,encode(data)))
+        _,audit=collect(self.request,self.config,self.target,as_of=self.now)
+        self.assertEqual(audit['model'],other);self.assertEqual(audit['validated_rows'],1)
+
     def test_exact_native_task_is_audited_and_source_databases_are_unchanged(self):
         before={k:digest(Path(self.config[k]).read_bytes()) for k in ('openbot_db','provider_db')}
         result=wait_for_reply(self.folder,self.key,self.configfile,clock=lambda:self.now)

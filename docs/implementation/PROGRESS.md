@@ -1,3 +1,47 @@
+# Model-flexible OpenBot integration — CODEX_LOCAL, 15 November 2026
+
+**PARTIAL: new orchestration skill is not installed; explicit owner approval for
+the dependent same-agent task handoff and owner-originated live acceptance are
+pending.** No live market scan or native review was initiated by Codex. See
+[engineering checkpoint](OPENBOT_MODEL_FLEXIBLE_INTEGRATION.md) and
+[sanitized verification](../../evidence/external-first/openbot-integration-20261115/engineering-verification.json).
+
+Started from freshly fetched clean54f6e39 on the sole integration branch in a
+new isolated clone; existing checkouts/main unchanged. Existing native Researcher
+configuration is codex/gpt-6-luna on OpenBot0.71.0/CLI0.169.0. Trusted runtime
+identity replaces the live static-model assumption. The inspected Codex receipt
+schema verifies backend/model, current parent and isolated review turns, exact
+full inline skill/request, zero review tools and exact provider/app final reply.
+Live import re-reads native storage rather than trusting an audit file. The
+historical OpenCode collector is retained; unsupported schemas fail closed.
+
+A fixed asynchronous runner requires the exact current owner run message and a
+genuine provider-recorded command before market access. It exposes durable UTC
+job/progress/review/final states, prevents duplicate runs, imports verified advice
+into the existing scan and exports a sanitized hash-verified ZIP. Its separate
+orchestration skill does not alter the evidence-only review skill. No global MCP,
+Local Scripts, model/profile/permission change, trading or scheduling operation.
+
+Actual Windows→WSL offline preflight exposed cross-OS active-WAL disk I/O errors.
+Extending the existing fixed Windows reader to identity/authorization/receipt
+reads repaired the real offline launcher: exit0, correct configured identity,
+zero live calls. The Windows UI bridge instead fails before JavaScript due to
+its WSL sandboxCwd metadata; the Local Scripts CLI is intentionally unused.
+A private path-only setup was reconstructed locally; it is ignored, not public.
+
+Untouched390-test baseline passed643.037s; initial414-test integration passed
+679.385s; final416-test local regression passed385.333s. The exact owner-command
+guard additionally passed12 focused tests8.034s. Config VALID; immutable
+blueprint/plan/review-skill hashes and all source certificates unchanged. Fixture
+compatibility is not empirical live compatibility. Fresh funnel/advice/resources/
+live diagnostic ZIP are NOT_RUN. True specialist feeds, M14/M15 definitions,
+quota/cadence/execution costs and prospective performance remain unqualified.
+Publishing/remote-head/CI results are reported in the final handoff; PR24 stays
+draft and is not merged. Next: supported in-app skill setup, then the owner alone
+initiates the first live examination from the Researcher's normal main chat.
+
+---
+
 # Final functional acceptance — CODEX_LOCAL, 15 November 2026
 
 Started from fetched clean `6af2e8db8016688e78878baf4950c7d2c5b710cc` on the same
