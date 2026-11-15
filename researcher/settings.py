@@ -9,12 +9,21 @@ MANIFEST = ROOT / "researcher/config/discovery_specs.json"
 
 
 def load_config():
-    config = json.loads(MANIFEST.read_text())
+    config = json.loads(MANIFEST.read_text(encoding='utf-8'))
     validate_config(config)
     return config
 
 
 def validate_config(config):
+    recovery=config.get('recovery',{})
+    if recovery and (recovery.get('version')!='recovery-1'
+            or type(recovery.get('operational_alt_capacity')) is not int
+            or not 1<=recovery['operational_alt_capacity']<=28
+            or not 30<=recovery.get('investigation_wall_seconds',0)<=300
+            or not 20<=recovery.get('official_http_limit',0)<=80
+            or not 0<=recovery.get('targeted_depth_symbols',-1)<=12
+            or recovery.get('basis_busy_resumptions')!=1):
+        raise ContractError('RESOURCE_PLAN_CONTRACT')
     if config.get("schema_version") != "openbot.discovery-specs.v1" or config.get("session") != 4:
         raise ContractError("CONFIG_VERSION")
     if config.get("policy") != {

@@ -38,6 +38,8 @@ def capability_coverage(config):
                         "analytical_implementation":methods[m['id']],
                         "qualified_market_wide_evaluations":0} for m in config["methods"]],
             "families":[{"id":f["id"],"name":f["name"],**f["implementation"],
+                         "state":"IMPLEMENTED_TRIAL" if families[f['id']]['implemented_code'] else f['implementation']['state'],
+                         "legacy_state":f['implementation']['state'],
                          "legacy_state_scope":"INHERITED_PRODUCTION_SOURCE_GATE",
                          "analytical_implementation":families[f['id']],
                          "qualified_market_wide_evaluations":0} for f in config["families"]],

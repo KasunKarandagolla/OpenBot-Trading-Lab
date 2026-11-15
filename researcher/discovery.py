@@ -307,9 +307,9 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                          native_review_dir=None,native_audit_config=None,native_wait_seconds=0,native_max_cards=4):
     """One on-demand read-only path: live sources → remote packs → saved research.
 
-    Historical price precursors nominate questions independently. Only two
-    selected alts receive causal history alongside BTC/ETH context; this cannot
-    establish market-wide family detection or repair unsupported specialists.
+    Historical price precursors nominate questions independently. The protected
+    audit lane and adaptive operational investigation are separate. Selected
+    reconstruction cannot certify whole-market coverage or missing specialists.
     """
     import math
     import time
@@ -337,11 +337,14 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
     sources=sources or ResearchSources(mode=mode)
     if sources.mode!=mode:raise ContractError('SOURCE_QUALIFICATION_CONTRACT')
     wall=time.monotonic();start=clock();config=config or load_config();validate_config(config)
-    import resource
-    cpu_start=resource.getrusage(resource.RUSAGE_SELF)
+    import os
+    cpu_start=os.times()
     spec=config['session5'];cutoffs={tf:closed_cutoff(start,tf) for tf in ('1h','15m','4h')}
     completion=config.get('session55',{})
-    api=api or OfficialResearchAPI()
+    recovery=config.get('recovery',{}) if mode=='LIVE' else {}
+    alt_capacity=spec['max_targeted_alt_symbols']+recovery.get('operational_alt_capacity',0)
+    api=api or OfficialResearchAPI(PublicHTTP(max_requests=recovery.get('official_http_limit',20)),
+        max_sample_symbols=max(5,alt_capacity+2),max_sample_calls=max(10,6+2*alt_capacity))
     client=client or BasisMCP(PublicHTTP(max_requests=spec['max_http_requests']),qualification=True,session5=True,session6a=True)
     ledger=RunLedger(ledger_path or ROOT/'work/research-metadata.sqlite')
     report={'schema_version':'openbot.market-research.v5','environment':'CODEX_LOCAL' if mode=='LIVE' else 'OFFLINE_REPLAY_HOST','mode':mode,
@@ -414,7 +417,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 report['source_health']=[{**{k:v for k,v in p.items() if k!='observations'},
                     'accepted':len(p['observations']),'eligible':len(members)} for p in pulse]
                 report['operation_status']='PARTIAL';report['operating_mode']='REMOTE_WIDE_PARTIAL'
-                key=digest(encode([cutoffs,identity,spec,completion,mode,sources.certificates,
+                key=digest(encode([cutoffs,identity,spec,completion,recovery,mode,sources.certificates,
                     sources.nominations,sources.selected_inputs,route_ablation,context_prioritized,'interpretation-6b.1']).encode())
                 # Fresh official access/identity is mandatory even for unchanged
                 # bars. Reuse preserves first knowledge and original receipts.
@@ -428,6 +431,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         'original_snapshot':previous.get('reuse',{}).get('original_snapshot',previous['run_key']),
                         'original_evidence_cutoffs':cutoffs,
                         'fresh_remote_requests':0,'retained_partial_failures_are_not_retried_until_cache_expiry':True}
+                    report['llm_calls']=0
                     selected_names=set(report.get('current_economics',{}))
                     report['current_economics']={n:[o for p in pulse if p['kind'] in {'book','premium'}
                         for o in p['observations'] if o['native_symbol']==n] for n in selected_names}
@@ -460,6 +464,18 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         report['empty_shortlist_reason']=refreshed['empty_shortlist_reason']
                         report['reuse']['admission_revalidated_from_frozen_export']=True
                         report['reuse']['closed_history_replayed']=False
+                    if recovery and report.get('conditional_research_export',{}).get('research_handoffs'):
+                        from .handoff import decode_export
+                        from .admission_facts import refresh_selected
+                        saved=decode_export(report['conditional_research_export'])
+                        cards=[c for c,own,refs in saved]
+                        facts={i:f for c,own,refs in saved for i,f in own.items()}
+                        references=list({r.id:r for c,own,refs in saved for r in refs}.values())
+                        cards,depths,point_faults,at=refresh_selected(cards,facts,references,api,inventory,
+                            completion['economics'],clock=evaluation_time,max_depth=recovery['targeted_depth_symbols'])
+                        report['source_faults'].extend(point_faults)
+                        reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],as_of=at) for c in cards]
+                        report['reuse']['conditional_research_revalidated']=True
                 else:
                     report['cache_key']=key
                     for scope,old in old_cutoffs.items():
@@ -492,9 +508,16 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         for n in members)}
                     report['resource_plan']=plan_resources(tuple(members),cap=spec['max_screen_requests'],
                         qualified_packs=qualified_packs,samples=getattr(sources,'retained_receipts',()),fallback_qualified=True)
-                    client.connect();budget=RequestBudget(spec['max_screen_requests'],retry_calls=2,
-                        interval_seconds=0 if mode!='LIVE' else 1)
-                    engine=PartitionEngine(sources.screen_source or BasisScreenSource(client),budget,deferred_tool_recovery=True)
+                    basis_unavailable=None
+                    try:client.connect()
+                    except (ContractError,OSError,KeyError,TypeError,ValueError) as e:
+                        basis_unavailable=safe_error(e)
+                        report['source_faults'].append({'phase':'basis_connect','code':basis_unavailable})
+                    budget=RequestBudget(spec['max_screen_requests'],retry_calls=2,
+                        interval_seconds=0 if mode!='LIVE' else 1,max_elapsed_seconds=180 if recovery else None)
+                    screen_source=sources.screen_source or BasisScreenSource(client)
+                    engine=PartitionEngine(screen_source,budget,deferred_tool_recovery=True,transient_recovery=bool(recovery),
+                        unavailable_reason=basis_unavailable)
                     rows_by_tf={}
                     for tf in ('15m','1h'):
                         price_columns=[c for c in spec['qualified_price_columns'] if c!='quote_rvol32']
@@ -523,6 +546,10 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         result['requested']=len(result['requested_symbols']);result['evaluated']=len(result['evaluated_symbols'])
                         result['returned']=len(result['returned_symbols']);result['missing']=len(result['missing_symbols'])
                         result['failed']=len(result['failed_symbols']);result['unsupported']=0
+                        result['not_requested']=len(result.get('not_requested_symbols',()))
+                        result['time_accepted']=len(result.get('time_accepted_symbols',result['evaluated_symbols']))
+                        result['selected_for_current_screen_count']=len(result.get('selected_for_current_screen',inventory.symbols))
+                        result['rejected_after_cutoff_count']=len(result.get('rejected_after_cutoff',()))
                         result['per_formula']={f:{'eligible':len(members),'requested':result['requested'],
                             'evaluated':sum(r['values'].get(f) is not None for r in rows.values()),
                             'returned':result['returned'],'missing':result['missing'],
@@ -581,7 +608,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         method_ceiling=min(completion['method_screen_requests'],remaining_transport)
                         method_budget=RequestBudget(method_ceiling,
                             retry_calls=min(completion['method_recovery_requests'],method_ceiling))
-                        method_engine=PartitionEngine(sources.screen_source or BasisScreenSource(client),method_budget,deferred_tool_recovery=True)
+                        method_engine=PartitionEngine(screen_source,method_budget,deferred_tool_recovery=True,transient_recovery=bool(recovery))
                         for tf in completion['causal_timeframes']:
                             cp=scan_registered(method_engine,inventory,tf,cutoffs[tf],completion['qualified_bits'])
                             report['causal_packs'].append(cp)
@@ -644,6 +671,24 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     audit_pool=tail or [n for n in members if n not in {'BTCUSDT','ETHUSDT'}]
                     audit_names=lottery(audit_pool,cutoffs['15m'])[:1]
                     ticker_rows={o['native_symbol']:o for p in pulse if p['kind']=='ticker' for o in p['observations']}
+                    if recovery:
+                        # Independent lightweight precursor questions for source
+                        # gaps, stratified by turnover rather than a top-volume
+                        # eligibility gate. These never establish a structure.
+                        missing=[n for n in ticker_rows if n not in {'BTCUSDT','ETHUSDT'} and
+                            all(n not in rows for rows in rows_by_tf.values())]
+                        ordered=sorted(missing,key=lambda n:D(str(ticker_rows[n]['values']['quoteVolume'])))
+                        cheap=[]
+                        for j in range(4):
+                            stratum=ordered[len(ordered)*j//4:len(ordered)*(j+1)//4]
+                            cheap.extend(lottery(stratum,[cutoffs['15m'],'UNOBSERVED_TURNOVER',j])[:2])
+                        for n in cheap:
+                            nominate(n,'1h','C_UNOBSERVED_STRATIFIED_SOURCE_RECOVERY',('F1','F2','F3','F4','F8'),
+                                'Source gap: inspect this stratified current-market observation without assuming a missed opportunity')
+                            union[n,'1h']['evidence_ids']=[ticker_rows[n]['id']] if 'id' in ticker_rows[n] else [
+                                ticker_rows[n]['source_response_sha256']]
+                        report['cheap_missing_source_recovery']={'unobserved_pool':len(missing),'selected':cheap,
+                            'selection':'TWO_HASH_SAMPLES_PER_TURNOVER_QUARTILE; NOT_A_METHOD_OR_OPPORTUNITY_CLAIM'}
                     report['prospective_audit']={'registered_at':evaluation_time(),'frozen_cutoffs':cutoffs,
                         'eligible_denominator':len(members),'eligible_set_hash':digest(encode(sorted(members)).encode()),
                         'non_nominated_tail_denominator':len(tail),'sampling':'UNIFORM_HASH_STRATUM_LOTTERY; ONE_SELECTED_PUBLIC_OI_AUDIT',
@@ -675,6 +720,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 report['source_faults'].append({'phase':'native_oi','symbol':n,'code':safe_error(e)})
                     report['nominations']=list(union.values())
                     selected={};benchmark_ids=[]
+                    investigation_started=time.monotonic();history_costs=[]
                     def fetch_selected(names):
                         for n in names:
                             if n not in members:continue
@@ -682,6 +728,15 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 report['source_faults'].append({'phase':'contract_identity','symbol':n,'code':'CONTRACT_IDENTITY_CHANGED'})
                                 continue
                             for tf in (('1h','15m','4h') if n in {'BTCUSDT','ETHUSDT'} else ('1h','15m')):
+                                elapsed=time.monotonic()-investigation_started
+                                estimate=sum(history_costs)/len(history_costs) if history_costs else 1
+                                if (recovery and n not in {'BTCUSDT','ETHUSDT'} and
+                                        elapsed+estimate>recovery['investigation_wall_seconds']):
+                                    report.setdefault('investigation_deferred',[]).append({'native_symbol':n,'timeframe':tf,
+                                        'reason':'MEASURED_INVESTIGATION_WALL_BUDGET','elapsed_seconds':elapsed,
+                                        'estimated_next_history_seconds':estimate})
+                                    continue
+                                fetched_at=time.monotonic()
                                 try:
                                     bars,source=api.klines(members[n],timeframe=tf,cutoff=cutoffs[tf])
                                     selected[n,tf]=(bars,source)
@@ -691,14 +746,21 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                         facts[f.id]=f;benchmark_ids.append(f.id)
                                 except (ContractError,KeyError,ValueError,TypeError) as e:
                                     report['source_faults'].append({'phase':'targeted_history','symbol':n,'timeframe':tf,'code':safe_error(e)})
+                                finally:history_costs.append(time.monotonic()-fetched_at)
                     fetch_selected(('BTCUSDT','ETHUSDT'))
                     context=build_context(facts,as_of=evaluation_time(),eligible_symbols=inventory.eligible_symbols,
                         eligible_known=True,benchmark_ids=benchmark_ids,return_ids=return_ids)
                     report['context']=asdict(context)
                     # Separate watch, exception and structural allocations. All
                     # remaining questions retain NOT_REVIEWED_BUDGET explicitly.
-                    alt,allocations,allocation_study=allocate(list(union.values()),context,cutoffs,
-                        limit=spec['max_targeted_alt_symbols'])
+                    if recovery:
+                        from .audit import investigate
+                        alt,allocations,allocation_study=investigate(list(union.values()),context,cutoffs,
+                            rows_by_tf,ticker_rows,protected=spec['max_targeted_alt_symbols'],
+                            capacity=recovery['operational_alt_capacity'])
+                    else:
+                        alt,allocations,allocation_study=allocate(list(union.values()),context,cutoffs,
+                            limit=spec['max_targeted_alt_symbols'])
                     report['allocation_study']=allocation_study
                     report['targeted_allocation']=allocations
                     for sample in report['prospective_audit']['sample']:
@@ -706,9 +768,28 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     report['not_reviewed_budget']=[{**n,'reason':'NOT_REVIEWED_BUDGET'} for n in union.values()
                         if n['native_symbol'] not in {*alt,'BTCUSDT','ETHUSDT'}]
                     fetch_selected(alt)
-                    if causal_enabled or sources.certificates:
+                    investigated={n for n,tf in selected if n not in {'BTCUSDT','ETHUSDT'}}
+                    report['investigation_funnel']={'planned_alt_symbols':alt,'actual_alt_symbols':sorted(investigated),
+                        'actual_non_context_alt_count':len(investigated),
+                        'aligned_history_symbol_timeframes':[{'native_symbol':n,'timeframe':tf,
+                            'cutoff':s['cutoff'],'bars':len(b),'source_hash':s['source_response_sha256']}
+                            for (n,tf),(b,s) in selected.items() if n not in {'BTCUSDT','ETHUSDT'}],
+                        'history_wall_seconds':time.monotonic()-investigation_started,
+                        'observed_mean_history_seconds':sum(history_costs)/len(history_costs) if history_costs else None,
+                        'protected_audit_budget':spec['max_targeted_alt_symbols'],
+                        'operational_capacity':recovery.get('operational_alt_capacity',0),
+                        'wall_budget_seconds':recovery.get('investigation_wall_seconds'),
+                        'official_endtime_fallback':[{'native_symbol':n,'timeframe':tf,
+                            'reason':'REMOTE_ROW_UNAVAILABLE_AT_FROZEN_CUTOFF','source_hash':s['source_response_sha256']}
+                            for (n,tf),(b,s) in selected.items() if n not in rows_by_tf.get(tf,{}) and tf!='4h']}
+                    report['nominee_dispositions']=[{'native_symbol':n,'timeframe':tf,'routes':x['routes'],
+                        'disposition':'STRUCTURALLY_EVALUATED' if (n,tf) in selected else
+                            'SELECTED_HISTORY_UNAVAILABLE' if n in alt else 'DEFERRED_NOT_REQUESTED_BUDGET',
+                        'recheck':'NEXT_ON_DEMAND_RUN; RETAIN_NOMINATION_AND_SOURCE_IDS',
+                        'evidence_ids':x['evidence_ids']} for (n,tf),x in union.items()]
+                    if (causal_enabled or sources.certificates) and not recovery:
                         from .economic_sources import depth_snapshot
-                        for n in alt:
+                        for n in alt[:recovery.get('targeted_depth_symbols',len(alt))]:
                             try:
                                 depth=depth_snapshot(api,members[n]);report['economic_observations'].append(depth)
                                 observed_times.append(depth['received'])
@@ -744,6 +825,36 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         report['selected_research'].append({'native_symbol':n,'timeframe':tf,'source':source,
                             'family_facts':family,'gap_lifecycles':gap_lifecycle(bars,members[n].tick_size,as_of=as_of),
                             'scope':'TARGETED_CURRENT_HISTORICAL_RECONSTRUCTION; NOT_PROSPECTIVE_DISCOVERY'})
+                        if recovery:
+                            from .numerics import relative_quote_volume,anchored_value
+                            from statistics import median
+                            values={'close':bars[-1].close,'progress16':bars[-1].close/bars[-17].close,
+                                'prior_high16':max(b.high for b in bars[-17:-1]),
+                                'prior_low16':min(b.low for b in bars[-17:-1]),
+                                'quote_rvol32':relative_quote_volume(bars)}
+                            remote=rows_by_tf.get(tf,{}).get(n,{}).get('values',{})
+                            checks=[]
+                            for label,independent in values.items():
+                                actual=remote.get(label)
+                                if actual is not None and independent is not None:
+                                    tolerance=max(D('1e-9'),abs(independent)*D('1e-8'))
+                                    checks.append({'measurement':label,'remote':actual,'independent':independent,
+                                        'tolerance':tolerance,'passed':abs(D(str(actual))-independent)<=tolerance})
+                            session_ms=bars[-1].open_ms//86400000*86400000
+                            session=[b for b in bars if b.open_ms>=session_ms]
+                            from datetime import datetime,timezone
+                            vwap=anchored_value(session,anchor_ms=session_ms,
+                                anchor_known_at=datetime.fromtimestamp(session_ms/1000,
+                                    timezone.utc).isoformat()) if session and session[0].open_ms==session_ms else None
+                            report['selected_research'][-1]['live_measurements']={
+                                'quote_rvol32':values['quote_rvol32'],'quote_rvol_source':'OFFICIAL_CLOSED_QUOTE_VOLUME; LAST_33_BARS',
+                                'quote_rvol_independent_ratio':bars[-1].quote_volume/median(b.quote_volume for b in bars[-33:-1])
+                                    if median(b.quote_volume for b in bars[-33:-1])>0 else None,
+                                'session_whole_bar_q_over_v':vwap,
+                                'session_q_over_v_independent':sum((b.quote_volume for b in session),D(0))/sum(
+                                    (b.base_volume for b in session),D(0)) if session and sum((b.base_volume for b in session),D(0))>0 else None,
+                                'independent_remote_checks':checks,'source_hash':source['source_response_sha256'],
+                                'qualification':'SELECTED_TIMESTAMPED_ARITHMETIC; NOT_COMPLETE_METHOD_QUALIFICATION'}
                         # Cite actual selected bars. They were first available
                         # to this researcher at retrieval, never backdated.
                         for b in bars:
@@ -760,15 +871,41 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             for field in ('lo','hi','atr','tick'):raw[field]=D(str(raw[field]))
                             raw['source_ids']=tuple(raw['source_ids']);old_ref=Reference(**raw)
                             if utc(old_ref.valid_until)<utc(as_of):continue
-                            if not set(old_ref.source_ids)<=set(facts):
+                            if not all(i in facts for i in old_ref.source_ids):
                                 report.setdefault('watch_refresh_faults',[]).append({'watch_id':w['id'],
                                     'status':'SOURCE_COVERAGE_LOST','reason':'ORIGINAL_REFERENCE_SOURCE_OUTSIDE_SELECTED_WINDOW'})
                             elif old_ref.id not in {r.id for r in all_swings}:all_swings.append(old_ref)
                         from .engine_capabilities import analyze_selected,qualified_route_a
+                        analytical_refs=all_swings
+                        if recovery:
+                            live_refs=[r for r in all_swings if utc(r.valid_until)>=utc(as_of) and
+                                max(r.lo-bars[-1].close,bars[-1].close-r.hi,D(0))<=4*r.atr]
+                            # Current research investigates current decision
+                            # zones. Every other reference remains in the archive
+                            # and first-obstacle search, with a named disposition.
+                            analytical_refs=sorted(live_refs,key=lambda r:(
+                                max(r.lo-bars[-1].close,bars[-1].close-r.hi,D(0))/r.atr,
+                                -utc(r.known_at).timestamp(),r.id))
+                            allowance=max(4,min(12,int(60/max(1,sum(history_costs)/len(history_costs)))))
+                            analytical_refs=analytical_refs[:allowance]
+                            report.setdefault('reference_investigation_dispositions',[]).append({
+                                'native_symbol':n,'timeframe':tf,'available_references':len(all_swings),
+                                'current_references_evaluated':[r.id for r in analytical_refs],
+                                'archive_only_outside_current_radius':[r.id for r in all_swings if r not in live_refs],
+                                'deferred_reference_budget':[r.id for r in live_refs if r not in analytical_refs],
+                                'scope':'CURRENT_RESEARCH_ALLOCATION; ALL_FROZEN_REFERENCES_RETAINED_AS_OBSTACLES',
+                                'allowance_from_measured_source_cost':allowance})
                         report['selected_research'][-1]['analytical_engine']=analyze_selected(
                             bars,members[n].tick_size,cutoff=cutoffs[tf],as_of=as_of,
                             benchmark=bench[0] if bench and len(bench[0])==len(bars) else None,
-                            references=all_swings,inputs=sources.inputs_for(n,tf,cutoffs[tf],as_of))
+                            references=analytical_refs,inputs=sources.inputs_for(n,tf,cutoffs[tf],as_of),
+                            current_episodes=bool(recovery))
+                        report['selected_research'][-1]['analytical_source_gaps']=[{
+                            'family':h['family'],'status':h['status'],'reason':h.get('details',{}),
+                            'source_hash':source['source_response_sha256'],'cutoff':cutoffs[tf],
+                            'opportunity_absence_established':False}
+                            for h in report['selected_research'][-1]['analytical_engine']['families']
+                            if h['status'] not in {'COMPUTED','NO_EVENT_IN_COMPLETE_WINDOW'}]
                         # The registered adapter is exercised in ordinary scans,
                         # while current new full-family source gates stay closed.
                         report['selected_research'][-1]['analytical_route_a']=qualified_route_a(
@@ -792,7 +929,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 compared['qualified_method_predicates_evaluated']=0
                         remote_ages={x['pivot_age'] for x in remote_rows if x['qualified_mask']}
                         remote_refs=[r for r in all_swings if any(utc(r.created_at).timestamp()*1000==bars[-1-age].open_ms for age in remote_ages)]
-                        proposed=[*all_swings[-4:],*remote_refs,
+                        proposed=[*(analytical_refs[-4:] if recovery else all_swings[-4:]),*remote_refs,
                             *equal_level_references(bars,members[n].tick_size,as_of=as_of)[-2:]]
                         refs=list({r.id:ledger.freeze_reference(r) for r in proposed if r.id not in terminal_ids}.values())
                         references.extend(r for r in [*obstacle_refs,*refs] if r.id not in {v.id for v in references})
@@ -843,6 +980,35 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             cards.append(card)
                     # The same bounded planner runs for every interpreted card.
                     # A query must document alternative dispositions before I/O.
+                    if recovery:
+                        archive=[];current_groups={}
+                        for c in cards:
+                            primary=next(h for h in c.hypotheses if h.family==c.primary_family)
+                            latest=(c.formation['families'][c.primary_family]['timeline'][-1] if c.formation else
+                                c.events[-1] if c.events else None)
+                            bars=selected[c.native_symbol,c.timeframe][0]
+                            d=max(c.reference.lo-bars[-1].close,bars[-1].close-c.reference.hi,D(0))/c.reference.atr
+                            reason=('REFERENCE_EXPIRED' if utc(c.reference.valid_until)<utc(as_of) else
+                                'PRIMARY_CAUSAL_CONTRADICTION' if primary.contradicting_ids else
+                                'NO_CURRENT_SUPPORTING_EVENT' if not primary.supporting_ids or not latest else
+                                'HISTORICAL_EVENT_OUTSIDE_RESEARCH_HORIZON' if (utc(as_of)-utc(latest['known_at'])).total_seconds()>54000 else
+                                'OUTSIDE_CURRENT_REFERENCE_RADIUS' if d>4 else None)
+                            if reason:
+                                archive.append({'card_id':c.id,'native_symbol':c.native_symbol,'family':c.primary_family,
+                                    'reference_id':c.reference.id,'disposition':reason,'distance_atr':d})
+                            else:current_groups.setdefault((c.native_symbol,c.primary_family),[]).append((c,d,latest))
+                        cards=[]
+                        for group in current_groups.values():
+                            group.sort(key=lambda x:(x[1],-utc(x[2]['known_at']).timestamp(),x[0].id))
+                            # One primary case per family/coin; independent TF
+                            # and reference alternatives remain in the ledger.
+                            cards.append(group[0][0])
+                            archive.extend({'card_id':c.id,'native_symbol':c.native_symbol,'family':c.primary_family,
+                                'reference_id':c.reference.id,'disposition':'ALTERNATIVE_SAME_FAMILY_REFERENCE',
+                                'distance_atr':d} for c,d,latest in group[1:])
+                        report['historical_case_dispositions']=archive
+                        report['investigation_funnel']['current_interpreted_card_count']=len(cards)
+                        report['investigation_funnel']['archived_or_alternative_card_count']=len(archive)
                     from .context import investigation_order
                     cards=investigation_order(cards,context,prioritized=context_prioritized)
                     report['context_questions']={'actual_order':'CONTEXT_PRIORITY' if context_prioritized else 'NEUTRAL',
@@ -894,7 +1060,49 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             consolidated[key]['shared_gap_reuses']+=1
                         else:meaningful.append(p)
                     report['planner']=meaningful
+                    if recovery:
+                        from .admission_facts import refresh_selected
+                        cards,depths,point_faults,as_of=refresh_selected(cards,facts,references,api,inventory,
+                            completion['economics'],clock=evaluation_time,max_depth=recovery['targeted_depth_symbols'])
+                        report['economic_observations'].extend(depths);report['source_faults'].extend(point_faults)
+                        from .method_engine import specialist_method
+                        for sample in report['selected_research']:
+                            depth=next((d for d in depths if d['native_symbol']==sample['native_symbol']),None)
+                            if depth:
+                                observed=specialist_method('M25',snapshot=depth)
+                                observed.update(source_hash=depth['source_hash'],source_time=depth['time'],
+                                    scope='CURRENT_DISPLAYED_DEPTH_ONLY; NO_PERSISTENT_WALL_OR_EXECUTED_ABSORPTION')
+                                sample['analytical_engine']['methods']=[observed if m['method_id']=='M25' else m
+                                    for m in sample['analytical_engine']['methods']]
                     reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],as_of=as_of) for c in cards]
+                    if native_review_dir is not None and recovery.get('native_pre_admission_enabled'):
+                        from .candidate_review import active_coin_watches
+                        from .agent_review import exchange
+                        active=active_coin_watches(reviews,as_of=as_of)
+                        wanted=[w['primary']['card_id'] for w in active if w['native_symbol'] not in {'BTCUSDT','ETHUSDT'}]
+                        pre_cards=sorted((c for c in cards if c.id in wanted),key=lambda c:wanted.index(c.id))
+                        report['native_review_phase']='PRE_ADMISSION_CURRENT_COIN_HYPOTHESES'
+                        report['consultant']=exchange(native_review_dir,pre_cards,facts,as_of=evaluation_time(),
+                            context=report.get('context'),reviews=reviews,max_cards=native_max_cards)
+                        if native_audit_config and report['consultant']['status']=='AWAITING_NATIVE_APP_RESPONSE':
+                            import sqlite3
+                            try:
+                                from .native_app import wait_for_reply
+                                receipt=wait_for_reply(native_review_dir,report['consultant']['material_sha256'],
+                                    native_audit_config,wait_seconds=native_wait_seconds,clock=evaluation_time)
+                                report['consultant']=exchange(native_review_dir,(),{},as_of=evaluation_time(),
+                                    previous=report['consultant'],cached=True)
+                                report['consultant']['native_collector']=receipt
+                                if receipt['status']=='NATIVE_RECEIPT_COLLECTED':
+                                    report['llm_calls']=receipt['observed_model_attempts']
+                            except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError):
+                                report['consultant']['native_collector']={'status':'NATIVE_RECEIPT_UNAVAILABLE_DETERMINISTIC_FALLBACK'}
+                            # Actual time advances during a native turn; point
+                            # quotes/depth must be independently refreshed.
+                            cards,depths,point_faults,as_of=refresh_selected(cards,facts,references,api,inventory,
+                                completion['economics'],clock=evaluation_time,max_depth=0)
+                            report['source_faults'].extend(point_faults)
+                            reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],as_of=as_of) for c in cards]
                     revoked_tfs={p['timeframe'] for p in report['causal_packs'] if p['qualification']=='REVOKED_SELECTED_ORACLE_MISMATCH'}
                     for r in reviews:
                         if r['reference']['timeframe'] in revoked_tfs and r['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}:
@@ -981,7 +1189,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     # distinct from broad coverage, including valid no-events.
                     from .engine_capabilities import manifest as analytical_manifest
                     capabilities=analytical_manifest(config)
-                    report['research_coverage']={'version':'research-coverage-6b.1','by_timeframe':{}}
+                    report['research_coverage']={'version':'research-coverage-6b.1',
+                        'scope':'SELECTED_HISTORY_ALGORITHM_EXECUTION; REMOTE_LEDGER_HAS_SEPARATE_SCOPE','by_timeframe':{}}
                     for tf in ('1h','15m','4h'):
                         engines=[s for s in report['selected_research'] if s['timeframe']==tf]
                         rows={}
@@ -1008,9 +1217,13 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                     'empirical_discovery_usefulness':'UNMEASURED'}
                         report['research_coverage']['by_timeframe'][tf]=rows
                     report['route_coverage']={route:{'eligible':ir['eligible_contracts'],
+                        'unit':'UNIQUE_SYMBOL_TIMEFRAME',
                         'requested':len({(x['native_symbol'],x['timeframe']) for x in union.values() if any(r.startswith(route+'_') for r in x['routes'])}),
-                        'evaluated':len({(c.native_symbol,c.timeframe) for c in cards if any(r.startswith(route+'_') for r in c.origins)}),
-                        'returned':len({c.id for c in cards if any(r.startswith(route+'_') for r in c.origins)}),
+                        'evaluated':len({(n,tf) for n,tf in selected if (n,tf) in union
+                            and any(r.startswith(route+'_') for r in union[n,tf]['routes'])}),
+                        'returned':len({(n,tf) for n,tf in selected if (n,tf) in union
+                            and any(r.startswith(route+'_') for r in union[n,tf]['routes'])}),
+                        'hypothesis_card_records':len({c.id for c in cards if any(r.startswith(route+'_') for r in c.origins)}),
                         'not_evaluated_budget':len([x for x in report['not_reviewed_budget'] if any(r.startswith(route+'_') for r in x['routes'])]),
                         'unsupported':len(members) if route=='B' and not independent else 0,
                         'failed':len(specialist_faults) if route=='B' else 0} for route in ('A','B','C')}
@@ -1067,8 +1280,14 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             'interpretation':'SHORT_ELAPSED_POINT_OBSERVATIONS; NOT_PROFITABILITY_OR_FULL_UNIVERSE_RECALL'})
                 report['prospective_follow_up']=follow
             from .handoff import make_export,consult_changed_cards
-            report['llm_calls']=0
-            if native_review_dir is None:
+            if not cached and report.get('native_review_phase'):
+                report['llm_status']=report['consultant']['status']
+            elif recovery and native_review_dir is not None:
+                # A source failure before the pre-admission phase cannot fall
+                # through to the old post-admission request publisher.
+                report['consultant']={**consult_changed_cards(cards),
+                    'status':'NATIVE_PRE_ADMISSION_UNAVAILABLE_OR_UNCHANGED; NO_POST_ADMISSION_FALLBACK'}
+            elif native_review_dir is None:
                 report['consultant']=consult_changed_cards(cards)
             else:
                 from .agent_review import exchange
@@ -1086,7 +1305,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         report['consultant']=exchange(native_review_dir,(),{},as_of=report['completed_at_utc'],
                             previous=report['consultant'],cached=True)
                         report['consultant']['native_collector']=receipt
-                        if receipt['status']=='NATIVE_RECEIPT_COLLECTED' and report['consultant']['status']=='VALIDATED_ADVISORY_ONLY':
+                        if receipt['status']=='NATIVE_RECEIPT_COLLECTED':
                             report['llm_calls']=receipt['observed_model_attempts']
                     except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError):
                         report['consultant']['native_collector']={'status':'NATIVE_RECEIPT_UNAVAILABLE_DETERMINISTIC_FALLBACK'}
@@ -1106,6 +1325,39 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 for r in report['shortlist']:
                     report['near_misses'].append({**r,'stage':'UNKNOWN','reason_code':'CLOCK_COHERENCE_UNQUALIFIED'})
                 report['shortlist']=[]
+            if recovery:
+                from .candidate_review import conditional_research,active_coin_watches
+                current_reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],
+                    as_of=report['completed_at_utc']) for c in cards]
+                report['active_coin_watchlist']=active_coin_watches(current_reviews,as_of=report['completed_at_utc'])
+                report['watch_counts']={'active_unique_coins':len(report['active_coin_watchlist']),
+                    'historical_reference_records':len(report['watches']),
+                    'historical_unique_coins':len({w['native_symbol'] for w in report['watches']}),
+                    'semantics':'ACTIVE_CURRENT_COIN_HYPOTHESES_SEPARATE_FROM_REFERENCE_ARCHIVE'}
+                candidates,dispositions=conditional_research(current_reviews,cards,facts,references,
+                    as_of=report['completed_at_utc']) if recovery.get('conditional_research_enabled') and not report.get('clock_anomalies') else ([],[])
+                report['conditional_research_candidates']=candidates
+                report['conditional_research_dispositions']=dispositions
+                report['conditional_research_policy']={'owner_approved':True,'blueprint_sections':['1.1','11.3','11.4'],
+                    'strict_ready_gates_changed':False,'full_method_qualification_changed':False,
+                    'trade_authorization':False,'deep_analyst_connected':False}
+                report['conditional_research_export']=make_export({**report,'shortlist':candidates},cards,facts,references)
+                report['coverage']['price_observed_symbols']=sorted({n for p in report['packs'] for n in p['evaluated_symbols']})
+                report['coverage']['observed_symbols']=sorted({n for p in [*report['packs'],*report['causal_packs']]
+                    for n in p['evaluated_symbols']})
+                report['coverage']['observed_symbols_scope']='AT_LEAST_ONE_TIME_ACCEPTED_REGISTERED_REMOTE_PRICE_OR_NARROW_CAUSAL_PACK; NOT_FULL_CORE'
+                report['coverage']['unobserved_symbols']=sorted(set(report.get('inventory',{}).get('identity_hashes',{}))-
+                    set(report['coverage']['observed_symbols']))
+                report['coverage']['remote_family_ledger_scope']='REMOTE_FIXED_AGE_NOMINATION_PREDICATES_ONLY'
+                report['invalidation_counts']={kind:sum(r.get('invalidation_kind')==kind or
+                    r.get('reason')==('REFERENCE_EXPIRED' if kind=='EXPIRY' else 'DELISTED_OR_CHANGED_CONTRACT_IDENTITY')
+                    for r in report['invalidations']) for kind in ('EXPIRY','CAUSAL_CONTRADICTION','IDENTITY')}
+                report['invalidation_counts']['interpretation']='REFERENCE_OR_HYPOTHESIS_RECORDS; NOT_TRADES_OR_LOSSES'
+                from collections import Counter
+                report['historical_case_disposition_counts']=dict(Counter(
+                    r['disposition'] for r in report.get('historical_case_dispositions',())))
+                report['invalidation_counts']['archived_expiry_records']=report['historical_case_disposition_counts'].get('REFERENCE_EXPIRED',0)
+                report['invalidation_counts']['archived_contradiction_records']=report['historical_case_disposition_counts'].get('PRIMARY_CAUSAL_CONTRADICTION',0)
             if not cached or cards:report['handoff_export']=make_export(report,cards,facts,references)
             elif not report['shortlist']:
                 report['handoff_export']=make_export(report,(),{},())
@@ -1119,10 +1371,10 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 'basis_charged_units':None,'quota':'UNKNOWN','sustainable_cadence':'UNQUALIFIED','llm_calls':report['llm_calls'],
                 'llm_call_semantics':'COMPLETED_NATIVE_PROVIDER_ASSISTANT_ATTEMPTS_OBSERVED_DURING_OPT_IN_REVIEW; INCOMPLETE_NATIVE_TURNS_UNKNOWN',
                 'cached_snapshot_reused':cached,'targeted_kline_calls':api.sample_calls}
-            cpu=resource.getrusage(resource.RUSAGE_SELF)
-            report['costs']['process_resources']={'scan_cpu_user_seconds':cpu.ru_utime-cpu_start.ru_utime,
-                'scan_cpu_system_seconds':cpu.ru_stime-cpu_start.ru_stime,'process_peak_rss_kib':cpu.ru_maxrss,
-                'scope':'LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE'}
+            cpu=os.times()
+            report['costs']['process_resources']={'scan_cpu_user_seconds':cpu.user-cpu_start.user,
+                'scan_cpu_system_seconds':cpu.system-cpu_start.system,'process_peak_rss_kib':None,
+                'scope':'PORTABLE_PROCESS_CPU; PEAK_RSS_NOT_MEASURED'}
             report['costs']['by_provider']={name:{'http_requests':len(rows),
                 'response_bytes':sum(r.get('response_bytes') or 0 for r in rows),
                 'request_body_bytes':sum(r.get('request_body_bytes') or 0 for r in rows),
@@ -1142,7 +1394,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
             merged_bundles=[(ref,sorted(events.values(),key=lambda e:(utc(e['known_at']),e['id'])),list(hs.values()))
                 for ref,events,hs in grouped.values()]
             report['run_id']=report['run_key'];report['as_of_utc']=report['completed_at_utc']
-            report['parameter_versions']={'interpretation':'6b.1','resource_plan':'6b.1','family_engine':'6a.1'}
+            report['parameter_versions']={'interpretation':'6b.1','resource_plan':'6b.1','family_engine':'6a.1',
+                'recovery':recovery.get('version'),'current_episode_selection':bool(recovery)}
             body={'schema_version':report['research_shortlist_version'],'run_id':report['run_id'],
                 'as_of_utc':report['as_of_utc'],'mode':report['evidence_mode'],
                 'source_revisions':{'inventory':report.get('inventory',{}).get('content_sha256'),
@@ -1151,6 +1404,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 **{k:report.get(k) for k in ('shortlist','near_misses','invalidations','late',
                     'not_reviewed_budget','context','research_coverage','route_coverage','resource_plan',
                     'source_faults','clock_anomalies','time_gaps','question_audit','consumed_obstacles','costs')},
+                **{k:report.get(k) for k in ('conditional_research_candidates','conditional_research_policy',
+                    'active_coin_watchlist','watch_counts','investigation_funnel','nominee_dispositions','invalidation_counts')},
                 'research_advice':report['consultant'],
                 'watches':[{k:v for k,v in w.items() if k!='review'} for w in report['watches']],
                 'trade_authorization':False,'new_orders_created':0}
@@ -1166,19 +1421,21 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
 def research_summary(report):
     """Small operator view; full source citations remain in JSON/SQLite."""
     lines=[f"OpenBot Market Researcher — {report['release_status']} ({report['mode']})",
-        f"Eligible contracts: {report['coverage']['eligible_contracts']}; research handoffs: {len(report['shortlist'])}"]
+        f"Eligible contracts: {report['coverage']['eligible_contracts']}; strict handoffs: {len(report['shortlist'])}; conditional research candidates: {len(report.get('conditional_research_candidates',()))}"]
     for p in report['packs']:
         lines.append(f"{p['timeframe']}: {len(p['column_ids'])} remote precursors; requested {p['requested']}, price evaluated {p['evaluated']}, returned {p['returned']}, missing {p['missing']}, failed {p['failed']}")
         if 'quote_rvol32' in p['per_formula']:
-            q=p['per_formula']['quote_rvol32'];lines.append(f"  Quote RVOL evaluated {q['evaluated']}/{q['eligible']}; unavailable {q.get('unavailable',0)}, failed {q['failed']}")
+            q=p['per_formula']['quote_rvol32'];lines.append(f"  Quote RVOL {'NOT_REQUESTED' if not q['requested'] else 'REQUESTED'}; evaluated {q['evaluated']}/{q['requested']} requested ({q['eligible']} eligible); deferred {q.get('not_requested',0)}, unavailable {q.get('unavailable',0)}, requested failures {q['failed'] if q['requested'] else 0}")
     for p in report.get('causal_packs',()):
-        lines.append(f"{p['timeframe']} causal nomination templates: evaluated {p['evaluated']}/{p['eligible_contracts']}; failed {p['failed']}; positive contracts {len(p['positive_observations'])}; full-method coverage remains partial")
-    lines.append(f"Watches: {len(report['watches'])}; near misses: {len(report['near_misses'])}; invalidations: {len(report['invalidations'])}; not reviewed within budget: {len(report['not_reviewed_budget'])}")
+        lines.append(f"{p['timeframe']} causal nomination templates: evaluated {p['evaluated']}/{p['requested']} requested ({p['eligible_contracts']} eligible); requested-but-absent {p['missing']}; deferred {len(p.get('not_requested_symbols',()))}; full-method coverage remains partial")
+    lines.append(f"Active watch coins: {len(report.get('active_coin_watchlist',()))}; historical watch reference records: {len(report['watches'])}; near misses: {len(report['near_misses'])}; expired/contradicted records: {len(report['invalidations'])}; not reviewed within budget: {len(report['not_reviewed_budget'])}")
+    if report.get('investigation_funnel'):
+        lines.append(f"Structurally investigated non-context coins: {report['investigation_funnel']['actual_non_context_alt_count']}; protected audit and operational capacity are separate.")
     lines.append(f"Unobserved gaps: {len(report['time_gaps'])}; HTTP calls: {report['costs']['http_requests']}; bytes: {report['costs']['response_bytes']}; wall: {report['costs']['wall_ms']/1000:.1f}s")
     if report.get('consultant',{}).get('status') not in {None,'LLM_DISABLED_NO_APPROVED_PROVIDER'}:
         lines.append(f"Native review: {report['consultant']['status']}; validated cards: {report['consultant'].get('accepted',0)}; observed model attempts this scan: {report.get('llm_calls',0)}.")
     if report.get('reuse'):lines.append('Reused unchanged closed-bar evidence; refreshed official inventory and current economics.')
-    if not report['shortlist']:lines.append('No qualified handoff: causal/admission coverage is incomplete. This does not establish that no opportunities exist.')
+    if not report['shortlist'] and not report.get('conditional_research_candidates'):lines.append('No research handoff under the observed evidence and gates. This does not establish that no opportunities exist.')
     lines.append('Full CORE/all-method coverage remains unqualified; narrow causal templates and selected public depth/OI are separate. Read-only; no orders or scheduling.')
     if report['source_faults']:lines.append('Source faults: '+', '.join(f['code'] for f in report['source_faults']))
     return '\n'.join(lines)

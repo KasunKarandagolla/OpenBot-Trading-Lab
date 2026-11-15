@@ -17,7 +17,9 @@ def consult_changed_cards(cards,*,provider=None):
     # A paid runtime, owner-approved model or subagent does not follow from an
     # installed SKILL.md. Keep the extension disabled until separately qualified.
     if provider is not None:raise ContractError('RESEARCH_TOOL_NOT_ALLOWED')
-    return {'status':'LLM_DISABLED_NO_APPROVED_PROVIDER','calls':0,'changed_cards':len(cards),
+    return {'status':'LLM_DISABLED_NO_APPROVED_PROVIDER','calls':0,'published_cards':len(cards),
+        'changed_cards':len(cards),'changed_cards_semantics':'DEPRECATED_ALIAS_OF_PUBLISHED_CARDS; NOT_MODEL_EDITS',
+        'model_changed_cards':0,
         'allowed_query_menu':sorted(ALLOWED_QUESTIONS),'deterministic_only_ablation':'IDENTICAL; ZERO_MODEL_CALLS'}
 
 
@@ -29,10 +31,12 @@ def make_export(report,cards,facts,references):
         ids=set(c.evidence_ids)|set(c.reference.source_ids)|{i for e in c.events for i in e['source_ids']}
         review=next(r for r in report['shortlist'] if r['card_id']==c.id)
         ids.update(review['room'].get('evidence_ids',()))
-        if not ids<=set(facts):raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
+        ids.update(review.get('research_room',{}).get('evidence_ids',()))
+        if not all(i in facts for i in ids):raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
         packets.append({'card':asdict(c),'reference_id':c.reference.id,'review':review,
             'evidence':{i:asdict(facts[i]) for i in sorted(ids)},
-            'obstacles':[asdict(r) for r in references if r.id==review['room'].get('first_obstacle_id')],
+            'obstacles':[asdict(r) for r in references if r.id in {
+                review['room'].get('first_obstacle_id'),review.get('research_room',{}).get('first_obstacle_id')}],
             'analyst_may_decline':True,'decline_side_effects':[]})
     body={'schema_version':'openbot.research-handoff.v1','direction':'RESEARCHER_TO_ANALYST_EXPORT_ONLY',
         'mode':report['mode'],'created_at':report['completed_at_utc'],'research_handoffs':packets,

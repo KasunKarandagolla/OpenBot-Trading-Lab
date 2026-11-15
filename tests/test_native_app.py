@@ -86,6 +86,23 @@ class NativeReceiptCollector(unittest.TestCase):
         with self.assertRaises(ContractError):collect(self.request,self.config,self.target,as_of=self.now)
         self.assertFalse((self.folder/(self.key+'.audit.json')).exists())
 
+    def test_real_invocation_proof_is_retained_when_reply_contract_is_rejected(self):
+        self.reply['interpretations'][0]['interpretation']='F4 prose is not an enum label'
+        with sqlite3.connect(self.config['openbot_db']) as db:
+            db.execute("UPDATE projection_thread_messages SET message_json=? WHERE author='assistant'",
+                (json.dumps({'text':encode(self.reply)}),))
+        result=wait_for_reply(self.folder,self.key,self.configfile,clock=lambda:self.now)
+        self.assertEqual(result['observed_model_attempts'],1)
+        self.assertEqual(result['reply_validation_status'],'REJECTED')
+        self.assertEqual(result['reply_rejection_reason'],'AGENT_REPLY_ADVICE')
+        audit=json.loads((self.folder/(self.key+'.audit.json')).read_text())
+        self.assertTrue(audit['native_invocation_verified']);self.assertEqual(audit['validated_rows'],0)
+        from researcher.agent_review import exchange
+        rejected=exchange(self.folder,(),{},as_of=self.now,cached=True,
+            previous={'material_sha256':self.key})
+        self.assertEqual(rejected['reason'],'AGENT_REPLY_ADVICE')
+        self.assertNotEqual(rejected['status'],'VALIDATED_ADVISORY_ONLY')
+
     def test_incomplete_read_or_future_completion_fails_closed(self):
         self.tools[1]['state']['content'][0]['text']='1: {';self.write_attempt()
         with self.assertRaises(ContractError):collect(self.request,self.config,self.target,as_of=self.now)

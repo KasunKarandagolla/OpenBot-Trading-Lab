@@ -34,10 +34,14 @@ class CachedPublicHTTP:
 
 
 class OfficialResearchAPI:
-    def __init__(self,http=None,*,access_denial=None):
+    def __init__(self,http=None,*,access_denial=None,max_sample_symbols=5,max_sample_calls=10):
         # A fresh authorized host probes its normal official route. Existing
         # recorded denials can still be supplied; never clear one within a run.
+        if (type(max_sample_symbols) is not int or not 1<=max_sample_symbols<=32
+                or type(max_sample_calls) is not int or not 1<=max_sample_calls<=66):
+            raise ContractError('BOUNDED_CLOSED_SAMPLE_REQUIRED')
         self.http=CachedPublicHTTP(http)
+        self.max_sample_symbols=max_sample_symbols;self.max_sample_calls=max_sample_calls
         self.access_denial=access_denial
         self.sample_symbols=set()
         self.sample_calls=0
@@ -67,7 +71,7 @@ class OfficialResearchAPI:
         if self.access_denial in {403,451}:raise ProviderError("RECORDED_BINANCE_ACCESS_DENIAL")
         if instrument.identity_status!="EXCHANGE_VERIFIED":raise ContractError("KLINES_REQUIRE_VERIFIED_IDENTITY")
         names=self.sample_symbols|{instrument.native_symbol}
-        if len(names)>5 or self.sample_calls>=10:
+        if len(names)>self.max_sample_symbols or self.sample_calls>=self.max_sample_calls:
             raise ContractError("SELECTED_SAMPLE_BUDGET_EXHAUSTED")
         if (timeframe not in WIDTHS or type(bars) is not int or not 1<=bars<=300
                 or int(utc(cutoff).timestamp())%WIDTHS[timeframe]

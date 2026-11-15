@@ -1,5 +1,6 @@
 """Actual Streamable HTTP MCP client, deliberately limited to research reads."""
 import json
+import time
 from decimal import Decimal
 from .contracts import ContractError, symbol
 from .transport import MCP_READ_TOOLS, ProviderError, PublicHTTP
@@ -92,6 +93,7 @@ class BasisMCP:
         self.session6a = session6a
         self.blocked_reason = None
         self.blocked_receipt = None
+        self.cooldown_until = None
 
     def _rpc(self, method, params, *, notification=False):
         self.counter += 1
@@ -110,14 +112,31 @@ class BasisMCP:
             if response.body:
                 raise ProviderError("MCP_NOTIFICATION_BODY_UNEXPECTED")
             return {}
-        try:return rpc_result(response.body, self.counter)
+        try:
+            if response.receipt.get('http_status')==202 and not response.body:
+                raise ProviderError('PROVIDER_PENDING_EMPTY_202')
+            return rpc_result(response.body, self.counter)
         except ProviderError as error:
             receipt=dict(response.receipt)
             if str(error)=='PROVIDER_BUSY_COOLDOWN':
                 # Advisory is from the tool payload, not an HTTP Retry-After.
                 receipt['provider_advised_wait_seconds']=60
                 self.blocked_reason='PROVIDER_BUSY_COOLDOWN';self.blocked_receipt=receipt
+                self.cooldown_until=time.monotonic()+60
             raise ProviderError(str(error),receipt) from None
+
+    def resume_after_cooldown(self,*,max_wait=60):
+        """One explicitly budgeted caller may resume the same lawful session.
+
+        Denials/429 are never cleared. The provider's full advised delay must
+        elapse; resumption is not a new session or a silent replay.
+        """
+        if self.blocked_reason!='PROVIDER_BUSY_COOLDOWN' or self.cooldown_until is None:return False
+        delay=max(0,self.cooldown_until-time.monotonic())
+        if delay>max_wait:return False
+        if delay:time.sleep(delay)
+        self.blocked_reason=None;self.blocked_receipt=None;self.cooldown_until=None
+        return True
 
     def connect(self):
         result = self._rpc("initialize", {"protocolVersion": PROTOCOL, "capabilities": {},

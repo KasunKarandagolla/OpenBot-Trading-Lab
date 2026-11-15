@@ -74,7 +74,10 @@ def main():
         elif args.command=='show':
             from .persistence import read_latest_report
             saved=read_latest_report(args.db)
-            report=saved if args.action=='results' else {args.action:saved.get(args.action if args.action=='watches' else 'research_coverage'),
+            report=saved if args.action=='results' else {args.action:saved.get(
+                'active_coin_watchlist' if args.action=='watches' and 'active_coin_watchlist' in saved else
+                    args.action if args.action=='watches' else 'research_coverage'),
+                'watch_counts':saved.get('watch_counts') if args.action=='watches' else None,
                 'mode':saved['mode'],'as_of_utc':saved['completed_at_utc'],'trade_authorization':False}
         elif args.command == 'review':
             from .session4 import replay_session3,probe_precursors

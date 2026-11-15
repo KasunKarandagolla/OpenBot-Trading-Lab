@@ -37,7 +37,20 @@ def attach(card,facts,references,bars,instrument,source,depth,assumptions,*,as_o
         edge=r.lo if direction==1 else r.hi
         add('OBSTACLE_LIFECYCLE',{'reference_id':r.id,'after':card.window_start,
             'consumed':any(b.high>=edge if direction==1 else b.low<=edge for b in relevant)},'REFERENCE_STATE')
-    if not depth:return tuple(ids),{'status':'UNKNOWN','reason':'NO_CURRENT_TARGETED_DEPTH'}
+    # Horizon and declared scenarios are independently sourceable. A depth gap
+    # must not erase unrelated answers or become an undifferentiated UNKNOWN.
+    for measurement,value,units in (
+        ('ROUND_TRIP_FEE_BPS',D(assumptions['round_trip_fee_assumption_bps']),'BPS'),
+        ('FUNDING_BOUND_BPS',D(assumptions['funding_assumption_bound_bps']),'BPS'),
+        ('HORIZON_SECONDS',D(assumptions['max_horizon_seconds']),'SECONDS'),
+        ('HORIZON_RELEVANT',bool(card.events) and (utc(as_of)-utc(
+            card.formation['families'][card.primary_family]['timeline'][-1]['known_at'] if card.formation else
+            card.events[-1]['known_at'])).total_seconds()<=54000,'BOOLEAN')):
+        add(measurement,value,units,provider='DECLARED_RESEARCH_SCENARIO:'+assumptions['fee_source'],
+            source_hash=digest(encode(assumptions).encode()),end=card.cutoff)
+    if not depth:return tuple(ids),{'status':'SOURCE_GAP','reason':'NO_CURRENT_TARGETED_DEPTH',
+        'source_gaps':['DEPTH_USDT_WITHIN_ROOM','SLIPPAGE_BOUND_BPS'],
+        'answered_independently':['ROUND_TRIP_FEE_BPS_SCENARIO','FUNDING_BOUND_BPS_SCENARIO','HORIZON_RELEVANT']}
     from dataclasses import replace
     from .candidate_review import remaining_room
     room=remaining_room(replace(card,evidence_ids=tuple(ids)),facts,references,as_of=as_of)
@@ -53,13 +66,8 @@ def attach(card,facts,references,bars,instrument,source,depth,assumptions,*,as_o
     # Bounds below are explicitly declared scenarios, not account facts or a
     # guarantee of future funding/fills. They can produce only CONDITIONAL.
     for measurement,value,units in (
-        ('ROUND_TRIP_FEE_BPS',D(assumptions['round_trip_fee_assumption_bps']),'BPS'),
         ('SLIPPAGE_BOUND_BPS',cost['slippage_excluding_spread_bps']+D(assumptions['additional_slippage_assumption_bps']),'BPS'),
-        ('FUNDING_BOUND_BPS',D(assumptions['funding_assumption_bound_bps']),'BPS'),
-        ('HORIZON_SECONDS',D(assumptions['max_horizon_seconds']),'SECONDS'),
-        ('HORIZON_RELEVANT',bool(card.events) and (utc(as_of)-utc(
-            card.formation['families'][card.primary_family]['timeline'][-1]['known_at'] if card.formation else
-            card.events[-1]['known_at'])).total_seconds()<=54000,'BOOLEAN')):
+        ):
         add(measurement,value,units,provider='DECLARED_RESEARCH_SCENARIO:'+assumptions['fee_source'],
             source_hash=digest(encode(assumptions).encode()),end=card.cutoff)
     return tuple(ids),{**cost,'assumptions':assumptions,'room':room,
@@ -135,3 +143,69 @@ def refresh_cached(export,api,pulse,members,assumptions,*,clock,sources,refresh=
             card=replace(card,evidence_ids=tuple(dict.fromkeys(ids)))
         cards.append(card);facts.update(own);references.update({r.id:r for r in refs})
     return cards,facts,list(references.values()),faults,consumed
+
+
+def refresh_selected(cards,facts,references,api,inventory,assumptions,*,clock,max_depth=8):
+    """Refresh point evidence after computation, for selected coins only.
+
+    A displayed book at today's quote cannot certify future liquidity at a
+    distant decision price. Persist its observed probe and that exact limitation.
+    """
+    from dataclasses import replace
+    from .economic_sources import depth_snapshot
+    from .candidate_review import remaining_room
+    from .contracts import ContractError
+    from .screening import safe_error
+    pulse=api.pulse(inventory,partial=True,kinds=('book',))
+    books={o['native_symbol']:o for p in pulse for o in p['observations']}
+    members={i.native_symbol:i for i in inventory.instruments};depths={};faults=[]
+    ranking={}
+    for c in cards:
+        if c.native_symbol in {'BTCUSDT','ETHUSDT'} or c.native_symbol not in books:continue
+        primary=next(h for h in c.hypotheses if h.family==c.primary_family)
+        if primary.contradicting_ids or not primary.supporting_ids:continue
+        b=books[c.native_symbol];mid=(b['values']['bid']+b['values']['ask'])/2
+        d=max(c.reference.lo-mid,mid-c.reference.hi,D(0))/c.reference.atr
+        ranking[c.native_symbol]=min(ranking.get(c.native_symbol,D('Infinity')),d)
+    for n in sorted(ranking,key=lambda n:(ranking[n],n))[:max_depth]:
+        if ranking[n]>D('2.5'):continue
+        try:depths[n]=depth_snapshot(api,members[n])
+        except (ContractError,OSError,ValueError,KeyError,TypeError) as e:
+            faults.append({'phase':'current_candidate_depth','symbol':n,'code':safe_error(e)})
+    # Books can age during depth retrieval. The consumer rechecks every point's
+    # own timestamp against the actual completion time; no freshness stamping.
+    at=clock();updated=[]
+    for c in cards:
+        ids=[i for i in c.evidence_ids if facts[i].measurement not in {
+            'RESEARCH_PRICE','SPREAD_BPS','DEPTH_USDT_WITHIN_ROOM','SLIPPAGE_BOUND_BPS','DISPLAYED_BOOK_PROBE'}]
+        def add(measurement,value,units,end,received,provider,sha):
+            fid=fact_id(c.id,measurement,value,sha)
+            facts[fid]=Fact(fid,members[c.native_symbol],measurement,value,units,'CURRENT',end,end,
+                received,received,provider,sha,'EXACT_REPORTED',True,'QUALIFIED',c.mode,30,
+                cluster='EXECUTION_FRICTION');ids.append(fid)
+        b=books.get(c.native_symbol)
+        if b:
+            add('RESEARCH_PRICE',(b['values']['bid']+b['values']['ask'])/2,'USDT_PER_BASE',
+                b['source_time_utc'],b['received_at_utc'],'OFFICIAL_BINANCE_TOP_OF_BOOK',b['source_response_sha256'])
+            add('SPREAD_BPS',b['values']['spread_bps'],'BPS',b['source_time_utc'],b['received_at_utc'],
+                'OFFICIAL_BINANCE_TOP_OF_BOOK',b['source_response_sha256'])
+        d=depths.get(c.native_symbol)
+        if d:
+            own_references=[r for r in references if r.native_symbol==c.native_symbol]
+            room=remaining_room(replace(c,evidence_ids=tuple(ids)),facts,own_references,as_of=at)
+            obstacle=next((r for r in own_references if r.id==room.get('first_obstacle_id')),None)
+            side=next(h.direction for h in c.hypotheses if h.family==c.primary_family)
+            cost=book_cost(d,members[c.native_symbol],notional=assumptions['probe_notional_usdt'],
+                obstacle=(obstacle.lo if side=='BULLISH' else obstacle.hi) if obstacle else None,
+                direction=1 if side=='BULLISH' else -1)
+            add('DISPLAYED_BOOK_PROBE',cost,'SNAPSHOT_PROBE',d['time'],d['received'],
+                'OFFICIAL_BINANCE_DISPLAYED_DEPTH',d['source_hash'])
+            if cost['status']=='OBSERVED':
+                if cost['depth_usdt_within_room'] is not None:
+                    add('DEPTH_USDT_WITHIN_ROOM',cost['depth_usdt_within_room'],'USDT',d['time'],d['received'],
+                        'OFFICIAL_BINANCE_DISPLAYED_DEPTH',d['source_hash'])
+                add('SLIPPAGE_BOUND_BPS',cost['slippage_excluding_spread_bps']+
+                    D(assumptions['additional_slippage_assumption_bps']),'BPS',d['time'],d['received'],
+                    'DECLARED_RESEARCH_SCENARIO:'+assumptions['fee_source'],d['source_hash'])
+        updated.append(replace(c,evidence_ids=tuple(ids)))
+    return updated,list(depths.values()),faults,at

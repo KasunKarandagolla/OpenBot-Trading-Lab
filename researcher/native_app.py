@@ -63,6 +63,9 @@ def prepare(directory,material,config_file):
         'Return one complete openbot.research-review.reply.v1 JSON object for all supplied cards, '
         f'material_sha256 {material}, all required fields, one existing citation per card, claims:[], '
         'trade_authorization:false, below6500 characters. No Markdown or other text. '
+        'CRITICAL FORMAT: interpretation must be ONLY one exact label from that card families '
+        '(for example F4), NULL or UNKNOWN; never a sentence. strongest_rival is ONLY a supplied '
+        'rival label. Do not add narrative fields or put prose/numbers in label fields. '
         'Retain missing sources, chronology, first obstacle, NULL and strongest rival; advice cannot admit a trade.\n')
     (folder/(material+'.prompt.txt')).write_text(prompt)
     return request,config,target
@@ -128,7 +131,17 @@ def collect(request,config,target,*,as_of):
     source=encode(request)+'\n'
     if not loaded or '\n'.join(read_lines[i] for i in sorted(read_lines))+'\n'!=source:
         raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    raw=json.loads(message)['text'];validated=validate_reply(parse_reply(raw),request)
+    raw=json.loads(message)['text']
+    try:
+        validated=validate_reply(parse_reply(raw),request)
+        validation={'reply_validation_status':'VALIDATED','validated_rows':validated['accepted']}
+    except ContractError as error:
+        # A real rejected model output is still an observed invocation. Keep
+        # complete runtime/byte proof and let exchange reject it independently.
+        from .agent_review import REJECTION_CODES
+        code=str(error)
+        if code not in REJECTION_CODES:raise
+        validation={'reply_validation_status':'REJECTED','reply_rejection_reason':code,'validated_rows':0}
     audit={'schema_version':'openbot.native-review.audit.v1','audit_source':'OPENBOT_APP_SCOPED_READ_ONLY_AUDIT',
         'agent_name':AGENT,'model':MODEL,'skill_sha256':request['skill_sha256'],'material_sha256':material,
         'reply_sha256':digest(raw.encode()),'native_invocation_verified':True,'model_requests':len(attempts),
@@ -138,7 +151,7 @@ def collect(request,config,target,*,as_of):
         'skill_and_request_read_completely':True,'provider_schema':'OPENCODE_V2_SESSION_MESSAGE',
         'authority':'ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM',
         'provider_usage':[{'finish':a.get('finish'),'tokens':a.get('tokens'),'reported_cost_usd':a.get('cost')} for a in attempts],
-        'validated_rows':validated['accepted']}
+        **validation}
     return raw,audit
 
 
@@ -190,6 +203,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None):
                 if not path.exists():
                     with path.open('x',encoding='utf-8',newline='') as stream:stream.write(value)
             return {'status':'NATIVE_RECEIPT_COLLECTED','observed_model_attempts':audit['model_requests'],
+                'reply_validation_status':audit['reply_validation_status'],
+                'reply_rejection_reason':audit.get('reply_rejection_reason'),
                 'storage_read_retries':storage_retries}
         if time.monotonic()>=deadline:return {'status':'AWAITING_OWNER_NATIVE_APP_SUBMISSION','storage_read_retries':storage_retries}
         time.sleep(min(1,max(0,deadline-time.monotonic())))

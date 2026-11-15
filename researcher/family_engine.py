@@ -137,10 +137,10 @@ def boundary_family(family, ref, bars, *, as_of, balance=False):
         'opposing_initiative_verified':any(e['kind']=='OPPOSING_INITIATIVE' for e in tl)})
 
 
-def continuation(bars,tick):
+def continuation(bars,tick,*,latest=False):
     if len(bars)<20:return hypothesis('F1')
     swings=confirmed_swings(bars);tl=[];expired=0
-    for s in swings:
+    for s in reversed(swings) if latest else swings:
         known=[p for p in swings if p['known_index']<=s['known_index']]
         ladder=swing_ladder(known)
         side=1 if ladder=='HH_HL' else -1 if ladder=='LH_LL' else 0
@@ -184,9 +184,9 @@ def continuation(bars,tick):
         details={'expired_before_first_available':expired})
 
 
-def compression_family(bars,tick,refs):
+def compression_family(bars,tick,refs,*,latest=False):
     if len(bars)<159:return hypothesis('F3')
-    for i in range(159,len(bars)+1):
+    for i in (range(len(bars),158,-1) if latest else range(159,len(bars)+1)):
         q=compression(bars[:i],tick=tick)
         if q['past_percentile']>D('.2'):continue
         b=bars[i-1]
@@ -294,11 +294,11 @@ def value_reversion(bars,tick,balance,*,anchor_ms=None,anchor_known_at=None):
     return hypothesis('F7',state='NO_EVENT_IN_COMPLETE_WINDOW')
 
 
-def relative_family(bars,benchmark,refs):
+def relative_family(bars,benchmark,refs,*,latest=False):
     if benchmark is None:return hypothesis('F8',state='SOURCE_CAPABILITY_REQUIRED')
     if len(bars)<36:return hypothesis('F8')
     rows=residual_series(bars,benchmark)
-    for i in range(36,len(bars)+1):
+    for i in (range(len(bars),35,-1) if latest else range(36,len(bars)+1)):
         rel=residual_persistence(rows[i-3:i])
         side=rel['direction']
         if not side:continue
@@ -321,11 +321,11 @@ def relative_family(bars,benchmark,refs):
     return hypothesis('F8',state='NO_EVENT_IN_COMPLETE_WINDOW')
 
 
-def shock_family(bars,tick,*,liquidation=None):
+def shock_family(bars,tick,*,liquidation=None,latest=False):
     if len(bars)<35:return hypothesis('F9')
     atr=wilder_atr(bars);trs=true_ranges(bars)
     expired=0
-    for i in range(33,len(bars)):
+    for i in (range(len(bars)-1,32,-1) if latest else range(33,len(bars))):
         if not atr[i-1] or trs[i]<3*atr[i-1]:continue
         # Earlier normalized own-history ranges; current event excluded.
         past=[trs[j]/atr[j-1] for j in range(max(15,i-32),i) if atr[j-1]]
@@ -362,7 +362,8 @@ def shock_family(bars,tick,*,liquidation=None):
         details={'expired_before_first_available':expired})
 
 
-def evaluate_families(bars,tick,*,cutoff,as_of,benchmark=None,references=(),profiles=(),event_anchor=None,liquidation=None):
+def evaluate_families(bars,tick,*,cutoff,as_of,benchmark=None,references=(),profiles=(),event_anchor=None,liquidation=None,
+                      current_episodes=False):
     bars=closed_prefix(bars,cutoff=cutoff,as_of=as_of)
     if not bars:return [hypothesis('F'+str(i)) for i in range(1,10)]
     tick=D(tick)
@@ -374,9 +375,13 @@ def evaluate_families(bars,tick,*,cutoff,as_of,benchmark=None,references=(),prof
     if any(r.native_symbol!=bars[0].native_symbol or r.timeframe!=bars[0].timeframe for r in refs):
         raise ContractError('REFERENCE_BAR_IDENTITY')
     balance=balance_references(bars,tick)
-    result=[continuation(bars,tick),compression_family(bars,tick,refs),
-            value_reversion(bars,tick,balance,**(event_anchor or {})),relative_family(bars,benchmark,refs),
-            shock_family(bars,tick,liquidation=liquidation)]
+    if current_episodes:
+        for end in range(len(bars)-4,max(31,len(bars)-33),-4):
+            found=balance_references(bars,tick,baseline_end=end)
+            if found:balance=found;break
+    result=[continuation(bars,tick,latest=current_episodes),compression_family(bars,tick,refs,latest=current_episodes),
+            value_reversion(bars,tick,balance,**(event_anchor or {})),relative_family(bars,benchmark,refs,latest=current_episodes),
+            shock_family(bars,tick,liquidation=liquidation,latest=current_episodes)]
     for profile in profiles:result.extend(profile_rotation(profile,bars,tick,as_of=as_of))
     for f in ('F2','F4','F5','F6'):
         candidates=balance if f=='F6' else refs

@@ -1,3 +1,83 @@
+# One-session functional recovery — CODEX_LOCAL, 15 November 2026
+
+Fetched clean feature HEAD `722fe0a6f5232fad23f39f387b475e7476e47be5` before
+implementation; PR24 draft/main untouched. Independently supplied diagnostic ZIP
+hash `7d9333ebad157cac66fafc27cba0b6d5f0a1894743dc5fde8ce4f62cc231289d`
+verified. Immutable blueprint/plan and historical source certificates unchanged.
+The owner explicitly approved CONDITIONAL_RESEARCH_ONLY handoffs with verified
+current structure/price/spread and named room/fee/depth questions; strict READY,
+production method/source qualification and trading authority are unchanged.
+
+**Actually functional:** separate2-symbol protected allocation plus18 operational
+capacity;20 genuine non-context coins investigated in successful ordinary runs;
+selected current causal episodes, explicit reference/nominee dispositions and
+ranked coin watches. Sourceable significance/proximity, quote participation,
+whole-bar Q/V, targeted displayed-depth M25 and declared horizon/cost scenarios
+execute. Missing balance/specialists remain precise gaps. Current candidate
+selection no longer depends on terminal trade authorization. No forced count.
+
+Source integrity uses exact frozen bar cutoffs; no historical Basis as_of claim.
+One advised60s same-session busy resumption, pending202/transient receipts,
+physical dispatch accounting and bounded calls/bytes/time preserve good data.
+Selected official endTime histories recover justified candidates; no wide local
+warehouse. One real run accepted35015M price rows with1H price deferred while
+its separate causal1H pack evaluated519. The next real restart accepted519/519
+price rows on both TFs. Final newer remote rows were all rejected, yet20 selected
+alts still produced useful research. This is not a provider ceiling or a claim
+about opportunities among unobserved symbols.
+
+Final normal run `827bfd3d6bb548e873c4754b76f6b34d2ab0803427b7b0ae9685c8438b67de1e`:
+**five conditional research coins** UNI/F8, MET/F5, AAVE/F8, ESPORTS/F9, WIF/F9;
+three measured research-room cases/two named room questions, zero strict
+handoffs.22 active watch coins include BTC/ETH;197 historical references on33
+names remain separate.750 archived contradictory hypothesis records are not
+trades/losses. All common watch first-seen times survive real restarts
+(103/103,167/167,167/167). Two benchmark1H freshness checks became stale when the
+run crossed the hour; frozen selected histories remain available, context
+unknown/non-veto. Final98 market HTTP/6,802,540B/1,140.198s including native wait.
+
+**Actual native acceptance:** existing Trading Lab Market Researcher and
+unchanged `opencode/deepseek-v4.1-flash-free`, skill hash
+`96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb`.
+Request `8baf49cd472d2c57d3113927706898fded04a3ea5acea22f407f175d1a06e33d`
+created07:07:58Z; actual turn07:11:44.564–07:14:26.414Z, five provider assistant
+attempts, two ICNT/APR cards independently audited/imported before07:14:30.633Z:
+VALIDATED_ADVISORY_ONLY in the pre-admission phase. Complete skill/request bytes,
+exact citations and read-only tools verified; Local Scripts/model/permissions
+unchanged. WATCH/INVESTIGATE priorities and questions added; no facts or
+eligibility changed, usefulness unmeasured. A prior genuine turn/five attempts
+was rejected for prose in an enum; actual invocation counts are now retained
+independently of reply validity. No hand repair or copied-chat escape conversion.
+
+Real testing exposed/fixed multi-coin obstacle scope on restart and prevented
+its old post-error native fallback. Other fixes: direct membership rather than
+repeated full fact-map copies, recent/relevant references, distance-aware stage,
+expiry/contradiction identity, route units, publication/model counters, exact
+quote/1H denominators, F9 code/source state, portable CPU and UTF-8 manifest.
+All27 measurements/F1–F9/31 methods remain. Eight selected current-depth method
+observations on each selected TF in the final run do not qualify persistent
+walls. Full methods/production/source rights/sustained quota remain PARTIAL;
+M14/M15 definitions and actual profile/footprint/flow/liquidation/sector/catalyst
+feeds remain unsourced. No Deep Analyst integration or trade/scheduling change.
+
+Baseline357 tests passed678.857s; final372 passed1,211.303s, zero failures/skips;
+19 critical source/native/restart regressions passed27.749s. Config, immutable
+hashes and diff checks pass. Initial pacing-test regression, expired preliminary
+request/interrupted transaction, scoped-room failure and rejected native reply
+remain explicit in receipts. Four completed live scans total367 market HTTP /
+25,056,841B; interrupted-probe cost not fully retained. Two native turns/10
+assistant attempts report estimated$0 in app records; billing/entitlement and
+charged/sustainable source quota unknown. No future outcome/recall/P&L claim;
+ten diagnostic cases stay pending until after2026-11-15T18:46:28Z.
+
+See ONE_SESSION_RECOVERY_RUNBOOK.md and
+`evidence/external-first/recovery-20261115/` for exact source/method/native/test
+receipts, before/after scopes and hashes. Full reports/private receipts stay
+ignored under work/recovery. Publication SHA/remote equality and exact CI are
+verified after commit/push and recorded in the owner handoff; PR24 stays draft.
+
+---
+
 # Session 6C — final combined acceptance under approved source gates
 
 CODEX_LOCAL / SOL, completed2026-11-15. A `8a7e61b` and B `4c3b88f` were

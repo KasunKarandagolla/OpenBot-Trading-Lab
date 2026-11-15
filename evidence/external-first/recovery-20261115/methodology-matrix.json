@@ -1,0 +1,5406 @@
+{
+  "measurements_27": [
+    {
+      "id": "ID0",
+      "required_input": "exchangeInfo exact perp metadata",
+      "definition": "venue/native symbol/USDT settle/type/status; multiplier never inferred; tick and lot Decimal alignment",
+      "prior_anchor": "dated metadata snapshot",
+      "code_path": "inventory/Instrument; measurements.tick_price",
+      "test_oracle": "Inherited identity, young, multiplier, Unicode tests",
+      "status": "SOURCE_CAPABILITY_REQUIRED",
+      "unknown": "Explicit multiplier may be absent"
+    },
+    {
+      "id": "ECO1",
+      "required_input": "fresh book, turnover, declared native depth and friction assumptions",
+      "definition": "10000*(ask-bid)/mid; declared depth USDT within bps; native lot/min notional and current book walk",
+      "prior_anchor": "quote/depth timestamps; first original opposing obstacle",
+      "code_path": "economic_sources.book_cost; method_engine.depth_walls; admission_facts.attach",
+      "test_oracle": "Depth oracle + inherited consumed-obstacle/admission tests",
+      "status": "SOURCE_CAPABILITY_REQUIRED",
+      "unknown": "Personal fees/future fills remain unknown; scenarios are conditional"
+    },
+    {
+      "id": "VOL1",
+      "required_input": "closed H/L and previous C",
+      "definition": "max(H-L,abs(H-Cprev),abs(L-Cprev)); first sample undefined",
+      "prior_anchor": "previous closed source bar",
+      "code_path": "numerics.true_ranges; pack_contracts.TR",
+      "test_oracle": "Previous-close independent arithmetic and inherited genuine HLC",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "New remote expression needs exact-start Local oracle"
+    },
+    {
+      "id": "VOL2",
+      "required_input": "14 valid TRs then recurrence",
+      "definition": "seed=sum(TR1..14)/14; ATR=(13*ATRprev+TR)/14",
+      "prior_anchor": "fixed source start; original ATR frozen in Reference",
+      "code_path": "numerics.wilder_atr; pack_contracts.ATR",
+      "test_oracle": "Exact seed/recurrence, zero ATR, retained native-atr failures",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Not infinite-history seed equivalence"
+    },
+    {
+      "id": "VOL3",
+      "required_input": "n=16 closed H/L/C",
+      "definition": "(maxH-minL)/max(C,tick)",
+      "prior_anchor": "last complete 16-bar window",
+      "code_path": "numerics.normalized_width; pack_contracts.W",
+      "test_oracle": "Independent width arithmetic and genuine selected bars",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Row-specific provider history needs qualification"
+    },
+    {
+      "id": "VOL4",
+      "required_input": "128 earlier width windows",
+      "definition": "(#less + 0.5*#equal)/128; entire current16 excluded",
+      "prior_anchor": "baseline offsets16..143, 159 total bars",
+      "code_path": "numerics.compression; pack_contracts.QUIET",
+      "test_oracle": "Ties/flat/current exclusion/short history",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Young history unknown, not favorable zero"
+    },
+    {
+      "id": "PATH1",
+      "required_input": "n+1 closed closes",
+      "definition": "abs(Ct-Ct-n)/sum(abs(diff C)); zero path UNKNOWN",
+      "prior_anchor": "prior n transitions",
+      "code_path": "numerics.efficiency; pack_contracts.PATH",
+      "test_oracle": "Monotone=1; flat unknown; native regressions",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Remote zero sentinel needs Local oracle"
+    },
+    {
+      "id": "PATH2",
+      "required_input": "two aligned bars and tick",
+      "definition": "max(0,minH-maxL)/max(min(range1,range2),tick)",
+      "prior_anchor": "previous closed bar",
+      "code_path": "numerics.overlap",
+      "test_oracle": "Inherited independent geometry/flat tests",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "OHLC geometry only"
+    },
+    {
+      "id": "PATH3",
+      "required_input": "previous ATR and two closed bars",
+      "definition": "TR/ATRprev; abs(C-O)/max(H-L,tick); (C-L)/max(range,tick); signed progress",
+      "prior_anchor": "strict prior ATR",
+      "code_path": "numerics.displacement; pack_contracts displacement/body",
+      "test_oracle": "Wick negative, positive displacement, zero ATR",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "No intrabar order"
+    },
+    {
+      "id": "LVL1",
+      "required_input": "l/r in 2,3,4; contiguous bars",
+      "definition": "strict left high and non-strict right high; mirror lows; confirm only at k+r",
+      "prior_anchor": "pivot id and right confirmation",
+      "code_path": "numerics.confirmed_swings",
+      "test_oracle": "Tied pivots and known-at prefix tests",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Comparable hierarchy is declared timeframe"
+    },
+    {
+      "id": "LVL2",
+      "required_input": "confirmed swings/predeclared range/old zone",
+      "definition": "immutable bounds, tick/ATR, origin/source IDs, known/available/expiry",
+      "prior_anchor": "original Reference id and source graph",
+      "code_path": "structures.Reference; family_engine.reference",
+      "test_oracle": "Future prefix, ledger immutability, expiry/source mismatch",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Significance remains a measured subclass"
+    },
+    {
+      "id": "LVL3",
+      "required_input": "valid pre-known opposite references and current source price",
+      "definition": "distance=max(lo-p,p-hi,0)/ATRref; nearest directional obstacle; consumption never skipped",
+      "prior_anchor": "first opposing obstacle before event",
+      "code_path": "numerics.first_obstacle; candidate_review.remaining_room",
+      "test_oracle": "Inherited consumed first obstacle/room failures",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Room/economics unknown without current facts"
+    },
+    {
+      "id": "LVL4",
+      "required_input": "frozen zone/buffer and ordered closed bars",
+      "definition": "overlap zone +/- max(2ticks,.15ATR); next episode only after fully separated .5ATR retreat",
+      "prior_anchor": "same frozen zone; no same-bar path",
+      "code_path": "numerics.touch_episodes; family_engine.boundary_family",
+      "test_oracle": "Noisy repeated touches and separate episodes",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Prototype retreat not empirically calibrated"
+    },
+    {
+      "id": "LVL5",
+      "required_input": "ordered confirmed high/low ladder and pre-known protected swing",
+      "definition": "HH/HL or LH/LL; buffered close BOS; first opposing CHoCH; prior sweep plus displacement MSS candidate",
+      "prior_anchor": "original protected swing and ladder known before break",
+      "code_path": "structures.swing_breaks; method_engine.evaluate_methods",
+      "test_oracle": "M02 independent MSS positive/wick negative; F1 ladder tests",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "MSS is explicit price variant, no intent"
+    },
+    {
+      "id": "VOLU1",
+      "required_input": "matching USDT quote volume current +32 baseline",
+      "definition": "Q/median(Qprev32); zero median UNKNOWN",
+      "prior_anchor": "strict previous32 bars",
+      "code_path": "numerics.relative_quote_volume; isolated PARTICIPATION packs",
+      "test_oracle": "Zero baseline/optional failure isolation/genuine quote_volume receipts",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Optional scope may be budget omitted"
+    },
+    {
+      "id": "FLOW1",
+      "required_input": "exact matching kline buy quote/base volumes",
+      "definition": "deltaQ=2BQ-Q; deltaB=2BV-V; imbalanceQ=deltaQ/Q; anchored sum deltaQ",
+      "prior_anchor": "predeclared/reset anchor and complete bars",
+      "code_path": "numerics.bar_delta/anchored_value; specialists.trade_delta",
+      "test_oracle": "Inherited unit arithmetic and source pairs",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Bar aggressor facts are not footprint"
+    },
+    {
+      "id": "FLOW2",
+      "required_input": "complete same-anchor CVD and two confirmed swings",
+      "definition": "lower price low with higher CVD low; mirror high; available at second right confirmation",
+      "prior_anchor": "same anchor and pivot IDs",
+      "code_path": "measurements.flow_divergence",
+      "test_oracle": "Independent positive/negative and delayed confirmation",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Divergence is not reversal proof"
+    },
+    {
+      "id": "VALUE1",
+      "required_input": "complete base/quote bars from pre-known UTC/event anchor",
+      "definition": "sum Q / sum V; zero V unknown; exact whole-bar first moment",
+      "prior_anchor": "anchor known no later than first included bar open",
+      "code_path": "numerics.anchored_value; method_engine M19",
+      "test_oracle": "Mixed volume, reset, post-hoc anchor rejection",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "No partial-bar event reconstruction"
+    },
+    {
+      "id": "VALUE2",
+      "required_input": "whole-bar value, prior residuals, or actual tape second moment",
+      "definition": "distance=(C-VWAP)/ATRref; z_close=residual/sigma prior16 residuals; true tape sum((p-mean)^2*v)/sumv separately",
+      "prior_anchor": "expanding Q/V prefix; evaluation excluded from sigma",
+      "code_path": "measurements.value_extension; specialists.trade_value",
+      "test_oracle": "Exact residual distinction and executed variance=3 oracle",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "True weighted bands require qualified tape"
+    },
+    {
+      "id": "VALUE3",
+      "required_input": "complete declared venue/window executed price-volume tape",
+      "definition": "fixed bins; POC tie lower; greedy contiguous70% VA adjacent tie lower; MEAN3 nodes, separation3",
+      "prior_anchor": "frozen completed profile/version; contiguous first revisit",
+      "code_path": "specialists.true_profile/profile_nodes/first_profile_revisit",
+      "test_oracle": "Independent POC/VA/ties/nodes/revisit and OHLC/partial rejection",
+      "status": "SOURCE_CAPABILITY_REQUIRED",
+      "unknown": "No qualified complete production tape"
+    },
+    {
+      "id": "REL1",
+      "required_input": "time-aligned alt/BTC/ETH/peer closes",
+      "definition": "log(Ct/Ct-h) difference; matched windows required",
+      "prior_anchor": "same completed endpoints and venue",
+      "code_path": "numerics.relative_return",
+      "test_oracle": "Alignment negative and source-relative regressions",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Ticker proxy remains separately named"
+    },
+    {
+      "id": "REL2",
+      "required_input": "aligned historical asset/benchmark returns",
+      "definition": "beta=Cov/Var trained n32 ending t-1; alpha=meanY-beta*meanX; later residuals; persistent3 signs",
+      "prior_anchor": "lagged training end, OOS timestamps",
+      "code_path": "numerics.lag_trained_beta; measurements.residual_series/persistent_residual",
+      "test_oracle": "Known beta=2, OOS residual, zero benchmark variance, signed F8",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Persistence is not predictive calibration"
+    },
+    {
+      "id": "REL3",
+      "required_input": "dated contract-linked memberships and aligned peer residuals",
+      "definition": "own residual minus median of at least5 other mapped peers",
+      "prior_anchor": "membership known/valid intervals and same measurement cutoff",
+      "code_path": "measurements.sector_strength",
+      "test_oracle": "Five peers positive; four/stale/missing unknown",
+      "status": "SOURCE_CAPABILITY_REQUIRED",
+      "unknown": "No current dated perp-sector source qualified"
+    },
+    {
+      "id": "DER1",
+      "required_input": "native OI multiplier/mark and funding kind/actual interval/index",
+      "definition": "native CONTRACTS*multiplier, BASE_ASSET unchanged, or USDT_NOTIONAL/mark; exact logUSDT=logbase+logmark; fractional funding and aligned mark/index basis",
+      "prior_anchor": "synchronized mark/OI; predicted versus settled explicitly",
+      "code_path": "measurements.oi_decomposition/funding_basis",
+      "test_oracle": "1000 multiplier decomposition/no side; interval and mark mismatch",
+      "status": "SOURCE_CAPABILITY_REQUIRED",
+      "unknown": "Full unit metadata and actual funding interval need source qualification"
+    },
+    {
+      "id": "DER2",
+      "required_input": "timestamped witnessed forced executions and feed coverage",
+      "definition": "sum actual price*base in declared window; sampled retained; modeled clusters never observed total",
+      "prior_anchor": "exact venue/contract/event IDs and window",
+      "code_path": "specialists.liquidations",
+      "test_oracle": "Observed200 USDT, sampled/model separation, duplicate rejection",
+      "status": "SOURCE_CAPABILITY_REQUIRED",
+      "unknown": "Coverage/retention rights/provider not qualified"
+    },
+    {
+      "id": "CTX1",
+      "required_input": "same-window eligible/evaluable cross-section returns",
+      "definition": "up share/outperform share; global median/MAD; explicit eligible/evaluable/missing denominators",
+      "prior_anchor": "frozen aligned source cutoff and full identity snapshot",
+      "code_path": "context.build_context",
+      "test_oracle": "Inherited synchronization, denominator, advisory non-veto tests",
+      "status": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "unknown": "Never average partition medians"
+    },
+    {
+      "id": "CTX2",
+      "required_input": "original publisher, publication/first-known/receipt times and contract mapping",
+      "definition": "published <= first_known <= received <= evaluation; exact impacted perp mapping",
+      "prior_anchor": "dated source and mapping known-at",
+      "code_path": "measurements.catalyst",
+      "test_oracle": "Unicode identity and inverted-time negatives",
+      "status": "SOURCE_CAPABILITY_REQUIRED",
+      "unknown": "No live original-publisher source qualified"
+    }
+  ],
+  "measurement_status_scope": "Inherited definitions/qualifications retained; live observations are separately scoped",
+  "source_run_id": "827bfd3d6bb548e873c4754b76f6b34d2ab0803427b7b0ae9685c8438b67de1e",
+  "families_and_methods_40": [
+    {
+      "kind": "families",
+      "id": "F1",
+      "name": null,
+      "code_path": "researcher.family_engine.continuation",
+      "implemented": true,
+      "tested_scope": "inherited independent family oracles",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "families",
+      "id": "F2",
+      "name": null,
+      "code_path": "researcher.family_engine.boundary_family",
+      "implemented": true,
+      "tested_scope": "inherited independent family oracles",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "families",
+      "id": "F3",
+      "name": null,
+      "code_path": "researcher.family_engine.compression_family",
+      "implemented": true,
+      "tested_scope": "inherited independent family oracles",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 15,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 12,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "families",
+      "id": "F4",
+      "name": null,
+      "code_path": "researcher.family_engine.boundary_family",
+      "implemented": true,
+      "tested_scope": "inherited independent family oracles",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "families",
+      "id": "F5",
+      "name": null,
+      "code_path": "researcher.family_engine.boundary_family",
+      "implemented": true,
+      "tested_scope": "inherited independent family oracles",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 18,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "families",
+      "id": "F6",
+      "name": null,
+      "code_path": "researcher.family_engine.boundary_family/balance_references",
+      "implemented": true,
+      "tested_scope": "inherited independent family oracles",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 2,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 2,
+          "requested": 22,
+          "returned": 2,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 2,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 4,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 4,
+          "requested": 22,
+          "returned": 4,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 4,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "families",
+      "id": "F7",
+      "name": null,
+      "code_path": "researcher.family_engine.value_reversion",
+      "implemented": true,
+      "tested_scope": "inherited independent family oracles",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 2,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 2,
+          "requested": 22,
+          "returned": 2,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 2,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 4,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_UNKNOWN",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 4,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 4,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "families",
+      "id": "F8",
+      "name": null,
+      "code_path": "researcher.family_engine.relative_family",
+      "implemented": true,
+      "tested_scope": "inherited independent family oracles",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 21,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 20,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "families",
+      "id": "F9",
+      "name": null,
+      "code_path": "researcher.family_engine.shock_family",
+      "implemented": true,
+      "tested_scope": "inherited independent family oracles",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 21,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 20,
+          "failed_or_history_unknown": [
+            {
+              "status": "STALE",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "STALE",
+              "symbol": "KITEUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 20,
+          "requested": 22,
+          "returned": 20,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 20,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M01",
+      "name": "Confirmed swings, HH/HL/LH/LL",
+      "code_path": "numerics.confirmed_swings/swing_ladder",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M02",
+      "name": "BOS / CHoCH / MSS",
+      "code_path": "method_engine.evaluate_methods/swing_breaks",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M03",
+      "name": "Horizontal S/R, supply/demand",
+      "code_path": "method_engine.evaluate_methods/order_blocks",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M04",
+      "name": "EQH/EQL / inferred liquidity pool",
+      "code_path": "structures.equal_level_references",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M05",
+      "name": "Liquidity sweep / reclaim",
+      "code_path": "family_engine.boundary_family",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M06",
+      "name": "Order Block (OB) candidate",
+      "code_path": "method_engine.order_blocks",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 21,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 20,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M07",
+      "name": "Breaker / role-flip",
+      "code_path": "method_engine.zone_lifecycle",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M08",
+      "name": "Fair Value Gap (FVG)",
+      "code_path": "structures.gap_lifecycle",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M09",
+      "name": "Inverse FVG (iFVG)",
+      "code_path": "structures.gap_lifecycle",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M10",
+      "name": "Mitigation/zone revisits",
+      "code_path": "method_engine.zone_lifecycle",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M11",
+      "name": "OTE",
+      "code_path": "method_engine.ote",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M12",
+      "name": "Candle Range Theory (CRT) variant",
+      "code_path": "method_engine.crt",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M13",
+      "name": "PO3 / AMD prototype",
+      "code_path": "method_engine.amd",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M14",
+      "name": "Silver Bullet",
+      "code_path": "method_engine.timed_subclass",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "DEFINITION_PENDING",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "DEFINITION_PENDING",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "DEFINITION_PENDING",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "DEFINITION_PENDING",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "PRIMARY_SOURCE_TIMING_DEFINITION_AND_CRYPTO_APPLICABILITY",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M15",
+      "name": "Keepssy Reversal Model",
+      "code_path": null,
+      "implemented": false,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "DEFINITION_PENDING",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "DEFINITION_PENDING",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "DEFINITION_PENDING",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "DEFINITION_PENDING",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "DEFINITION_PENDING",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "KEEPSY_PRIMARY_SOURCE_EXACT_OPERATIONAL_RULES",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M16",
+      "name": "Auction Market Theory",
+      "code_path": "method_engine.auction",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M17",
+      "name": "Volume Profile POC/VAH/VAL",
+      "code_path": "specialists.true_profile",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "COMPLETE_EXECUTED_TAPE_VENUE_WINDOW_BINS",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M18",
+      "name": "HVN/LVN / naked POC",
+      "code_path": "specialists.profile_nodes/first_profile_revisit",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "TRUE_PROFILE_AND_CONTIGUOUS_FIRST_REVISIT_HISTORY",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M19",
+      "name": "Session/anchored VWAP",
+      "code_path": "numerics.anchored_value",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M20",
+      "name": "Statistical reversion",
+      "code_path": "measurements.value_extension/family_engine.value_reversion",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M21",
+      "name": "Real trade-side delta/CVD",
+      "code_path": "measurements.flow_divergence/specialists.trade_delta",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M22",
+      "name": "Footprint diagonal imbalance",
+      "code_path": "specialists.footprint",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "COMPLETE_AGGRESSOR_PRICE_BIN_EXECUTIONS",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M23",
+      "name": "Absorption",
+      "code_path": "specialists.aggression_attempts",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "COMPARABLE_EXECUTED_ATTEMPTS_AND_LATER_RESPONSE",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M24",
+      "name": "Aggression exhaustion",
+      "code_path": "specialists.aggression_attempts",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "COMPARABLE_EXECUTED_ATTEMPTS_AND_LATER_RESPONSE",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M25",
+      "name": "Order-book depth / walls",
+      "code_path": "method_engine.depth_walls",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 8,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 8,
+          "requested": 22,
+          "returned": 8,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 8,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 8,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 8,
+          "requested": 22,
+          "returned": 8,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 8,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "CURRENT_ORDERED_NATIVE_DEPTH",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M26",
+      "name": "Open interest",
+      "code_path": "measurements.oi_decomposition",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "SYNCHRONIZED_NATIVE_OI_MARK_AND_MULTIPLIER",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M27",
+      "name": "Funding / basis",
+      "code_path": "measurements.funding_basis",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "RATE_KIND_ACTUAL_INTERVAL_UNITS_AND_ALIGNED_MARK_INDEX",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M28",
+      "name": "Reported liquidations",
+      "code_path": "specialists.liquidations",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "OBSERVED_FORCED_EXECUTIONS_AND_SAMPLING",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M29",
+      "name": "Relative strength and sectors",
+      "code_path": "measurements.persistent_residual/sector_strength",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "MATCHED_BENCHMARK_AND_DATED_PERP_SECTOR_MEMBERSHIPS",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M30",
+      "name": "Volatility/market breadth",
+      "code_path": "numerics.compression/context.build_context",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "1h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 22,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 22,
+          "requested": 22,
+          "returned": 22,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 22,
+          "unsupported": 0
+        },
+        "4h": {
+          "code_state": "IMPLEMENTED_AND_INDEPENDENTLY_ORACLE_TESTED_OFFLINE",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 0
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "Full source/formation/empirical qualification remains distinct from selected execution",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    },
+    {
+      "kind": "methods",
+      "id": "M31",
+      "name": "News/events/catalysts",
+      "code_path": "measurements.catalyst",
+      "implemented": true,
+      "tested_scope": "tests/test_session6a.py + inherited authentic regression suites",
+      "implementation_state": "SOURCE_CAPABILITY_REQUIRED",
+      "live_selected_scope": {
+        "15m": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 11,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "1h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BTCUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ETHUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "PLAYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "1000CHEEMSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "UNIUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KAVAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "INJUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AAVEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "TACUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "WIFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ONEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ERAUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SKYUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "AIOTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ESPORTSUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "METUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "APRUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "FFUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "ICNTUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "BIOUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "KITEUSDT"
+            },
+            {
+              "status": "SOURCE_CAPABILITY_REQUIRED",
+              "symbol": "SOLVUSDT"
+            }
+          ],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 17,
+          "positive_or_nonempty_result": 0,
+          "requested": 22,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        },
+        "4h": {
+          "code_state": "SOURCE_CAPABILITY_REQUIRED",
+          "eligible": 519,
+          "empirical_discovery_usefulness": "UNMEASURED",
+          "evaluated": 0,
+          "failed_or_history_unknown": [],
+          "live_eligible_universe_coverage": false,
+          "not_evaluated_budget": 0,
+          "positive_or_nonempty_result": 0,
+          "requested": 0,
+          "returned": 0,
+          "scope_inventory": 519,
+          "source_qualified_selected": 0,
+          "source_unqualified_selected": 0,
+          "unsupported": 519
+        }
+      },
+      "live_sources": "TIMESTAMPED_OFFICIAL_BINANCE_SELECTED_OHLC_QV; CURRENT_M25_DEPTH_WHEN_OBSERVED",
+      "independent_live_verification": "Selected scalar/quote ratio checks in live-acceptance; complete causal method qualification NOT established",
+      "source_gap": "VERIFIED_ORIGINAL_PUBLISHER_AND_CONTRACT_MAPPING",
+      "production_qualified": false,
+      "whole_market_method_qualified": false
+    }
+  ],
+  "all_31_production_qualified": false
+}

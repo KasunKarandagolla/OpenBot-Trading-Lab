@@ -90,7 +90,7 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
         if (utc(card.cutoff)>utc(as_of) or utc(card.reference.available_at)>utc(as_of)
                 or any(utc(e['available_at'])>utc(as_of) for e in card.events)):
             raise ContractError('AGENT_EVIDENCE_FUTURE')
-        if len(selected)>=max_cards or len(card.events)>32:
+        if len(selected)>=max_cards:
             omitted.append({'card_id':card.id,'reason':'NOT_REVIEWED_INPUT_BUDGET'});continue
         ids=set(card.evidence_ids)|set(card.reference.source_ids)
         ids.update(i for e in card.events for i in e['source_ids'])
@@ -98,7 +98,8 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
         for i in sorted(ids):
             f=facts.get(i)
             if f is None:continue
-            point=(f.timeframe=='CURRENT' and f.measurement in {'RESEARCH_PRICE','SPREAD_BPS'})
+            point=(f.timeframe=='CURRENT' and f.measurement in {'RESEARCH_PRICE','SPREAD_BPS',
+                'DEPTH_USDT_WITHIN_ROOM','SLIPPAGE_BOUND_BPS','DISPLAYED_BOOK_PROBE'})
             if f.instrument.native_symbol!=card.native_symbol or (f.timeframe!=card.timeframe and not point):
                 raise ContractError('AGENT_EVIDENCE_IDENTITY')
             if utc(f.available_at)>utc(as_of) or utc(f.received_at)>utc(as_of):
@@ -114,10 +115,21 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
                 catalog[i].update(value=None,value_sha256=digest(encode(f.value).encode()),
                     value_transport_status='NOT_SENT_INPUT_BUDGET; SOURCE_FACT_RETAINED_LOCALLY')
         review=by_review.get(card.id,{})
+        # Preserve the primary causal chain plus recent rivals under the existing
+        # event budget. Explicit omissions never stand for a complete chronology.
+        primary=next(h for h in card.hypotheses if h.family==card.primary_family)
+        required=set(primary.supporting_ids+primary.contradicting_ids)
+        event_ids=required|{e['id'] for e in card.events[-8:]}
+        events=[e for e in card.events if e['id'] in event_ids] if len(card.events)>32 else list(card.events)
+        if len(events)>32:
+            omitted.append({'card_id':card.id,'reason':'NOT_REVIEWED_INPUT_BUDGET'});continue
         item={'card_id':card.id,'native_symbol':card.native_symbol,'timeframe':card.timeframe,
             'mode':card.mode,'qualification':card.qualification,'cutoff':card.cutoff,
             'reference':asdict(card.reference),'families':list(card.family_ids),
-            'methods':list(card.method_ids),'events':list(card.events),
+            'methods':list(card.method_ids),'events':events,
+            'ordered_event_transport':{'original':len(card.events),'sent':len(events),
+                'complete_graph_sha256':digest(encode(card.events).encode()),
+                'scope':'PRIMARY_CHAIN_AND_RECENT_RIVALS; FULL_GRAPH_RETAINED_LOCALLY' if len(events)<len(card.events) else 'COMPLETE'},
             'rivals':[asdict(h) for h in card.hypotheses],
             'evidence':catalog,'missing_evidence_ids':sorted(ids-set(catalog)),
             'deterministic_stage':review.get('stage','UNKNOWN'),
@@ -244,6 +256,7 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
             if temporary is not None:temporary.unlink(missing_ok=True)
         return value
     result={'status':'NATIVE_REVIEW_DETERMINISTIC_FALLBACK','calls':0,
+        'published_cards':len(cards),'model_changed_cards':0,
         'delivery':'OWNER_INITIATED_EXISTING_OPENBOT_APPLICATION',
         'trade_authorization':False,'can_override_deterministic_admission':False}
     try:

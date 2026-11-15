@@ -84,6 +84,13 @@ class BasisScreenSource:
     """Uses the Session 1 runtime client, session and allowlist unchanged."""
     def __init__(self, client):
         self.client = client
+        self.busy_resumptions=0
+
+    def resume_after_busy(self):
+        if self.busy_resumptions>=1:return False
+        if not self.client.resume_after_cooldown(max_wait=60):return False
+        self.busy_resumptions+=1
+        return True
 
     def screen(self, names, pack):
         args = {"exchange": "binance", "market": "futures", "quote": "USDT",
@@ -97,9 +104,11 @@ class BasisScreenSource:
             data = self.client.call("screener_run", args)
         except ProviderError as error:
             if len(self.client.http.receipts) > before:
-                raise ProviderError(safe_error(error), self.client.http.receipts[-1]) from None
-            raise
+                raise ProviderError(safe_error(error), {**self.client.http.receipts[-1],
+                    'request_dispatched':True}) from None
+            raise ProviderError(safe_error(error), {'request_dispatched':False}) from None
         metadata = dict(self.client.http.receipts[-1])
+        metadata['request_dispatched']=True
         metadata["schema_sha256"] = digest(encode(self.client.tools["screener_run"]["inputSchema"]).encode())
         return data, metadata
 
@@ -111,7 +120,8 @@ class RequestBudget:
     in the transport receipt; the engine does not sleep and retry the denial.
     """
     def __init__(self, max_calls=8, *, retry_calls=2, interval_seconds=1,
-                 max_response_bytes=8 * 1024 * 1024, clock=time.monotonic, sleeper=time.sleep):
+                 max_response_bytes=8 * 1024 * 1024, clock=time.monotonic, sleeper=time.sleep,
+                 max_elapsed_seconds=None):
         if (type(max_calls) is not int or not 1 <= max_calls <= 40 or type(retry_calls) is not int
                 or not 0 <= retry_calls <= max_calls or not 0 <= interval_seconds <= 10
                 or type(max_response_bytes) is not int or max_response_bytes <= 0):
@@ -122,8 +132,12 @@ class RequestBudget:
         self.calls = self.retries = self.bytes = 0
         self.last_started = None
         self.stopped_reason = None
+        self.started=self.clock() if max_elapsed_seconds is not None else None
+        self.max_elapsed_seconds=max_elapsed_seconds
 
     def acquire(self, recovery=False):
+        if self.max_elapsed_seconds is not None and self.clock()-self.started>=self.max_elapsed_seconds:
+            self.stopped_reason='SCREEN_WALL_BUDGET_EXHAUSTED'
         if self.stopped_reason:
             raise ProviderError(self.stopped_reason)
         if self.calls >= self.max_calls or (recovery and self.retries >= self.retry_limit):
@@ -150,6 +164,8 @@ class RequestBudget:
             "screen_response_bytes": self.bytes, "screen_request_limit": self.max_calls,
             "min_request_interval_seconds": self.interval, "concurrency": 1,
             "stopped_reason": self.stopped_reason, "charged_quota_units": None,
+            "wall_budget_seconds":self.max_elapsed_seconds,
+            "elapsed_seconds":self.clock()-self.started if self.started is not None else None,
             "sustainable_cadence": "UNQUALIFIED", "scheduling_enabled": False}
 
 
@@ -315,10 +331,13 @@ def calculation_report(receipt, pack, *, provider_counts=None):
 
 
 class PartitionEngine:
-    def __init__(self, source: RemoteScreenSource, budget: RequestBudget, *, partition_size=50,deferred_tool_recovery=False):
+    def __init__(self, source: RemoteScreenSource, budget: RequestBudget, *, partition_size=50,deferred_tool_recovery=False,
+                 transient_recovery=False,unavailable_reason=None):
         partitions((), partition_size)
         self.source, self.budget, self.partition_size = source, budget, partition_size
         self.deferred_tool_recovery=deferred_tool_recovery
+        self.transient_recovery=transient_recovery
+        self.unavailable_reason=unavailable_reason
 
     def run(self, inventory, pack, cutoff):
         instruments = {i.native_symbol: i for i in inventory.instruments}
@@ -327,12 +346,13 @@ class PartitionEngine:
         attempts, effective, observations, dispatched, pending = [], [], [], [], []
 
         def execute(names, recovery=False):
-            metadata, data, acquired = {}, None, False
+            metadata, data, acquired, sent = {}, None, False, False
             try:
+                if self.unavailable_reason:raise ProviderError(self.unavailable_reason)
                 self.budget.acquire(recovery)
                 acquired = True
-                dispatched.extend(names)
                 data, metadata = self.source.screen(names, pack)
+                dispatched.extend(names);sent=True
                 self.budget.record(metadata)
                 receipt, values = normalize_screen(names, data, metadata, pack=pack,
                     instruments=instruments, cutoff=cutoff)
@@ -342,10 +362,13 @@ class PartitionEngine:
                 code = safe_error(error)
                 if isinstance(error, ProviderError) and error.receipt:
                     metadata = error.receipt
-                    if acquired:
+                    if acquired and metadata.get('request_dispatched') is not False:
                         self.budget.record(metadata)
+                if acquired and not sent and metadata.get('request_dispatched') is not False:
+                    dispatched.extend(names);sent=True
                 receipt, values = failed_receipt(names, pack, code, metadata), []
-                if code in {"HTTP_403", "HTTP_451", "HTTP_429", "ROUTE_DISABLED", "REQUEST_BUDGET_EXHAUSTED", "PROVIDER_BUSY_COOLDOWN"}:
+                if code in {"HTTP_403", "HTTP_451", "HTTP_429", "ROUTE_DISABLED", "REQUEST_BUDGET_EXHAUSTED"} or (
+                        code=='PROVIDER_BUSY_COOLDOWN' and not self.transient_recovery):
                     self.budget.stop(code)
             counts = ({key: data[key] if type(data.get(key)) is int and data[key] >= 0 else None
                        for key in ["screened", "evaluated", "matched", "returned", "couldNotEvaluate"]}
@@ -356,7 +379,20 @@ class PartitionEngine:
                     if isinstance(row, dict) and row.get("symbol") in names and type(row.get("observationTime")) is int:
                         row_times[row["symbol"]] = row["observationTime"]
             attempts.append({**calculation_report(receipt, pack, provider_counts=counts),
-                "dispatched": acquired, "provider_reported_bar_open_seconds": row_times})
+                "dispatched": sent, "provider_reported_bar_open_seconds": row_times,
+                "received_at_utc":metadata.get('received_at_utc'),
+                "provider_as_of":data.get('evidence',{}).get('asOfUtc') if isinstance(data,dict) else None,
+                "recovery":recovery})
+            if (self.transient_recovery and not recovery and receipt.provider_error in
+                    {'PROVIDER_BUSY_COOLDOWN','PROVIDER_PENDING_EMPTY_202','NETWORK_OR_TLS_FAILURE','HTTP_502','HTTP_503','HTTP_504'}
+                    and self.budget.retries<self.budget.retry_limit and self.budget.calls<self.budget.max_calls):
+                resumed=(receipt.provider_error!='PROVIDER_BUSY_COOLDOWN' or
+                    bool(getattr(self.source,'resume_after_busy',lambda:False)()))
+                attempts[-1]['bounded_resume_authorized']=resumed
+                if resumed:
+                    execute(names,True)
+                    return
+            if receipt.provider_error=='PROVIDER_BUSY_COOLDOWN':self.budget.stop('PROVIDER_BUSY_COOLDOWN')
             if self.deferred_tool_recovery and not recovery and receipt.provider_error=='MCP_TOOL_ERROR' and not self.budget.stopped_reason:
                 pending.append((names,receipt))
                 return
@@ -387,6 +423,9 @@ class PartitionEngine:
         failures.update({n: "UNVERIFIED_PROVIDER_SYMBOL_SCOPE" for n in unsupported})
         if set(evaluated) | set(failures) != set(inventory.symbols) or set(evaluated) & set(failures):
             raise ContractError("EFFECTIVE_PARTITION_ACCOUNTING")
+        requested=set(dispatched);returned={n for r in effective for n in r.returned_symbols}
+        deferred={n:failures[n] for n in failures if n not in requested and n not in unsupported}
+        rejected={n:reason for n,reason in failures.items() if n in requested}
         return {
             "pack_id": pack.id, "timeframe": pack.timeframe, "cutoff_utc": cutoff,
             "formula_version": pack.version, "formula_sha256": pack.formula_hash,
@@ -396,12 +435,19 @@ class PartitionEngine:
             "planned_symbols": list(inventory.symbols),
             "requested_symbols": list(dict.fromkeys(dispatched)),
             "not_requested_symbols": [n for n in inventory.symbols if n not in dispatched],
-            "evaluated_symbols": list(evaluated), "failed_symbols": failures,
+            "evaluated_symbols": list(evaluated), "failed_symbols": rejected if self.transient_recovery else failures,
+            "failure_scope":"REQUESTED_ONLY" if self.transient_recovery else 'LEGACY_NOT_EVALUATED; SEE_REQUESTED_FAILURES',
+            "requested_failed_symbols":rejected,
+            "not_evaluated_reasons":failures,"deferred_symbols":deferred,
+            "unsupported_symbols":list(unsupported),
+            "selected_for_current_screen":list(supported),
+            "time_accepted_symbols":list(evaluated),
+            "missing_after_request":sorted(requested-returned),
+            "rejected_after_cutoff":sorted(n for n,v in rejected.items() if v=='AFTER_FROZEN_CUTOFF'),
             "recognized_symbols": sorted({n for r in effective for n in r.recognized_symbols}),
             "returned_symbols": sorted({n for r in effective for n in r.returned_symbols}),
             "matched_symbols": list(evaluated),
-            "missing_symbols": sorted({n for r in effective for n in r.requested_symbols
-                                       if n in dispatched and n not in r.returned_symbols}),
+            "missing_symbols": sorted(requested-returned),
             "provider_added_fillers": sorted({n for a in attempts for n in a["filler_symbols"]}),
             "truncated_attempts": sum(a["truncated"] for a in attempts),
             "source_cutoffs": {n: t for r in effective for n, t in r.source_cutoffs.items()},
@@ -418,6 +464,9 @@ def safe_error(error):
     # exception's text unless it is one of those fixed codes.
     code = str(error)
     allowed = {
+        'OBSTACLE_IDENTITY_MISMATCH',
+        'SCREEN_WALL_BUDGET_EXHAUSTED',
+        'PROVIDER_PENDING_EMPTY_202',
         'PROVIDER_BUSY_COOLDOWN',
         'CLOSED_HISTORY_REQUIRED','CLOSED_BAR_CUTOFF_MISMATCH','ORACLE_FORMULA_NOT_IMPLEMENTED',
         'OFFLINE_SOURCE_UNAVAILABLE','OFFLINE_REPLAY_SCOPE','SOURCE_QUALIFICATION_CONTRACT',

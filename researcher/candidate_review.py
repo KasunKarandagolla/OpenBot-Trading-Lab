@@ -254,7 +254,7 @@ def remaining_room(card, facts, references, *, as_of):
             choices.append((direction*(edge-number(origin.value)),r.id,edge,r))
     if not choices:return {'status':'ROOM_UNKNOWN','reason':'NO_PREKNOWN_OPPOSING_OBSTACLE','evidence_ids':[origin.id,current.id]}
     _,rid,edge,r=min(choices,key=lambda x:(x[0],x[1]))
-    if not set(r.source_ids)<=set(facts):raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
+    if not all(i in facts for i in r.source_ids):raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
     gross=max(D(0),direction*(edge-number(current.value)))
     lifecycle=[facts[i] for i in card.evidence_ids if i in facts and facts[i].measurement=='OBSTACLE_LIFECYCLE'
         and isinstance(facts[i].value,dict) and facts[i].value.get('reference_id')==rid
@@ -337,7 +337,7 @@ def review_card(card, facts, references, *, as_of):
     if any(utc(e['available_at'])>utc(as_of) for e in card.events):raise ContractError('EVENT_NOT_AVAILABLE')
     # All raw event/reference source citations must resolve in the evidence graph.
     raw_ids=set(card.reference.source_ids)|{i for e in card.events for i in e['source_ids']}
-    if not raw_ids<=set(facts):raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
+    if not all(i in facts for i in raw_ids):raise ContractError('HYPOTHESIS_UNKNOWN_EVIDENCE')
     primary=next(h for h in card.hypotheses if h.family==card.primary_family)
     complete,sequence_ids=_sequence(card)
     room=remaining_room(card,facts,references,as_of=as_of)
@@ -352,8 +352,13 @@ def review_card(card, facts, references, *, as_of):
     from .screening import closed_cutoff
     current=current and utc(card.cutoff)==utc(closed_cutoff(as_of,card.timeframe))
     formation=card.formation['families'][card.primary_family] if card.formation else None
-    if utc(card.reference.valid_until)<utc(as_of) or primary.contradicting_ids:
-        stage='INVALIDATED';reason='REFERENCE_EXPIRED_OR_CAUSAL_PREMISE_CONTRADICTED'
+    contradictions=[e for e in card.events if e['id'] in primary.contradicting_ids and e['kind']!='EXPIRED']
+    expired=utc(card.reference.valid_until)<utc(as_of) or any(
+        e['id'] in primary.contradicting_ids and e['kind']=='EXPIRED' for e in card.events)
+    if contradictions:
+        stage='INVALIDATED';reason='CAUSAL_PREMISE_CONTRADICTED'
+    elif expired:
+        stage='INVALIDATED';reason='REFERENCE_EXPIRED'
     elif formation and formation['stage']=='LATE':stage='LATE';reason='FORMATION_REACHED_PRIOR_VALUE_OR_EXHAUSTED'
     elif room['status']=='ROOM_EXHAUSTED':stage='LATE';reason='FIRST_PREKNOWN_OBSTACLE_CONSUMED'
     elif not cited(card.evidence_ids,facts,as_of=as_of,native_symbol=card.native_symbol):
@@ -376,6 +381,15 @@ def review_card(card, facts, references, *, as_of):
         stage='DEVELOPING';reason='PARTIAL_OR_TRIAL_CAUSAL_FORMATION; ADMISSION_DEPENDENCIES_UNRESOLVED'
     elif card.events:stage='EARLY';reason='PREKNOWN_REFERENCE_AND_INITIATING_EVIDENCE'
     else:stage='PREMATURE';reason='APPLICABLE_METHOD_WITHOUT_MEANINGFUL_SEQUENCE'
+    current_price=_one(card,facts,'RESEARCH_PRICE',as_of,'USDT_PER_BASE')
+    closed_prices=[facts[i] for i in raw_ids if facts[i].measurement=='SELECTED_CLOSED_BAR'
+        and isinstance(facts[i].value,dict) and 'close' in facts[i].value]
+    price_fact=current_price or (max(closed_prices,key=lambda f:utc(f.window_end)) if closed_prices else None)
+    price=number(price_fact.value if current_price else price_fact.value['close']) if price_fact else None
+    distance_atr=(max(card.reference.lo-price,price-card.reference.hi,D(0))/card.reference.atr
+        if price is not None and card.reference.atr>0 else None)
+    if stage=='APPROACHING_DECISION' and (distance_atr is None or distance_atr>1):
+        stage='DEVELOPING';reason='HISTORICAL_APPROACH; CURRENT_DISTANCE_UNKNOWN_OR_OUTSIDE_DECISION_AREA'
     missing=[]
     if not complete:missing.append('COMPLETE_FAMILY_SEQUENCE')
     if not current or card.qualification!='QUALIFIED':missing.append('QUALIFIED_CURRENT_SEQUENCE')
@@ -387,6 +401,11 @@ def review_card(card, facts, references, *, as_of):
     citation_ids=set(card.evidence_ids)|raw_ids|set(room.get('evidence_ids',()))
     return {'card_id':card.id,'instrument':card.native_symbol,'scope':card.venue+'_PERPETUAL',
         'stage':stage,'reason_code':reason,'side_hypothesis':primary.direction,
+        'distance_atr_at_verification':distance_atr,'distance_price_source_id':price_fact.id if price_fact else None,
+        'distance_price_scope':'FRESH_TOP_OF_BOOK' if current_price else 'LATEST_CITED_CLOSED_BAR' if price_fact else 'SOURCE_GAP',
+        'invalidation_kind':'EXPIRY' if stage=='INVALIDATED' and reason=='REFERENCE_EXPIRED' else
+            'CAUSAL_CONTRADICTION' if stage=='INVALIDATED' else None,
+        'invalidating_event_ids':[e['id'] for e in contradictions],
         'reference':{**asdict(card.reference),'id':card.reference.id},'event_window':(card.window_start,card.cutoff),
         'family_ids':card.family_ids,'method_ids':card.method_ids,'origins':card.origins,
         'primary_family':card.primary_family,
@@ -479,3 +498,133 @@ def shortlist(reviews, *, coverage, max_count=5, not_reviewed=()):
             for cluster in sorted({r['exposure_cluster'] for r in selected})},
         'coverage':coverage,'llm_calls':0,'trade_authorization':False,
         'new_orders_created':0,'empty_shortlist_reason':None if selected else 'NO_QUALIFIED_HANDOFF_WITHIN_OBSERVED_COVERAGE; NOT_A_NO_OPPORTUNITIES_CLAIM'}
+
+
+def active_coin_watches(reviews,*,as_of):
+    """Current coin hypotheses, distinct from the immutable reference archive."""
+    by={}
+    for r in reviews:
+        if r['stage'] not in {'EARLY','DEVELOPING','APPROACHING_DECISION','READY_FOR_DEEP','CONDITIONAL_FOR_DEEP','FAST_WITH_ROOM'}:continue
+        d=r.get('distance_atr_at_verification')
+        if d is None or d>D('2.5') or utc(r['expiry'])<utc(as_of):continue
+        if not r.get('events'):continue
+        latest=max(r['events'],key=lambda e:utc(e['known_at']))
+        if not 0<=(utc(as_of)-utc(latest['known_at'])).total_seconds()<=54000:continue
+        by.setdefault(r['instrument'],[]).append(r)
+    result=[]
+    for name,rows in by.items():
+        rows.sort(key=lambda r:(r['historical_significance'] not in {'MED','HIGH'},
+            r['stage']!='APPROACHING_DECISION',r['distance_atr_at_verification'],
+            -utc(max(r['events'],key=lambda e:utc(e['known_at']))['known_at']).timestamp(),r['card_id']))
+        distinct=[]
+        for r in rows:
+            ref=r['reference'];mid=(number(ref['lo'])+number(ref['hi']))/2
+            if any(abs(mid-(number(x['reference']['lo'])+number(x['reference']['hi']))/2)<=
+                    max(2*number(ref['tick']),2*number(x['reference']['tick']),
+                        D('.15')*min(number(ref['atr']),number(x['reference']['atr']))) for x in distinct):continue
+            distinct.append(r)
+        primary=distinct[0]
+        def case(r):
+            return {k:r[k] for k in ('card_id','primary_family','side_hypothesis','stage','reference',
+                'distance_atr_at_verification','supporting_evidence_ids','strongest_rival',
+                'trigger_to_investigate','invalidating_evidence','event_window','missing_necessary_inputs')}
+        result.append({'native_symbol':name,'primary':case(primary),'alternatives':[case(r) for r in distinct[1:4]],
+            'attention':'NEAR_NOW' if primary['distance_atr_at_verification']<=1 else 'DEVELOPING',
+            'source_scope':primary['distance_price_scope'],'as_of':as_of,
+            'reference_records':len(rows),'deduplicated_zones':len(distinct),
+            'timeframe_relationships':sorted({r['reference']['timeframe'] for r in rows}),
+            'trade_authorization':False})
+    result.sort(key=lambda w:(w['attention']!='NEAR_NOW',w['primary']['distance_atr_at_verification'],w['native_symbol']))
+    for rank,w in enumerate(result,1):w['rank']=rank
+    return result
+
+
+def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5):
+    """Owner-approved research handoffs, independently labeled from READY.
+
+    Blueprint §§1.1, 11.3/11.4 permit developing research and documented cost
+    assumptions. This does not qualify full methods, backdate availability, or
+    weaken review_card. Unknown present price/identity/causality never passes.
+    """
+    from .observations import WIDTHS
+    by_card={c.id:c for c in cards};eligible=[];decisions=[]
+    for r in reviews:
+        c=by_card[r['card_id']];reason=None
+        own=[facts[i] for i in c.evidence_ids if i in facts]
+        price=_one(c,facts,'RESEARCH_PRICE',as_of,'USDT_PER_BASE')
+        spread=_one(c,facts,'SPREAD_BPS',as_of,'BPS')
+        primary=next(h for h in c.hypotheses if h.family==c.primary_family)
+        latest=(c.formation['families'][c.primary_family]['timeline'][-1] if c.formation else
+            c.events[-1] if c.events else None)
+        d=r.get('distance_atr_at_verification')
+        if c.native_symbol in {'BTCUSDT','ETHUSDT'}:reason='CONTEXT_ONLY'
+        elif r['stage'] in {'INVALIDATED','LATE','UNKNOWN','PREMATURE'}:reason='INVALID_LATE_OR_SOURCE_UNASSESSABLE'
+        elif not price or not spread:reason='FRESH_CURRENT_PRICE_OR_SPREAD_SOURCE_GAP'
+        elif not latest or not 0<=(utc(as_of)-utc(latest['known_at'])).total_seconds()<=min(54000,3*WIDTHS[c.timeframe]):reason='NO_RECENT_STRUCTURAL_EVENT'
+        elif primary.contradicting_ids:reason='CONTRADICTORY_PRIMARY_CAUSAL_CASE'
+        elif not primary.supporting_ids:reason='NO_SUPPORTING_STRUCTURAL_EVENT'
+        elif r['historical_significance'] not in {'MED','HIGH'}:reason='REFERENCE_SIGNIFICANCE_UNVERIFIED'
+        elif d is None or d>D('2.5'):reason='DECISION_ZONE_DISTANT_OR_UNKNOWN'
+        elif not c.invalidating_evidence or not r['strongest_rival']:reason='RIVAL_OR_INVALIDATION_MISSING'
+        raw_ids=set(c.reference.source_ids)|{i for e in c.events for i in e['source_ids']}
+        if not reason and not cited(raw_ids,facts,as_of=as_of,native_symbol=c.native_symbol,qualified=True):
+            reason='RAW_STRUCTURE_SOURCE_UNQUALIFIED_OR_STALE'
+        room={'status':'ROOM_UNKNOWN','reason':'NO_INDEPENDENT_PREKNOWN_OPPOSING_OBSTACLE',
+            'scope':'CURRENT_RESEARCH_RECONSTRUCTION; ORIGINAL_RECEIPT_AVAILABILITY_RETAINED'}
+        if not reason:
+            direction=1 if primary.direction=='BULLISH' else -1 if primary.direction=='BEARISH' else 0
+            origin=(c.reference.lo+c.reference.hi)/2;choices=[]
+            kinds={'SWING_HIGH','RANGE_TOP','DAILY_HIGH','WEEKLY_HIGH','EQH_POOL_INFERRED'} if direction==1 else {
+                'SWING_LOW','RANGE_BOTTOM','DAILY_LOW','WEEKLY_LOW','EQL_POOL_INFERRED'}
+            for ref in references:
+                if ref.native_symbol!=c.native_symbol or ref.id==c.reference.id or ref.kind not in kinds:continue
+                # Market confirmation must precede initiation. Retrieval remains
+                # later and is explicitly not prospective prior knowledge.
+                if utc(ref.known_at)>utc(c.window_start) or utc(ref.available_at)>utc(as_of):continue
+                edge=ref.lo if direction==1 else ref.hi
+                if direction*(edge-origin)>0 and all(i in facts for i in ref.source_ids):
+                    choices.append((direction*(edge-origin),ref.id,edge,ref))
+            if not direction:reason='DIRECTION_UNDETERMINED'
+            elif choices:
+                _,rid,edge,ref=min(choices,key=lambda v:(v[0],v[1]))
+                lifecycles=[f for f in own if f.measurement=='OBSTACLE_LIFECYCLE' and isinstance(f.value,dict)
+                    and f.value.get('reference_id')==rid and f.usable(as_of=as_of,native_symbol=c.native_symbol)]
+                consumed=any(f.value.get('consumed') is True for f in lifecycles)
+                gross=direction*(edge-number(price.value))
+                room.update(status='ROOM_EXHAUSTED' if consumed or gross<=0 else 'ROOM_OBSERVED',
+                    reason='FIRST_OPPOSING_OBSTACLE_CONSUMED' if consumed else None,
+                    first_obstacle_id=rid,level=edge,room_bps=max(D(0),gross/number(price.value)*10000),
+                    obstacle_known_at=ref.known_at,obstacle_available_at=ref.available_at,
+                    evidence_ids=[price.id,*ref.source_ids])
+                if consumed or gross<=0:reason='FIRST_OPPOSING_OBSTACLE_CONSUMED'
+                elif utc(ref.valid_until)<utc(as_of) or ref.timeframe!=c.timeframe and not lifecycles:
+                    room.update(status='ROOM_UNKNOWN',reason='NEAREST_OBSTACLE_EXPIRED_OR_CROSS_TIMEFRAME_LIFECYCLE_UNVERIFIED')
+                    if d>1 or len(primary.supporting_ids)<2:reason='NEAREST_OBSTACLE_LIFECYCLE_UNVERIFIED'
+                elif room['room_bps']<=number(spread.value)+c.reference.buffer/number(price.value)*10000:
+                    reason='OBSERVED_SPREAD_AND_RESOLUTION_EXHAUST_ROOM'
+            elif d>1 or len(primary.supporting_ids)<2:reason='ROOM_UNKNOWN_WITH_INSUFFICIENT_NEAR_CURRENT_STRUCTURE'
+        if reason:
+            decisions.append({'card_id':c.id,'native_symbol':c.native_symbol,'disposition':reason});continue
+        gaps=list(dict.fromkeys([*r['missing_necessary_inputs'],*r['economics'].get('missing',()),
+            'ACCOUNT_FEE_TIER_AND_FUTURE_EXECUTION_COSTS','POTENTIAL_EVENT_WITHIN_15H_NOT_PREDICTED',
+            *(['DATED_SECTOR_MEMBERSHIP; PRICE_RELATIVE_BRANCH_ONLY'] if c.primary_family=='F8' else []),
+            *(['FIRST_INDEPENDENT_OPPOSING_OBSTACLE'] if room['status']=='ROOM_UNKNOWN' else [])]))
+        item={**r,'stage':'CONDITIONAL_RESEARCH_ONLY','strict_admission_stage':r['stage'],
+            'reason_code':'CURRENT_STRUCTURAL_RESEARCH_WITH_EXPLICIT_ANALYST_QUESTIONS',
+            'research_room':room,'missing_evidence':gaps,'research_as_of':as_of,
+            'source_age_seconds':int((utc(as_of)-utc(c.cutoff)).total_seconds()),
+            'source_qualification':'SELECTED_SOURCE_BACKED_TRIAL; FULL_METHOD_PRODUCTION_UNQUALIFIED',
+            'first_knowing_time':max((facts[i].received_at for i in raw_ids),key=utc),
+            'prospective_historical_discovery':False,'trade_authorization':False,
+            'analyst_question':('Verify the nearest independently confirmed opposing obstacle before any urgent handoff'
+                if room['status']=='ROOM_UNKNOWN' else 'Verify room survives actual fee tier, relevant-price liquidity and the next closed response'),
+            'execution_authorization':'NONE; NO_DEEP_ANALYST_CONNECTION'}
+        eligible.append(item)
+    eligible.sort(key=lambda r:(r['research_room']['status']!='ROOM_OBSERVED',r['distance_atr_at_verification'],
+        r['source_age_seconds'],r['card_id']))
+    picked=[];seen=set()
+    for row in eligible:
+        if row['instrument'] in seen or len(picked)>=max_count:
+            decisions.append({'card_id':row['card_id'],'native_symbol':row['instrument'],'disposition':'ALTERNATIVE_CASE_OR_RESEARCH_CAPACITY'});continue
+        picked.append(row);seen.add(row['instrument'])
+    return picked,decisions
