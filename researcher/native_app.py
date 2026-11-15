@@ -2,8 +2,8 @@
 
 This does not invoke an agent. It reads only the matching native task/turn and
 provider messages through SQLite mode=ro. On WSL it can start a fixed data-only
-reader with the existing Windows Python. No account/credential/shared-data
-tables, UI automation, model invocation or trading operation exist here.
+reader with the existing Windows Python. No account/credential/shared-data tables, UI automation, model invocation or
+trading operations exist here.
 """
 import json,re,sqlite3,time,sys,os
 from contextlib import contextmanager
@@ -97,11 +97,12 @@ def collect(request,config,target,*,as_of):
           AND time_created BETWEEN ? AND ? ORDER BY seq''',
           (session,int(utc(start).timestamp()*1000)-1000,int(utc(end).timestamp()*1000)+1000)).fetchall()
     if not 1<=len(rows)<=16:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    attempts=[json.loads(r[0]) for r in rows];operations=[];read_lines={};loaded=False
+    attempts=[json.loads(r[0]) for r in rows];operations=[];read_lines={};loaded=False;methods=[]
     canonical=(ROOT/'.agents/skills/market-research-review/SKILL.md').read_text()
     body=canonical.split('---',2)[2].strip()
     expected=str(PureWindowsPath(_windows(target))).casefold()
     skillpath=str(PureWindowsPath(_windows(Path(config['agent_workspace'])/'.agents/skills/market-research-review/SKILL.md'))).casefold()
+    skillmirror=str(PureWindowsPath(_windows(Path(config['agent_workspace'])/'.claude/skills/market-research-review/SKILL.md'))).casefold()
     for attempt in attempts:
         model=attempt.get('model',{})
         if model.get('providerID')!='opencode' or model.get('id')!='deepseek-v4.1-flash-free':
@@ -112,15 +113,18 @@ def collect(request,config,target,*,as_of):
             if state.get('status')!='completed':raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
             contents='\n'.join(c.get('text','') for c in state.get('content',[]) if c.get('type')=='text')
             if name=='skill' and state.get('input')=={'id':'market-research-review'} and body in contents:
-                loaded=True;operations.append('READ_SKILL');continue
-            if name!='read':raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+                loaded=True;operations.append('READ_SKILL');methods.append('skill');continue
+            if name not in {'read','grep'}:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
             path=str(PureWindowsPath(state.get('input',{}).get('path',''))).casefold()
             lines={int(m[1]):m[2] for line in contents.splitlines() if (m:=re.match(r'^(\d+): (.*)$',line))}
-            if path==expected:read_lines.update(lines);operations.append('READ_REQUEST')
-            elif path==skillpath:
-                loaded=loaded or '\n'.join(lines[i] for i in sorted(lines))+'\n'==canonical
+            if path==expected:
+                if name=='read':read_lines.update(lines)
+                operations.append('READ_REQUEST')
+            elif path in {skillpath,skillmirror}:
+                if name=='read':loaded=loaded or '\n'.join(lines[i] for i in sorted(lines))+'\n'==canonical
                 operations.append('READ_SKILL')
             else:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+            methods.append(name)
     source=encode(request)+'\n'
     if not loaded or '\n'.join(read_lines[i] for i in sorted(read_lines))+'\n'!=source:
         raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
@@ -129,6 +133,7 @@ def collect(request,config,target,*,as_of):
         'agent_name':AGENT,'model':MODEL,'skill_sha256':request['skill_sha256'],'material_sha256':material,
         'reply_sha256':digest(raw.encode()),'native_invocation_verified':True,'model_requests':len(attempts),
         'native_app_turns':1,'tool_operations':operations,'unauthorized_tool_operations':0,
+        'read_methods':methods,'search_scope':'EXACT_REQUEST_OR_SCOPED_SKILL_FILE_ONLY; NO_DIRECTORY_SEARCH',
         'native_started_at_utc':start,'native_completed_at_utc':end,'audited_at_utc':as_of,
         'skill_and_request_read_completely':True,'provider_schema':'OPENCODE_V2_SESSION_MESSAGE',
         'authority':'ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM',
@@ -154,10 +159,11 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None):
         executable=Path(native)
         if executable.name.lower()!='python.exe' or not executable.is_file():raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
         runner="import runpy,sys; sys.path.insert(0,sys.argv.pop(1)); sys.argv[0]='native_receipt'; runpy.run_module('researcher.native_app',run_name='__main__')"
-        try:
-            result=subprocess.run([str(executable),'-X','utf8','-c',runner,_windows(ROOT),
+        command=[str(executable),'-X','utf8','-c',runner,_windows(ROOT),
                 '--directory',_windows(Path(directory).absolute()),'--material',material,
-                '--config',_windows(config_path),'--wait-seconds',str(wait_seconds)],
+                '--config',_windows(config_path),'--wait-seconds',str(wait_seconds)]
+        try:
+            result=subprocess.run(command,
                 stdout=subprocess.PIPE,text=True,encoding='utf-8',timeout=wait_seconds+30)
         except subprocess.TimeoutExpired:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED') from None
         if result.returncode:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
@@ -176,6 +182,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None):
             storage_retries+=1;found=None
         if found:
             raw,audit=found
+            audit['submission_transport']='OWNER_OPENBOT_APPLICATION_UI'
             for suffix,value in [('reply.json',raw),('audit.json',encode(audit)+'\n')]:
                 path=folder/(material+'.'+suffix)
                 if path.is_symlink():raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')

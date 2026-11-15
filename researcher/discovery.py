@@ -304,7 +304,7 @@ def scan_live(*, qualification=False, api=None, client=None, config=None, ledger
 
 def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clock=now_utc,
                          mode='LIVE',crash_hook=None,sources=None,context_prioritized=True,route_ablation=None,
-                         native_review_dir=None,native_audit_config=None,native_wait_seconds=0):
+                         native_review_dir=None,native_audit_config=None,native_wait_seconds=0,native_max_cards=4):
     """One on-demand read-only path: live sources → remote packs → saved research.
 
     Historical price precursors nominate questions independently. Only two
@@ -331,6 +331,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
     from .transport import PublicHTTP
     if mode not in {'LIVE','SYNTHETIC','AUTHENTIC_REPLAY'}:raise ContractError('FACT_PROVENANCE')
     if native_audit_config and (mode!='LIVE' or native_review_dir is None):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+    if type(native_max_cards) is not int or not 1<=native_max_cards<=4:raise ContractError('AGENT_INPUT_SIZE')
     if route_ablation is not None and (mode!='SYNTHETIC' or not set(route_ablation)<={'A','B','C'}):
         raise ContractError('OFFLINE_REPLAY_SCOPE')
     sources=sources or ResearchSources(mode=mode)
@@ -1074,7 +1075,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 native_cards=() if cached and same_source_admission else cards
                 report['consultant']=exchange(native_review_dir,native_cards,facts,as_of=report['completed_at_utc'],
                     context=report.get('context'),reviews=reviews,cached=cached,
-                    previous=previous.get('consultant') if previous else None)
+                    previous=previous.get('consultant') if previous else None,max_cards=native_max_cards)
                 if native_audit_config and report['consultant']['status'] in {'AWAITING_NATIVE_APP_RESPONSE','NATIVE_REPLY_UNAUDITED_DETERMINISTIC_FALLBACK'}:
                     import sqlite3
                     try:
@@ -1116,7 +1117,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 'p50_ms':durations[(len(durations)-1)//2] if durations else None,
                 'p95_ms':durations[math.ceil(.95*len(durations))-1] if durations else None,
                 'basis_charged_units':None,'quota':'UNKNOWN','sustainable_cadence':'UNQUALIFIED','llm_calls':report['llm_calls'],
-                'llm_call_semantics':'NATIVE_PROVIDER_ASSISTANT_ATTEMPTS_OBSERVED_DURING_OPT_IN_WAIT; THIS_PROCESS_INVOKES_ZERO_MODELS',
+                'llm_call_semantics':'COMPLETED_NATIVE_PROVIDER_ASSISTANT_ATTEMPTS_OBSERVED_DURING_OPT_IN_REVIEW; INCOMPLETE_NATIVE_TURNS_UNKNOWN',
                 'cached_snapshot_reused':cached,'targeted_kline_calls':api.sample_calls}
             cpu=resource.getrusage(resource.RUSAGE_SELF)
             report['costs']['process_resources']={'scan_cpu_user_seconds':cpu.ru_utime-cpu_start.ru_utime,

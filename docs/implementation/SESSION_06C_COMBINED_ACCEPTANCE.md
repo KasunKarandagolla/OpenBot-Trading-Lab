@@ -1,8 +1,9 @@
 # Phase C implementation and acceptance record
 
-Status: **implementation checkpoint; final coordinated native app test pending**.
-No completion, production qualification or source-limited final release is
-claimed. A and B are pushed/verified; PR24 remains draft and main unchanged.
+Status: **PASS within the owner-approved source gates**. The final ordinary
+scan collected and imported an actual native response while its request was
+current. Source qualification and prospective usefulness remain PARTIAL; no
+production activation is claimed. PR24 stays draft; main is unchanged.
 
 ## Completed real checks
 
@@ -71,20 +72,54 @@ Scoped skill is now `6c-native-review.2`, hash
 All182 preexisting specialist skill files remain untouched. Model/profile/
 permissions, unrelated agents, trading and Freqtrade remain unchanged.
 
-## Remaining acceptance gate
+## Final coordinated acceptance — PASS
 
-The final corrected Windows receipt path requires one fresh, coordinated owner
-submission while the ordinary scan waits. The old timed prompt has expired.
-Do not call that final path verified merely because four synthetic storage tests
-and native read probes pass. The owner is being asked for readiness before a
-new source snapshot/window, avoiding repeated expired prompts/model spend.
+The ordinary `scan now` path generated one LIVE_PARTIAL card, the owner submitted
+it through the existing OpenBot interface, and the Windows read-only collector
+verified the complete current skill and request bytes plus provider/model/tools.
+It imported `VALIDATED_ADVISORY_ONLY` automatically,461.217s after request creation,
+inside600s. Native model execution111.169s,3 provider assistant attempts;
+methods skill/read/read,0 unauthorized operations,0 storage read retries.
+The persisted result contains the same validated advice; no retrospective import
+or timestamp repair was used. Local Scripts stayed off as the owner requested.
 
-Full clean snapshots have passed357 tests, no failures/skips, preserving all331
-inherited tests. Latest Windows-reader/validator focused checks pass16 tests;
-the exact final source is undergoing its clean-checkout full suite and push CI.
-See operator steps and compact verification receipts for observed final results.
+Latest source denominator519:15M price precursors519/519;1H150/519,369 failed or
+unevaluated, including50 missing rows. The source receipt retains all disjoint
+scope sets; missing is not an additional denominator to add to failed. This is
+ordinary precursor coverage, not the separate Phase A full CORE qualification.
+Final0 handoffs,1164 watches,79 near misses,777 invalidations and953 observed gaps.
+No gaps become retrospectively actionable. Source/27/9/31 gates remain unchanged.
+
+Final complete on-demand run:38 market HTTP requests,4,041,060 response bytes,
+657.409s including source work and owner/native wait; process peak271084KiB;
+research DB176541696 bytes at9 snapshots. The subsequent cutoff-advancing scan
+made34 market requests/0 model attempts and retained0 handoffs. It was a new
+closed-bar snapshot, not an unchanged warm-cache claim. Earlier genuine warm
+reuse and stable-watch/interruption receipts remain separately labeled.
+
+The actual model's file-local grep operations in an earlier three-card test were
+valid reads of the exact request. The original auditor rejected that backend
+method; compatibility was corrected without allowing directory searches or
+skipping complete byte proof. The original closed window remains closed. A later
+single-card response began after its window and remains excluded from current
+state. Negative current-import outcomes and original timestamps are preserved.
+
+Six known native turns independently account for30 provider assistant attempts,
+all on the configured model. Five whole replies validate19 source-cited rows;
+one original whole reply is malformed and rejected. All tested numeric-claim
+arrays are empty, so numerical hallucination accuracy is not measurable.
+App-reported aggregate1773319 tokens (including cached input/reasoning accounting),
+estimated$0 on its stated API-equivalent basis; missing failed-attempt usage,
+future entitlement, quota and sustainable cadence remain unknown. No recall,
+profitability or production-readiness claim follows. Full native accounting and
+final byte-hashed request/reply/audit/ordinary report receipts are public.
+
+The final code retains all331 inherited tests;357 tests in the clean full suite
+and the focused native/exchange checks pass. Exact final pushed CI is observed
+and linked in the publication record/PR. Config and immutable design hashes pass.
 
 Optional downstream remains **NOT_INTEGRATED**: no compatible independent Deep
-Analyst input handler was configured in the inspected hierarchy, source gates
-remain partial and no current nonzero hypothesis is admitted. The hashed one-way
-export is preserved; no existing deep vision/risk/trade-planning behavior changes.
+Analyst input handler was configured, source gates remain partial and no current
+nonzero hypothesis is admitted. The hashed one-way export is preserved; its
+empty actual export roundtrip passes, and existing rejection/contract regression
+tests remain. No deep vision/risk/trade-planning behavior changes.

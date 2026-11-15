@@ -53,6 +53,7 @@ def main():
     scan.add_argument('--native-review-dir',help='optional bounded request/reply exchange below work/; native OpenBot application invokes the existing agent')
     scan.add_argument('--native-audit-config',help='opt-in local native read-only receipt paths under work/; never invokes an agent')
     scan.add_argument('--native-wait-seconds',type=int,default=0,help='interactive receipt wait,0..600 seconds; default0')
+    scan.add_argument('--native-max-cards',type=int,choices=range(1,5),default=4,help='native input budget,1..4 cards; default4')
     show=sub.add_parser('show');show.add_argument('action',choices=['results','watches','coverage'])
     show.add_argument('--db',default=str(ROOT/'work/research-metadata.sqlite'))
     args = parser.parse_args()
@@ -94,14 +95,14 @@ def main():
                 from .replay import retained_session5,synthetic_6b
                 api,client,sources,at,provenance=(retained_session5 if args.replay=='retained-session5' else synthetic_6b)()
                 report=scan_market_research(config=config,api=api,client=client,sources=sources,clock=lambda:at,
-                    mode=sources.mode,ledger_path=args.db,native_review_dir=args.native_review_dir)
+                    mode=sources.mode,ledger_path=args.db,native_review_dir=args.native_review_dir,native_max_cards=args.native_max_cards)
                 report['offline_source_provenance']=provenance
             elif args.action in {'now','live'} and inventory is None:
                 from .query_planner import ResearchSources
                 sources=ResearchSources.from_file(args.qualifications) if args.qualifications else None
                 report=scan_market_research(config=config,ledger_path=args.db,sources=sources,
                     native_review_dir=args.native_review_dir,native_audit_config=args.native_audit_config,
-                    native_wait_seconds=args.native_wait_seconds)
+                    native_wait_seconds=args.native_wait_seconds,native_max_cards=args.native_max_cards)
             elif args.action == 'qualify':
                 from .qualification5 import qualify_core
                 report = qualify_core()

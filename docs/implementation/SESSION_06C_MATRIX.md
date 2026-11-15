@@ -1,10 +1,9 @@
 # Session 6C Local capability and source matrix
 
-C update: two actual LIVE_PARTIAL native interpretations validate source IDs;
-expired current import correctly fell back. Corrected Windows receipt collector
-has passed native read probes/focused tests and awaits final coordinated app
-acceptance. All production source/27/9/31 states below remain unchanged. Native
-reasoning does not qualify feeds, definitions, economics or prospective benefit.
+Final update: actual current native receipt import PASS;1 LIVE_PARTIAL card,
+complete skill/request reads,3 observed model attempts,0 handoffs. Source/27/9/31
+states remain unchanged and PARTIAL. Closed-window replies remain excluded.
+Earlier C pending paragraphs below are historical; see final combined acceptance.
 
 Phase B adds actual native interpretation on4 AUTHENTIC_REPLAY/8 SYNTHETIC_TEST
 cards,0 LIVE. Corrected reply12/12 citations pass after one rejected whole reply.

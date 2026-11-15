@@ -1,3 +1,50 @@
+# Session 6C — final combined acceptance under approved source gates
+
+CODEX_LOCAL / SOL, completed2026-11-15. A `8a7e61b` and B `4c3b88f` were
+pushed/verified; intermediate implementation `119ae13` also passed both CI runs.
+Final ordinary `scan now` now imports real existing-agent advice while current:
+**VALIDATED_ADVISORY_ONLY**, complete skill/request byte proof,1 reviewed card,
+3 actual provider assistant attempts,0 unauthorized operations/0 read retries.
+Import461.217s after request creation, native111.169s; persisted0 research handoffs,
+0 orders. Same Trading Lab Market Researcher/model; Local Scripts remained off.
+
+Current market denominator519:15M price519/519;1H150/519 with369 failed/unevaluated
+(including50 missing rows); full registered CORE519/519 on both TFs remains the
+separate Phase A qualification receipt, not a broad current production claim.
+38 market HTTP/4,041,060B/657.409s including interactive wait;1164 watches,
+79 near misses,777 invalidations,953 gaps. DB176541696B at9 snapshots.
+Subsequent changed-cutoff run34 HTTP/0 model attempts/0 handoffs. Actual earlier
+warm4 official/0 Basis, stable watch timestamps, clock, numerical/formation,
+quiet/footer/Unicode/multiplier/young and real SQLite interruption receipts stand.
+
+Fixed file-local grep compatibility without directory-search permission; all
+request bytes and current skill still required. Optional per-run native budget
+1–4 cards, default4; final test1. Manual-only normal application interface and
+fixed Windows read-only receipt helper; no automatic message route or app
+permission/model/key/new-agent change. All182 preexisting native skill files
+unchanged. Native skill6c-native-review.2 SHA256
+`96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb`.
+
+Six known native turns/30 provider assistant attempts; five valid whole replies,
+19 validated source-cited rows;1 original malformed whole reply rejected.
+Late/closed replies remain excluded from current state.0 numeric claims, so
+numeric hallucination rate not measurable; counterargument richness/recall/P&L
+benefit unproved. App reports1773319 aggregate tokens and estimated$0 on its
+API-equivalent basis; quota/future entitlement/failed usage remain unknown.
+
+All27/F1–F9/31 rows retained:18 offline-oracle,11 source-dependent,M14/M15 pending.
+Source/prospective/rights qualification remains PARTIAL as explicitly approved;
+no new production certificates. Optional Deep Analyst NOT_INTEGRATED; one-way
+read-only export preserved and tested, no unearned downstream activation.
+Full suite357 pass, all331 inherited retained; current native/exchange tests pass;
+final exact-source CI, SHA equality, clean worktree and immutable hashes are
+verified before final handoff. PR24 remains draft; main/trading/Freqtrade intact.
+See SESSION_06C_COMBINED_ACCEPTANCE.md, SESSION_06C_OPERATOR.md and final-acceptance
+receipts. Earlier entries below are historical checkpoints, not current pending
+work. Final publication SHA/CI are linked in PR24 and the owner deliverable.
+
+---
+
 # Session 6C — combined implementation checkpoint (Phase C acceptance pending)
 
 A `8a7e61b` and B `4c3b88f` pushed/verified; both push/PR CI success for each.

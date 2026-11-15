@@ -207,7 +207,7 @@ def consume_reply(raw,request,*,native_receipt):
         'invocation_verification':'NATIVE_RECEIPT_REQUIRES_SEPARATE_RUNTIME_AUDIT; JSON_VALIDATION_ALONE_IS_NOT_PROOF'}
 
 
-def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None,cached=False):
+def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None,cached=False,max_cards=4):
     """Optional native-app file exchange; never starts a process/model/tool.
 
     An operator separately audits the native turn and puts a matching receipt
@@ -254,7 +254,7 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
             rank={'READY_FOR_DEEP':0,'FAST_WITH_ROOM':0,'CONDITIONAL_FOR_DEEP':0,
                 'APPROACHING_DECISION':1,'DEVELOPING':2,'EARLY':3,'UNKNOWN':4,'PREMATURE':5,'LATE':6,'INVALIDATED':7}
             ordered=sorted(cards,key=lambda c:(rank.get(by_review.get(c.id,{}).get('stage','UNKNOWN'),4),c.id))
-            request=make_request(ordered,facts,as_of=as_of,skill_sha256=skill,context=context,reviews=reviews,max_cards=4)
+            request=make_request(ordered,facts,as_of=as_of,skill_sha256=skill,context=context,reviews=reviews,max_cards=max_cards)
             request=publish(root/(request['material_sha256']+'.request.json'),request)
         elif cached and previous and previous.get('material_sha256'):
             key=previous['material_sha256']
@@ -289,6 +289,7 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
             raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
         accepted=consume_reply(raw,request,native_receipt=audit)
         return {**result,**accepted,'calls':0,'audited_prior_model_requests':audit['model_requests'],
+            'delivery':audit.get('submission_transport',result['delivery']),
             'calls_this_scan':0,'response_reused':previous is not None and previous.get('material_sha256')==key
                 and previous.get('status')=='VALIDATED_ADVISORY_ONLY',
             'advisory_agenda':[{'card_id':r['card_id'],'priority':r['priority'],

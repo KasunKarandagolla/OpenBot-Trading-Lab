@@ -1,3 +1,18 @@
+# Final Session 6C evidence
+
+Final corrected ordinary native import: **PASS under approved source gates**.
+`final-acceptance/` contains exact request/reply/audit bytes, runtime accounting,
+source/resource summary and checksum index. It proves complete current skill/
+request reads, configured existing agent/model, no forbidden operations, current
+import461.217s after request creation and persisted0 research handoffs.
+
+No source certificate is promoted. The later cutoff-advancing source scan made0
+model attempts and preserves its new pending native batch rather than reusing an
+old reply. Historical failure/pending records below remain dated evidence, not
+outstanding final acceptance. PR24 stays draft; production/downstream are gated.
+
+---
+
 # Session 6C public evidence — standalone and native review
 
 Phase B records under `native-review/` contain the bounded frozen request,

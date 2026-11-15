@@ -163,14 +163,15 @@ class NativeReviewContract(unittest.TestCase):
         api,client,sources,at,_=synthetic_6b()
         with TemporaryDirectory(dir=ROOT/'work') as tmp:
             result=scan_market_research(api=api,client=client,sources=sources,clock=lambda:at,
-                mode='SYNTHETIC',ledger_path=Path(tmp)/'research.sqlite',native_review_dir=Path(tmp)/'exchange')
+                mode='SYNTHETIC',ledger_path=Path(tmp)/'research.sqlite',native_review_dir=Path(tmp)/'exchange',native_max_cards=1)
             self.assertEqual(result['consultant']['status'],'AWAITING_NATIVE_APP_RESPONSE')
             self.assertEqual(len(result['shortlist']),2);self.assertEqual(result['llm_calls'],0)
             self.assertFalse(result['trade_authorization']);self.assertEqual(result['new_orders_created'],0)
             self.assertTrue((Path(tmp)/'exchange'/result['consultant']['request_file']).is_file())
+            self.assertEqual(result['consultant']['cards'],1)
             api,client,sources,at,_=synthetic_6b()
             warm=scan_market_research(api=api,client=client,sources=sources,clock=lambda:at,
-                mode='SYNTHETIC',ledger_path=Path(tmp)/'research.sqlite',native_review_dir=Path(tmp)/'exchange')
+                mode='SYNTHETIC',ledger_path=Path(tmp)/'research.sqlite',native_review_dir=Path(tmp)/'exchange',native_max_cards=1)
             self.assertTrue(warm['costs']['cached_snapshot_reused'])
             self.assertEqual(warm['consultant']['material_sha256'],result['consultant']['material_sha256'])
             self.assertEqual(warm['llm_calls'],0)

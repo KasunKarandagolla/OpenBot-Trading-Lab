@@ -35,6 +35,7 @@ change. The scanner and deterministic calculations continue in WSL.
 python3 -m researcher scan now \
   --native-review-dir work/operator-native \
   --native-audit-config work/session6c/native-audit-local.json \
+  --native-max-cards 1 \
   --native-wait-seconds 600 \
   --output work/operator-native-001.json
 ```
@@ -63,7 +64,10 @@ admission. The existing native profile's host access remains unchanged: task
 instructions are not represented as host isolation. Audited task tools must be
 only the named skill and exact request reads; no tool is dispatched from advice.
 
-Limits: at most4 ordinary cards (12 in explicit contract tests),32 events/card,
+File-local `grep` of the exact request or named skill is a read operation;
+directory searches remain rejected, and complete file reading is still proved.
+
+Limits: configurable1–4 ordinary cards (12 in explicit contract tests),32 events/card,
 98KB card budget/128KB complete request. Oversized nested values stay in the
 local source graph and are explicitly hash-referenced, never numeric claims.
 Breadth keeps aggregate values and exact denominators; long evidence/missing

@@ -1,3 +1,15 @@
+# Session 6C — final Local operator handoff
+
+Final ordinary native import **PASS under approved source gates**, with complete
+skill/request/provider proof and persisted0 handoffs. Source completeness stays
+PARTIAL; no production or downstream activation. Use
+[operator steps](SESSION_06C_OPERATOR.md), [combined acceptance](SESSION_06C_COMBINED_ACCEPTANCE.md)
+and [27/9/31 matrix](SESSION_06C_MATRIX.md). The existing agent/model is unchanged;
+Local Scripts stayed off. Earlier phase records below retain their historical
+status and failures; they do not describe outstanding final acceptance.
+
+---
+
 # Session 6C Local completion programme — A/B verified, C acceptance pending
 
 Current C code/real failure/verification record:

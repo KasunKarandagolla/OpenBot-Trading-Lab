@@ -43,6 +43,8 @@ class NativeReceiptCollector(unittest.TestCase):
         canonical=skill.read_text();body=canonical.split('---',2)[2].strip()
         self.tools=[{'type':'tool','name':'skill','state':{'status':'completed','input':{'id':'market-research-review'},'content':[{'type':'text','text':body}]}},
             {'type':'tool','name':'read','state':{'status':'completed','input':{'path':_windows(self.target)},'content':[{'type':'text','text':'\n'.join(f'{i}: {line}' for i,line in enumerate((encode(self.request)+'\n').splitlines(),1))}]}}]
+        self.tools.append({'type':'tool','name':'grep','state':{'status':'completed',
+            'input':{'path':_windows(self.target),'pattern':'card_id'},'content':[]}})
         with sqlite3.connect(self.config['provider_db']) as db:
             db.execute('CREATE TABLE session_message(session_id,type,time_created,seq,data)')
         self.write_attempt()
@@ -78,14 +80,18 @@ class NativeReceiptCollector(unittest.TestCase):
     def test_unapproved_tool_or_replacement_model_cannot_produce_a_receipt(self):
         self.tools.append({'type':'tool','name':'shell','state':{'status':'completed','input':{},'content':[]}});self.write_attempt()
         with self.assertRaises(ContractError):collect(self.request,self.config,self.target,as_of=self.now)
-        self.tools.pop();self.write_attempt(model='REPLACEMENT')
+        self.tools.pop();self.tools[-1]['state']['input']['path']=_windows(self.workspace);self.write_attempt()
+        with self.assertRaises(ContractError):collect(self.request,self.config,self.target,as_of=self.now)
+        self.tools[-1]['state']['input']['path']=_windows(self.target);self.write_attempt(model='REPLACEMENT')
         with self.assertRaises(ContractError):collect(self.request,self.config,self.target,as_of=self.now)
         self.assertFalse((self.folder/(self.key+'.audit.json')).exists())
 
     def test_incomplete_read_or_future_completion_fails_closed(self):
-        self.tools[-1]['state']['content'][0]['text']='1: {';self.write_attempt()
+        self.tools[1]['state']['content'][0]['text']='1: {';self.write_attempt()
         with self.assertRaises(ContractError):collect(self.request,self.config,self.target,as_of=self.now)
         with self.assertRaises(ContractError):collect(self.request,self.config,self.target,as_of=self.at)
+        self.tools[-1]['state']['input']['path']=_windows(self.workspace);self.write_attempt()
+        with self.assertRaises(ContractError):collect(self.request,self.config,self.target,as_of=self.now)
 
     def test_missing_owner_submission_does_not_read_unrelated_threads_or_invoke(self):
         with sqlite3.connect(self.config['openbot_db']) as db:db.execute("DELETE FROM projection_thread_messages WHERE author='user'")
