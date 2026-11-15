@@ -41,6 +41,12 @@ orders, scheduling, Freqtrade DB/config, other subagents or Deep Analyst changes
 Full/focused test receipts, immutable hashes and exact final GitHub delivery/CI
 are recorded in acceptance evidence and the final handoff.
 
+Final delivery cross-check corrected a stale MMT audit sentence: its recorded
+09:45 closed-bar outside acceptance was observed; renewed retention remains a
+question. Original snapshots and calculations are unchanged. Initial exact-head
+CI exposed two tests assuming ignored work/ already existed; the new test class
+now creates its own scratch parent before any temporary directories.
+
 ---
 
 # Historical one-session recovery — CODEX_LOCAL, 15 November 2026

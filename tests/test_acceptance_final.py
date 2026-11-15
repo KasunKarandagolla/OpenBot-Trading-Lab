@@ -24,6 +24,9 @@ from test_session4 import case
 
 
 class OperatingAcceptance(unittest.TestCase):
+    def setUp(self):
+        (ROOT/'work').mkdir(exist_ok=True)
+
     def test_first_source_response_can_freeze_after_slow_start_but_later_cannot_move_it(self):
         names=('AUSDT','BUSDT','CUSDT')
         class Crosses(Source):
