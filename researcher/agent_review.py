@@ -352,8 +352,11 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
         # A malformed/unavailable native exchange cannot abort persistence or
         # manufacture a model response. Keep raw inputs in ignored work only.
         from .screening import safe_error
+        from .native_identity import safe_diagnostic
+        diagnostic=safe_diagnostic(getattr(error,'diagnostic',None))
         code=str(error) if isinstance(error,ContractError) else ''
         return {**result,'status':'NATIVE_REVIEW_INVALID_OR_UNAVAILABLE_DETERMINISTIC_FALLBACK',
             'reason':code if code in REJECTION_CODES else safe_error(error) if isinstance(error,ContractError)
                 else 'NATIVE_STORAGE_UNAVAILABLE' if isinstance(error,sqlite3.Error) else 'NATIVE_REVIEW_FILE_OR_VALUE_UNAVAILABLE',
-            'unattested_model_attempts':'UNKNOWN; NOT_COUNTED_AS_VERIFIED_CALLS'}
+            'unattested_model_attempts':'UNKNOWN; NOT_COUNTED_AS_VERIFIED_CALLS',
+            **({'native_diagnostic':diagnostic} if diagnostic else {})}

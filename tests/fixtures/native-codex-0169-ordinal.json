@@ -1,0 +1,77 @@
+{
+  "fixture_origin": "Observed failed-turn field layouts; all identities, content, times and paths replaced. Review content is synthetic engineering evidence. No provider transcript copied.",
+  "session_meta": {
+    "account_scoped": true,
+    "creator_user_id": "SANITIZED_USER",
+    "creator_account_id": "SANITIZED_ACCOUNT",
+    "session_id": "@SESSION@",
+    "id": "@SESSION@",
+    "timestamp": "@META_TIME@",
+    "cwd": "@WORKSPACE@",
+    "runtime_workspace_roots": [
+      "@WORKSPACE@"
+    ],
+    "originator": "openbot",
+    "cli_version": "0.169.0",
+    "source": "SANITIZED_SOURCE",
+    "model_provider": "openai",
+    "base_instructions": {
+      "text": "PRIVATE_METADATA_SENTINEL"
+    },
+    "dynamic_tools": [],
+    "history_mode": "SANITIZED_MODE",
+    "context_window": {}
+  },
+  "launch_item": {
+    "type": "CommandExecution",
+    "id": "SANITIZED_COMMAND",
+    "command": [
+      "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "-NoProfile",
+      "-Command",
+      "wsl.exe --cd '@ROOT@' -- python3 -m researcher.openbot_runner start --request-id @REQUEST_ID@"
+    ],
+    "cwd": "SANITIZED_SHELL_CWD",
+    "process_id": null,
+    "status": "completed",
+    "exit_code": 0,
+    "aggregated_output": "PRIVATE_OUTPUT_SENTINEL",
+    "duration": {
+      "secs": 0,
+      "nanos": 100
+    },
+    "source": "SANITIZED_SOURCE",
+    "parsed_cmd": []
+  },
+  "envelope_key_order": [
+    "timestamp",
+    "ordinal",
+    "type",
+    "payload"
+  ],
+  "user_content_parts": [
+    {
+      "type": "text",
+      "text": "SANITIZED_ENVELOPE",
+      "text_elements": []
+    },
+    {
+      "type": "text",
+      "text": "@BRIEF@",
+      "text_elements": []
+    },
+    {
+      "type": "text",
+      "text": "SANITIZED_SUFFIX",
+      "text_elements": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 100,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 100,
+    "reasoning_output_tokens": 50,
+    "total_tokens": 200
+  }
+}

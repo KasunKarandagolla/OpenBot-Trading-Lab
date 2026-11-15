@@ -1,0 +1,168 @@
+{
+  "scope": "ENGINEERING_VALIDATION_ONLY; NOT_LIVE_MARKET_ACCEPTANCE",
+  "starting_commit": "d4b2330370aceae62075ff80dceb9d5b3962d1b2",
+  "failed_job": "20261115T155254Z-3ad3e1865ecd4fb99a8de6ae65129913",
+  "failed_job_observation": {
+    "state": "FAILED",
+    "reason": "NATIVE_PROVIDER_SCHEMA_UNSUPPORTED",
+    "files": [
+      "state.json",
+      "process.json",
+      "worker.log"
+    ],
+    "start_proof_present": false,
+    "stage_present": false,
+    "scanner_started_at_utc_present": false,
+    "research_ledger_present": false,
+    "report_present": false,
+    "trade_authorization": false
+  },
+  "confirmed_failing_guard": {
+    "source": "researcher/native_codex.py",
+    "line_at_starting_commit": 65,
+    "check": "timestamp/type prefix regex",
+    "expected_prefix_keys": [
+      "timestamp",
+      "type"
+    ],
+    "observed_envelope_keys": [
+      "timestamp",
+      "ordinal",
+      "type",
+      "payload"
+    ],
+    "observed_types": {
+      "timestamp": "str",
+      "ordinal": "int",
+      "type": "str",
+      "payload": "dict"
+    },
+    "legacy_header_matches": false,
+    "legacy_reproduction_error": "NATIVE_PROVIDER_SCHEMA_UNSUPPORTED"
+  },
+  "runtime": {
+    "openbot_version_previously_verified": "0.71.0",
+    "provider": "codex",
+    "provider_backend": "openai",
+    "cli_version": "0.169.0",
+    "model_at_observation": "gpt-6-luna",
+    "model_selection_hardcoded": false,
+    "session_meta_identity_workspace_backend_checks_passed": true,
+    "turn_context_identity_model_workspace_checks_passed": true,
+    "ordinals_contiguous": true
+  },
+  "second_confirmed_incompatibility": {
+    "source": "researcher/openbot_runner.py:recorded_launch_matches",
+    "expected_powershell_flags": [
+      "-Command"
+    ],
+    "observed_powershell_flags": [
+      "-NoProfile",
+      "-Command"
+    ],
+    "script_argv_matches_fixed_launch": true,
+    "successful_exit": true,
+    "receipt_thread_and_turn_match": true
+  },
+  "authentic_archived_receipt_check": {
+    "repaired_records_parse": "PASS",
+    "sanitized_schema_variant": "CODEX_0169_ORDINAL",
+    "exact_matching_completed_launch_receipts": 1,
+    "historical_only": true,
+    "failed_job_mutated_or_resumed": false
+  },
+  "read_path": {
+    "existing_owner_managed_native_audit_configuration_only": true,
+    "sqlite_query_only": true,
+    "existing_fixed_windows_identity_reader": "PASS",
+    "sandbox_wsl_native_python_probe": "FAILED_VSOCK_BIND",
+    "same_existing_reader_outside_sandbox": "PASS",
+    "permissions_or_local_scripts_changed": false,
+    "credentials_inspected": false,
+    "raw_native_records_copied": false
+  },
+  "fixture_provenance": "Native field layouts and command flags observed in the failed job session; identities, paths, timestamps, instructions, outputs, inputs and replies replaced. No real prompt, reasoning, transcript or account values retained.",
+  "inherited_fixture_gap": "The fixtures emitted timestamp/type/payload without ordinal and tested only powershell.exe/-Command/script. They did not represent the authentic four-argument -NoProfile shell receipt.",
+  "limits": {
+    "codex_backend_allowlist": [
+      "openai"
+    ],
+    "codex_cli_version_allowlist": [
+      "0.169.0"
+    ],
+    "schema_variants": [
+      "CODEX_0169",
+      "CODEX_0169_ORDINAL"
+    ],
+    "other_codex_backends_or_versions": "FAIL_CLOSED_UNTIL_VERIFIED",
+    "other_models": "Accepted only with matching trusted app, provider DB and turn context; no model-name pin. Structured response must still pass all evidence gates.",
+    "opencode": "Existing compatibility adapter retained; autonomous runner remains Codex-only."
+  },
+  "protected_repository_sha256": {
+    ".agents/skills/market-research-review/SKILL.md": "96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb",
+    "docs/implementation/OpenBot_Cloud_First_GitHub_Synced_Implementation_Plan.md": "245591eea0f92cd185c51db3420043031c11c1d941f91ecdb31fd64a34e0c232",
+    "docs/implementation/OpenBot_Final_External_First_Market_Discovery_Blueprint.md": "cf7a58fd9ed5f5d1010673406c26a405c8112b907216a47f88a9ebee1bd3d45c",
+    "integration/openbot-market-research/SKILL.md": "d5fdcd1408195e89c1766a9bf471483412594d80355ee17df668c4ff059dd63e"
+  },
+  "protected_installed_skills": {
+    "openbot-market-research": {
+      "known_workspace_skill_files": 1,
+      "sha256": [
+        "235fd27f4c87d84a3111c4913ea7a952bb6dae3907747f924e77fb8c6261f805"
+      ]
+    },
+    "market-research-review": {
+      "known_workspace_skill_files": 1,
+      "sha256": [
+        "96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb"
+      ]
+    }
+  },
+  "verification": {
+    "focused_observed_compatibility": {
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    "inherited_native_runtime_initial": {
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    "full_suite": {
+      "command": "python3 -m unittest discover -s tests -v",
+      "passed": 431,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 588.325
+    },
+    "config": "VALID",
+    "whitespace": "PASS",
+    "ci": "Observed separately at final published head.",
+    "initial_full_suite_before_final_receipt_hardening": {
+      "passed": 430,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 572.322
+    },
+    "windows_host_observed_no_profile_wrapper": "PASS",
+    "initial_adversarial_run": {
+      "tests": 14,
+      "passed": 13,
+      "failed": 1,
+      "cause": "Joining provider text parts synthesized the brief final newline missing from its actual text part.",
+      "resolution": "Require the complete brief within one actual text part, exactly once; no assertion relaxed."
+    },
+    "full_suite_log_sha256": "ceda187af3502ddc65b2a07123ce1f20e1705ae01b0a6ae3f1367904713a4c32",
+    "focused_log_sha256": "d7a9340f62a7151ecc442725ae6c854363eeb793ef92fd9b3b294f6d92ed615f",
+    "optional_diagnostic_probe": {
+      "result": "EXIT_139",
+      "scope": "Single inherited offline core test instrumented with faulthandler.dump_traceback_later(45).",
+      "observed": "Segmentation fault at diagnostic timeout; stack reported interpreter trampoline. No assertion result from this diagnostic run.",
+      "impact": "The same test passed in both complete uninstrumented suites; final suite passed 431 tests. No production change or assertion weakening made for this probe."
+    }
+  },
+  "live_status": "NOT_RERUN_IN_CODEX; OPENBOT_LIVE_ACCEPTANCE_PENDING",
+  "owner_next_action": "Refresh the approved OpenBot checkout to the published SHA, then send Run the complete market research now. to the existing Researcher. No skill reinstall or model change required.",
+  "fixture_sha256": "304ebf4e9546ef5e1c00126537d91f27599593e5eb42e75c8a0afc89e37be556"
+}

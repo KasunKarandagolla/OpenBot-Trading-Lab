@@ -43,6 +43,9 @@ def call(config,operation,values=None):
             code=response.get('reason') if isinstance(response,dict) else None
             if code not in ERRORS and code not in {'RUNNER_OWNER_START_REQUIRED','RUNNER_START_UNATTESTED'}:
                 code='NATIVE_STORAGE_UNAVAILABLE'
+            from .native_identity import NativeEvidenceError,safe_diagnostic
+            diagnostic=safe_diagnostic(response.get('diagnostic')) if isinstance(response,dict) else {}
+            if diagnostic:raise NativeEvidenceError(code,diagnostic['stage'],diagnostic['check'],diagnostic['schema_variant'])
             raise ContractError(code)
         return response['result']
     except subprocess.TimeoutExpired:raise ContractError('NATIVE_STORAGE_TIMED_OUT') from None
@@ -84,7 +87,9 @@ def main():
         print(encode({'result':execute(args.operation,args.input)}));return 0
     except (ValueError,TypeError,KeyError,OSError,__import__('sqlite3').Error) as error:
         code=str(error) if isinstance(error,ContractError) else 'NATIVE_STORAGE_UNAVAILABLE'
-        print(encode({'reason':code}));return 2
+        from .native_identity import safe_diagnostic
+        diagnostic=safe_diagnostic(getattr(error,'diagnostic',None))
+        print(encode({'reason':code,**({'diagnostic':diagnostic} if diagnostic else {})}));return 2
 
 
 if __name__=='__main__':raise SystemExit(main())

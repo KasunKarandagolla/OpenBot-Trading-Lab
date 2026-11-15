@@ -1,3 +1,40 @@
+# Native attestation compatibility repair — CODEX_LOCAL, 15 November 2026
+
+**Engineering validation only. NOT_RERUN_IN_CODEX; OpenBot live acceptance pending.**
+Started clean and fetched the approved integration branch at `d4b2330`; older
+checkouts/main preserved, PR24 stays draft. The saved failed job confirms FAILED
+before start_proof/SCANNING, with no ledger/report. Read-only authentic-session
+inspection reproduced native_codex.py:65: the regex assumes timestamp,type,
+but the real envelope is timestamp,ordinal,type,payload. Actual CLI0.169.0,
+OpenBot origin, session/workspace/backend/model match. The successful actual
+launch also has PowerShell -NoProfile,-Command; the old matcher allowed only
+-Command. Inherited fixtures represented neither difference.
+
+Scoped parsing/receipt repair now reads that authentic archived session and
+matches exactly one successful launch receipt. It preserves full identity,
+owner/turn/session/workspace/model, exact command, successful exit, input/reply
+provenance and zero review tools. Ordinal/semantic order, duplicate keys and
+metadata checks fail closed. Full-input bytes cannot be reconstructed by joining
+parts after a missing newline. Only allowlisted diagnostic labels and numeric
+usage counters leave the reader. Known Codex backend/version remain openai/
+0.169.0; models are not name-pinned and unverified providers fail closed.
+
+Both installed discovery skill files and both repository SKILL.md files retain
+their hashes; blueprint/plan, source certificates, 27 measurements, nine families,
+31 methods, source/admission gates and trade_authorization=false are unchanged.
+Existing fixed Windows read-only identity reader passes outside the WSL sandbox;
+no app permissions, credentials or Local Scripts changed. No live scanner/model
+or OpenBot acceptance was initiated. Focused compatibility15/15 and initial
+native-runtime13/13 pass; full-suite/config/protected-file results are in the
+[sanitized receipt](../../evidence/external-first/native-attestation-repair-20261115/verification.json).
+See [repair report](NATIVE_ATTESTATION_REPAIR_20261115.md) for exact guards,
+observed layouts, adversarial coverage and provider limits. Publication and
+exact-head CI are verified in the delivery handoff. Owner next action: refresh
+the approved checkout to the published SHA and send **Run the complete market
+research now.** to the existing Researcher. No skill reinstall is required.
+
+---
+
 # Model-flexible OpenBot integration — CODEX_LOCAL, 15 November 2026
 
 **PARTIAL: new orchestration skill is not installed; explicit owner approval for

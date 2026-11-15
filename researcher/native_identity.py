@@ -18,6 +18,24 @@ ERRORS = frozenset({'NATIVE_AUDIT_CONFIG_MISSING','NATIVE_AUDIT_CONFIG_INVALID',
     'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','NATIVE_REQUEST_STALE','NATIVE_STORAGE_UNAVAILABLE','NATIVE_STORAGE_TIMED_OUT'})
 ADAPTERS = {'opencode': 'OPENCODE_V2_SESSION_MESSAGE', 'codex': 'CODEX_ROLLOUT_0169'}
 
+# Diagnostics are labels, never provider values or exception text.
+DIAGNOSTIC_LABELS={
+    'stage':frozenset({'ENVELOPE','SESSION','EVIDENCE'}),
+    'check':frozenset({'JSON','TIMESTAMP','ORDER','VERSION','IDENTITY','BACKEND','CONTEXT','TURN','INPUT','FINAL','TOOLS','COMPLETENESS'}),
+    'schema_variant':frozenset({'CODEX_0169','CODEX_0169_ORDINAL','UNRECOGNIZED'})}
+
+
+def safe_diagnostic(value):
+    if not isinstance(value,dict) or set(value)!=set(DIAGNOSTIC_LABELS):return {}
+    if any(not isinstance(v,str) or v not in DIAGNOSTIC_LABELS[k] for k,v in value.items()):return {}
+    return dict(value)
+
+
+class NativeEvidenceError(ContractError):
+    def __init__(self,code,stage,check,variant='UNRECOGNIZED'):
+        super().__init__(code if code in ERRORS else 'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
+        self.diagnostic=safe_diagnostic({'stage':stage,'check':check,'schema_variant':variant})
+
 
 def ref(value):
     return digest(str(value).encode())

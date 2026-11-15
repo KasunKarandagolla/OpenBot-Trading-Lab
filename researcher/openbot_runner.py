@@ -120,8 +120,9 @@ def recorded_launch_matches(item,request_id,root,host_os):
     expected=['python3','-m','researcher.openbot_runner','start','--request-id',request_id]
     command=item.get('command')
     if not isinstance(command,list) or not all(isinstance(v,str) for v in command):return False
-    if len(command)==3 and PureWindowsPath(command[0]).name.casefold()=='powershell.exe' and command[1]=='-Command':
-        try:argv=shlex.split(command[2])
+    if (len(command) in {3,4} and PureWindowsPath(command[0]).name.casefold()=='powershell.exe'
+            and command[1:-1] in (['-Command'],['-NoProfile','-Command'])):
+        try:argv=shlex.split(command[-1])
         except ValueError:return False
         if host_os=='nt':root='/mnt/'+root[0].lower()+'/'+root[3:].replace(chr(92),'/')
         return argv==['wsl.exe','--cd',root,'--',*expected]
@@ -131,10 +132,8 @@ def recorded_launch_matches(item,request_id,root,host_os):
 def attest_start(state,config):
     from .native_host import delegated,call
     if delegated(config):return call(config,'attest_start',{'state':state})
-    from .native_codex import records
+    from .native_codex import records,context_matches
     from datetime import timedelta
-    from pathlib import PureWindowsPath
-    import shlex
     identity=state['native_identity'];assert_current(identity,config)
     if _owner_proof(identity,config)['owner_message_sha256']!=state['owner_message_sha256']:
         raise ContractError('RUNNER_OWNER_START_REQUIRED')
@@ -145,19 +144,22 @@ def attest_start(state,config):
     rows=[r for r in rows if ref(r[0])==identity['external_session_ref'] and ref(r[1])==identity['turn_ref']]
     if len(rows)!=1:raise ContractError('RUNNER_START_UNATTESTED')
     session,turn,start_at=rows[0]
-    context=False
+    context=False;proof=None
     for x in records(config,session,config['agent_workspace'],start=utc(start_at)-timedelta(seconds=1),end=utc(now_utc()),backend=identity.get('provider_backend')):
         p=x['payload']
-        if x['type']=='turn_context' and p.get('turn_id')==turn:
-            if p.get('model')!=identity['model']:raise ContractError('NATIVE_MODEL_SWITCHED')
+        if x['type']=='turn_context':
+            context_matches(p,turn,identity['model'],config['agent_workspace'])
             context=True
         if x['type']=='event_msg' and p.get('type')=='item_completed' and p.get('turn_id')==turn:
+            if p.get('thread_id')!=session:raise ContractError('NATIVE_SESSION_MISMATCH')
             item=p.get('item',{})
             if (context and item.get('type')=='CommandExecution' and item.get('status')=='completed'
-                    and item.get('exit_code')==0 and recorded_launch_matches(item,state['request_id'],str(ROOT),os.name)):
-                return {'status':'VERIFIED_OPENBOT_AGENT_COMMAND','source':'CODEX_PROVIDER_COMMAND_EXECUTION',
+                    and type(item.get('exit_code')) is int and item['exit_code']==0
+                    and recorded_launch_matches(item,state['request_id'],str(ROOT),os.name)):
+                proof={'status':'VERIFIED_OPENBOT_AGENT_COMMAND','source':'CODEX_PROVIDER_COMMAND_EXECUTION',
                     'parent_turn_ref':ref(turn),'command_sha256':digest(encode(item['command']).encode()),
                     'verified_at_utc':now_utc()}
+    if proof is not None:return proof
     raise ContractError('RUNNER_START_UNATTESTED')
 
 
@@ -201,7 +203,10 @@ def run_job(key):
     except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
         # No private exception/path/token is included in the user-facing state.
         code=str(error) if isinstance(error,ContractError) and re.fullmatch('[A-Z0-9_; ]{1,160}',str(error)) else 'RUNNER_DEPENDENCY_OR_STORAGE_UNAVAILABLE'
-        _transition(folder,'FAILED',reason=code,live_acceptance='PARTIAL')
+        from .native_identity import safe_diagnostic
+        diagnostic=safe_diagnostic(getattr(error,'diagnostic',None))
+        _transition(folder,'FAILED',reason=code,live_acceptance='PARTIAL',
+            **({'native_diagnostic':diagnostic} if diagnostic else {}))
     return status(key)
 
 
@@ -209,6 +214,9 @@ def status(key,include_review=False):
     folder=_job(key);data=_read(folder/'state.json')
     result={k:data[k] for k in ('schema_version','job_id','state','created_at_utc','updated_at_utc','commit',
         'stage','stage_seconds','reason','native_status','native_collector','artifact','live_acceptance','trade_authorization') if k in data}
+    from .native_identity import safe_diagnostic
+    diagnostic=safe_diagnostic(data.get('native_diagnostic'))
+    if diagnostic:result['native_diagnostic']=diagnostic
     if data['state'] not in FINAL:
         ready=list((folder/'review').glob('*.review-task.json'))
         if len(ready)>1:raise ContractError('RUNNER_REVIEW_COLLISION')
