@@ -1,3 +1,61 @@
+# Workflow lifecycle recovery — CODEX_CLOUD, 16 November 2026
+
+**ENGINEERING_READY_FOR_LIVE_ACCEPTANCE — live OpenBot NOT_RUN_IN_CODEX_CLOUD.**
+One writer on the existing integration branch, fetched clean at
+`95d509617f52e6fe8911930b8360faf1d5230c5d`. PR24 stays draft; main stays
+`2343053ce68f6fff4525c5b67771ea445deb3779`.
+
+The latest failure facts supplied by the owner are retained as observations;
+the ZIP named `0721464f2085b14f953c617c9ff56f5f785d78a9d9d574f87901dc2acdfac3db`
+was not supplied, so its checksum/offending native row was not independently
+verified. No exact cause of that individual live exception is manufactured.
+Controlled regressions prove the active-pointer contract can reject valid
+persisted parent/child work and expose additional lifecycle faults.
+
+Native collection/import now binds the captured parent across legitimate active
+pointer changes, checks child task/turn/session relationships and exact provider
+input/output, rejects duplicate/pre-request handoffs and persisted task
+substitution, and keeps actual creation states separate from verified model
+attempts. One-shot tickets remain one-shot; missing tasks and terminal causes
+are explicit. Mixed validated batches survive rejected independent batches;
+per-card expiry and unreviewed finalists prevent false completion. All viable
+finalists remain covered; optional watch review has a visible four-card budget.
+The model gets the complete registry states/definitions and source/dependency
+labels under the existing whole-card transport limits.
+
+Startup reservations are atomic/recoverable. The approved WSL/POSIX runner uses
+an OS-released guard, publishes its worker process, detects PID reuse/missing
+publication and preserves terminal states. Dead whole scans are not replayed;
+receipt-only resume re-audits the same task. A bounded read-only delivery observer
+checks exact attachment/final proof and unchanged ZIP bytes after export.
+
+The exact SHA-rendered setup-and-acceptance message is now an explicit owner
+command alongside the unchanged ordinary sentence. Preflight checks actual
+provider records and both installed skills. A separately labeled archived
+packet may prove genuine native transport before the one current scan; a failed
+transport preflight exports diagnostics without starting market access. No
+archived interpretation is imported as a current-market finding.
+
+Untouched baseline:447 passed645.733s. Intermediate full:478 passed892.649s,
+plus the exact acceptance-chain fixture. Final release: **485 passed960.099s,
+zero failures/errors/skips**, exact79-file source hashes. Expanded targeted set:
+92 passed. Initial red fault injection, a corrected lazy-iterator diagnostic,
+and the deliberately interrupted preliminary full run remain disclosed.
+Config VALID; all25 protected files unchanged, including both canonical skills,
+blueprint/plan and source configuration. F1–F9/27 measurements/31 methods and all
+source/admission/trading gates remain intact. No actual new market/model request,
+Cloud Binance retry, order, scheduler, app/model/permission/Local Scripts change.
+Actual Cloud native preflight stops at NATIVE_AUDIT_CONFIG_MISSING.
+
+[Root causes, complete workflow and acceptance checklist](WORKFLOW_RECOVERY_AUDIT_20261116.md)
+· [Exact acceptance prompt template](OPENBOT_RECOVERY_ACCEPTANCE_PROMPT.txt)
+· [Verification](../../evidence/external-first/workflow-recovery-20261116/verification.json).
+Publication SHA, remote equality, draft status and exact-head CI are observed in
+the final delivery. Full live acceptance remains NO-GO until the existing owner
+OpenBot runtime independently supplies the genuine receipts and ZIP/final proof.
+
+---
+
 # Final engineering recovery — CODEX_CLOUD, 16 November 2026
 
 **END-TO-END ENGINEERING: COMPLETE_OFFLINE_VERIFIED.**

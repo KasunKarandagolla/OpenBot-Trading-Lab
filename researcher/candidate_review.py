@@ -690,14 +690,19 @@ def refresh_cached_watches(watches,pulse,*,as_of):
     return kept,gaps
 
 
-def native_review_selection(reviews,cards,facts,references,*,as_of,max_cards=None):
+def native_review_selection(reviews,cards,facts,references,*,as_of,max_cards=None,watch_limit=4):
     """Review actual conditional finalists, with a protected exception/rival.
 
     This uses the same current sources and policy as final admission. Watch
     distance alone cannot silently substitute convenient model-test cards.
     """
     finalists,_=conditional_research(reviews,cards,facts,references,as_of=as_of,max_count=len(cards),deduplicate=False)
-    wanted=[r['card_id'] for r in finalists[:max_cards]]
+    if type(watch_limit) is not int or watch_limit<0:raise ContractError('AGENT_INPUT_SIZE')
+    # Strict finalists also require interpretation even when the conditional
+    # research branch has different source requirements.
+    strict=[r['card_id'] for r in reviews if r['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}]
+    control=list(dict.fromkeys([*strict,*(r['card_id'] for r in finalists)]))
+    wanted=control[:max_cards]
     active=active_coin_watches(reviews,as_of=as_of)
     by={c.id:c for c in cards}
     exceptions=[r['card_id'] for r in finalists if any(s in by[r['card_id']].origins
@@ -705,18 +710,25 @@ def native_review_selection(reviews,cards,facts,references,*,as_of,max_cards=Non
     fallback=[w['primary']['card_id'] for w in active if w['native_symbol'] not in {'BTCUSDT','ETHUSDT'}]
     if max_cards is not None and max_cards>1 and exceptions and exceptions[0] not in wanted:
         wanted=wanted[:max_cards-1]+[exceptions[0]]
+    selected_watches=[];deferred_watches=[]
     for cid in fallback:
-        if max_cards is not None and len(wanted)>=max_cards:break
-        if cid not in wanted:wanted.append(cid)
+        if cid in wanted:continue
+        if len(selected_watches)>=watch_limit:
+            deferred_watches.append(cid);continue
+        if max_cards is not None and len(wanted)>=max_cards:
+            deferred_watches.append(cid);continue
+        wanted.append(cid);selected_watches.append(cid)
     if max_cards is None:
         for r in finalists:
             if r['card_id'] not in wanted:wanted.append(r['card_id'])
     return wanted,{'policy':'CURRENT_CONDITIONAL_FINALISTS_THEN_PROTECTED_EXCEPTION_AND_CURRENT_RIVALS',
-        'deterministic_control_card_ids':[r['card_id'] for r in finalists],
+        'deterministic_control_card_ids':control,
         'selected':[{'card_id':cid,'native_symbol':by[cid].native_symbol,
-            'relationship':'PROVISIONAL_FINALIST' if cid in {r['card_id'] for r in finalists} else 'CURRENT_WATCH_RIVAL',
+            'relationship':'PROVISIONAL_FINALIST' if cid in control else 'CURRENT_WATCH_RIVAL',
             'origins':by[cid].origins} for cid in wanted],
-        'omitted_finalists':[r['card_id'] for r in finalists if r['card_id'] not in wanted],
+        'omitted_finalists':[cid for cid in control if cid not in wanted],
+        'deferred_watch_card_ids':deferred_watches,'watch_review_limit':watch_limit,
+        'watch_omission_reason':'OPTIONAL_WATCH_INTERPRETATION_BUDGET; DETERMINISTIC_WATCH_RETAINED',
         'scope':'SOURCE_IDENTICAL_CONTROL; NO_MODEL_CALL_IMPLIED'}
 
 
@@ -725,10 +737,18 @@ def apply_native_research_advice(candidates,dispositions,consultant,*,as_of):
     control=[r['card_id'] for r in candidates];picked=[];decisions=list(dispositions);links=[]
     age=(utc(as_of)-utc(consultant['request_created_at_utc'])).total_seconds() if consultant.get('request_created_at_utc') else None
     provenance=consultant.get('card_review_provenance',{})
-    valid=consultant.get('status')=='VALIDATED_ADVISORY_ONLY' and age is not None and (bool(provenance) or 0<=age<=600)
+    validated=set(consultant.get('reviewed_card_ids',()))
+    valid=(consultant.get('status')=='VALIDATED_ADVISORY_ONLY' or
+        consultant.get('status')=='NATIVE_REVIEW_INCOMPLETE' and bool(provenance))
     advice={a['card_id']:a for a in consultant.get('reply',{}).get('interpretations',())
-        if not provenance or a['card_id'] in provenance and 0<=(utc(as_of)-utc(
-            provenance[a['card_id']]['request_created_at_utc'])).total_seconds()<=600} if valid else {}
+        if (not provenance and age is not None and 0<=age<=600 or
+            a['card_id'] in provenance and
+            (consultant.get('status')=='VALIDATED_ADVISORY_ONLY' or a['card_id'] in validated and
+                provenance[a['card_id']].get('validation_status')=='VALIDATED_ADVISORY_ONLY') and
+            0<=(utc(as_of)-utc(provenance[a['card_id']]['request_created_at_utc'])).total_seconds()<=600)} if valid else {}
+    valid=bool(advice)
+    expected=set(consultant.get('card_ids',())) or {a['card_id'] for a in consultant.get('reply',{}).get('interpretations',())}
+    coverage_complete=consultant.get('status')=='VALIDATED_ADVISORY_ONLY' and expected<=set(advice)
     for r in candidates:
         a=advice.get(r['card_id'])
         if a:
@@ -744,7 +764,7 @@ def apply_native_research_advice(candidates,dispositions,consultant,*,as_of):
                     'recheck':a['falsifying_question']});continue
             r={**r,'native_challenge':challenge,'analyst_question':a['falsifying_question']}
         r={**r,'reasoning_status':'NATIVE_REVIEWED' if a else 'DETERMINISTIC_ONLY',
-            'native_review_coverage_complete':consultant.get('status')=='VALIDATED_ADVISORY_ONLY'}
+            'native_review_coverage_complete':coverage_complete}
         picked.append(r)
     picked.sort(key=lambda r:({'INVESTIGATE':0,'WATCH':1,'UNKNOWN':2}.get(
         advice.get(r['card_id'],{}).get('priority'),1),control.index(r['card_id'])))
@@ -758,4 +778,7 @@ def apply_native_research_advice(candidates,dispositions,consultant,*,as_of):
         'native_assisted_card_ids':[r['card_id'] for r in picked if r['card_id'] in advice],
         'output_card_ids':[r['card_id'] for r in picked],'linked_decisions':links,
         'accepted_current_advice':valid,'ranking_or_membership_changed':control!=[r['card_id'] for r in picked],
+        'current_advice_card_ids':sorted(advice),
+        'stale_review_card_ids':sorted(cid for cid,p in provenance.items()
+            if (utc(as_of)-utc(p['request_created_at_utc'])).total_seconds()>600),
         'performance_improvement_established':False,'hard_gates_changed':False}

@@ -48,11 +48,12 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
     if as_of is not None and not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=600:
         raise ContractError('NATIVE_REQUEST_STALE')
     if request.get('native_identity',{}).get('provider')=='codex':
-        from .native_identity import load_private,assert_current,local_path
+        from .native_identity import load_private,assert_parent,local_path
         from .native_codex import review_brief
         private=load_private(config_path)
-        if verified_identity is None:assert_current(request['native_identity'],private)
-        elif verified_identity!=request['native_identity']:raise ContractError('NATIVE_SESSION_MISMATCH')
+        if verified_identity is not None and verified_identity!=request['native_identity']:
+            raise ContractError('NATIVE_SESSION_MISMATCH')
+        assert_parent(request['native_identity'],private)
         installed=local_path(private['agent_workspace'])/'.agents/skills/market-research-review/SKILL.md'
         if digest(installed.read_bytes())!=request['skill_sha256']:raise ContractError('AGENT_SKILL_HASH')
         args={'title':'OPENBOT-RESEARCH-'+material,'brief':review_brief(request)}
@@ -216,17 +217,33 @@ def failure(error,stage):
         if safe_diagnostic(getattr(error,'diagnostic',None)) else {})}
 
 
-def review_count(request,config):
+def review_count(request,config,*,details=False):
     """Scoped observation, never a model submission or permission to retry."""
-    if request.get('native_identity',{}).get('provider')!='codex':return 0
+    if request.get('native_identity',{}).get('provider')!='codex':
+        return {'count':0,'task_state':'UNSUPPORTED_OBSERVATION'} if details else 0
     from .native_host import delegated,call
     args={'agent_id':request['native_identity']['agent_id'],
-        'title':'OPENBOT-RESEARCH-'+request['material_sha256']}
+        'title':'OPENBOT-RESEARCH-'+request['material_sha256'],'details':details}
     if delegated(config):return call(config,'review_count',args)
-    from .native_identity import read_db
+    return task_observation(config,**args)
+
+
+def task_observation(config,*,agent_id,title,details=False):
+    """App task creation is observable separately from provider execution."""
+    from .native_identity import read_db,ref
     with read_db(config['openbot_db']) as db:
-        return db.execute("SELECT count(*) FROM projection_agent_threads WHERE agent_id=? AND title=? AND origin='agent'",
-            (args['agent_id'],args['title'])).fetchone()[0]
+        rows=db.execute("SELECT thread_id,created_at FROM projection_agent_threads WHERE agent_id=? AND title=? AND origin='agent'",
+            (agent_id,title)).fetchall()
+        if not details:return len(rows)
+        result={'count':len(rows),'task_state':'MISSING' if not rows else 'DUPLICATE' if len(rows)>1 else 'PENDING'}
+        if len(rows)!=1:return result
+        thread,created=rows[0];result.update(task_ref=ref(thread),task_created_at_utc=created)
+        turns=db.execute('SELECT status,started_at,completed_at FROM projection_turns WHERE thread_id=?',(thread,)).fetchall()
+    if any(r[0] in {'failed','cancelled','interrupted'} for r in turns):result['task_state']='FAILED'
+    elif any(r[0]=='running' for r in turns):result['task_state']='RUNNING'
+    elif turns and all(r[0]=='completed' for r in turns):result['task_state']='COMPLETED'
+    elif any(r[0] not in {'pending','queued'} for r in turns):result['task_state']='UNKNOWN'
+    return result
 
 
 def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,progress=None,verified_identity=None):
@@ -253,35 +270,51 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
     except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
         first_error=failure(error,'TASK_PUBLICATION')
         emit('REVIEW_FAILED',first_error=first_error)
-        return finish('NATIVE_TASK_PUBLICATION_FAILED')
+        return finish('NATIVE_TASK_PUBLICATION_FAILED',terminal_error=first_error)
     folder=Path(directory);published=clock()
     config_hash=digest(Path(config_file).read_bytes())
     result['publication_seconds']=round(time.monotonic()-began,6)
     result['request_prepared_at_utc']=published
     emit('REVIEW_READY',request_prepared_at_utc=published,
         publication_seconds=round(time.monotonic()-began,6))
-    deadline=time.monotonic()+wait_seconds
-    pending_status=None
+    # Publication/reader startup consumes the same request freshness envelope.
+    deadline=time.monotonic()+min(wait_seconds,max(0,600-(utc(clock())-utc(request['as_of_utc'])).total_seconds()))
+    pending_status=None;observation=None
     while True:
         try:
             if digest(Path(config_file).read_bytes())!=config_hash:
                 raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
-            count=review_count(request,config)
+            observed=review_count(request,config,details=True);count=observed['count']
             if count>1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            if count:
+                from .native_identity import under_work
+                anchor={k:observed[k] for k in ('task_ref','task_created_at_utc')}
+                anchor_path=under_work(folder/(material+'.task-observation.json'))
+                try:
+                    with anchor_path.open('x',encoding='utf-8') as f:
+                        f.write(encode(anchor));f.flush();os.fsync(f.fileno())
+                except FileExistsError:
+                    if anchor_path.stat().st_size>4096 or json.loads(anchor_path.read_text(encoding='utf-8'))!=anchor:
+                        raise ContractError('NATIVE_SESSION_MISMATCH')
+            if observed!=observation:
+                observation=observed
+                result['native_task_observation']=observed
+                if count:
+                    emit('REVIEW_RUNNING',native_task_state=observed['task_state'],native_task_observation=observed)
             if count and running_at is None:
                 running_at=clock();emit('REVIEW_RUNNING',native_started_observed_at_utc=running_at)
             found=collect(request,config,target,as_of=clock())
         except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
             fault=failure(error,'RECEIPT_COLLECTION')
             if first_error is None:first_error=fault
-            retry=fault['code'] in {'NATIVE_REVIEW_INCOMPLETE','NATIVE_HANDOFF_UNATTESTED',
+            retry=fault['code'] in {'NATIVE_REVIEW_INCOMPLETE','NATIVE_HANDOFF_UNATTESTED','AGENT_EVIDENCE_FUTURE',
                 'NATIVE_STORAGE_LOCKED','NATIVE_STORAGE_UNAVAILABLE','NATIVE_STORAGE_TIMED_OUT',
                 'NATIVE_READER_PROCESS_UNAVAILABLE'}
             # Duplicate submissions are terminal, never an invitation to retry.
             if 'count' in locals() and count>1:retry=False
             if not retry:
                 emit('REVIEW_FAILED',first_error=first_error)
-                return finish(fault['code'])
+                return finish(fault['code'],terminal_error=fault)
             storage_retries+=1;pending_status=fault['code'];found=None
             emit('REVIEW_RUNNING' if running_at else 'REVIEW_READY',first_error=first_error,
                 last_pending_status=pending_status,storage_read_retries=storage_retries)
@@ -299,7 +332,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             except (ContractError,OSError,ValueError) as error:
                 if first_error is None:first_error=failure(error,'RECEIPT_PERSISTENCE')
                 emit('REVIEW_FAILED',first_error=first_error)
-                return finish('NATIVE_RECEIPT_PERSISTENCE_FAILED')
+                return finish('NATIVE_RECEIPT_PERSISTENCE_FAILED',terminal_error=failure(error,'RECEIPT_PERSISTENCE'))
             emit('REVIEW_VERIFIED' if audit['reply_validation_status']=='VALIDATED' else 'REVIEW_REJECTED',
                 observed_model_attempts=audit['model_requests'])
             return finish('NATIVE_RECEIPT_COLLECTED',observed_model_attempts=audit['model_requests'],
@@ -311,10 +344,14 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 owner_dispatch_seconds=max(0,(utc(audit['native_started_at_utc'])-utc(request['as_of_utc'])).total_seconds()),
                 receipt_collection_latency_seconds=max(0,(utc(clock())-utc(audit['native_completed_at_utc'])).total_seconds()))
         if time.monotonic()>=deadline:
+            lease=folder/(material+'.dispatch.json')
+            if observation and observation['task_state']=='MISSING':
+                pending_status='NATIVE_DISPATCH_RESERVED_TASK_MISSING' if lease.exists() else 'NATIVE_TASK_NOT_SUBMITTED'
             emit('REVIEW_TIMED_OUT' if wait_seconds else 'REVIEW_PENDING',first_error=first_error)
             status='NATIVE_REVIEW_TIMED_OUT' if wait_seconds else (
                 'NATIVE_NOT_INVOKED' if request.get('native_identity') else 'AWAITING_OWNER_NATIVE_APP_SUBMISSION')
-            return finish(status,last_pending_status=pending_status)
+            return finish(status,last_pending_status=pending_status,
+                terminal_error={'stage':'RECEIPT_COLLECTION','code':pending_status or status})
         time.sleep(min(1,max(0,deadline-time.monotonic())))
 
 

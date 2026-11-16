@@ -21,6 +21,7 @@ class SimulatedApp:
     """App storage + real-shaped 0.169 ordinal envelopes, scoped by exact task."""
     def __init__(self,fixture,clock):
         self.f=fixture;self.clock=clock;self.submitted={};self.pending=[];self.input_cards=[]
+        self.reply_transform=None
     def envelope(self,at,kind,payload):return {'timestamp':at,'type':kind,'payload':payload}
     def write(self,name,rows):
         p=self.f.root/'sessions'/(name+'.jsonl')
@@ -67,6 +68,7 @@ class SimulatedApp:
                     'supporting_evidence_ids':[evidence],'contradicting_ids':[],
                     'strongest_rival':'NULL','null_hypothesis':False,'missed_traps':['SHARED_PRICE_EVIDENCE'],
                     'falsifying_question':'FIRST_OBSTACLE','priority':'INVESTIGATE' if c['native_symbol']=='BEARUSDT' else 'WATCH','claims':[]})
+            if self.reply_transform:reply=self.reply_transform(request,reply)
             raw=encode(reply);e=self.envelope
             rows.extend([e(at,'token_usage_record',{'turn_id':turn,'thread_id':name,'response_id':'FIXTURE_'+name,
                     'usage':{'input_tokens':100,'output_tokens':100}}),

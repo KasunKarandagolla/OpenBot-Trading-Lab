@@ -189,10 +189,28 @@ def records(config,session,workspace,*,start,end,backend=None):
     return items
 
 
+def turn_records(config,session,turn,workspace,*,start,end,backend=None):
+    """Select a persisted turn, including untagged items in its context.
+
+    A later turn in a reused rollout is not a change to this turn's identity.
+    Explicit item identifiers inside the selected context are still validated
+    by each consumer; a same-turn model/workspace change remains an error.
+    """
+    owner=None
+    for row in records(config,session,workspace,start=start,end=end,backend=backend):
+        p=row['payload']
+        if row['type']=='turn_context' or row['type']=='event_msg' and p.get('type')=='task_started':
+            owner=p.get('turn_id')
+            if not isinstance(owner,str) or not owner:raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
+        if owner==turn:yield row
+        elif row['type']=='event_msg' and p.get('turn_id')==turn:
+            raise ContractError('NATIVE_SESSION_MISMATCH')
+
+
 def attest(config,session,turn,*,model,workspace,start,end,expected_input,expected_reply,backend=None):
     """No model invocation. Exact input, turn model, zero tools, exact final."""
     from datetime import timedelta
-    rows=records(config,session,workspace,start=utc(start)-timedelta(seconds=1),end=utc(end)+timedelta(seconds=1),backend=backend)
+    rows=list(turn_records(config,session,turn,workspace,start=utc(start)-timedelta(seconds=1),end=utc(end)+timedelta(seconds=1),backend=backend))
     with read_db(config['provider_db']) as db:
         actual=db.execute('SELECT model FROM threads WHERE id=?',(session,)).fetchone()
     if not actual or actual[0]!=model:raise ContractError('NATIVE_MODEL_SWITCHED')
@@ -267,15 +285,12 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
 def attest_handoff(config,identity,request,*,as_of):
     """The parent provider must record a genuine completed start_task call."""
     from datetime import timedelta
-    with read_db(config['openbot_db']) as db:
-        sessions=db.execute('''SELECT p.external_session_id,t.turn_id,t.started_at
-          FROM projection_provider_sessions p JOIN projection_turns t ON t.provider_session_id=p.id
-          JOIN projection_threads h ON h.thread_id=t.thread_id WHERE h.agent_id=?''',(identity['agent_id'],)).fetchall()
-    matches=[r for r in sessions if ref(r[0])==identity['external_session_ref'] and ref(r[1])==identity['turn_ref']]
-    if len(matches)!=1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-    session,turn,start=matches[0];brief=review_brief(request)
-    context=False;matched=False
-    for x in records(config,session,config['agent_workspace'],start=utc(start)-timedelta(seconds=1),end=utc(as_of),backend=identity.get('provider_backend')):
+    from .native_identity import parent_binding
+    binding=parent_binding(identity,config)
+    session,turn,start=binding['external'],binding['turn'],binding['started_at']
+    end=min(utc(as_of),utc(binding['completed_at'])) if binding['completed_at'] else utc(as_of)
+    brief=review_brief(request);context=False;matches=[]
+    for x in turn_records(config,session,turn,config['agent_workspace'],start=utc(start)-timedelta(seconds=1),end=end,backend=identity.get('provider_backend')):
         p=x['payload']
         if x['type']=='turn_context':
             context_matches(p,turn,identity['model'],config['agent_workspace']);context=True
@@ -287,6 +302,7 @@ def attest_handoff(config,identity,request,*,as_of):
         if (context and item.get('success') is True and item.get('status')=='completed' and
                 args.get('name')=='openbot.start_task' and
                 args.get('arguments')=={'title':'OPENBOT-RESEARCH-'+request['material_sha256'], 'brief':brief}):
-            matched=True
-    if matched:return True
+            if utc(x['timestamp'])<utc(request['as_of_utc']):raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            matches.append(x['timestamp'])
+    if len(matches)==1:return True
     raise ContractError('NATIVE_HANDOFF_UNATTESTED')

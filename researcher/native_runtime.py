@@ -1,7 +1,40 @@
 """Provider dispatch for trusted, model-flexible native receipts. Never invokes."""
 import json
 from .contracts import ContractError, digest, utc
-from .native_identity import assert_current, read_db, ref
+from .native_identity import assert_parent, read_db, ref
+
+
+def integration_preflight(config,*,as_of):
+    """Read the actual current adapter and installed skills before market I/O."""
+    from .native_host import delegated,call
+    if delegated(config):return call(config,'integration_preflight',{'as_of':as_of})
+    from .native_identity import active_identity,parent_binding,local_path
+    from .native_codex import turn_records,context_matches,SCHEMA
+    from .settings import ROOT
+    from datetime import timedelta
+    identity=active_identity(config);binding=parent_binding(identity,config)
+    if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
+    context=False
+    for row in turn_records(config,binding['external'],binding['turn'],config['agent_workspace'],
+            start=utc(binding['started_at'])-timedelta(seconds=1),end=utc(as_of),backend=identity['provider_backend']):
+        if row['type']=='turn_context':
+            context_matches(row['payload'],binding['turn'],identity['model'],config['agent_workspace']);context=True
+    if not context:raise ContractError('NATIVE_NOT_INVOKED')
+    root=str(ROOT)
+    if len(root)>2 and root[1]==':':root='/mnt/'+root[0].lower()+'/'+root[3:].replace(chr(92),'/')
+    hashes={}
+    for name,source in [('market-research-review',ROOT/'.agents/skills/market-research-review/SKILL.md'),
+            ('openbot-market-research',ROOT/'integration/openbot-market-research/SKILL.md')]:
+        expected=source.read_text(encoding='utf-8').replace('@@RESEARCH_ROOT@@',root).encode()
+        installed=[local_path(config['agent_workspace'])/prefix/'skills'/name/'SKILL.md'
+            for prefix in ('.agents','.claude')]
+        found=[p for p in installed if p.is_file()]
+        if not found or any(any(q.is_symlink() for q in (p,*p.parents)) or p.read_bytes()!=expected for p in found):
+            raise ContractError('AGENT_SKILL_HASH')
+        hashes[name]=digest(expected)
+    return {'status':'NATIVE_READER_AND_INSTALLED_SKILLS_VERIFIED','identity':identity,
+        'provider_schema':SCHEMA,'skill_sha256':hashes,'market_requests':0,'model_requests':0,
+        'native_execution_verified':False,'trade_authorization':False}
 
 
 def collect(request,config,*,as_of):
@@ -10,7 +43,7 @@ def collect(request,config,*,as_of):
     from .agent_review import parse_reply,validate_reply,REJECTION_CODES
     identity=request.get('native_identity')
     if not isinstance(identity,dict):raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
-    assert_current(identity,config)
+    assert_parent(identity,config)
     if not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=600:
         raise ContractError('NATIVE_REQUEST_STALE')
     if identity['provider']=='opencode':
@@ -23,19 +56,20 @@ def collect(request,config,*,as_of):
     marker='OPENBOT-RESEARCH-'+request['material_sha256'];brief=review_brief(request)
     with read_db(config['openbot_db']) as db:
         # An agent-originated task of the very same configured existing agent.
-        rows=db.execute('''SELECT thread_id FROM projection_agent_threads
+        rows=db.execute('''SELECT thread_id,created_at FROM projection_agent_threads
           WHERE agent_id=? AND origin='agent' AND title=? AND created_at>=?''',
           (identity['agent_id'],marker,request['as_of_utc'])).fetchall()
         if not rows:return None
         if len(rows)!=1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-        thread=rows[0][0]
+        thread,created=rows[0]
+        if ref(thread)==identity['thread_ref']:raise ContractError('NATIVE_SESSION_MISMATCH')
         inputs=db.execute('''SELECT message_json FROM projection_thread_messages
           WHERE thread_id=? AND author='agent' AND created_at>=? ORDER BY ordinal''',
           (thread,request['as_of_utc'])).fetchall()
         if not inputs or json.loads(inputs[0][0]).get('text')!=brief:
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         finals=db.execute('''SELECT m.message_json,t.turn_id,t.started_at,t.completed_at,
-           p.external_session_id,p.model,p.provider
+           p.external_session_id,p.model,p.provider,t.thread_id,p.thread_id
           FROM projection_thread_messages m JOIN projection_turns t ON t.turn_id=m.turn_id
           JOIN projection_provider_sessions p ON p.id=t.provider_session_id
           WHERE m.thread_id=? AND m.author='assistant' AND m.item_type='final_answer'
@@ -47,15 +81,17 @@ def collect(request,config,*,as_of):
                 raise ContractError('NATIVE_TASK_FAILED')
             return None
         if len(finals)!=1:raise ContractError('NATIVE_REVIEW_INCOMPLETE')
-    message,turn,start,end,session,model,provider=finals[0]
+    message,turn,start,end,session,model,provider,turn_thread,session_thread=finals[0]
+    if (turn_thread!=thread or session_thread!=thread or ref(session)==identity['external_session_ref']
+            or ref(turn)==identity['turn_ref']):raise ContractError('NATIVE_SESSION_MISMATCH')
     if provider!=identity['provider'] or model!=identity['model']:raise ContractError('NATIVE_MODEL_SWITCHED')
-    if not utc(request['as_of_utc'])<=utc(start)<=utc(end)<=utc(as_of):raise ContractError('AGENT_EVIDENCE_FUTURE')
+    if not utc(request['as_of_utc'])<=utc(created)<=utc(start)<=utc(end)<=utc(as_of):raise ContractError('AGENT_EVIDENCE_FUTURE')
     raw=json.loads(message).get('text')
     if not isinstance(raw,str) or len(raw.encode())>32768:raise ContractError('AGENT_REPLY_SIZE')
     attest_handoff(config,identity,request,as_of=as_of)
     proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
         expected_input=brief,expected_reply=raw,backend=identity['provider_backend'])
-    assert_current(identity,config)
+    assert_parent(identity,config)
     try:
         validated=validate_reply(parse_reply(raw),request)
         validation={'reply_validation_status':'VALIDATED','validated_rows':validated['accepted']}
@@ -80,23 +116,23 @@ def delivery_proof(state,config):
     """
     from .native_host import delegated,call
     if delegated(config):return call(config,'delivery_proof',{'state':state})
-    from .native_identity import configured_identity
-    from .native_codex import records,context_matches
+    from .native_identity import parent_binding,local_path
+    from .native_codex import turn_records,context_matches
     from datetime import timedelta
-    identity=state['native_identity'];current=configured_identity(config)
-    if any(current.get(k)!=identity.get(k) for k in ('agent_id','provider','model','adapter')):
-        raise ContractError('NATIVE_MODEL_SWITCHED')
+    identity=state['native_identity'];binding=parent_binding(identity,config)
     artifact=state.get('artifact',{})
     if not artifact:return None
+    target=local_path(artifact['attachment_path'])
+    expected=local_path(config['agent_workspace'])/'market-research-results'/(state['job_id']+'.zip')
+    if target!=expected or any(p.is_symlink() for p in (target,*target.parents)):
+        raise ContractError('NATIVE_REPLY_PROVENANCE')
+    raw_zip=target.read_bytes()
+    if digest(raw_zip)!=artifact['sha256']:raise ContractError('NATIVE_REPLY_PROVENANCE')
+    from .diagnostic_export import verify_zip
+    verify_zip(raw_zip)
+    if binding['status']!='completed' or not binding['completed_at']:return None
+    turn,start,end,session,thread=(binding[k] for k in ('turn','started_at','completed_at','external','thread'))
     with read_db(config['openbot_db']) as db:
-        rows=db.execute('''SELECT t.turn_id,t.started_at,t.completed_at,p.external_session_id,t.thread_id
-          FROM projection_turns t JOIN projection_provider_sessions p ON p.id=t.provider_session_id
-          JOIN projection_threads h ON h.thread_id=t.thread_id WHERE h.agent_id=? AND t.status='completed' ''',
-          (identity['agent_id'],)).fetchall()
-        rows=[r for r in rows if ref(r[0])==identity['turn_ref'] and ref(r[3])==identity['external_session_ref']]
-        if not rows:return None
-        if len(rows)!=1:raise ContractError('NATIVE_SESSION_MISMATCH')
-        turn,start,end,session,thread=rows[0]
         finals=db.execute('''SELECT message_json FROM projection_thread_messages
           WHERE thread_id=? AND turn_id=? AND author='assistant' AND item_type='final_answer'
           AND status='completed' ''',(thread,turn)).fetchall()
@@ -104,7 +140,7 @@ def delivery_proof(state,config):
     raw=json.loads(finals[0][0]).get('text','')
     if state['job_id'] not in raw or artifact['sha256'] not in raw:return None
     attached=False;context=False;final=False
-    for row in records(config,session,config['agent_workspace'],start=utc(start)-timedelta(seconds=1),
+    for row in turn_records(config,session,turn,config['agent_workspace'],start=utc(start)-timedelta(seconds=1),
             end=utc(end)+timedelta(seconds=1),backend=identity.get('provider_backend')):
         p=row['payload']
         if row['type']=='turn_context':

@@ -310,7 +310,7 @@ def scan_live(*, qualification=False, api=None, client=None, config=None, ledger
 
 def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clock=now_utc,
                          mode='LIVE',crash_hook=None,sources=None,context_prioritized=True,route_ablation=None,
-                         native_review_dir=None,native_audit_config=None,native_wait_seconds=0,native_max_cards=4,progress=None,native_progress=None,job_id=None):
+                         native_review_dir=None,native_audit_config=None,native_wait_seconds=0,native_max_cards=4,progress=None,native_progress=None,job_id=None,native_identity=None):
     """One on-demand read-only path: live sources → remote packs → saved research.
 
     Historical price precursors nominate questions independently. The protected
@@ -1167,7 +1167,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 report['consultant']=review_batches(native_review_dir,pre_cards,facts,
                                     clock=evaluation_time,context=report.get('context'),reviews=native_reviews,
                                     audit_config=native_audit_config,wait_seconds=native_wait_seconds,
-                                    max_cards=native_max_cards,progress=native_progress)
+                                    max_cards=native_max_cards,progress=native_progress,native_identity=native_identity)
                             except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
                                 from .native_app import failure
                                 fault=failure(error,'REQUEST_PREPARATION')
@@ -1448,12 +1448,22 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     as_of=report['completed_at_utc'],max_count=len(cards),deduplicate=False)
                 ranked={c['card_id']:c.get('rank') for c in candidates}
                 reviewed_ids=set(report.get('consultant',{}).get('reviewed_card_ids',[]))
+                current_reviewed=set(native_comparison.get('current_advice_card_ids',()))
+                required_reviews={r['card_id'] for r in [*all_viable,*report['shortlist']]}
+                report['native_review_coverage']={'required_finalist_card_ids':sorted(required_reviews),
+                    'validated_card_ids':sorted(reviewed_ids),'current_validated_card_ids':sorted(current_reviewed),
+                    'unreviewed_or_stale_finalist_card_ids':sorted(required_reviews-current_reviewed),
+                    'stale_review_card_ids':native_comparison.get('stale_review_card_ids',[]),
+                    'complete_for_final_candidates':not bool(required_reviews-current_reviewed),
+                    'scope':'CURRENT_PER_CARD_ADVICE; DETERMINISTIC_SOURCE_AND_ADMISSION_GATES_RETAINED'}
                 dispositions_by_id={d['card_id']:d for d in dispositions}
                 report['candidate_consideration']=[{'card_id':r['card_id'],'native_symbol':r['instrument'],
                     'reference_id':r['reference']['id'],'timeframe':r['reference']['timeframe'],
                     'direction':r['side_hypothesis'],'family':r['primary_family'],'methods':r['method_ids'],
                     'rank':ranked.get(r['card_id']),'ranking_status':'RANKED' if r['card_id'] in ranked else 'UNRANKED_ALTERNATIVE',
                     'reviewed':r['card_id'] in reviewed_ids,
+                    'native_review_status':'VALIDATED_CURRENT' if r['card_id'] in current_reviewed else
+                        'VALIDATED_EXPIRED' if r['card_id'] in reviewed_ids else 'NOT_REVIEWED',
                     'omission':dispositions_by_id.get(r['card_id']),
                     'next_question':r['analyst_question'],'strongest_rival':r['strongest_rival'],
                     'as_of':r['research_as_of'],'valid_until':r['valid_until'],'trade_authorization':False}

@@ -117,13 +117,13 @@ def active_identity(config):
     if delegated(config):return call(config,'active_identity')
     identity=configured_identity(config)
     with read_db(config['openbot_db']) as db:
-        rows=db.execute('''SELECT t.thread_id,t.active_turn_id,p.id,p.external_session_id,p.model,p.provider
+        rows=db.execute('''SELECT t.thread_id,t.active_turn_id,p.id,p.external_session_id,p.model,p.provider,r.started_at
             FROM projection_threads t JOIN projection_agents a ON a.thread_id=t.thread_id
             JOIN projection_provider_sessions p ON p.thread_id=t.thread_id
-            JOIN projection_turns r ON r.turn_id=t.active_turn_id AND r.provider_session_id=p.id
-            WHERE a.agent_id=? AND p.state='active' AND r.completed_at IS NULL''',(identity['agent_id'],)).fetchall()
+            JOIN projection_turns r ON r.turn_id=t.active_turn_id AND r.provider_session_id=p.id AND r.thread_id=t.thread_id
+            WHERE a.agent_id=? AND t.agent_id=a.agent_id AND p.state='active' AND r.completed_at IS NULL''',(identity['agent_id'],)).fetchall()
     if len(rows)!=1:raise ContractError('NATIVE_NOT_INVOKED')
-    thread,turn,sid,external,model,provider=rows[0]
+    thread,turn,sid,external,model,provider,started=rows[0]
     if model!=identity['model'] or provider!=identity['provider']:raise ContractError('NATIVE_MODEL_SWITCHED')
     if provider=='codex':
         with read_db(config['provider_db']) as db:
@@ -136,7 +136,51 @@ def active_identity(config):
         if '/' not in model:raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
         backend=model.split('/',1)[0]
     return {**identity,'provider_backend':backend,'thread_ref':ref(thread),'turn_ref':ref(turn),
-        'session_ref':ref(sid),'external_session_ref':ref(external)}
+        'session_ref':ref(sid),'external_session_ref':ref(external),'parent_started_at_utc':started}
+
+
+def parent_binding(identity,config):
+    """Resolve the captured parent from durable relations, never active pointers.
+
+    Internal to the storage host: raw identifiers never cross native_host.
+    Closing a turn/session does not change its identity. Reassigning its agent,
+    thread, provider, model or external session does.
+    """
+    current=configured_identity(config)
+    if current['agent_id']!=identity.get('agent_id'):raise ContractError('NATIVE_AGENT_MISMATCH')
+    if any(current[k]!=identity.get(k) for k in ('provider','model','adapter')):
+        raise ContractError('NATIVE_MODEL_SWITCHED')
+    with read_db(config['openbot_db']) as db:
+        rows=db.execute('''SELECT h.thread_id,t.turn_id,p.id,p.external_session_id,
+          p.model,p.provider,t.started_at,t.completed_at,t.status
+          FROM projection_threads h JOIN projection_turns t ON t.thread_id=h.thread_id
+          JOIN projection_provider_sessions p ON p.id=t.provider_session_id AND p.thread_id=h.thread_id
+          WHERE h.agent_id=?''',(identity['agent_id'],)).fetchall()
+    matches=[r for r in rows if all(ref(v)==identity.get(k) for v,k in zip(r[:4],
+        ('thread_ref','turn_ref','session_ref','external_session_ref')))]
+    if len(matches)!=1:raise ContractError('NATIVE_SESSION_MISMATCH')
+    thread,turn,sid,external,model,provider,start,end,status=matches[0]
+    if identity.get('parent_started_at_utc',start)!=start:raise ContractError('NATIVE_SESSION_MISMATCH')
+    if model!=identity['model'] or provider!=identity['provider']:raise ContractError('NATIVE_MODEL_SWITCHED')
+    if provider=='codex':
+        with read_db(config['provider_db']) as db:
+            row=db.execute('SELECT model_provider,model,cwd FROM threads WHERE id=?',(external,)).fetchone()
+        if not row or path_key(row[2])!=path_key(config['agent_workspace']):raise ContractError('NATIVE_SESSION_MISMATCH')
+        if row[1]!=model:raise ContractError('NATIVE_MODEL_SWITCHED')
+        if row[0]!=identity.get('provider_backend'):raise ContractError('NATIVE_SESSION_MISMATCH')
+    from .contracts import utc
+    utc(start)
+    if end is not None and utc(end)<utc(start):raise ContractError('NATIVE_SESSION_MISMATCH')
+    return {'thread':thread,'turn':turn,'session_id':sid,'external':external,
+        'started_at':start,'completed_at':end,'status':status}
+
+
+def assert_parent(identity,config):
+    """Check immutable parent ownership while permitting active-turn changes."""
+    from .native_host import delegated,call
+    if delegated(config):return call(config,'assert_parent',{'identity':identity})
+    parent_binding(identity,config)
+    return configured_identity(config)
 
 
 def assert_current(identity,config):
@@ -148,5 +192,7 @@ def assert_current(identity,config):
         raise ContractError('NATIVE_MODEL_SWITCHED')
     active=active_identity(config)
     if any(active.get(k)!=identity.get(k) for k in ('thread_ref','turn_ref','session_ref','external_session_ref','provider_backend')):
+        raise ContractError('NATIVE_SESSION_MISMATCH')
+    if identity.get('parent_started_at_utc',active['parent_started_at_utc'])!=active['parent_started_at_utc']:
         raise ContractError('NATIVE_SESSION_MISMATCH')
     return current

@@ -14,13 +14,15 @@ import sqlite3
 import sys
 import time
 import uuid
+from contextlib import contextmanager
 from .contracts import ContractError, digest, encode, now_utc, utc
 from .settings import ROOT
-from .native_identity import active_identity, assert_current, load_private, read_db, ref, under_work
+from .native_identity import active_identity, assert_current, assert_parent, load_private, read_db, ref, under_work
 
 BASE=ROOT/'work/openbot-integration'
 PRIVATE=BASE/'native-audit-local.json'
 OWNER_COMMAND='run the complete market research now'
+ACCEPTANCE_PROMPT=ROOT/'docs/implementation/OPENBOT_RECOVERY_ACCEPTANCE_PROMPT.txt'
 FINAL={'COMPLETED','PARTIAL','FAILED','INTERRUPTED','FINAL_DELIVERED'}
 
 
@@ -50,24 +52,67 @@ def _write(path,value):
 
 def _transition(folder,state,**fields):
     data=_read(folder/'state.json');at=now_utc()
-    if data['state']!=state:
+    # A stale status/progress reader cannot overwrite a terminal worker result.
+    delivery=(state=='FINAL_DELIVERED' and data['state'] in {'COMPLETED','PARTIAL'})
+    if data['state'] in FINAL and state!=data['state'] and not delivery:return data
+    if data['state']!=state or 'native_task_state' in fields and fields['native_task_state']!=data.get('native_task_state'):
         data.setdefault('lifecycle',[]).append({'state':state,'at_utc':at,
-            **{k:fields[k] for k in ('material_sha256','batch_index','batch_count','first_error') if k in fields}})
+            **{k:fields[k] for k in ('material_sha256','batch_index','batch_count','first_error','native_task_state') if k in fields}})
     data.update(fields,state=state,updated_at_utc=at)
     _write(folder/'state.json',data)
     return data
 
 
-def _owner_proof(identity,config):
+@contextmanager
+def _start_guard():
+    # The approved runner executes in WSL/POSIX. OS ownership releases this
+    # guard on a crash; an abandoned exclusive-create file must not block forever.
+    try:import fcntl
+    except ImportError:raise ContractError('RUNNER_PROCESS_LOCK_UNSUPPORTED') from None
+    with under_work(BASE/'start.lock').open('ab') as stream:
+        try:fcntl.flock(stream,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError:raise ContractError('RUNNER_ALREADY_ACTIVE') from None
+        try:yield
+        finally:fcntl.flock(stream,fcntl.LOCK_UN)
+
+
+def _process_token(pid):
+    try:return (Path('/proc')/str(pid)/'stat').read_text().rsplit(') ',1)[1].split()[19]
+    except (OSError,IndexError):return None
+
+
+def _process_record(pid):
+    return {'pid':pid,'start_token':_process_token(pid)}
+
+
+def _process_alive(record):
+    try:os.kill(record['pid'],0)
+    except ProcessLookupError:return False
+    token=_process_token(record['pid'])
+    return not (record.get('start_token') and token and record['start_token']!=token)
+
+
+def _owner_proof(identity,config,*,expected_commit=None):
     from .native_host import delegated,call
-    if delegated(config):return call(config,'owner_proof',{'identity':identity})
+    if delegated(config):return call(config,'owner_proof',{'identity':identity,'expected_commit':expected_commit})
     with read_db(config['openbot_db']) as db:
         rows=db.execute('''SELECT d.turn_id,m.text,m.sender_kind FROM projection_deliveries d
           JOIN projection_mailbox_messages m ON m.message_id=d.message_id
           WHERE d.recipient_agent_id=? AND m.sender_kind='user' ''',(identity['agent_id'],)).fetchall()
-    rows=[r for r in rows if ref(r[0])==identity['turn_ref'] and r[1].strip().casefold().rstrip('.!')==OWNER_COMMAND]
+    def mode(text):
+        if not isinstance(text,str):return None
+        if text.strip().casefold().rstrip('.!')==OWNER_COMMAND:return 'ORDINARY_RESEARCH'
+        # Exact versioned owner message, pinned to the checkout being launched.
+        # Substrings, negated/quoted instructions and delegated senders fail.
+        if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
+                text.strip()==ACCEPTANCE_PROMPT.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',expected_commit).strip()):
+            return 'SETUP_AND_ACCEPTANCE'
+        return None
+    rows=[(*r,mode(r[1])) for r in rows if ref(r[0])==identity['turn_ref']]
+    rows=[r for r in rows if r[3] is not None]
     if len(rows)!=1:raise ContractError('RUNNER_OWNER_START_REQUIRED')
-    return {'owner_message_sha256':digest(rows[0][1].encode()),'owner_origin':'OPENBOT_CURRENT_USER_DELIVERY'}
+    return {'owner_message_sha256':digest(rows[0][1].encode()),'owner_origin':'OPENBOT_CURRENT_USER_DELIVERY',
+        'owner_run_mode':rows[0][3]}
 
 
 def start(request_id):
@@ -76,43 +121,33 @@ def start(request_id):
     if Path.cwd().resolve()!=ROOT:raise ContractError('RUNNER_WRONG_WORKING_DIRECTORY')
     config=load_private(PRIVATE);identity=active_identity(config)
     if identity['provider']!='codex':raise ContractError('RUNNER_AUTONOMOUS_HANDOFF_UNSUPPORTED_FOR_PROVIDER')
-    owner=_owner_proof(identity,config)
     sha=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     if subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True):
         raise ContractError('RUNNER_DIRTY_CHECKOUT')
+    owner=_owner_proof(identity,config,expected_commit=sha)
     BASE.mkdir(parents=True,exist_ok=True);lock=under_work(BASE/'active.json')
     # The owner message/turn is the idempotency key, even if the model invents a
     # new request id on retry. Concurrent or interrupted work never starts twice.
-    try:
-        with lock.open('x',encoding='utf-8') as f:
-            key=utc(now_utc()).strftime('%Y%m%dT%H%M%SZ')+'-'+request_id
-            f.write(encode({'job_id':key,'turn_ref':identity['turn_ref']}))
-    except FileExistsError:
-        existing=_read(lock)
-        if existing.get('turn_ref')==identity['turn_ref']:return status(existing['job_id'])
-        if status(existing['job_id'])['state'] not in FINAL:raise ContractError('RUNNER_ALREADY_ACTIVE')
-        # Serialize replacement: only the next owner turn can release a finished
-        # lock. Exclusive request lock prevents two callers replacing it at once.
-        guard=BASE/'replace.lock'
-        try:
-            with guard.open('x'):pass
-        except FileExistsError:raise ContractError('RUNNER_ALREADY_ACTIVE') from None
-        try:
-            if _read(lock)!=existing:raise ContractError('RUNNER_ALREADY_ACTIVE')
-            lock.unlink()
-            return start(request_id)
-        finally:guard.unlink(missing_ok=True)
-    folder=_job(key);folder.mkdir(parents=True)
-    _write(folder/'state.json',{'schema_version':'openbot.research-job.v1','job_id':key,
-        'state':'STARTING','created_at_utc':now_utc(),'updated_at_utc':now_utc(),
-        'commit':sha,'native_identity':identity,'request_id':request_id,**owner,
-        'lifecycle':[{'state':'OWNER_AUTHORIZED','at_utc':now_utc()}],
-        'trade_authorization':False,'live_acceptance':'PARTIAL; NO_LIVE_RUN_YET'})
+    with _start_guard():
+        if lock.exists():
+            existing=_read(lock)
+            if existing.get('turn_ref')==identity['turn_ref']:return status(existing['job_id'])
+            if status(existing['job_id'])['state'] not in FINAL:raise ContractError('RUNNER_ALREADY_ACTIVE')
+        key=utc(now_utc()).strftime('%Y%m%dT%H%M%SZ')+'-'+request_id
+        initial={'schema_version':'openbot.research-job.v1','job_id':key,
+            'state':'STARTING','created_at_utc':now_utc(),'updated_at_utc':now_utc(),
+            'commit':sha,'native_identity':identity,'request_id':request_id,**owner,
+            'lifecycle':[{'state':'OWNER_AUTHORIZED','at_utc':now_utc()}],
+            'trade_authorization':False,'live_acceptance':'PARTIAL; NO_LIVE_RUN_YET'}
+        # Atomically publish enough state to recover a crash before state.json.
+        _write(lock,{'job_id':key,'turn_ref':identity['turn_ref'],'initial_state':initial})
+        folder=_job(key);folder.mkdir(parents=True)
+        _write(folder/'state.json',initial)
     try:
         with (folder/'worker.log').open('x',encoding='utf-8') as log:
             child=subprocess.Popen([sys.executable,'-m','researcher.openbot_runner','_worker','--job-id',key],
                 cwd=ROOT,stdin=subprocess.DEVNULL,stdout=log,stderr=log,start_new_session=True)
-        _write(folder/'process.json',{'pid':child.pid})
+        _write(folder/'process.json',_process_record(child.pid))
     except OSError:
         _transition(folder,'FAILED',reason='RUNNER_PROCESS_START_FAILED');raise ContractError('RUNNER_PROCESS_START_FAILED') from None
     return status(key)
@@ -137,10 +172,10 @@ def recorded_launch_matches(item,request_id,root,host_os):
 def attest_start(state,config):
     from .native_host import delegated,call
     if delegated(config):return call(config,'attest_start',{'state':state})
-    from .native_codex import records,context_matches
+    from .native_codex import turn_records,context_matches
     from datetime import timedelta
     identity=state['native_identity'];assert_current(identity,config)
-    if _owner_proof(identity,config)['owner_message_sha256']!=state['owner_message_sha256']:
+    if _owner_proof(identity,config,expected_commit=state['commit'])['owner_message_sha256']!=state['owner_message_sha256']:
         raise ContractError('RUNNER_OWNER_START_REQUIRED')
     with read_db(config['openbot_db']) as db:
         rows=db.execute('''SELECT p.external_session_id,t.turn_id,t.started_at FROM projection_turns t
@@ -150,7 +185,7 @@ def attest_start(state,config):
     if len(rows)!=1:raise ContractError('RUNNER_START_UNATTESTED')
     session,turn,start_at=rows[0]
     context=False;proof=None
-    for x in records(config,session,config['agent_workspace'],start=utc(start_at)-timedelta(seconds=1),end=utc(now_utc()),backend=identity.get('provider_backend')):
+    for x in turn_records(config,session,turn,config['agent_workspace'],start=utc(start_at)-timedelta(seconds=1),end=utc(now_utc()),backend=identity.get('provider_backend')):
         p=x['payload']
         if x['type']=='turn_context':
             context_matches(p,turn,identity['model'],config['agent_workspace'])
@@ -168,10 +203,28 @@ def attest_start(state,config):
     raise ContractError('RUNNER_START_UNATTESTED')
 
 
+def _prior_live_packet(current):
+    """Only the approved runner's prior command-attested live capture area."""
+    for folder in sorted((BASE/'jobs').iterdir(),reverse=True)[:32]:
+        if folder==current or not folder.is_dir():continue
+        state_path=under_work(folder/'state.json')
+        if not state_path.is_file():continue
+        state=_read(state_path)
+        if (state.get('start_proof',{}).get('status')!='VERIFIED_OPENBOT_AGENT_COMMAND' or
+                not state.get('scanner_started_at_utc')):continue
+        for path in sorted((folder/'review').glob('*.request.json')):
+            path=under_work(path)
+            if path.stat().st_size>131072:continue
+            request=json.loads(path.read_text(encoding='utf-8'))
+            if request.get('cards') and all(c.get('mode')=='LIVE' for c in request['cards']):return path
+    return None
+
+
 def run_job(key):
     """Called only by the detached worker. Offline tests patch the dependencies."""
     folder=_job(key);state=_read(folder/'state.json');config=load_private(PRIVATE)
     if state['state']!='STARTING':return status(key)  # no replay after any transition
+    if not (folder/'process.json').exists():_write(folder/'process.json',_process_record(os.getpid()))
     # Exclusive durable claim also prevents two workers racing before transition.
     try:
         with (folder/'worker.claim').open('x',encoding='utf-8') as stream:
@@ -188,20 +241,53 @@ def run_job(key):
             time.sleep(1)
         if proof is None:raise ContractError('RUNNER_START_UNATTESTED')
         _transition(folder,'COMMAND_ATTESTED',start_proof=proof)
-        _transition(folder,'SCANNING',scanner_started_at_utc=now_utc())
         from .discovery import scan_market_research
         def progress(stage,seconds):
             current=_read(folder/'state.json')['state']
             _transition(folder,current,stage=stage,stage_seconds=seconds)
         def native_progress(state,**fields):
             _transition(folder,state,**fields)
-        report=scan_market_research(ledger_path=BASE/'research.sqlite',
-            native_review_dir=folder/'review',native_audit_config=PRIVATE,
-            native_wait_seconds=600,native_max_cards=4,progress=progress,native_progress=native_progress,job_id=key,clock=now_utc)
+        transport=None
+        if state.get('owner_run_mode')=='SETUP_AND_ACCEPTANCE':
+            from .native_runtime import integration_preflight
+            setup=integration_preflight(config,as_of=now_utc())
+            _transition(folder,'NATIVE_INTEGRATION_PREFLIGHT',integration_preflight=setup)
+            source=_prior_live_packet(folder)
+            if source:
+                from .native_workflow import probe_captured_request
+                try:
+                    transport=probe_captured_request(folder/'review',source,native_identity=state['native_identity'],
+                        audit_config=PRIVATE,clock=now_utc,progress=lambda s,**v:native_progress(s,
+                            review_scope='ARCHIVED_TRANSPORT_PREFLIGHT',**v))
+                except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
+                    from .native_app import failure
+                    transport={'status':'NATIVE_REVIEW_INCOMPLETE','first_error':failure(error,'NATIVE_TRANSPORT_PREFLIGHT'),
+                        'observed_model_attempts':0,'current_market_interpretation':False}
+            else:transport={'status':'NO_PREVIOUS_LIVE_PACKET; CURRENT_SCAN_REVIEW_REQUIRED','observed_model_attempts':0}
+        transport_failed=(transport and not transport['status'].startswith('NO_PREVIOUS_LIVE_PACKET') and
+            (transport['status']!='VALIDATED_ADVISORY_ONLY' or transport.get('accepted',0)<1 or
+                transport.get('native_receipt',{}).get('native_identity')!=state['native_identity']))
+        if transport_failed:
+            report={'schema_version':'openbot.native-preflight-report.v1','mode':'AUTHENTIC_REPLAY',
+                'release_status':'PARTIAL_NATIVE_PREFLIGHT_FAILED','job_id':key,'market_scan_started':False,
+                'completed_at_utc':now_utc(),'trade_authorization':False,'shortlist':[],
+                'coverage':{'eligible_contracts':None,'all_market_structurally_covered':False},
+                'consultant':{'status':'NOT_INVOKED_CURRENT_MARKET; PREFLIGHT_FAILED'},
+                'costs':{'market_http_requests':0,'archived_native_model_attempts':transport.get('observed_model_attempts',0)}}
+        else:
+            _transition(folder,'SCANNING',scanner_started_at_utc=now_utc())
+            report=scan_market_research(ledger_path=BASE/'research.sqlite',
+                native_review_dir=folder/'review',native_audit_config=PRIVATE,
+                native_wait_seconds=600,native_max_cards=4,progress=progress,
+                native_progress=lambda s,**v:native_progress(s,review_scope='CURRENT_MARKET_REVIEW',**v),
+                job_id=key,clock=now_utc,native_identity=state['native_identity'])
+            report['market_scan_started']=True
+        if transport:report['native_transport_preflight']=transport
         report['openbot_orchestration']={'job_id':key,'commit':state['commit'],'start_proof':proof,
             'native_identity':state['native_identity'],'invocation_source':'EXISTING_OPENBOT_RESEARCHER',
             'acceptance':'PARTIAL; FINAL_APP_DELIVERY_NOT_YET_OBSERVED','trade_authorization':False}
-        data=_transition(folder,'RECONCILED',scanner_completed_at_utc=now_utc())
+        data=_transition(folder,'RECONCILED' if report['market_scan_started'] else 'PREFLIGHT_REJECTED',
+            scanner_completed_at_utc=now_utc() if report['market_scan_started'] else None)
         report['openbot_orchestration']['lifecycle']=data.get('lifecycle',[])
         report['openbot_orchestration']['final_delivery']='AWAITING_NATIVE_APP_ATTACHMENT_AND_RESPONSE_PROOF'
         from .__main__ import write_report
@@ -214,13 +300,21 @@ def run_job(key):
         artifact=export_job(folder,report,config)
         _transition(folder,'EXPORTED',artifact=artifact)
         native=report.get('consultant',{})
-        complete=(report.get('mode')=='LIVE' and native.get('status')=='VALIDATED_ADVISORY_ONLY'
-            and native.get('accepted',0)>0 and native.get('native_receipt',{}).get('native_identity')==state['native_identity'])
+        current_native=(native.get('status')=='VALIDATED_ADVISORY_ONLY' and native.get('accepted',0)>0
+            and native.get('native_receipt',{}).get('native_identity')==state['native_identity'])
+        archive_only=(native.get('status')=='NO_CHANGED_NATIVE_REVIEW_CARDS' and native.get('cards')==0
+            and transport and transport.get('status')=='VALIDATED_ADVISORY_ONLY' and transport.get('accepted',0)>0
+            and transport.get('native_receipt',{}).get('native_identity')==state['native_identity'])
+        complete=(report.get('mode')=='LIVE' and (current_native or archive_only)
+            and report.get('native_review_coverage',{}).get('complete_for_final_candidates') is True)
         # Delivery is a subsequent native main-chat action. This worker never
         # asserts FULL acceptance before observing the real delivered answer.
         _transition(folder,'COMPLETED' if complete else 'PARTIAL',artifact=artifact,
             native_status=native.get('status'),native_collector=native.get('native_collector'),
-            first_error=native.get('first_error'),observed_model_attempts=native.get('observed_model_attempts',0),
+            first_error=native.get('first_error') or (transport or {}).get('first_error') or
+                (transport or {}).get('native_collector',{}).get('first_error'),
+            observed_model_attempts=native.get('observed_model_attempts',0),
+            transport_model_attempts=(transport or {}).get('observed_model_attempts',0),
             live_acceptance='PARTIAL; AWAITING_OPENBOT_RESULT_AND_ZIP_DELIVERY' if complete else 'PARTIAL; NATIVE_OR_SOURCE_GATE_NOT_PASSED')
     except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
         # No private exception/path/token is included in the user-facing state.
@@ -233,7 +327,23 @@ def run_job(key):
 
 
 def status(key,include_review=False):
-    folder=_job(key);data=_read(folder/'state.json')
+    folder=_job(key)
+    try:data=_read(folder/'state.json')
+    except FileNotFoundError:
+        reservation=_read(BASE/'active.json');initial=reservation.get('initial_state',{})
+        if (reservation.get('job_id')!=key or initial.get('job_id')!=key or
+                initial.get('native_identity',{}).get('turn_ref')!=reservation.get('turn_ref')):
+            raise ContractError('RUNNER_STATE_INVALID') from None
+        _write(folder/'state.json',initial)
+        data=_transition(folder,'INTERRUPTED',reason='RUNNER_START_PUBLICATION_INTERRUPTED; NO_AUTOMATIC_LIVE_REPLAY')
+    # Observe liveness before reserving or returning any dispatch capability.
+    # A stopped worker has no consumer for a newly created native task.
+    if data['state'] not in FINAL:
+        process=folder/'process.json'
+        if process.exists() and not _process_alive(_read(process)):
+            data=_transition(folder,'INTERRUPTED',reason='RUNNER_PROCESS_ENDED; NO_AUTOMATIC_LIVE_REPLAY')
+        elif not process.exists() and (utc(now_utc())-utc(data['created_at_utc'])).total_seconds()>30:
+            data=_transition(folder,'INTERRUPTED',reason='RUNNER_PROCESS_NOT_PUBLISHED; NO_AUTOMATIC_LIVE_REPLAY')
     delivery_error=None
     if data['state'] in {'COMPLETED','PARTIAL'} and data.get('artifact'):
         try:
@@ -245,7 +355,8 @@ def status(key,include_review=False):
             delivery_error=failure(error,'FINAL_DELIVERY_OBSERVATION')
     result={k:data[k] for k in ('schema_version','job_id','state','created_at_utc','updated_at_utc','commit',
         'stage','stage_seconds','reason','native_status','native_collector','artifact','live_acceptance','trade_authorization',
-        'delivery_receipt','lifecycle','material_sha256','batch_index','batch_count','first_error','observed_model_attempts') if k in data}
+        'delivery_receipt','lifecycle','material_sha256','batch_index','batch_count','first_error','observed_model_attempts',
+        'native_task_state','native_task_observation','transport_model_attempts') if k in data}
     if delivery_error:result['delivery_observation_error']=delivery_error
     from .native_identity import safe_diagnostic
     diagnostic=safe_diagnostic(data.get('native_diagnostic'))
@@ -264,10 +375,12 @@ def status(key,include_review=False):
                 raise ContractError('NATIVE_HANDOFF_UNATTESTED')
             try:
                 private=load_private(PRIVATE)
-                assert_current(data['native_identity'],private)
+                assert_parent(data['native_identity'],private)
                 from .native_app import review_count
-                count=review_count({'native_identity':data['native_identity'],
-                    'material_sha256':ready[0].name.split('.')[0]},private)
+                observed=review_count({'native_identity':data['native_identity'],
+                    'material_sha256':ready[0].name.split('.')[0]},private,details=True)
+                count=observed['count'];result['native_task_state']=observed['task_state']
+                result['native_task_observation']=observed
                 if count>1:
                     result.update(state='REVIEW_FAILED',reason='NATIVE_HANDOFF_UNATTESTED')
                 elif count:result['state']='REVIEW_RUNNING'
@@ -299,20 +412,31 @@ def status(key,include_review=False):
                     else:
                         result['start_task_arguments']=args;result['dispatch_receipt']=receipt
 
-        proc=folder/'process.json'
-        if proc.exists():
-            try:os.kill(_read(proc)['pid'],0)
-            except ProcessLookupError:
-                _transition(folder,'INTERRUPTED',reason='RUNNER_PROCESS_ENDED; NO_AUTOMATIC_LIVE_REPLAY')
-                result.update(state='INTERRUPTED',reason='RUNNER_PROCESS_ENDED; NO_AUTOMATIC_LIVE_REPLAY')
     if data['state'] in {'COMPLETED','PARTIAL','FINAL_DELIVERED'} and (folder/'report.json').is_file():
         from .discovery import research_summary,coverage_summary,watch_summary
         report=json.loads((folder/'report.json').read_text(encoding='utf-8'))
         native=report.get('consultant',{})
-        result.update(results=research_summary(report),coverage=coverage_summary(report),watches=watch_summary(report),
+        scanned=report.get('market_scan_started',True)
+        result.update(results=research_summary(report) if scanned else 'Market scan not started: native transport preflight failed. No current-market candidate conclusion.',
+            coverage=coverage_summary(report) if scanned else 'NOT_SCANNED',
+            watches=watch_summary(report) if scanned else 'NOT_REFRESHED; PREVIOUS_LEDGER_UNCHANGED',
             costs=report.get('costs'),native_review={'status':native.get('status'),'accepted':native.get('accepted'),
-                'reply':native.get('reply'),'decision_delta':report.get('native_control_comparison')})
+                'reply':native.get('reply'),'decision_delta':report.get('native_control_comparison')},
+            native_transport_preflight=report.get('native_transport_preflight'))
     return result
+
+
+def watch_delivery(key,*,wait_seconds=600):
+    """Bounded receipt observation after export; no task/model/scan submission."""
+    if type(wait_seconds) is not int or not 0<=wait_seconds<=600:raise ContractError('RUNNER_WAIT_INVALID')
+    deadline=time.monotonic()+wait_seconds
+    while True:
+        result=status(key)
+        if result['state']=='FINAL_DELIVERED' or result['state'] not in {'COMPLETED','PARTIAL'}:return result
+        if time.monotonic()>=deadline:
+            _transition(_job(key),result['state'],delivery_observation_status='FINAL_DELIVERY_NOT_OBSERVED_WITHIN_BOUND')
+            return status(key)
+        time.sleep(min(5,max(0,deadline-time.monotonic())))
 
 
 def main():
@@ -322,14 +446,17 @@ def main():
     args=parser.parse_args()
     try:
         if args.action=='preflight':
-            from .native_identity import configured_identity
-            config=load_private(PRIVATE);identity=configured_identity(config)
+            from .native_runtime import integration_preflight
+            config=load_private(PRIVATE)
             from .settings import validate_config,load_config
             validate_config(load_config())
-            result={'status':'OFFLINE_PREFLIGHT_ONLY','identity':identity,'live_calls':0,'live_acceptance':'PARTIAL; OWNER_INITIATION_REQUIRED'}
+            result={**integration_preflight(config,as_of=now_utc()),'live_calls':0,
+                'live_acceptance':'PARTIAL; AUTHENTIC_MODEL_EXECUTION_NOT_YET_VERIFIED'}
         elif args.action=='start':result=start(args.request_id)
         elif args.action=='status':result=status(args.job_id,args.include_review)
-        else:result=run_job(args.job_id)
+        else:
+            result=run_job(args.job_id)
+            if result['state'] in {'COMPLETED','PARTIAL'}:result=watch_delivery(args.job_id)
         print(encode(result));return 0
     except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
         code=str(error) if isinstance(error,ContractError) else 'RUNNER_PRIVATE_DEPENDENCY_UNAVAILABLE'

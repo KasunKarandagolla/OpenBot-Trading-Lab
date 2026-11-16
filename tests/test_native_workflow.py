@@ -33,6 +33,7 @@ class DurableNativeHandoff(unittest.TestCase):
             receipt=wait_for_reply(self.folder,self.f.key,self.f.cf,wait_seconds=1)
         self.assertEqual(receipt['status'],'NATIVE_TASK_PUBLICATION_FAILED')
         self.assertEqual(receipt['first_error']['stage'],'TASK_PUBLICATION')
+        self.assertEqual(receipt['terminal_error'],receipt['first_error'])
         self.assertNotIn('secret',encode(receipt))
 
     def test_delayed_real_shaped_receipt_preserves_input_and_records_ready_running_verified(self):

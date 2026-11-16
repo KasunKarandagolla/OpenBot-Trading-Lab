@@ -12,7 +12,7 @@ import tempfile
 from .contracts import ContractError,encode
 from .settings import ROOT
 
-OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','owner_proof','collect','attest_start','review_count','delivery_proof'})
+OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','assert_parent','integration_preflight','owner_proof','collect','attest_start','review_count','delivery_proof'})
 
 
 def delegated(config):return os.name!='nt' and bool(config.get('native_python'))
@@ -41,7 +41,7 @@ def call(config,operation,values=None):
         if result.returncode or not isinstance(response,dict) or 'result' not in response:
             from .native_identity import ERRORS
             code=response.get('reason') if isinstance(response,dict) else None
-            if code not in ERRORS and code not in {'RUNNER_OWNER_START_REQUIRED','RUNNER_START_UNATTESTED'}:
+            if code not in ERRORS and code not in {'RUNNER_OWNER_START_REQUIRED','RUNNER_START_UNATTESTED','AGENT_SKILL_HASH'}:
                 code='NATIVE_STORAGE_UNAVAILABLE'
             from .native_identity import NativeEvidenceError,safe_diagnostic
             diagnostic=safe_diagnostic(response.get('diagnostic')) if isinstance(response,dict) else {}
@@ -65,19 +65,22 @@ def execute(operation,input_file):
     if operation=='configured_identity':return identity.configured_identity(config)
     if operation=='active_identity':return identity.active_identity(config)
     if operation=='assert_current':return identity.assert_current(v['identity'],config)
+    if operation=='assert_parent':return identity.assert_parent(v['identity'],config)
     if operation=='collect':
         from .native_runtime import collect
         return collect(v['request'],config,as_of=v['as_of'])
+    if operation=='integration_preflight':
+        from .native_runtime import integration_preflight
+        return integration_preflight(config,as_of=v['as_of'])
     if operation in {'owner_proof','attest_start'}:
         from .openbot_runner import _owner_proof,attest_start
-        return _owner_proof(v['identity'],config) if operation=='owner_proof' else attest_start(v['state'],config)
+        return _owner_proof(v['identity'],config,expected_commit=v.get('expected_commit')) if operation=='owner_proof' else attest_start(v['state'],config)
     if operation=='delivery_proof':
         from .native_runtime import delivery_proof
         return delivery_proof(v['state'],config)
     if operation=='review_count':
-        with identity.read_db(config['openbot_db']) as db:
-            return db.execute("SELECT count(*) FROM projection_agent_threads WHERE agent_id=? AND title=? AND origin='agent'",
-                (v['agent_id'],v['title'])).fetchone()[0]
+        from .native_app import task_observation
+        return task_observation(config,agent_id=v['agent_id'],title=v['title'],details=v.get('details',False))
     raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
 
 
