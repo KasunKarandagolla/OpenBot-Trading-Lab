@@ -427,6 +427,17 @@ class PartitionEngine:
             if self.deferred_tool_recovery and not recovery and receipt.provider_error=='MCP_TOOL_ERROR' and not self.budget.stopped_reason:
                 pending.append((names,receipt))
                 return
+            # A partial valid partition keeps its accepted rows. Recover only
+            # requested-but-absent identities once, after healthy partitions,
+            # under the same frozen cutoff and physical retry budget.
+            missing=tuple(n for n in names if receipt.failed_symbols.get(n)=='MISSING_ID_NO_EVALUATION_PROOF')
+            if self.transient_recovery and not recovery and missing and not receipt.provider_error and not receipt.truncated:
+                effective.append(replace(receipt,requested_symbols=tuple(n for n in names if n not in missing),
+                    failed_symbols={n:r for n,r in receipt.failed_symbols.items() if n not in missing}))
+                observations.extend(values)
+                pending.append((missing,replace(receipt,requested_symbols=missing,evaluated_symbols=(),
+                    returned_symbols=(),recognized_symbols=(),failed_symbols={n:'MISSING_ID_NO_EVALUATION_PROOF' for n in missing},source_cutoffs={})))
+                return
             # Tool failure or truncation gets finite smaller partitions. A known
             # denial, sparse function or missing ID never triggers an open loop.
             retryable = receipt.truncated or receipt.provider_error == "MCP_TOOL_ERROR"
@@ -488,7 +499,7 @@ class PartitionEngine:
             "calculation": pack.column_id, "calculation_coverage": [calculation_report(r, pack) for r in effective],
             "attempts": attempts, "observations": observations,
             "zero_opportunities_established": False,
-            "recovery_policy":"DEFER_DISTINCT_TOOL_FAULTS; BISECT_TRUNCATION" if self.deferred_tool_recovery else "BOUNDED_BISECTION",
+            "recovery_policy":"DEFER_DISTINCT_TOOL_FAULTS_AND_ABSENT_ROWS; BISECT_TRUNCATION" if self.deferred_tool_recovery else "BOUNDED_BISECTION",
         }
 
 

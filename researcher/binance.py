@@ -1,7 +1,7 @@
 """Live official public API on the operator's authorized, ordinary host.
 
 One bounded transport; no auth, redirects, alternate hosts or route recovery.
-Only current aggregate data and at most five selected-symbol history samples.
+Only current aggregate data and selected histories under the physical I/O budget.
 """
 import time
 from .contracts import ContractError, digest, now_utc
@@ -37,8 +37,8 @@ class OfficialResearchAPI:
     def __init__(self,http=None,*,access_denial=None,max_sample_symbols=5,max_sample_calls=10):
         # A fresh authorized host probes its normal official route. Existing
         # recorded denials can still be supplied; never clear one within a run.
-        if (type(max_sample_symbols) is not int or not 1<=max_sample_symbols<=32
-                or type(max_sample_calls) is not int or not 1<=max_sample_calls<=66):
+        if (type(max_sample_symbols) is not int or not 1<=max_sample_symbols<=80
+                or type(max_sample_calls) is not int or not 1<=max_sample_calls<=80):
             raise ContractError('BOUNDED_CLOSED_SAMPLE_REQUIRED')
         self.http=CachedPublicHTTP(http)
         self.max_sample_symbols=max_sample_symbols;self.max_sample_calls=max_sample_calls

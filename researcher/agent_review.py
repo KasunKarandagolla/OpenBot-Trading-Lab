@@ -237,7 +237,7 @@ def consume_reply(raw,request,*,native_receipt):
         'invocation_verification':'NATIVE_RECEIPT_REQUIRES_SEPARATE_RUNTIME_AUDIT; JSON_VALIDATION_ALONE_IS_NOT_PROOF'}
 
 
-def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None,cached=False,max_cards=4,ordered_card_ids=(),audit_config=None,require_identity=False):
+def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None,cached=False,max_cards=4,ordered_card_ids=(),audit_config=None,require_identity=False,prepare_only=False):
     """Optional native-app file exchange; never starts a process/model/tool.
 
     An operator separately audits the native turn and puts a matching receipt
@@ -320,6 +320,7 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
         age=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()
         if not 0<=age<=600:return {**result,'status':'NATIVE_REQUEST_STALE_DETERMINISTIC_FALLBACK'}
         reply_path=root/(key+'.reply.json');audit_path=root/(key+'.audit.json')
+        if prepare_only:return {**result,'status':'AWAITING_NATIVE_APP_RESPONSE'}
         if identity is not None:
             from .native_runtime import collect
             found=collect(request,private,as_of=as_of)

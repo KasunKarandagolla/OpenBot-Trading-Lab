@@ -1,3 +1,62 @@
+# Final engineering recovery — CODEX_CLOUD, 16 November 2026
+
+**END-TO-END ENGINEERING: COMPLETE_OFFLINE_VERIFIED.**
+**LIVE ACCEPTANCE: NOT_RUN_IN_CODEX_CLOUD.** User-authorized recovery of the
+existing external-first Researcher; one integration writer, PR24 remains draft.
+Started from fetched clean `7c72c817f87c829db1042d9b009e11117bb23fe4`.
+
+The supplied failed live ZIP verifies SHA256
+`249438aaebe657a3fa8849f86bcdcb7a54c8f0dbdd11ae35af3393c1090460ae`
+and all internal checksums. It remains immutable historical evidence. The
+original reader exception was not retained, so no speculative Windows root cause
+is claimed. A controlled process failure independently reproduced publication
+being skipped by the old whole-wait delegation.
+
+Task publication is now separate from scoped native receipt reads. Durable
+review states and a real monotonic per-batch wait expose READY before blocking,
+retain the first sanitized fault, and handle pending, failed, invalid and timed-out
+tasks. Exact one-shot dispatch tickets survive double polls; worker claims and
+persistent shared metadata prevent scan/task replay and lost watch continuity.
+Provider attestation/model flexibility remains strict and the prior ordinal /
+-NoProfile repair is intact. Separate attachment/final provider proof records
+FINAL_DELIVERED without changing the already exported ZIP.
+
+All viable finalist hypotheses plus protected current rivals enter whole-card
+batches under actual request/brief limits. The full asynchronous fixture computes
+five coins on two TFs/two families including a bearish case: six finalist
+hypotheses plus one rival, seven reviewed cards, three fixture tasks/attempts,
+zero genuine LLM calls. Valid advice changes research priority. A second E2E
+scenario ages quotes/depth and invalidates a consumed-obstacle candidate after
+refresh. Strict READY stays zero and trading authority false.
+
+History allocation now derives from physical I/O, measured source latency and
+freshness instead of18+2 coins; current in-radius references and decisive questions
+are no longer cut at4–12/six. The519 fixture investigates beyond20 selectively,
+warms without new histories/remote screens and preserves reference/event/watch
+identities. Requested-but-absent rows get one missing-only recovery while accepted
+partitions and frozen cutoff survive.27 actual component measurement states,
+9 families and31 method states are exported with source/definition exceptions.
+No source certificate, fee/room/admission gate or production-method flag changed.
+
+Untouched baseline431 tests passed299.374s. Final frozen-source full suite:
+**447 passed454.566s, zero failures/skips**. Focused receipt covers62 native/
+runner/provider/coverage tests. Config VALID; protected hashes and whitespace
+pass. Red publication/wait tests and an intermediate warm-cache assertion during
+ongoing source edits remain disclosed in the verification record; no assertion
+was relaxed and no hidden skip added. Genuine OpenBot/market/model performance
+is unclaimed. No Cloud Binance probe, live model substitute, trading/admin/DB
+change, schedule, Local Scripts, new agent or model reassignment.
+
+[Feature/source matrix](FINAL_RECOVERY_ENGINEERING_MATRIX.md) ·
+[Native E2E trace](FINAL_NATIVE_ORCHESTRATION_E2E_TRACE.md) ·
+[One-message live acceptance](FINAL_OPENBOT_LIVE_ACCEPTANCE.md) ·
+[Verification](../../evidence/external-first/final-recovery-20261116/verification.json).
+Publication SHA/remote equality/exact-head CI are observed in the delivery handoff.
+After the approved checkout update, the owner's next action is one message to
+that same Researcher: **Run the complete market research now.**
+
+---
+
 # Native attestation compatibility repair — CODEX_LOCAL, 15 November 2026
 
 **Engineering validation only. NOT_RERUN_IN_CODEX; OpenBot live acceptance pending.**

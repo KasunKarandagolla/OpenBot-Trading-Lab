@@ -10,7 +10,7 @@ from .native_identity import local_path,under_work
 from .settings import ROOT
 
 PRIVATE_KEYS=frozenset({'openbot_db','provider_db','agent_workspace','native_python','headers','request_headers',
-    'authorization','api_key','access_token','refresh_token','account_id','creator_account_id','creator_user_id',
+    'authorization','cookie','cookies','password','secret','api_key','access_token','refresh_token','account_id','creator_account_id','creator_user_id',
     'session_id','external_session_id','thread_id','turn_id','resume_cursor','raw_reasoning','encrypted_content'})
 
 
@@ -58,9 +58,9 @@ def export_job(folder,report,config):
             'skill_sha256':digest((ROOT/'.agents/skills/market-research-review/SKILL.md').read_bytes())},
         'native.json':{'review':report.get('consultant'), 'decision_delta':report.get('native_control_comparison')},
         'coverage.json':{k:report.get(k) for k in ('inventory','coverage','research_coverage','route_coverage','packs','causal_packs',
-            'nominee_dispositions','not_reviewed_budget','source_faults','costs')},
+            'nominee_dispositions','not_reviewed_budget','source_faults','costs','measurement_coverage')},
         'candidates.json':{k:report.get(k) for k in ('conditional_research_candidates','shortlist','active_coin_watchlist',
-            'watch_counts','conditional_research_export','handoff_export','targeted_samples')}}
+            'watch_counts','candidate_consideration','conditional_research_export','handoff_export','targeted_samples')}}
     entries={name:(encode(sanitize(value))+'\n').encode() for name,value in values.items()}
     entries['SHA256SUMS.json']=(encode({k:digest(v) for k,v in entries.items()})+'\n').encode()
     if sum(map(len,entries.values()))>100*1024*1024:raise ContractError('DIAGNOSTIC_EXPORT_SIZE')

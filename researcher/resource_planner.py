@@ -7,7 +7,8 @@ VERSION = 'research-resources-6b.1'
 
 
 def plan_resources(names, *, cap=26, qualified_packs=(), partition_size=50,
-                   remaining_quota=None, retry_reserve=0, samples=(),fallback_qualified=False):
+                   remaining_quota=None, retry_reserve=0, samples=(),fallback_qualified=False,
+                   selected_history_budget=None,selected_depth_max_calls=2):
     if (type(cap) is not int or not 0 <= cap <= 40 or type(retry_reserve) is not int
             or not 0 <= retry_reserve <= cap or remaining_quota is not None
             and (type(remaining_quota) is not int or remaining_quota < 0)):
@@ -68,11 +69,11 @@ def plan_resources(names, *, cap=26, qualified_packs=(), partition_size=50,
         'operation_envelope':{'basis_transport_ceiling_including_handshake':40,
             'retained_observed_handshake_http':3,'legacy_causal_required_calls_one_timeframe':p,
             'legacy_causal_configured_ceiling':14,'causal_actual_ceiling':'MIN_CONFIGURED_AND_REMAINING_TRANSPORT_AFTER_BROAD',
-            'selected_klines':{'symbols':5,'calls':10,'bars_per_call':300},
-            'selected_depth_max_calls':2,'selected_oi_max_calls':2,
+            'selected_klines':selected_history_budget or {'symbols':5,'calls':10,'bars_per_call':300},
+            'selected_depth_max_calls':selected_depth_max_calls,'selected_oi_max_calls':2,
             'public_inventory_calls':1,'initial_aggregate_pulse_calls':3,'final_quote_premium_calls':2,
             'historical_asof_api':'UNQUALIFIED; NEVER_ASSUMED',
-            'protected_review':'ONE_OF_TWO_ALT_SLOTS_ROTATES_WATCH_QUIET_CONTRARY_AUDIT_SPECIALIST',
+            'protected_review':'ROTATING_AUDIT_PLUS_ADAPTIVE_OPERATIONAL_CAPACITY' if selected_history_budget else 'ONE_OF_TWO_ALT_SLOTS_ROTATES_WATCH_QUIET_CONTRARY_AUDIT_SPECIALIST',
             'unallocated_questions':'NOT_REVIEWED_BUDGET; NEVER_NO_OPPORTUNITY'},
         'family_method_consequences':{'families':{f'F{i}':'SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION' for i in range(1,10)},
             'methods':{f'M{i:02d}':'DEFINITION_PENDING' if i in (14,15) else

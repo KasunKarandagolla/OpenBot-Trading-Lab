@@ -1,3 +1,10 @@
+Current engineering state: see
+[FINAL_RECOVERY_ENGINEERING_MATRIX.md](FINAL_RECOVERY_ENGINEERING_MATRIX.md).
+The recovery is offline verified; new live acceptance remains NOT_RUN_IN_CODEX_CLOUD.
+Historical source observations below are retained, not a claim of a new run.
+
+---
+
 # Session 6C Local capability and source matrix
 
 Final update: actual current native receipt import PASS;1 LIVE_PARTIAL card,

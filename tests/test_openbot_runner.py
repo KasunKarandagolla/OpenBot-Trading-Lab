@@ -98,7 +98,7 @@ class OpenBotRunnerContract(unittest.TestCase):
             result=runner.run_job(job);again=runner.run_job(job)
         self.assertEqual(result['state'],'PARTIAL');self.assertIn('PARTIAL',result['live_acceptance'])
         self.assertEqual(again['state'],'PARTIAL');self.assertEqual(scanner.call_count,1)
-        self.assertEqual(scanner.call_args.kwargs['native_max_cards'],1)
+        self.assertEqual(scanner.call_args.kwargs['native_max_cards'],4)
         self.assertEqual(scanner.call_args.kwargs['native_wait_seconds'],600)
         artifact=result['artifact'];raw=Path(artifact['attachment_path']).read_bytes()
         self.assertEqual(digest(raw),artifact['sha256']);self.assertTrue(verify_zip(raw))
@@ -150,3 +150,38 @@ class OpenBotRunnerContract(unittest.TestCase):
         self.process.assert_not_called()
         linked=self.f.root/'linked';linked.symlink_to(self.base,target_is_directory=True)
         with self.assertRaises(ContractError):runner._read(linked/'active.json')
+
+    def test_atomic_dispatch_ticket_survives_double_poll_and_storage_outage(self):
+        job=runner.start(self.key)['job_id'];folder=runner._job(job)/'review';folder.mkdir()
+        args={'title':'OPENBOT-RESEARCH-'+self.f.key,'brief':self.f.brief}
+        (folder/(self.f.key+'.review-task.json')).write_text(encode(args))
+        with sqlite3.connect(self.f.config['openbot_db']) as db:db.execute('DELETE FROM projection_agent_threads')
+        with patch('researcher.native_app.review_count',side_effect=sqlite3.OperationalError('database is locked')):
+            first=runner.status(job,include_review=True);second=runner.status(job,include_review=True)
+        self.assertEqual(first['state'],'REVIEW_READY');self.assertEqual(first['start_task_arguments'],args)
+        self.assertEqual(second['state'],'REVIEW_DISPATCH_RESERVED');self.assertNotIn('start_task_arguments',second)
+        self.assertEqual(first['review_observation_error']['code'],'NATIVE_STORAGE_LOCKED')
+        self.assertTrue((folder/(self.f.key+'.dispatch.json')).exists())
+
+    def test_durable_worker_claim_prevents_duplicate_workers_before_first_transition(self):
+        job=runner.start(self.key)['job_id'];folder=runner._job(job)
+        (folder/'worker.claim').write_text('{}')
+        with patch('researcher.discovery.scan_market_research') as scanner:
+            runner.run_job(job);runner.run_job(job)
+        scanner.assert_not_called()
+        self.assertEqual(self.process.call_count,1)
+
+    def test_interrupted_handoff_restart_never_reissues_dispatch_or_scanner(self):
+        job=runner.start(self.key)['job_id'];folder=runner._job(job);review=folder/'review';review.mkdir()
+        args={'title':'OPENBOT-RESEARCH-'+self.f.key,'brief':self.f.brief}
+        (review/(self.f.key+'.review-task.json')).write_text(encode(args))
+        with sqlite3.connect(self.f.config['openbot_db']) as db:db.execute('DELETE FROM projection_agent_threads')
+        runner._transition(folder,'REVIEW_READY',material_sha256=self.f.key)
+        first=runner.status(job,include_review=True);self.assertEqual(first['start_task_arguments'],args)
+        with patch.object(runner.os,'kill',side_effect=ProcessLookupError):
+            stopped=runner.status(job);self.assertEqual(stopped['state'],'INTERRUPTED')
+        with patch('researcher.discovery.scan_market_research') as scanner:
+            again=runner.run_job(job);retry=runner.start('b'*32)
+        self.assertEqual(again['state'],'INTERRUPTED');self.assertEqual(retry['job_id'],job)
+        self.assertNotIn('start_task_arguments',again);scanner.assert_not_called()
+        self.assertEqual(self.process.call_count,1)

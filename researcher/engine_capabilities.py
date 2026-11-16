@@ -57,7 +57,9 @@ def analyze_selected(bars,tick,*,cutoff,as_of,benchmark=None,references=(),input
         liquidation=inputs.get('observed_liquidation'),current_episodes=current_episodes)
     methods=evaluate_methods(bars,tick,cutoff=cutoff,as_of=as_of,benchmark=benchmark,
         references=references,families=families,inputs=inputs)
-    return {'families':families,'methods':methods,'execution_scope':'BOUNDED_SELECTED_ORACLE_RECONSTRUCTION',
+    from .measurement_coverage import selected
+    measurements=selected(bars,tick,methods,references,benchmark)
+    return {'families':families,'methods':methods,'measurements':measurements,'execution_scope':'BOUNDED_SELECTED_ORACLE_RECONSTRUCTION',
         'mode':'OFFLINE_OR_SOURCE_RECONSTRUCTION; NOT_PROSPECTIVE_LIVE_QUALIFICATION',
         'episode_selection':'LATEST_CAUSALLY_CONFIRMED_REFERENCE' if current_episodes else 'FIRST_RETAINED_EPISODE',
         'production_enabled':False,'new_orders_created':0,'remote_requests':0}

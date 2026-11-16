@@ -21,7 +21,7 @@ from .native_identity import active_identity, assert_current, load_private, read
 BASE=ROOT/'work/openbot-integration'
 PRIVATE=BASE/'native-audit-local.json'
 OWNER_COMMAND='run the complete market research now'
-FINAL={'COMPLETED','PARTIAL','FAILED','INTERRUPTED'}
+FINAL={'COMPLETED','PARTIAL','FAILED','INTERRUPTED','FINAL_DELIVERED'}
 
 
 def _job(key):
@@ -49,7 +49,11 @@ def _write(path,value):
 
 
 def _transition(folder,state,**fields):
-    data=_read(folder/'state.json');data.update(fields,state=state,updated_at_utc=now_utc())
+    data=_read(folder/'state.json');at=now_utc()
+    if data['state']!=state:
+        data.setdefault('lifecycle',[]).append({'state':state,'at_utc':at,
+            **{k:fields[k] for k in ('material_sha256','batch_index','batch_count','first_error') if k in fields}})
+    data.update(fields,state=state,updated_at_utc=at)
     _write(folder/'state.json',data)
     return data
 
@@ -102,6 +106,7 @@ def start(request_id):
     _write(folder/'state.json',{'schema_version':'openbot.research-job.v1','job_id':key,
         'state':'STARTING','created_at_utc':now_utc(),'updated_at_utc':now_utc(),
         'commit':sha,'native_identity':identity,'request_id':request_id,**owner,
+        'lifecycle':[{'state':'OWNER_AUTHORIZED','at_utc':now_utc()}],
         'trade_authorization':False,'live_acceptance':'PARTIAL; NO_LIVE_RUN_YET'})
     try:
         with (folder/'worker.log').open('x',encoding='utf-8') as log:
@@ -167,6 +172,11 @@ def run_job(key):
     """Called only by the detached worker. Offline tests patch the dependencies."""
     folder=_job(key);state=_read(folder/'state.json');config=load_private(PRIVATE)
     if state['state']!='STARTING':return status(key)  # no replay after any transition
+    # Exclusive durable claim also prevents two workers racing before transition.
+    try:
+        with (folder/'worker.claim').open('x',encoding='utf-8') as stream:
+            stream.write(encode({'claimed_at_utc':now_utc()}))
+    except FileExistsError:return status(key)
     try:
         # The launching command must finish before its completed provider receipt
         # exists. Wait for that receipt only; no market operation before proof.
@@ -177,21 +187,32 @@ def run_job(key):
                 if str(error)!='RUNNER_START_UNATTESTED':raise
             time.sleep(1)
         if proof is None:raise ContractError('RUNNER_START_UNATTESTED')
-        _transition(folder,'SCANNING',start_proof=proof,scanner_started_at_utc=now_utc())
+        _transition(folder,'COMMAND_ATTESTED',start_proof=proof)
+        _transition(folder,'SCANNING',scanner_started_at_utc=now_utc())
         from .discovery import scan_market_research
         def progress(stage,seconds):
-            _transition(folder,'SCANNING',stage=stage,stage_seconds=seconds)
-        report=scan_market_research(ledger_path=folder/'research.sqlite',
+            current=_read(folder/'state.json')['state']
+            _transition(folder,current,stage=stage,stage_seconds=seconds)
+        def native_progress(state,**fields):
+            _transition(folder,state,**fields)
+        report=scan_market_research(ledger_path=BASE/'research.sqlite',
             native_review_dir=folder/'review',native_audit_config=PRIVATE,
-            native_wait_seconds=600,native_max_cards=1,progress=progress)
+            native_wait_seconds=600,native_max_cards=4,progress=progress,native_progress=native_progress,job_id=key,clock=now_utc)
         report['openbot_orchestration']={'job_id':key,'commit':state['commit'],'start_proof':proof,
             'native_identity':state['native_identity'],'invocation_source':'EXISTING_OPENBOT_RESEARCHER',
             'acceptance':'PARTIAL; FINAL_APP_DELIVERY_NOT_YET_OBSERVED','trade_authorization':False}
-        _transition(folder,'RECONCILING',scanner_completed_at_utc=now_utc())
+        data=_transition(folder,'RECONCILED',scanner_completed_at_utc=now_utc())
+        report['openbot_orchestration']['lifecycle']=data.get('lifecycle',[])
+        report['openbot_orchestration']['final_delivery']='AWAITING_NATIVE_APP_ATTACHMENT_AND_RESPONSE_PROOF'
         from .__main__ import write_report
+        from .diagnostic_export import sanitize
+        report=sanitize(report)
+        report['output_payload_sha256']=digest(encode({k:v for k,v in report.items()
+            if k not in {'persistence','output_payload_sha256'}}).encode())
         write_report(folder/'report.json',report)
         from .diagnostic_export import export_job
         artifact=export_job(folder,report,config)
+        _transition(folder,'EXPORTED',artifact=artifact)
         native=report.get('consultant',{})
         complete=(report.get('mode')=='LIVE' and native.get('status')=='VALIDATED_ADVISORY_ONLY'
             and native.get('accepted',0)>0 and native.get('native_receipt',{}).get('native_identity')==state['native_identity'])
@@ -199,6 +220,7 @@ def run_job(key):
         # asserts FULL acceptance before observing the real delivered answer.
         _transition(folder,'COMPLETED' if complete else 'PARTIAL',artifact=artifact,
             native_status=native.get('status'),native_collector=native.get('native_collector'),
+            first_error=native.get('first_error'),observed_model_attempts=native.get('observed_model_attempts',0),
             live_acceptance='PARTIAL; AWAITING_OPENBOT_RESULT_AND_ZIP_DELIVERY' if complete else 'PARTIAL; NATIVE_OR_SOURCE_GATE_NOT_PASSED')
     except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
         # No private exception/path/token is included in the user-facing state.
@@ -212,36 +234,78 @@ def run_job(key):
 
 def status(key,include_review=False):
     folder=_job(key);data=_read(folder/'state.json')
+    delivery_error=None
+    if data['state'] in {'COMPLETED','PARTIAL'} and data.get('artifact'):
+        try:
+            from .native_runtime import delivery_proof
+            receipt=delivery_proof(data,load_private(PRIVATE))
+            if receipt:data=_transition(folder,'FINAL_DELIVERED',delivery_receipt=receipt)
+        except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
+            from .native_app import failure
+            delivery_error=failure(error,'FINAL_DELIVERY_OBSERVATION')
     result={k:data[k] for k in ('schema_version','job_id','state','created_at_utc','updated_at_utc','commit',
-        'stage','stage_seconds','reason','native_status','native_collector','artifact','live_acceptance','trade_authorization') if k in data}
+        'stage','stage_seconds','reason','native_status','native_collector','artifact','live_acceptance','trade_authorization',
+        'delivery_receipt','lifecycle','material_sha256','batch_index','batch_count','first_error','observed_model_attempts') if k in data}
+    if delivery_error:result['delivery_observation_error']=delivery_error
     from .native_identity import safe_diagnostic
     diagnostic=safe_diagnostic(data.get('native_diagnostic'))
     if diagnostic:result['native_diagnostic']=diagnostic
     if data['state'] not in FINAL:
-        ready=list((folder/'review').glob('*.review-task.json'))
+        material=data.get('material_sha256')
+        if material and re.fullmatch('[0-9a-f]{64}',material):
+            task=folder/'review'/(material+'.review-task.json')
+            ready=[task] if task.is_file() and data['state'] in {'REVIEW_READY','REVIEW_RUNNING'} else []
+        else:ready=list((folder/'review').glob('*.review-task.json'))
         if len(ready)>1:raise ContractError('RUNNER_REVIEW_COLLISION')
         if ready:
-            result['state']='REVIEW_READY'
-            args=_read(ready[0])
+            args=_read(ready[0]);result['state']='REVIEW_READY'
+            if (set(args)!={'title','brief'} or args['title']!='OPENBOT-RESEARCH-'+ready[0].name.split('.')[0]
+                    or not isinstance(args['brief'],str) or len(args['brief'])>100000):
+                raise ContractError('NATIVE_HANDOFF_UNATTESTED')
             try:
                 private=load_private(PRIVATE)
-                from .native_host import delegated,call
-                if delegated(private):count=call(private,'review_count',{'agent_id':data['native_identity']['agent_id'],'title':args['title']})
-                else:
-                    with read_db(private['openbot_db']) as db:
-                        count=db.execute("SELECT count(*) FROM projection_agent_threads WHERE agent_id=? AND title=? AND origin='agent'",
-                            (data['native_identity']['agent_id'],args['title'])).fetchone()[0]
-                if count:result['state']='REVIEW_RUNNING'
-            except (OSError,ValueError,sqlite3.Error):
-                result['review_state']='NATIVE_STORAGE_UNAVAILABLE'
-            if include_review and result['state']=='REVIEW_READY':result['start_task_arguments']=args
+                assert_current(data['native_identity'],private)
+                from .native_app import review_count
+                count=review_count({'native_identity':data['native_identity'],
+                    'material_sha256':ready[0].name.split('.')[0]},private)
+                if count>1:
+                    result.update(state='REVIEW_FAILED',reason='NATIVE_HANDOFF_UNATTESTED')
+                elif count:result['state']='REVIEW_RUNNING'
+            except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
+                from .native_app import failure
+                result['review_observation_error']=failure(error,'DISPATCH_OBSERVATION')
+                # Publication remains usable during a receipt-reader outage.
+                fault=result['review_observation_error']
+                if fault['code'] in {'NATIVE_STORAGE_UNAVAILABLE','NATIVE_STORAGE_TIMED_OUT',
+                        'NATIVE_STORAGE_LOCKED','NATIVE_READER_PROCESS_UNAVAILABLE'}:
+                    result['state']=data['state'] if data['state']=='REVIEW_RUNNING' else 'REVIEW_READY'
+                else:result.update(state='REVIEW_FAILED',reason=fault['code'])
+            if result['state']=='REVIEW_READY':
+                # Atomic one-shot dispatch reservation. A second status caller
+                # cannot receive another submission ticket while app storage is
+                # catching up. Lost callers time out; never auto-resubmit.
+                lease=ready[0].with_name(ready[0].name.replace('.review-task.json','.dispatch.json'))
+                if lease.exists():
+                    result['state']='REVIEW_DISPATCH_RESERVED'
+                    result['dispatch_receipt']=_read(lease)
+                elif include_review:
+                    receipt={'material_sha256':ready[0].name.split('.')[0],
+                        'arguments_sha256':digest(encode(args).encode()),'reserved_at_utc':now_utc(),
+                        'submission_policy':'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'}
+                    try:
+                        with lease.open('x',encoding='utf-8') as stream:
+                            stream.write(encode(receipt));stream.flush();os.fsync(stream.fileno())
+                    except FileExistsError:result['state']='REVIEW_DISPATCH_RESERVED'
+                    else:
+                        result['start_task_arguments']=args;result['dispatch_receipt']=receipt
+
         proc=folder/'process.json'
         if proc.exists():
             try:os.kill(_read(proc)['pid'],0)
             except ProcessLookupError:
                 _transition(folder,'INTERRUPTED',reason='RUNNER_PROCESS_ENDED; NO_AUTOMATIC_LIVE_REPLAY')
                 result.update(state='INTERRUPTED',reason='RUNNER_PROCESS_ENDED; NO_AUTOMATIC_LIVE_REPLAY')
-    if data['state'] in {'COMPLETED','PARTIAL'} and (folder/'report.json').is_file():
+    if data['state'] in {'COMPLETED','PARTIAL','FINAL_DELIVERED'} and (folder/'report.json').is_file():
         from .discovery import research_summary,coverage_summary,watch_summary
         report=json.loads((folder/'report.json').read_text(encoding='utf-8'))
         native=report.get('consultant',{})

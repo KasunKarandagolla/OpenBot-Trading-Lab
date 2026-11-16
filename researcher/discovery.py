@@ -310,7 +310,7 @@ def scan_live(*, qualification=False, api=None, client=None, config=None, ledger
 
 def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clock=now_utc,
                          mode='LIVE',crash_hook=None,sources=None,context_prioritized=True,route_ablation=None,
-                         native_review_dir=None,native_audit_config=None,native_wait_seconds=0,native_max_cards=4,progress=None):
+                         native_review_dir=None,native_audit_config=None,native_wait_seconds=0,native_max_cards=4,progress=None,native_progress=None,job_id=None):
     """One on-demand read-only path: live sources → remote packs → saved research.
 
     Historical price precursors nominate questions independently. The protected
@@ -337,7 +337,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
     from .transport import PublicHTTP
     if mode not in {'LIVE','SYNTHETIC','AUTHENTIC_REPLAY'}:raise ContractError('FACT_PROVENANCE')
     if native_audit_config and (mode!='LIVE' or native_review_dir is None):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    if type(native_max_cards) is not int or not 1<=native_max_cards<=4:raise ContractError('AGENT_INPUT_SIZE')
+    if type(native_max_cards) is not int or not 1<=native_max_cards<=12:raise ContractError('AGENT_INPUT_SIZE')
     if route_ablation is not None and (mode!='SYNTHETIC' or not set(route_ablation)<={'A','B','C'}):
         raise ContractError('OFFLINE_REPLAY_SCOPE')
     sources=sources or ResearchSources(mode=mode)
@@ -349,9 +349,16 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
     spec=config['session5'];cutoffs={tf:closed_cutoff(start,tf) for tf in ('1h','15m','4h')}
     completion=config.get('session55',{})
     recovery=config.get('recovery',{}) if mode=='LIVE' else {}
-    alt_capacity=spec['max_targeted_alt_symbols']+recovery.get('operational_alt_capacity',0)
-    api=api or OfficialResearchAPI(PublicHTTP(max_requests=recovery.get('official_http_limit',20)),
-        max_sample_symbols=max(5,alt_capacity+2),max_sample_calls=max(10,6+2*alt_capacity))
+    official_limit=recovery.get('official_http_limit',20)
+    # Reserve actual point/depth/context operations, then bound histories by I/O,
+    # not a fixed number of coins. Retried physical calls consume the same cap.
+    point_phases=2 if native_review_dir is not None else 1
+    pending_point_reserve=2+point_phases*(2+recovery.get('targeted_depth_symbols',0))
+    # Initial inventory/pulse and protected OI reads precede allocation. Reserve
+    # every later depth/quote phase, including a second quote after slow depth.
+    history_limit=max(1,official_limit-(4+3+pending_point_reserve)) if recovery else 10
+    api=api or OfficialResearchAPI(PublicHTTP(max_requests=official_limit),
+        max_sample_symbols=max(5,history_limit//2),max_sample_calls=history_limit)
     client=client or BasisMCP(PublicHTTP(max_requests=spec['max_http_requests']),qualification=True,session5=True,session6a=True)
     ledger=RunLedger(ledger_path or ROOT/'work/research-metadata.sqlite')
     report={'schema_version':'openbot.market-research.v5','environment':'CODEX_LOCAL' if mode=='LIVE' else 'OFFLINE_REPLAY_HOST','mode':mode,
@@ -376,6 +383,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
             'CURRENT_RECONSTRUCTION_IS_NOT_PROSPECTIVE_HISTORICAL_DISCOVERY',
             'FEES_DEPTH_SLIPPAGE_FUNDING_BOUNDS_AND_HORIZON_UNVERIFIED; NO_FAKE_READY',
             'PUBLISH_LAG_AND_SUSTAINABLE_QUOTA_UNKNOWN; SCHEDULING_DISABLED']}
+    report['job_id']=job_id
     report['planning_cutoffs']=dict(cutoffs)
     report['implementation_sha256']=implementation
     stage_started=wall;stage_times={}
@@ -447,7 +455,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 if (previous_reusable and previous.get('cache_key')==key
                         and 0<=(utc(clock())-utc(previous['completed_at_utc'])).total_seconds()<spec['cache_ttl_seconds']):
                     cached=True
-                    fresh={k:report[k] for k in ('inventory','source_health','created_at_utc')}
+                    fresh={k:report[k] for k in ('inventory','source_health','created_at_utc','job_id')}
                     report=previous;report.update(fresh);report['reuse']={'status':'UNCHANGED_CLOSED_BARS',
                         'original_snapshot':previous.get('reuse',{}).get('original_snapshot',previous['run_key']),
                         'original_evidence_cutoffs':cutoffs,
@@ -535,7 +543,10 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         pid in sources.qualified(n,p['timeframe'],cutoffs[p['timeframe']],field='packs',as_of=evaluation_time())
                         for n in members)}
                     report['resource_plan']=plan_resources(screen_inventory.symbols,cap=spec['max_screen_requests'],
-                        qualified_packs=qualified_packs,samples=getattr(sources,'retained_receipts',()),fallback_qualified=True)
+                        qualified_packs=qualified_packs,samples=getattr(sources,'retained_receipts',()),fallback_qualified=True,
+                        selected_history_budget={'symbols':getattr(api,'max_sample_symbols',history_limit//2),
+                            'calls':getattr(api,'max_sample_calls',history_limit),'bars_per_call':300} if recovery else None,
+                        selected_depth_max_calls=recovery.get('targeted_depth_symbols',2))
                     basis_unavailable=None
                     try:client.connect()
                     except (ContractError,OSError,KeyError,TypeError,ValueError) as e:
@@ -803,12 +814,17 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         from .audit import investigate
                         mean_cost=sum(history_costs)/len(history_costs) if history_costs else 1
                         remaining=max(0,recovery['investigation_wall_seconds']-(time.monotonic()-investigation_started))
-                        adaptive_capacity=min(recovery['operational_alt_capacity'],max(0,
-                            int(remaining/max(.001,2*mean_cost))-spec['max_targeted_alt_symbols']))
+                        call_left=max(0,getattr(api,'max_sample_calls',history_limit)-api.sample_calls)
+                        transport_left=max(0,official_limit-len(api.http.receipts)-pending_point_reserve)
+                        feasible=min(call_left,transport_left)//2
+                        adaptive_capacity=max(0,min(feasible,int(remaining/max(.001,2*mean_cost)))-
+                            spec['max_targeted_alt_symbols'])
                         alt,allocations,allocation_study=investigate(list(union.values()),context,cutoffs,
                             rows_by_tf,ticker_rows,protected=spec['max_targeted_alt_symbols'],
                             capacity=adaptive_capacity)
-                        allocation_study.update(configured_operational_ceiling=recovery['operational_alt_capacity'],
+                        allocation_study.update(configured_operational_ceiling='DERIVED_FROM_REMAINING_IO_AND_FRESHNESS',
+                            remaining_physical_history_calls=call_left,remaining_transport_history_allowance=transport_left,
+                            reserved_reconciliation_http_calls=pending_point_reserve,
                             measured_history_mean_seconds=mean_cost,remaining_history_seconds=remaining,
                             adaptive_operational_capacity=adaptive_capacity)
                     else:
@@ -831,7 +847,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         'history_wall_seconds':time.monotonic()-investigation_started,
                         'observed_mean_history_seconds':sum(history_costs)/len(history_costs) if history_costs else None,
                         'protected_audit_budget':spec['max_targeted_alt_symbols'],
-                        'operational_capacity':recovery.get('operational_alt_capacity',0),
+                        'operational_capacity':allocation_study.get('adaptive_operational_capacity',0),
                         'wall_budget_seconds':recovery.get('investigation_wall_seconds'),
                         'official_endtime_fallback':[{'native_symbol':n,'timeframe':tf,
                             'reason':'REMOTE_ROW_UNAVAILABLE_AT_FROZEN_CUTOFF','source_hash':s['source_response_sha256']}
@@ -871,7 +887,9 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                     cluster='EXECUTION_FRICTION')
                                 facts[f.id]=f;econ_ids.setdefault(n,[]).append(f.id)
                     as_of=evaluation_time()
-                    planner=QueryPlanner()
+                    planner=QueryPlanner(budgets={'broad':0,
+                        'targeted':max(4,official_limit-len(api.http.receipts)),
+                        'exception':max(1,len(selected)), 'watch':max(1,len(prior_watches))})
                     for (n,tf),(bars,source) in selected.items():
                         if tf=='4h':continue
                         if route_ablation is not None and n not in {'BTCUSDT','ETHUSDT'} and (n,tf) not in union:continue
@@ -903,7 +921,9 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 anchor_known_at=datetime.fromtimestamp(session_ms/1000,
                                     timezone.utc).isoformat()) if session and session[0].open_ms==session_ms else None
                             report['selected_research'][-1]['live_measurements']={
-                                'quote_rvol32':values['quote_rvol32'],'quote_rvol_source':'OFFICIAL_CLOSED_QUOTE_VOLUME; LAST_33_BARS',
+                                'quote_rvol32':values['quote_rvol32'],
+                                'quote_rvol_status':'COMPUTED' if values['quote_rvol32'] is not None else 'NOT_AVAILABLE_ZERO_OR_INSUFFICIENT_BASELINE',
+                                'quote_rvol_source':'OFFICIAL_CLOSED_QUOTE_VOLUME; LAST_33_BARS',
                                 'quote_rvol_independent_ratio':bars[-1].quote_volume/median(b.quote_volume for b in bars[-33:-1])
                                     if median(b.quote_volume for b in bars[-33:-1])>0 else None,
                                 'session_whole_bar_q_over_v':vwap,
@@ -942,8 +962,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             analytical_refs=sorted(live_refs,key=lambda r:(
                                 max(r.lo-bars[-1].close,bars[-1].close-r.hi,D(0))/r.atr,
                                 -utc(r.known_at).timestamp(),r.id))
-                            allowance=max(4,min(12,int(60/max(1,sum(history_costs)/len(history_costs)))))
-                            analytical_refs=analytical_refs[:allowance]
+                            allowance=len(analytical_refs)
                             report.setdefault('reference_investigation_dispositions',[]).append({
                                 'native_symbol':n,'timeframe':tf,'available_references':len(all_swings),
                                 'current_references_evaluated':[r.id for r in analytical_refs],
@@ -1087,7 +1106,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         before=review_card(c,facts,refs_for,as_of=as_of)
                         own_ids=set(c.evidence_ids)|set(c.reference.source_ids)|{i for e in c.events for i in e['source_ids']}
                         answers,decisions=planner.investigate(c,decision_questions(before),sources.questions(c,as_of,before),
-                            {i:facts[i] for i in own_ids},as_of=as_of,adapters=sources.adapters,max_steps=6)
+                            {i:facts[i] for i in own_ids},as_of=as_of,adapters=sources.adapters,max_steps=min(16,len(decision_questions(before))))
                         facts.update(answers)
                         added=tuple(i for i in answers if i not in own_ids and answers[i].instrument.native_symbol==c.native_symbol)
                         cards[index]=replace(c,evidence_ids=tuple(dict.fromkeys((*c.evidence_ids,*added))))
@@ -1133,42 +1152,47 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],as_of=as_of) for c in cards]
                     mark_stage('structure_methods_questions_and_point_refresh')
                     if native_review_dir is not None and recovery.get('native_pre_admission_enabled'):
-                        from .candidate_review import native_review_selection
-                        from .agent_review import exchange as native_exchange
-                        from functools import partial
-                        exchange=partial(native_exchange,audit_config=native_audit_config,require_identity=mode=='LIVE')
-                        wanted,selection=native_review_selection(reviews,cards,facts,references,as_of=as_of,max_cards=native_max_cards)
-                        from .candidate_review import conditional_research
-                        provisional,_=conditional_research(reviews,cards,facts,references,as_of=as_of)
+                        from .candidate_review import native_review_selection,conditional_research
+                        from .native_workflow import review_batches
+                        wanted,selection=native_review_selection(reviews,cards,facts,references,as_of=as_of)
+                        provisional,_=conditional_research(reviews,cards,facts,references,as_of=as_of,max_count=len(cards))
                         native_reviews=[*reviews,*provisional]
-                        pre_cards=sorted((c for c in cards if c.id in wanted),key=lambda c:wanted.index(c.id))
+                        by_card={c.id:c for c in cards};pre_cards=[by_card[cid] for cid in wanted]
                         report['native_review_phase']='PRE_ADMISSION_CURRENT_COIN_HYPOTHESES'
                         report['native_selection']=selection
                         native_prepared=time.monotonic()
-                        report['consultant']=exchange(native_review_dir,pre_cards,facts,as_of=evaluation_time(),
-                            context=report.get('context'),reviews=native_reviews,max_cards=native_max_cards,ordered_card_ids=wanted)
-                        stage_times['native_request_preparation']=round(time.monotonic()-native_prepared,6)
-                        stage_started=time.monotonic()
-                        if native_audit_config and report['consultant']['status']=='AWAITING_NATIVE_APP_RESPONSE':
+                        if native_audit_config:
                             import sqlite3
                             try:
-                                from .native_app import wait_for_reply
-                                receipt=wait_for_reply(native_review_dir,report['consultant']['material_sha256'],
-                                    native_audit_config,wait_seconds=native_wait_seconds,clock=evaluation_time)
-                                report['consultant']=exchange(native_review_dir,(),{},as_of=evaluation_time(),
-                                    previous=report['consultant'],cached=True)
-                                report['consultant']['native_collector']=receipt
-                                if receipt['status']=='NATIVE_RECEIPT_COLLECTED':
-                                    report['llm_calls']=receipt['observed_model_attempts']
-                            except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError):
-                                report['consultant']['native_collector']={'status':'NATIVE_RECEIPT_UNAVAILABLE_DETERMINISTIC_FALLBACK'}
-                            mark_stage('owner_and_native_wait_and_answer_import')
-                            # Actual time advances during a native turn; point
-                            # quotes/depth must be independently refreshed.
-                            cards,depths,point_faults,as_of=refresh_selected(cards,facts,references,api,inventory,
-                                completion['economics'],clock=evaluation_time,max_depth=0)
-                            report['source_faults'].extend(point_faults)
-                            reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],as_of=as_of) for c in cards]
+                                report['consultant']=review_batches(native_review_dir,pre_cards,facts,
+                                    clock=evaluation_time,context=report.get('context'),reviews=native_reviews,
+                                    audit_config=native_audit_config,wait_seconds=native_wait_seconds,
+                                    max_cards=native_max_cards,progress=native_progress)
+                            except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
+                                from .native_app import failure
+                                fault=failure(error,'REQUEST_PREPARATION')
+                                report['consultant']={'status':'NATIVE_REVIEW_INCOMPLETE','first_error':fault,
+                                    'accepted':0,'observed_model_attempts':0,'not_reviewed':wanted,
+                                    'native_collector':{'status':'NATIVE_REVIEW_INCOMPLETE','first_error':fault}}
+                        else:
+                            from .agent_review import exchange
+                            report['consultant']=exchange(native_review_dir,pre_cards,facts,as_of=evaluation_time(),
+                                context=report.get('context'),reviews=native_reviews,max_cards=native_max_cards,ordered_card_ids=wanted)
+                        report['llm_calls']=report['consultant'].get('observed_model_attempts',0)
+                        report['native_selection'].update(reviewed_card_ids=report['consultant'].get('reviewed_card_ids',[]),
+                            unreviewed_card_ids=report['consultant'].get('not_reviewed',wanted),
+                            batch_count=report['consultant'].get('batch_count',0))
+                        stage_times['native_request_preparation']=round(time.monotonic()-native_prepared-
+                            report['consultant'].get('elapsed_seconds',0),6)
+                        mark_stage('owner_and_native_wait_and_answer_import')
+                        # Reconcile point evidence after waiting, including expired depth.
+                        cards,depths,point_faults,as_of=refresh_selected(cards,facts,references,api,inventory,
+                            completion['economics'],clock=evaluation_time,max_depth=recovery['targeted_depth_symbols'])
+                        report['economic_observations'].extend(depths)
+                        report['source_faults'].extend(point_faults)
+                        report['point_reconciliation']={'as_of':as_of,'depth_snapshots':len(depths),
+                            'source_faults':point_faults,'closed_structure_recomputed':False}
+                        reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],as_of=as_of) for c in cards]
                     revoked_tfs={p['timeframe'] for p in report['causal_packs'] if p['qualification']=='REVOKED_SELECTED_ORACLE_MISMATCH'}
                     for r in reviews:
                         if r['reference']['timeframe'] in revoked_tfs and r['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}:
@@ -1352,7 +1376,13 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 # A source failure before the pre-admission phase cannot fall
                 # through to the old post-admission request publisher.
                 report['consultant']={**consult_changed_cards(cards),
-                    'status':'NATIVE_PRE_ADMISSION_UNAVAILABLE_OR_UNCHANGED; NO_POST_ADMISSION_FALLBACK'}
+                    'status':'NATIVE_PRE_ADMISSION_UNAVAILABLE_OR_UNCHANGED; NO_POST_ADMISSION_FALLBACK',
+                    'observed_model_attempts':0,'accepted':0,
+                    'reason':'UNCHANGED_CLOSED_EVIDENCE; NO_NEW_NATIVE_INVOCATION' if cached else 'PRE_ADMISSION_NOT_REACHED'}
+                if cached and report.get('native_selection'):
+                    report['native_selection']={**report['native_selection'],'reviewed_card_ids':[],
+                        'unreviewed_card_ids':report['native_selection'].get('deterministic_control_card_ids',[]),
+                        'batch_count':0,'review_scope':'NO_NEW_NATIVE_QUALIFICATION_IN_THIS_WARM_RUN'}
             elif native_review_dir is None:
                 report['consultant']=consult_changed_cards(cards)
             else:
@@ -1414,6 +1444,21 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 report['native_control_comparison']=native_comparison
                 report['conditional_research_candidates']=candidates
                 report['conditional_research_dispositions']=dispositions
+                all_viable,_=conditional_research(current_reviews,cards,facts,references,
+                    as_of=report['completed_at_utc'],max_count=len(cards),deduplicate=False)
+                ranked={c['card_id']:c.get('rank') for c in candidates}
+                reviewed_ids=set(report.get('consultant',{}).get('reviewed_card_ids',[]))
+                dispositions_by_id={d['card_id']:d for d in dispositions}
+                report['candidate_consideration']=[{'card_id':r['card_id'],'native_symbol':r['instrument'],
+                    'reference_id':r['reference']['id'],'timeframe':r['reference']['timeframe'],
+                    'direction':r['side_hypothesis'],'family':r['primary_family'],'methods':r['method_ids'],
+                    'rank':ranked.get(r['card_id']),'ranking_status':'RANKED' if r['card_id'] in ranked else 'UNRANKED_ALTERNATIVE',
+                    'reviewed':r['card_id'] in reviewed_ids,
+                    'omission':dispositions_by_id.get(r['card_id']),
+                    'next_question':r['analyst_question'],'strongest_rival':r['strongest_rival'],
+                    'as_of':r['research_as_of'],'valid_until':r['valid_until'],'trade_authorization':False}
+                    for r in all_viable]
+
                 report['conditional_research_policy']={'owner_approved':True,'blueprint_sections':['1.1','11.3','11.4'],
                     'strict_ready_gates_changed':False,'full_method_qualification_changed':False,
                     'trade_authorization':False,'deep_analyst_connected':False}
@@ -1437,10 +1482,15 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
             if not cached or cards:report['handoff_export']=make_export(report,cards,facts,references)
             elif not report['shortlist']:
                 report['handoff_export']=make_export(report,(),{},())
+            from .measurement_coverage import report_coverage
+            report['measurement_coverage']=report_coverage(report)
             mark_stage('final_review_exports_and_report')
             native=report.get('consultant',{}).get('native_receipt',{})
             native_start=native.get('native_started_at_utc');native_end=native.get('native_completed_at_utc')
-            native_trace=(utc(native_end)-utc(native_start)).total_seconds() if native_start and native_end else None
+            batch_receipts=native.get('batch_receipts',[])
+            native_trace=sum((utc(r['native_completed_at_utc'])-utc(r['native_started_at_utc'])).total_seconds()
+                for r in batch_receipts) if batch_receipts else (
+                (utc(native_end)-utc(native_start)).total_seconds() if native_start and native_end else None)
             native_wait=stage_times.get('owner_and_native_wait_and_answer_import',0)
             report['costs']={'http_requests':len(receipts),'response_bytes':sum(r.get('response_bytes') or 0 for r in receipts),
                 'request_body_bytes':sum(r.get('request_body_bytes') or 0 for r in receipts),
@@ -1484,7 +1534,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
             report['parameter_versions']={'interpretation':'6b.1','resource_plan':'6b.1','family_engine':'6a.1',
                 'recovery':recovery.get('version'),'current_episode_selection':bool(recovery)}
             body={'schema_version':report['research_shortlist_version'],'run_id':report['run_id'],
-                'as_of_utc':report['as_of_utc'],'mode':report['evidence_mode'],
+                'as_of_utc':report['as_of_utc'],'mode':report['evidence_mode'],'job_id':job_id,
                 'source_revisions':{'inventory':report.get('inventory',{}).get('content_sha256'),
                     'capability':report['capability_revision'],'manifest_sha256':digest(MANIFEST.read_bytes()),
                     'source_provenance':report['offline_source_provenance']},'parameter_versions':report['parameter_versions'],
@@ -1526,8 +1576,14 @@ def research_summary(report):
     lines.append(f"Unobserved gaps: {len(report['time_gaps'])}; HTTP calls: {report['costs']['http_requests']}; bytes: {report['costs']['response_bytes']}; wall: {report['costs']['wall_ms']/1000:.1f}s")
     if report.get('consultant',{}).get('status') not in {None,'LLM_DISABLED_NO_APPROVED_PROVIDER'}:
         lines.append(f"Native review: {report['consultant']['status']}; validated cards: {report['consultant'].get('accepted',0)}; observed model attempts this scan: {report.get('llm_calls',0)}.")
+    fault=report.get('consultant',{}).get('first_error')
+    if fault:lines.append(f"Native qualification incomplete or recovered fault: {fault['stage']} / {fault['code']}")
     for r in report.get('conditional_research_candidates',()):
         ref=r['reference'];room=r['research_room']
+        primary=next((h for h in r.get('hypotheses',()) if h['family']==r['primary_family']),{})
+        supporting=set(primary.get('supporting_ids',()))
+        observed=[e['kind'] for e in r.get('events',()) if e['id'] in supporting]
+        if observed:lines.append('  Observed sequence: '+' → '.join(observed[-3:]))
         lines.append(f"#{r.get('rank','?')} {r['instrument']} {r['side_hypothesis']} {ref['timeframe']} / {r['primary_family']} — CONDITIONAL_RESEARCH_ONLY")
         lines.append(f"  Zone {ref['lo']}–{ref['hi']}; distance {number(r['distance_atr_at_verification']):.2f} ATR; {room['status']}"+
             (f" ({number(room['room_bps']):.1f} bps to {room['level']})" if room.get('room_bps') is not None else f": {room['reason']}"))
@@ -1536,6 +1592,7 @@ def research_summary(report):
             'FIRST_OBSTACLE':'Verify the first same-coin opposing obstacle and its lifecycle',
             'NEXT_CLOSED_RESPONSE':'Check the next completed candle against this frozen zone',
             'SAME_REFERENCE_RIVAL':'Discriminate the supplied rivals at the original reference'}
+        lines.append(f"  Methods: {', '.join(r['method_ids'])}; reasoning: {r.get('reasoning_status','DETERMINISTIC_ONLY')}; valid until: {r.get('valid_until','UNKNOWN')}")
         lines.append(f"  Rival: {rival}; next: {questions.get(r['analyst_question'],r['analyst_question'])}")
         if r.get('current_price'):
             lines.append(f"  Price {r['current_price']['value']} at {r['current_price']['source_time']}; spread {number(r['current_spread_bps']['value']):.2f} bps.")

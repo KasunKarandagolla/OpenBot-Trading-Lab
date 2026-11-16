@@ -29,7 +29,7 @@ def _read_db(path):
     finally:db.close()
 
 
-def prepare(directory,material,config_file):
+def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
     """Publish an exact request and prompt in the existing research workspace."""
     folder=Path(directory).absolute();config_path=Path(config_file).absolute()
     if not re.fullmatch('[0-9a-f]{64}',material):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
@@ -41,11 +41,18 @@ def prepare(directory,material,config_file):
     config.pop('native_python',None)
     if set(config)!={'openbot_db','provider_db','agent_workspace'}:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     if os.name=='nt':config={k:_windows(v) for k,v in config.items()}
-    request=json.loads((folder/(material+'.request.json')).read_text())
+    request=json.loads((folder/(material+'.request.json')).read_text(encoding='utf-8'))
+    from .agent_review import _material
+    if request.get('material_sha256')!=material or digest(encode(_material(request)).encode())!=material:
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    if as_of is not None and not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=600:
+        raise ContractError('NATIVE_REQUEST_STALE')
     if request.get('native_identity',{}).get('provider')=='codex':
         from .native_identity import load_private,assert_current,local_path
         from .native_codex import review_brief
-        private=load_private(config_path);assert_current(request['native_identity'],private)
+        private=load_private(config_path)
+        if verified_identity is None:assert_current(request['native_identity'],private)
+        elif verified_identity!=request['native_identity']:raise ContractError('NATIVE_SESSION_MISMATCH')
         installed=local_path(private['agent_workspace'])/'.agents/skills/market-research-review/SKILL.md'
         if digest(installed.read_bytes())!=request['skill_sha256']:raise ContractError('AGENT_SKILL_HASH')
         args={'title':'OPENBOT-RESEARCH-'+material,'brief':review_brief(request)}
@@ -193,65 +200,121 @@ def collect(request,config,target,*,as_of):
     return raw,audit
 
 
-def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None):
-    """Interactive on-demand wait, bounded to600s; owner submits in the app."""
+def failure(error,stage):
+    """Only diagnostic labels leave the receipt reader; never exception values."""
+    from .agent_review import REJECTION_CODES
+    from .native_identity import safe_diagnostic
+    code=str(error) if isinstance(error,ContractError) else None
+    if code not in REJECTION_CODES:
+        code=('NATIVE_STORAGE_LOCKED' if isinstance(error,sqlite3.OperationalError)
+            and str(error).lower() in {'database is locked','database is busy'} else
+            'NATIVE_STORAGE_UNAVAILABLE' if isinstance(error,sqlite3.Error) else
+            {'TASK_PUBLICATION':'NATIVE_TASK_FILE_UNAVAILABLE','RECEIPT_PERSISTENCE':'NATIVE_RECEIPT_FILE_UNAVAILABLE',
+                'REQUEST_PREPARATION':'NATIVE_REQUEST_FILE_UNAVAILABLE'}.get(stage,'NATIVE_READER_PROCESS_UNAVAILABLE') if isinstance(error,OSError) else
+            'NATIVE_READER_VALUE_INVALID')
+    return {'stage':stage,'code':code,**({'diagnostic':safe_diagnostic(error.diagnostic)}
+        if safe_diagnostic(getattr(error,'diagnostic',None)) else {})}
+
+
+def review_count(request,config):
+    """Scoped observation, never a model submission or permission to retry."""
+    if request.get('native_identity',{}).get('provider')!='codex':return 0
+    from .native_host import delegated,call
+    args={'agent_id':request['native_identity']['agent_id'],
+        'title':'OPENBOT-RESEARCH-'+request['material_sha256']}
+    if delegated(config):return call(config,'review_count',args)
+    from .native_identity import read_db
+    with read_db(config['openbot_db']) as db:
+        return db.execute("SELECT count(*) FROM projection_agent_threads WHERE agent_id=? AND title=? AND origin='agent'",
+            (args['agent_id'],args['title'])).fetchone()[0]
+
+
+def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,progress=None,verified_identity=None):
+    """Publish locally before any receipt collection, then wait monotonically.
+
+    On WSL only individual scoped reads are delegated to the fixed native_host
+    reader. A reader process failure cannot strand publication in that process.
+    No model is submitted here; the existing main agent dispatches the task.
+    """
     if type(wait_seconds) is not int or not 0<=wait_seconds<=600:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    config_path=Path(config_file).absolute()
-    if not config_path.is_file():raise ContractError('NATIVE_AUDIT_CONFIG_MISSING')
-    if (not config_path.is_relative_to(ROOT/'work') or '..' in config_path.parts
-            or any(p.is_symlink() for p in (config_path,*config_path.parents)) or config_path.stat().st_size>4096):
-        raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    local=json.loads(config_path.read_text())
-    if not isinstance(local,dict):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    native=local.get('native_python')
-    if native and os.name!='nt':
-        # This helper reads data only; it is not a Windows UI-control helper.
-        # Native SQLite locking avoids cross-OS WAL errors while OpenBot writes.
-        import subprocess
-        executable=Path(native)
-        if executable.name.lower()!='python.exe' or not executable.is_file():raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-        runner="import runpy,sys; sys.path.insert(0,sys.argv.pop(1)); sys.argv[0]='native_receipt'; runpy.run_module('researcher.native_app',run_name='__main__')"
-        command=[str(executable),'-X','utf8','-c',runner,_windows(ROOT),
-                '--directory',_windows(Path(directory).absolute()),'--material',material,
-                '--config',_windows(config_path),'--wait-seconds',str(wait_seconds)]
-        try:
-            result=subprocess.run(command,
-                stdout=subprocess.PIPE,text=True,encoding='utf-8',timeout=wait_seconds+30)
-        except subprocess.TimeoutExpired:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED') from None
-        if result.returncode:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-        return {**json.loads(result.stdout),'receipt_reader':'EXISTING_WINDOWS_PYTHON_SQLITE_MODE_RO'}
     clock=clock or (lambda:datetime.now(timezone.utc).isoformat())
-    request,config,target=prepare(directory,material,config_file);folder=Path(directory)
-    if wait_seconds:
-        print(f'Native review input ready: {folder/(material+".prompt.txt")}; waiting up to{wait_seconds}s for owner submission in the existing OpenBot agent.',file=sys.stderr,flush=True)
-    deadline=time.monotonic()+wait_seconds;storage_retries=0;pending_status=None
+    began=time.monotonic();first_error=None;storage_retries=0;running_at=None
+    result={'observed_model_attempts':0,'storage_read_retries':0,
+        'configured_wait_seconds':wait_seconds,'trade_authorization':False}
+    def finish(status,**fields):
+        return {**result,'status':status,'storage_read_retries':storage_retries,
+            'elapsed_seconds':round(time.monotonic()-began,6),'first_error':first_error,**fields}
+    def emit(state,**fields):
+        if progress:progress(state,material_sha256=material,**fields)
+    try:
+        request,config,target=prepare(directory,material,config_file,verified_identity=verified_identity,as_of=clock())
+        if not 0<=(utc(clock())-utc(request['as_of_utc'])).total_seconds()<=600:
+            raise ContractError('NATIVE_REQUEST_STALE')
+    except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
+        first_error=failure(error,'TASK_PUBLICATION')
+        emit('REVIEW_FAILED',first_error=first_error)
+        return finish('NATIVE_TASK_PUBLICATION_FAILED')
+    folder=Path(directory);published=clock()
+    config_hash=digest(Path(config_file).read_bytes())
+    result['publication_seconds']=round(time.monotonic()-began,6)
+    result['request_prepared_at_utc']=published
+    emit('REVIEW_READY',request_prepared_at_utc=published,
+        publication_seconds=round(time.monotonic()-began,6))
+    deadline=time.monotonic()+wait_seconds
+    pending_status=None
     while True:
-        try:found=collect(request,config,target,as_of=clock())
-        except ContractError as error:
-            from .native_identity import ERRORS
-            if str(error) not in ERRORS:raise
-            if str(error) not in {'NATIVE_REVIEW_INCOMPLETE','NATIVE_HANDOFF_UNATTESTED'} or not wait_seconds:
-                return {'status':str(error),'storage_read_retries':storage_retries}
-            pending_status=str(error);found=None
-        except sqlite3.OperationalError as error:
-            if str(error).lower() not in {'disk i/o error','database is locked','database is busy','unable to open database file'}:raise
-            # Windows can briefly hold its WAL during a native turn. Retry only
-            # this read, within the same explicit wait; never resubmit a model.
-            storage_retries+=1;found=None
+        try:
+            if digest(Path(config_file).read_bytes())!=config_hash:
+                raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
+            count=review_count(request,config)
+            if count>1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            if count and running_at is None:
+                running_at=clock();emit('REVIEW_RUNNING',native_started_observed_at_utc=running_at)
+            found=collect(request,config,target,as_of=clock())
+        except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
+            fault=failure(error,'RECEIPT_COLLECTION')
+            if first_error is None:first_error=fault
+            retry=fault['code'] in {'NATIVE_REVIEW_INCOMPLETE','NATIVE_HANDOFF_UNATTESTED',
+                'NATIVE_STORAGE_LOCKED','NATIVE_STORAGE_UNAVAILABLE','NATIVE_STORAGE_TIMED_OUT',
+                'NATIVE_READER_PROCESS_UNAVAILABLE'}
+            # Duplicate submissions are terminal, never an invitation to retry.
+            if 'count' in locals() and count>1:retry=False
+            if not retry:
+                emit('REVIEW_FAILED',first_error=first_error)
+                return finish(fault['code'])
+            storage_retries+=1;pending_status=fault['code'];found=None
+            emit('REVIEW_RUNNING' if running_at else 'REVIEW_READY',first_error=first_error,
+                last_pending_status=pending_status,storage_read_retries=storage_retries)
         if found:
             raw,audit=found
+            result['observed_model_attempts']=audit['model_requests']
             audit.setdefault('submission_transport','OWNER_OPENBOT_APPLICATION_UI')
-            for suffix,value in [('reply.json',raw),('audit.json',encode(audit)+'\n')]:
-                path=folder/(material+'.'+suffix)
-                if path.is_symlink():raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-                if path.exists() and path.read_text()!=value:raise ContractError('NATIVE_REVIEW_REQUEST_COLLISION')
-                if not path.exists():
-                    with path.open('x',encoding='utf-8',newline='') as stream:stream.write(value)
-            return {'status':'NATIVE_RECEIPT_COLLECTED','observed_model_attempts':audit['model_requests'],
-                'reply_validation_status':audit['reply_validation_status'],
-                'reply_rejection_reason':audit.get('reply_rejection_reason'),
-                'storage_read_retries':storage_retries}
-        if time.monotonic()>=deadline:return {'status':(pending_status or ('NATIVE_REVIEW_TIMED_OUT' if wait_seconds else 'NATIVE_NOT_INVOKED')) if request.get('native_identity') else 'AWAITING_OWNER_NATIVE_APP_SUBMISSION','storage_read_retries':storage_retries}
+            try:
+                for suffix,value in [('reply.json',raw),('audit.json',encode(audit)+'\n')]:
+                    path=folder/(material+'.'+suffix)
+                    if path.is_symlink():raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+                    if path.exists() and path.read_text(encoding='utf-8')!=value:raise ContractError('NATIVE_REVIEW_REQUEST_COLLISION')
+                    if not path.exists():
+                        with path.open('x',encoding='utf-8',newline='') as stream:stream.write(value)
+            except (ContractError,OSError,ValueError) as error:
+                if first_error is None:first_error=failure(error,'RECEIPT_PERSISTENCE')
+                emit('REVIEW_FAILED',first_error=first_error)
+                return finish('NATIVE_RECEIPT_PERSISTENCE_FAILED')
+            emit('REVIEW_VERIFIED' if audit['reply_validation_status']=='VALIDATED' else 'REVIEW_REJECTED',
+                observed_model_attempts=audit['model_requests'])
+            return finish('NATIVE_RECEIPT_COLLECTED',observed_model_attempts=audit['model_requests'],
+                reply_validation_status=audit['reply_validation_status'],
+                reply_rejection_reason=audit.get('reply_rejection_reason'),
+                receipt_collected_at_utc=clock(),running_observed_at_utc=running_at,
+                native_started_at_utc=audit.get('native_started_at_utc'),
+                native_completed_at_utc=audit.get('native_completed_at_utc'),
+                owner_dispatch_seconds=max(0,(utc(audit['native_started_at_utc'])-utc(request['as_of_utc'])).total_seconds()),
+                receipt_collection_latency_seconds=max(0,(utc(clock())-utc(audit['native_completed_at_utc'])).total_seconds()))
+        if time.monotonic()>=deadline:
+            emit('REVIEW_TIMED_OUT' if wait_seconds else 'REVIEW_PENDING',first_error=first_error)
+            status='NATIVE_REVIEW_TIMED_OUT' if wait_seconds else (
+                'NATIVE_NOT_INVOKED' if request.get('native_identity') else 'AWAITING_OWNER_NATIVE_APP_SUBMISSION')
+            return finish(status,last_pending_status=pending_status)
         time.sleep(min(1,max(0,deadline-time.monotonic())))
 
 

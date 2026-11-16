@@ -12,7 +12,7 @@ import tempfile
 from .contracts import ContractError,encode
 from .settings import ROOT
 
-OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','owner_proof','collect','attest_start','review_count'})
+OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','owner_proof','collect','attest_start','review_count','delivery_proof'})
 
 
 def delegated(config):return os.name!='nt' and bool(config.get('native_python'))
@@ -71,6 +71,9 @@ def execute(operation,input_file):
     if operation in {'owner_proof','attest_start'}:
         from .openbot_runner import _owner_proof,attest_start
         return _owner_proof(v['identity'],config) if operation=='owner_proof' else attest_start(v['state'],config)
+    if operation=='delivery_proof':
+        from .native_runtime import delivery_proof
+        return delivery_proof(v['state'],config)
     if operation=='review_count':
         with identity.read_db(config['openbot_db']) as db:
             return db.execute("SELECT count(*) FROM projection_agent_threads WHERE agent_id=? AND title=? AND origin='agent'",

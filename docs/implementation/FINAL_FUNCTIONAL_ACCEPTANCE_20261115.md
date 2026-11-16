@@ -1,3 +1,12 @@
+Historical acceptance record. The later owner-originated native handoff failure
+and its engineering recovery are documented in
+[FINAL_NATIVE_ORCHESTRATION_E2E_TRACE.md](FINAL_NATIVE_ORCHESTRATION_E2E_TRACE.md).
+Current recovery live acceptance is NOT_RUN_IN_CODEX_CLOUD; use the
+[one-message acceptance procedure](FINAL_OPENBOT_LIVE_ACCEPTANCE.md).
+The original observations below remain unchanged.
+
+---
+
 # Final functional acceptance — 15 November 2026
 
 Verdict: **USABLE_RESEARCH_SHORTLISTING**, with disclosed source/method and latency limits. Read-only on demand; every conditional candidate has `trade_authorization=false`. Strict READY, source certificates and trading permissions are unchanged. This is neither all-method production qualification nor a profitability result.

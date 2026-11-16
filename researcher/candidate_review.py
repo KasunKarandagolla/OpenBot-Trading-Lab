@@ -556,7 +556,7 @@ def active_coin_watches(reviews,*,as_of):
     return result
 
 
-def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5):
+def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5,deduplicate=True):
     """Owner-approved research handoffs, independently labeled from READY.
 
     Blueprint §§1.1, 11.3/11.4 permit developing research and documented cost
@@ -643,7 +643,10 @@ def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5):
             'ACCOUNT_FEE_TIER_AND_FUTURE_EXECUTION_COSTS','POTENTIAL_EVENT_WITHIN_15H_NOT_PREDICTED',
             *(['DATED_SECTOR_MEMBERSHIP; PRICE_RELATIVE_BRANCH_ONLY'] if c.primary_family=='F8' else []),
             *(['FIRST_INDEPENDENT_OPPOSING_OBSTACLE',room['reason']] if room['status']=='ROOM_UNKNOWN' else [])]))
-        item={**r,'stage':'CONDITIONAL_RESEARCH_ONLY','strict_admission_stage':r['stage'],
+        from datetime import timedelta
+        valid_until=min((utc(c.reference.valid_until),utc(price.window_end)+timedelta(seconds=30),
+            utc(spread.window_end)+timedelta(seconds=30))).isoformat()
+        item={**r,'stage':'CONDITIONAL_RESEARCH_ONLY','valid_until':valid_until,'strict_admission_stage':r['stage'],
             'reason_code':'CURRENT_STRUCTURAL_RESEARCH_WITH_EXPLICIT_ANALYST_QUESTIONS',
             'research_room':room,'missing_evidence':gaps,'research_as_of':as_of,
             'source_age_seconds':int((utc(as_of)-utc(c.cutoff)).total_seconds()),
@@ -660,7 +663,7 @@ def conditional_research(reviews,cards,facts,references,*,as_of,max_count=5):
         r['source_age_seconds'],r['card_id']))
     picked=[];seen=set()
     for row in eligible:
-        if row['instrument'] in seen or len(picked)>=max_count:
+        if deduplicate and row['instrument'] in seen or len(picked)>=max_count:
             decisions.append({'card_id':row['card_id'],'native_symbol':row['instrument'],'disposition':'ALTERNATIVE_CASE_OR_RESEARCH_CAPACITY'});continue
         picked.append(row);seen.add(row['instrument'])
     return picked,decisions
@@ -687,24 +690,27 @@ def refresh_cached_watches(watches,pulse,*,as_of):
     return kept,gaps
 
 
-def native_review_selection(reviews,cards,facts,references,*,as_of,max_cards):
+def native_review_selection(reviews,cards,facts,references,*,as_of,max_cards=None):
     """Review actual conditional finalists, with a protected exception/rival.
 
     This uses the same current sources and policy as final admission. Watch
     distance alone cannot silently substitute convenient model-test cards.
     """
-    finalists,_=conditional_research(reviews,cards,facts,references,as_of=as_of)
+    finalists,_=conditional_research(reviews,cards,facts,references,as_of=as_of,max_count=len(cards),deduplicate=False)
     wanted=[r['card_id'] for r in finalists[:max_cards]]
     active=active_coin_watches(reviews,as_of=as_of)
     by={c.id:c for c in cards}
     exceptions=[r['card_id'] for r in finalists if any(s in by[r['card_id']].origins
         for s in ('C_RELATIVE_EXCEPTION','C_QUIET','C_STRATIFIED_AUDIT','C_UNOBSERVED_STRATIFIED_SOURCE_RECOVERY'))]
     fallback=[w['primary']['card_id'] for w in active if w['native_symbol'] not in {'BTCUSDT','ETHUSDT'}]
-    if max_cards>1 and exceptions and exceptions[0] not in wanted:
+    if max_cards is not None and max_cards>1 and exceptions and exceptions[0] not in wanted:
         wanted=wanted[:max_cards-1]+[exceptions[0]]
     for cid in fallback:
-        if len(wanted)>=max_cards:break
+        if max_cards is not None and len(wanted)>=max_cards:break
         if cid not in wanted:wanted.append(cid)
+    if max_cards is None:
+        for r in finalists:
+            if r['card_id'] not in wanted:wanted.append(r['card_id'])
     return wanted,{'policy':'CURRENT_CONDITIONAL_FINALISTS_THEN_PROTECTED_EXCEPTION_AND_CURRENT_RIVALS',
         'deterministic_control_card_ids':[r['card_id'] for r in finalists],
         'selected':[{'card_id':cid,'native_symbol':by[cid].native_symbol,
@@ -718,14 +724,17 @@ def apply_native_research_advice(candidates,dispositions,consultant,*,as_of):
     """Advice can reorder/defer already eligible research, never admit evidence."""
     control=[r['card_id'] for r in candidates];picked=[];decisions=list(dispositions);links=[]
     age=(utc(as_of)-utc(consultant['request_created_at_utc'])).total_seconds() if consultant.get('request_created_at_utc') else None
-    valid=consultant.get('status')=='VALIDATED_ADVISORY_ONLY' and age is not None and 0<=age<=600
-    advice={a['card_id']:a for a in consultant.get('reply',{}).get('interpretations',())} if valid else {}
+    provenance=consultant.get('card_review_provenance',{})
+    valid=consultant.get('status')=='VALIDATED_ADVISORY_ONLY' and age is not None and (bool(provenance) or 0<=age<=600)
+    advice={a['card_id']:a for a in consultant.get('reply',{}).get('interpretations',())
+        if not provenance or a['card_id'] in provenance and 0<=(utc(as_of)-utc(
+            provenance[a['card_id']]['request_created_at_utc'])).total_seconds()<=600} if valid else {}
     for r in candidates:
         a=advice.get(r['card_id'])
         if a:
             challenge={k:a[k] for k in ('priority','interpretation','strongest_rival','falsifying_question',
                 'supporting_evidence_ids','contradicting_ids','missed_traps','null_hypothesis')}
-            challenge.update(material_sha256=consultant['material_sha256'],
+            challenge.update(material_sha256=provenance.get(r['card_id'],{}).get('material_sha256',consultant['material_sha256']),
                 confidence_limit='ADVISORY_INTERPRETATION_OF_SUPPLIED_SOURCES; NO_PROBABILITY_OR_METHOD_CERTIFICATE')
             links.append({'card_id':r['card_id'],'native_symbol':r['instrument'],'challenge':challenge,
                 'disposition':'DEFER_NATIVE_RIVAL_CHALLENGE' if a['priority']=='DECLINE' or a['null_hypothesis'] else 'CONDITIONAL_RESEARCH_ONLY'})
@@ -734,6 +743,8 @@ def apply_native_research_advice(candidates,dispositions,consultant,*,as_of):
                     'disposition':'DEFER_NATIVE_RIVAL_CHALLENGE','challenge':challenge,
                     'recheck':a['falsifying_question']});continue
             r={**r,'native_challenge':challenge,'analyst_question':a['falsifying_question']}
+        r={**r,'reasoning_status':'NATIVE_REVIEWED' if a else 'DETERMINISTIC_ONLY',
+            'native_review_coverage_complete':consultant.get('status')=='VALIDATED_ADVISORY_ONLY'}
         picked.append(r)
     picked.sort(key=lambda r:({'INVESTIGATE':0,'WATCH':1,'UNKNOWN':2}.get(
         advice.get(r['card_id'],{}).get('priority'),1),control.index(r['card_id'])))
@@ -744,6 +755,7 @@ def apply_native_research_advice(candidates,dispositions,consultant,*,as_of):
             'ordering':'NATIVE_QUESTION_PRIORITY_WHEN_VALID; OBSERVED_ROOM_THEN_PROXIMITY_THEN_FRESHNESS',
             'compared_with':[x['instrument'] for x in picked[rank:]],'calibrated_predictive_score':False}
     return picked,decisions,{'as_of':as_of,'identical_source_deterministic_control':control,
-        'native_assisted_card_ids':[r['card_id'] for r in picked],'linked_decisions':links,
+        'native_assisted_card_ids':[r['card_id'] for r in picked if r['card_id'] in advice],
+        'output_card_ids':[r['card_id'] for r in picked],'linked_decisions':links,
         'accepted_current_advice':valid,'ranking_or_membership_changed':control!=[r['card_id'] for r in picked],
         'performance_improvement_established':False,'hard_gates_changed':False}

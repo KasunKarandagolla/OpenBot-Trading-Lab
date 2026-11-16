@@ -86,17 +86,17 @@ class NativeReceiptCollector(unittest.TestCase):
                 collect(self.request,self.config,self.target,as_of=self.now)]):
             again=wait_for_reply(self.folder,self.key,self.configfile,wait_seconds=1,clock=lambda:self.now)
         self.assertEqual(again['storage_read_retries'],1)
+        # Cross-OS collection now delegates individual trusted scoped reads in
+        # native_host, after local publication, instead of an entire wait child.
+        # This legacy OpenCode fixture remains a direct read-only compatibility
+        # test; Codex WSL subprocess contracts live in test_openbot_runner.
         if __import__('os').name!='nt':
             executable=self.root/'python.exe';executable.touch()
             self.configfile.write_text(json.dumps({**self.config,'native_python':str(executable)}))
-            from types import SimpleNamespace
-            with patch('subprocess.run',return_value=SimpleNamespace(returncode=0,stdout='{"status":"NATIVE_RECEIPT_COLLECTED"}')) as process:
-                delegated=wait_for_reply(self.folder,self.key,self.configfile)
-            self.assertEqual(delegated['receipt_reader'],'EXISTING_WINDOWS_PYTHON_SQLITE_MODE_RO')
-            self.assertNotIn('shell',process.call_args.kwargs)
-            import subprocess
-            with patch('subprocess.run',side_effect=subprocess.TimeoutExpired('SYNTHETIC_TEST',30)):
-                with self.assertRaises(ContractError):wait_for_reply(self.folder,self.key,self.configfile)
+            with patch('subprocess.run') as process:
+                scoped=wait_for_reply(self.folder,self.key,self.configfile,clock=lambda:self.now)
+            self.assertEqual(scoped['status'],'NATIVE_RECEIPT_COLLECTED')
+            process.assert_not_called()
 
     def test_unapproved_tool_or_replacement_model_cannot_produce_a_receipt(self):
         self.tools.append({'type':'tool','name':'shell','state':{'status':'completed','input':{},'content':[]}});self.write_attempt()
