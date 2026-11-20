@@ -35,6 +35,12 @@ assertions. Configuration validation and the 24 unchanged protected hashes
 passed. The orchestration skill is the single versioned exception in the prior
 protected manifest. Its source SHA-256 is
 `1170500f182592cf6fe89f7aae04fb74fe68b7a0de96ae68b2bb2d601f318a27`.
+An intermediate push check exposed a poll between file publication and the
+durable ready state. Selecting v2 at command attestation closes the legacy
+ticket path during that window, with a regression that polls immediately
+after file publication. An intermediate local run that overlapped source edits
+also failed the warm-cache assertion. The cache keys include source hashes,
+so release checks use frozen source. No tests or cache gates were relaxed.
 The full release checks run against the published commit. Cloud preflight
 returned `NATIVE_AUDIT_CONFIG_MISSING`. Live acceptance requires the existing
 owner runtime using the v2 installation, checksum and acceptance procedure.

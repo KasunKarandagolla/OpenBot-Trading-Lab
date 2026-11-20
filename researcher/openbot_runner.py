@@ -242,7 +242,9 @@ def run_job(key):
                 if str(error)!='RUNNER_START_UNATTESTED':raise
             time.sleep(1)
         if proof is None:raise ContractError('RUNNER_START_UNATTESTED')
-        _transition(folder,'COMMAND_ATTESTED',start_proof=proof)
+        # Select the current transport before publishing any review files. A
+        # status poll in the publication window must never issue a legacy ticket.
+        _transition(folder,'COMMAND_ATTESTED',start_proof=proof,review_transport='PAGED_V2')
         from .discovery import scan_market_research
         def progress(stage,seconds):
             current=_read(folder/'state.json')['state']

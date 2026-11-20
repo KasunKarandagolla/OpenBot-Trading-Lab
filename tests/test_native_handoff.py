@@ -43,8 +43,15 @@ class NativeHandoff(unittest.TestCase):
 
     def wait(self,on_ready=lambda:None):
         def progress(state,**fields):
+            if state=='REVIEW_READY' and 'review_transport' in fields:
+                # Production selects v2 at command attestation. The file is
+                # already visible here while the durable state is still earlier.
+                staged=runner.status(self.job,include_review=True)
+                self.assertEqual(staged['state'],'COMMAND_ATTESTED')
+                self.assertNotIn('dispatch_receipt',staged)
             runner._transition(self.folder,state,**fields)
             if state=='REVIEW_READY' and 'review_transport' in fields:on_ready()
+        runner._transition(self.folder,'COMMAND_ATTESTED',review_transport='PAGED_V2')
         return wait_for_reply(self.directory,self.material,self.j.private,clock=self.clock,
             wait_seconds=600,progress=progress,verified_identity=self.f.identity)
 
