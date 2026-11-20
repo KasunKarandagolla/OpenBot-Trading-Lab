@@ -442,6 +442,9 @@ def status(key,include_review=False):
     diagnostic=safe_diagnostic(data.get('native_diagnostic'))
     if diagnostic:result['native_diagnostic']=diagnostic
     if data.get('review_transport')=='PAGED_V2':
+        # The main chat must see the current state even when earlier batches
+        # have accumulated more history than the status console can return.
+        if data['state'] not in FINAL:result.pop('lifecycle',None)
         _paged_status(folder,data,result,include_review)
     elif data['state'] not in FINAL:
         material=data.get('material_sha256')

@@ -72,7 +72,9 @@ class NativeHandoff(unittest.TestCase):
             # Large status history must not compete with the one-shot reply.
             history=runner._read(self.folder/'state.json')['lifecycle']
             runner._transition(self.folder,'REVIEW_READY',lifecycle=[{'state':'previous','detail':'x'*65_536},*history])
-            self.assertGreater(len(encode(runner.status(self.job)).encode()),65536)
+            self.assertGreater(len((self.folder/'state.json').read_bytes()),65536)
+            visible_status=json.loads(encode(runner.status(self.job)).encode()[:65536])
+            self.assertEqual(visible_status['state'],'REVIEW_READY')
             status=self.ticket();receipt=self.receipt
             full=review_brief(self.request)
             self.assertEqual(len(full),95_759)
