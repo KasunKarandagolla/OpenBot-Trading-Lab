@@ -12,7 +12,7 @@ import tempfile
 from .contracts import ContractError,encode
 from .settings import ROOT
 
-OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','assert_parent','integration_preflight','owner_proof','collect','attest_start','review_count','delivery_proof'})
+OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','assert_parent','integration_preflight','owner_proof','collect','attest_start','review_count','delivery_proof','observe_handoff'})
 
 
 def delegated(config):return os.name!='nt' and bool(config.get('native_python'))
@@ -68,7 +68,10 @@ def execute(operation,input_file):
     if operation=='assert_parent':return identity.assert_parent(v['identity'],config)
     if operation=='collect':
         from .native_runtime import collect
-        return collect(v['request'],config,as_of=v['as_of'])
+        return collect(v['request'],config,as_of=v['as_of'],directory=v.get('directory'))
+    if operation=='observe_handoff':
+        from .native_app import observe_handoff
+        return observe_handoff(config,**v)
     if operation=='integration_preflight':
         from .native_runtime import integration_preflight
         return integration_preflight(config,as_of=v['as_of'])

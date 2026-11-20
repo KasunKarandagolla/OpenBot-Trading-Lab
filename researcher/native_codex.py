@@ -207,14 +207,18 @@ def turn_records(config,session,turn,workspace,*,start,end,backend=None):
             raise ContractError('NATIVE_SESSION_MISMATCH')
 
 
-def attest(config,session,turn,*,model,workspace,start,end,expected_input,expected_reply,backend=None):
-    """No model invocation. Exact input, turn model, zero tools, exact final."""
+def attest(config,session,turn,*,model,workspace,start,end,expected_input,expected_reply,backend=None,
+           evidence=None):
+    """Attest the bound turn, exact task brief, permitted evidence reads and final."""
     from datetime import timedelta
+    from .native_handoff import command_page
     rows=list(turn_records(config,session,turn,workspace,start=utc(start)-timedelta(seconds=1),end=utc(end)+timedelta(seconds=1),backend=backend))
     with read_db(config['provider_db']) as db:
         actual=db.execute('SELECT model FROM threads WHERE id=?',(session,)).fetchone()
     if not actual or actual[0]!=model:raise ContractError('NATIVE_MODEL_SWITCHED')
     context=False;began=False;ended=False;inputs=[];finals=[];responses=set();usage=[]
+    calls={};completed=set();delivered=set()
+    if evidence is not None:directory,material,fingerprint,pages=evidence
     for x in rows:
         p=x['payload'];kind=x['type'];typ=p.get('type')
         variant=x['_schema_variant']
@@ -224,8 +228,32 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
             if context:_fail('NATIVE_REVIEW_INCOMPLETE','EVIDENCE','CONTEXT',variant)
             context=True
         elif kind=='response_item':
+            if evidence is not None and typ=='function_call' and p.get('name')=='exec_command':
+                call_id=p.get('call_id');args=json.loads(p.get('arguments','null'))
+                if (not inputs or finals or not isinstance(call_id,str) or not call_id or call_id in calls
+                        or not isinstance(args,dict) or not isinstance(args.get('cmd'),str)
+                        or set(args)-{'cmd','login','yield_time_ms','max_output_tokens'} or args.get('login') is not False):
+                    raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+                # Validate the literal command before associating the result. The
+                # completed event must also attest what the shell actually ran.
+                page=command_page({'command':['powershell.exe','-Command',args['cmd']]},directory,material,fingerprint)
+                if page is None or not 1<=page<=len(pages) or page in calls.values():
+                    raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+                calls[call_id]=page
+                continue
+            if evidence is not None and typ=='function_call_output':
+                call_id=p.get('call_id');page=calls.get(call_id)
+                output=p.get('output')
+                if page is None or call_id not in completed or page in delivered or not isinstance(output,str):
+                    raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+                header,separator,body=output.partition('\nOutput:\n')
+                if (not separator or 'Process exited with code 0' not in header.splitlines()
+                        or body.removesuffix('\n').removesuffix('\r')!=pages[page-1]):
+                    raise ContractError('NATIVE_READ_INCOMPLETE')
+                delivered.add(page)
+                continue
             if typ in {'function_call','custom_tool_call','local_shell_call','web_search_call','computer_call',
-                       'function_call_output','custom_tool_call_output'}:
+                       'function_call_output','custom_tool_call_output','tool_search_call','tool_search_output'}:
                 raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
             if typ not in {'message','configuration_update','additional_tools'}:
                 raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
@@ -251,6 +279,15 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                     if item.get('phase')=='final_answer':
                         if not inputs:_fail('NATIVE_READ_INCOMPLETE','EVIDENCE','INPUT',variant)
                         finals.append(_text(item.get('content')))
+                elif it=='CommandExecution' and evidence is not None:
+                    call_id=item.get('id');page=calls.get(call_id)
+                    if (page is None or call_id in completed or command_page(item,directory,material,fingerprint)!=page):
+                        raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+                    output=item.get('aggregated_output')
+                    if (item.get('status')!='completed' or item.get('exit_code')!=0 or not isinstance(output,str)
+                            or output.removesuffix('\n').removesuffix('\r')!=pages[page-1]):
+                        raise ContractError('NATIVE_READ_INCOMPLETE')
+                    completed.add(call_id)
                 elif it!='Reasoning':raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
             elif typ=='thread_settings_applied':
                 if 'thread_id' in p and p['thread_id']!=session:raise ContractError('NATIVE_SESSION_MISMATCH')
@@ -273,36 +310,89 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
     # in the verbatim brief (including its final newline).
     if sum(part.count(expected_input) for part in inputs[0])!=1:raise ContractError('NATIVE_READ_INCOMPLETE')
     if finals!=[expected_reply]:raise ContractError('NATIVE_REPLY_PROVENANCE')
+    if evidence is not None and delivered!=set(range(1,len(pages)+1)):
+        raise ContractError('NATIVE_READ_INCOMPLETE')
     if not 1<=len(responses)<=16:raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
     return {'provider_schema':SCHEMA,'schema_variant':variant,'model_requests':len(responses),'provider_usage':usage,
-        'tool_operations':[],'unauthorized_tool_operations':0,
+        'tool_operations':['READ_SKILL','READ_REQUEST'] if evidence is not None else [],'unauthorized_tool_operations':0,
         'skill_and_request_read_completely':True,
-        'read_methods':['EXACT_INLINE_SKILL_AND_REQUEST_IN_PROVIDER_USER_MESSAGE'],
+        'read_methods':['EXACT_HASH_BOUND_PAGES_IN_PROVIDER_TOOL_OUTPUT'] if evidence is not None else
+            ['EXACT_INLINE_SKILL_AND_REQUEST_IN_PROVIDER_USER_MESSAGE'],
         'native_session_ref':ref(session),'native_turn_ref':ref(turn),
         'input_proof':'PROVIDER_ATTESTED_COMPLETE_INPUT_BYTES; NOT_A_CLAIM_ABOUT_HIDDEN_COGNITION'}
 
 
-def attest_handoff(config,identity,request,*,as_of):
-    """The parent provider must record a genuine completed start_task call."""
+def observe_submission(config, identity, request_at, arguments, *, as_of, reserved_at=None):
+    """Observe the scoped native call and response without performing either."""
     from datetime import timedelta
     from .native_identity import parent_binding
     binding=parent_binding(identity,config)
     session,turn,start=binding['external'],binding['turn'],binding['started_at']
     end=min(utc(as_of),utc(binding['completed_at'])) if binding['completed_at'] else utc(as_of)
-    brief=review_brief(request);context=False;matches=[]
+    context=False;started={};completed=[]
     for x in turn_records(config,session,turn,config['agent_workspace'],start=utc(start)-timedelta(seconds=1),end=end,backend=identity.get('provider_backend')):
         p=x['payload']
         if x['type']=='turn_context':
             context_matches(p,turn,identity['model'],config['agent_workspace']);context=True
-        if x['type']!='event_msg' or p.get('type')!='item_completed' or p.get('turn_id')!=turn:continue
-        if p.get('thread_id')!=session:raise ContractError('NATIVE_SESSION_MISMATCH')
-        item=p.get('item',{})
-        if item.get('type')!='DynamicToolCall' or item.get('tool')!='tool_call':continue
-        args=item.get('arguments',{})
-        if (context and item.get('success') is True and item.get('status')=='completed' and
-                args.get('name')=='openbot.start_task' and
-                args.get('arguments')=={'title':'OPENBOT-RESEARCH-'+request['material_sha256'], 'brief':brief}):
-            if utc(x['timestamp'])<utc(request['as_of_utc']):raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-            matches.append(x['timestamp'])
-    if len(matches)==1:return True
+        if not context:continue
+        if (x['type']=='response_item' and p.get('type')=='function_call'
+                and p.get('namespace')=='openbot' and p.get('name')=='tool_call'):
+            item=p;kind='request';call_id=p.get('call_id')
+        elif x['type']=='event_msg' and p.get('type')=='item_completed' and p.get('turn_id')==turn:
+            if p.get('thread_id')!=session:raise ContractError('NATIVE_SESSION_MISMATCH')
+            item=p.get('item',{});kind='response';call_id=item.get('id')
+            if (item.get('type')!='DynamicToolCall' or item.get('tool')!='tool_call'
+                    or item.get('namespace') not in {None,'openbot'}):continue
+        else:continue
+        envelope=item.get('arguments',{})
+        if isinstance(envelope,str):
+            try:envelope=json.loads(envelope,object_pairs_hook=_pairs)
+            except ValueError:continue
+        if not isinstance(envelope,dict) or envelope.get('name',envelope.get('tool'))!='openbot.start_task':continue
+        args=envelope.get('arguments')
+        if isinstance(args,str):
+            try:args=json.loads(args,object_pairs_hook=_pairs)
+            except ValueError:continue
+        if not isinstance(args,dict):continue
+        if args.get('title')!=arguments['title'] and not (isinstance(args.get('brief'),str) and
+                arguments['title'] in args['brief']):continue
+        at=utc(x['timestamp'])
+        if at<utc(request_at) or reserved_at is not None and at<utc(reserved_at):
+            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        if kind=='request':
+            if not isinstance(call_id,str) or call_id in started:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            started[call_id]=(x['timestamp'],args)
+        else:completed.append((call_id,x['timestamp'],args,item))
+    if len(started)>1 or len(completed)>1 or (started and completed and completed[0][0] not in started):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    if not completed:
+        if not started:return {'submission_state':'NOT_OBSERVED','submission_attempts':0}
+        at,args=next(iter(started.values()))
+        return {'submission_state':'ATTEMPTED','submission_attempts':1,'attempted_at_utc':at}
+    call_id,at,args,item=completed[0]
+    if call_id in started and started[call_id][1]!=args:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    result={'submission_attempts':1,'attempted_at_utc':started.get(call_id,(at,None))[0], 'responded_at_utc':at}
+    if item.get('success') is False:
+        title=args.get('title');brief=args.get('brief')
+        oversize=((isinstance(title,str) and len(title.strip())>120) or
+                  (isinstance(brief,str) and len(brief.strip().encode('utf-16-le',errors='surrogatepass'))//2>100000))
+        return {**result,'submission_state':'REJECTED','submission_error':
+                'NATIVE_TOOL_INPUT_SIZE_REJECTED' if oversize else 'NATIVE_TOOL_REJECTED'}
+    if item.get('success') is not True or item.get('status')!='completed' or args!=arguments:
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    if reserved_at is None:return {**result,'submission_state':'ACKNOWLEDGED'}
+    items=item.get('content_items')
+    if not isinstance(items,list) or len(items)!=1 or not isinstance(items[0],dict) or items[0].get('type')!='inputText':
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    response=json.loads(items[0].get('text','null'),object_pairs_hook=_pairs)
+    if (not isinstance(response,dict) or response.get('title')!=arguments['title'] or
+            not isinstance(response.get('taskId'),str) or not response['taskId']):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    return {**result,'submission_state':'ACKNOWLEDGED','acknowledged_task_ref':ref(response['taskId'])}
+
+
+def attest_handoff(config,identity,request,*,as_of):
+    args={'title':'OPENBOT-RESEARCH-'+request['material_sha256'],'brief':review_brief(request)}
+    observed=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of)
+    if observed['submission_state']=='ACKNOWLEDGED':return True
     raise ContractError('NATIVE_HANDOFF_UNATTESTED')

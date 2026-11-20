@@ -20,8 +20,8 @@ class WorkflowLifecycleRecovery(unittest.TestCase):
 
     def test_multiple_batches_survive_same_agent_task_pointer_changes(self):
         w=self.w;original_dispatch=w.app.dispatch_once;original_status=runner.status
-        def dispatch(args):
-            result=original_dispatch(args);n=len(w.app.submitted)
+        def dispatch(args,job=None,receipt=None):
+            result=original_dispatch(args,job,receipt);n=len(w.app.submitted)
             with sqlite3.connect(w.f.config['openbot_db']) as db:
                 db.execute('INSERT INTO projection_threads VALUES(?,?,?)',(f'THREAD_{n}','AGENT',f'TURN_{n}'))
                 db.execute('UPDATE projection_agents SET thread_id=?',(f'THREAD_{n}',))

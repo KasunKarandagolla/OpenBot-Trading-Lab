@@ -37,9 +37,10 @@ def integration_preflight(config,*,as_of):
         'native_execution_verified':False,'trade_authorization':False}
 
 
-def collect(request,config,*,as_of):
+def collect(request,config,*,as_of,directory=None):
     from .native_host import delegated,call
-    if delegated(config):return call(config,'collect',{'request':request,'as_of':as_of})
+    if delegated(config):return call(config,'collect',{'request':request,'as_of':as_of,
+        'directory':str(directory) if directory is not None else None})
     from .agent_review import parse_reply,validate_reply,REJECTION_CODES
     identity=request.get('native_identity')
     if not isinstance(identity,dict):raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
@@ -52,8 +53,12 @@ def collect(request,config,*,as_of):
         target=Path(config['agent_workspace'])/'research-review-6c'/(request['material_sha256']+'.json')
         return compatibility(request,config,target,as_of=as_of)
     if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
-    from .native_codex import review_brief,attest,attest_handoff
-    marker='OPENBOT-RESEARCH-'+request['material_sha256'];brief=review_brief(request)
+    from .native_codex import attest,attest_handoff,observe_submission
+    from .native_handoff import runner_review,load_dispatch,packet
+    from .native_identity import under_work
+    directory=under_work(directory) if directory is not None else None
+    paged=runner_review(directory)
+    args,_,_=packet(request,directory);marker=args['title'];brief=args['brief']
     with read_db(config['openbot_db']) as db:
         # An agent-originated task of the very same configured existing agent.
         rows=db.execute('''SELECT thread_id,created_at FROM projection_agent_threads
@@ -66,6 +71,7 @@ def collect(request,config,*,as_of):
         inputs=db.execute('''SELECT message_json FROM projection_thread_messages
           WHERE thread_id=? AND author='agent' AND created_at>=? ORDER BY ordinal''',
           (thread,request['as_of_utc'])).fetchall()
+        if not inputs and paged:return None
         if not inputs or json.loads(inputs[0][0]).get('text')!=brief:
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         finals=db.execute('''SELECT m.message_json,t.turn_id,t.started_at,t.completed_at,
@@ -88,9 +94,20 @@ def collect(request,config,*,as_of):
     if not utc(request['as_of_utc'])<=utc(created)<=utc(start)<=utc(end)<=utc(as_of):raise ContractError('AGENT_EVIDENCE_FUTURE')
     raw=json.loads(message).get('text')
     if not isinstance(raw,str) or len(raw.encode())>32768:raise ContractError('AGENT_REPLY_SIZE')
-    attest_handoff(config,identity,request,as_of=as_of)
+    evidence=None
+    if paged:
+        args,fingerprint,pages,ticket=load_dispatch(directory,request,as_of=as_of)
+        submitted=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
+            reserved_at=ticket['reserved_at_utc'])
+        # In OpenBot 0.71.0 newly created task IDs are their thread IDs.
+        if (submitted['submission_state']!='ACKNOWLEDGED' or submitted['acknowledged_task_ref']!=ref(thread)
+                or not utc(ticket['reserved_at_utc'])<=utc(submitted['attempted_at_utc'])<=utc(submitted['responded_at_utc'])
+                or not utc(ticket['reserved_at_utc'])<=utc(created)<=utc(submitted['responded_at_utc'])):
+            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        evidence=(directory,request['material_sha256'],fingerprint,pages)
+    else:attest_handoff(config,identity,request,as_of=as_of)
     proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
-        expected_input=brief,expected_reply=raw,backend=identity['provider_backend'])
+        expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence)
     assert_parent(identity,config)
     try:
         validated=validate_reply(parse_reply(raw),request)
@@ -103,8 +120,10 @@ def collect(request,config,*,as_of):
         'native_identity':identity,'skill_sha256':request['skill_sha256'],'material_sha256':request['material_sha256'],
         'reply_sha256':digest(raw.encode()),'native_invocation_verified':True,'native_app_turns':1,
         'native_started_at_utc':start,'native_completed_at_utc':end,'audited_at_utc':as_of,
-        'submission_transport':'EXISTING_AGENT_START_TASK; EXACT_PROVIDER_ATTESTED_INLINE_INPUT',
+        'submission_transport':'EXISTING_AGENT_START_TASK; EXACT_PROVIDER_ATTESTED_'+('PAGED_INPUT' if paged else 'INLINE_INPUT'),
         'authority':'ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM',**proof,**validation}
+    if paged:audit.update(submission_attempts=submitted['submission_attempts'],task_ref=ref(thread),
+        arguments_sha256=ticket['arguments_sha256'],packet_sha256=fingerprint,verified_evidence_pages=len(pages))
     return raw,audit
 
 

@@ -49,14 +49,14 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
         raise ContractError('NATIVE_REQUEST_STALE')
     if request.get('native_identity',{}).get('provider')=='codex':
         from .native_identity import load_private,assert_parent,local_path
-        from .native_codex import review_brief
+        from .native_handoff import packet
         private=load_private(config_path)
         if verified_identity is not None and verified_identity!=request['native_identity']:
             raise ContractError('NATIVE_SESSION_MISMATCH')
         assert_parent(request['native_identity'],private)
         installed=local_path(private['agent_workspace'])/'.agents/skills/market-research-review/SKILL.md'
         if digest(installed.read_bytes())!=request['skill_sha256']:raise ContractError('AGENT_SKILL_HASH')
-        args={'title':'OPENBOT-RESEARCH-'+material,'brief':review_brief(request)}
+        args,_,_=packet(request,folder)
         task_path=folder/(material+'.review-task.json')
         raw=encode(args)
         if task_path.exists():
@@ -71,7 +71,7 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
                 os.link(temporary,task_path)
             finally:
                 if temporary is not None:temporary.unlink(missing_ok=True)
-        return request,private,None
+        return request,private,folder
     workspace=Path(config['agent_workspace']).absolute()
     skill=workspace/'.agents/skills/market-research-review/SKILL.md'
     if any(p.is_symlink() for p in (workspace,*workspace.parents,skill,*skill.parents)):
@@ -105,7 +105,7 @@ def collect(request,config,target,*,as_of):
     """One bounded read of the exact task; never inspect preceding chat history."""
     if request.get('native_identity',{}).get('provider')=='codex':
         from .native_runtime import collect as dynamic_collect
-        return dynamic_collect(request,config,as_of=as_of)
+        return dynamic_collect(request,config,as_of=as_of,directory=target)
     expected_model=request['model']
     if request.get('native_identity'):
         from .native_identity import assert_current
@@ -246,6 +246,57 @@ def task_observation(config,*,agent_id,title,details=False):
     return result
 
 
+def observe_handoff(config, *, identity, directory, material, as_of):
+    """Bind the one-time ticket, provider call/response and app task projection."""
+    from .native_codex import observe_submission
+    from .native_handoff import load_dispatch, packet, read_object, runner_review
+    from .native_host import delegated, call
+    from .native_identity import assert_parent, under_work
+    from .agent_review import _material
+
+    directory=under_work(directory)
+    if not runner_review(directory) or not re.fullmatch('[0-9a-f]{64}',material):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    if delegated(config):return call(config,'observe_handoff',{'identity':identity,'directory':str(directory),
+        'material':material,'as_of':as_of})
+    assert_parent(identity,config)
+    request=read_object(directory/(material+'.request.json'))
+    if (request.get('material_sha256')!=material or request.get('native_identity')!=identity
+            or digest(encode(_material(request)).encode())!=material):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    lease=directory/(material+'.dispatch.json')
+    # The snapshot timestamp may precede a ticket published concurrently.
+    missing={'submission_state':'NOT_OBSERVED','submission_attempts':0,'task_created':False,
+        'task':{'count':0,'task_state':'MISSING'}}
+    if lease.exists():
+        if utc(read_object(lease).get('reserved_at_utc'))>utc(as_of):return missing
+        args,_,_,ticket=load_dispatch(directory,request,as_of=as_of)
+        result=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
+            reserved_at=ticket['reserved_at_utc'])
+        result['reserved_at_utc']=ticket['reserved_at_utc']
+    else:
+        args,_,_=packet(request,directory)
+        result=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of)
+        if result['submission_attempts']:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        # The native reader and main chat run concurrently. If a ticket was
+        # issued during this read, let the next observation bind the new data.
+        if lease.exists():return missing
+    observed=task_observation(config,agent_id=identity['agent_id'],title=args['title'],details=True)
+    if observed['count']>1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    if observed['count']:
+        if ('reserved_at_utc' not in result and lease.exists()):
+            return missing
+        if (observed['task_ref']==identity['thread_ref'] or 'reserved_at_utc' not in result
+                or utc(observed['task_created_at_utc'])<utc(result['reserved_at_utc'])):
+            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        if result['submission_state']=='ACKNOWLEDGED':
+            if (result['acknowledged_task_ref']!=observed['task_ref']
+                    or utc(observed['task_created_at_utc'])>utc(result['responded_at_utc'])):
+                raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            result['task_created']=True
+    return {**result,'task_created':result.get('task_created',False),'task':observed}
+
+
 def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,progress=None,verified_identity=None):
     """Publish locally before any receipt collection, then wait monotonically.
 
@@ -272,19 +323,70 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         emit('REVIEW_FAILED',first_error=first_error)
         return finish('NATIVE_TASK_PUBLICATION_FAILED',terminal_error=first_error)
     folder=Path(directory);published=clock()
+    from .native_handoff import FRESH_SECONDS, RESPONSE_SECONDS, SUBMISSION_SECONDS, runner_review
+    paged=runner_review(folder) and request.get('native_identity',{}).get('provider')=='codex'
     config_hash=digest(Path(config_file).read_bytes())
     result['publication_seconds']=round(time.monotonic()-began,6)
     result['request_prepared_at_utc']=published
     emit('REVIEW_READY',request_prepared_at_utc=published,
-        publication_seconds=round(time.monotonic()-began,6))
+        publication_seconds=round(time.monotonic()-began,6),
+        **({'review_transport':'PAGED_V2','submission_attempts':0,'submission_state':'NOT_OBSERVED',
+            'native_task_state':'MISSING','native_task_observation':None,'observed_model_attempts':0,
+            'attempted_at_utc':None,'responded_at_utc':None,'submission_error':None,'clock_diagnostic':None}
+            if paged else {}))
     # Publication/reader startup consumes the same request freshness envelope.
-    deadline=time.monotonic()+min(wait_seconds,max(0,600-(utc(clock())-utc(request['as_of_utc'])).total_seconds()))
-    pending_status=None;observation=None
+    deadline=time.monotonic()+min(wait_seconds,max(0,FRESH_SECONDS-(utc(clock())-utc(request['as_of_utc'])).total_seconds()))
+    dispatch_deadline=min(deadline,time.monotonic()+SUBMISSION_SECONDS)
+    pending_status=None;observation=None;submission=None
+    prior_wall=utc(published);prior_monotonic=time.monotonic()
+
+    def check_freshness():
+        nonlocal prior_wall,prior_monotonic
+        stamp=clock();wall=utc(stamp);monotonic=time.monotonic()
+        wall_gap=(wall-prior_wall).total_seconds();mono_gap=monotonic-prior_monotonic
+        if abs(wall_gap-mono_gap)>10 or wall_gap>35:
+            result['clock_diagnostic']={'code':'ELAPSED_TIME_DISCONTINUITY',
+                'wall_gap_seconds':round(wall_gap,3),'monotonic_gap_seconds':round(mono_gap,3)}
+        prior_wall=wall;prior_monotonic=monotonic
+        if not 0<=(wall-utc(request['as_of_utc'])).total_seconds()<=FRESH_SECONDS:
+            raise ContractError('NATIVE_REQUEST_STALE')
+        return stamp
+
+    def dispatch_failure(code):
+        fault={'stage':'TASK_SUBMISSION','code':code}
+        emit('REVIEW_FAILED',first_error=first_error or fault)
+        return finish(code,first_error=first_error or fault,terminal_error=fault)
+
     while True:
         try:
+            as_of=check_freshness()
             if digest(Path(config_file).read_bytes())!=config_hash:
                 raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
-            observed=review_count(request,config,details=True);count=observed['count']
+            if paged:
+                handoff=observe_handoff(config,identity=request['native_identity'],directory=folder,
+                    material=material,as_of=as_of)
+                stamp=check_freshness()
+                observed=handoff['task'];count=observed['count'] if handoff['task_created'] else 0
+                phase={k:v for k,v in handoff.items() if k not in {'task','task_created','acknowledged_task_ref'}}
+                result.update(phase)
+                result['native_task_observation']=observed
+                if phase['submission_attempts'] and (not submission or not submission['submission_attempts']
+                        or phase!=submission and not count):
+                    emit('TASK_SUBMISSION_ATTEMPTED',**phase)
+                submission=phase
+                if phase['submission_state']=='REJECTED':return dispatch_failure(phase['submission_error'])
+                if not count:
+                    if not phase['submission_attempts'] and time.monotonic()>=dispatch_deadline:
+                        return dispatch_failure('NATIVE_DISPATCH_RESERVED_TASK_MISSING' if phase.get('reserved_at_utc')
+                            else 'NATIVE_TASK_NOT_SUBMITTED')
+                    at=phase.get('responded_at_utc') or phase.get('attempted_at_utc')
+                    if at and ((utc(stamp)-utc(at)).total_seconds()>=RESPONSE_SECONDS or time.monotonic()>=deadline):
+                        return dispatch_failure('NATIVE_ACKNOWLEDGED_TASK_MISSING' if phase.get('responded_at_utc')
+                            else 'NATIVE_TOOL_RESPONSE_NOT_OBSERVED')
+                elif not running_at:
+                    emit('TASK_CREATED',native_task_state=observed['task_state'],native_task_observation=observed,**phase)
+                if count and observed['task_state']=='FAILED':raise ContractError('NATIVE_TASK_FAILED')
+            else:observed=review_count(request,config,details=True);count=observed['count']
             if count>1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
             if count:
                 from .native_identity import under_work
@@ -303,7 +405,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                     emit('REVIEW_RUNNING',native_task_state=observed['task_state'],native_task_observation=observed)
             if count and running_at is None:
                 running_at=clock();emit('REVIEW_RUNNING',native_started_observed_at_utc=running_at)
-            found=collect(request,config,target,as_of=clock())
+            found=collect(request,config,target,as_of=check_freshness()) if count or not paged else None
+            check_freshness()
         except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
             fault=failure(error,'RECEIPT_COLLECTION')
             if first_error is None:first_error=fault
@@ -313,14 +416,17 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             # Duplicate submissions are terminal, never an invitation to retry.
             if 'count' in locals() and count>1:retry=False
             if not retry:
-                emit('REVIEW_FAILED',first_error=first_error)
+                emit('REVIEW_FAILED',first_error=first_error,
+                    **({'clock_diagnostic':result['clock_diagnostic']} if 'clock_diagnostic' in result else {}))
                 return finish(fault['code'],terminal_error=fault)
             storage_retries+=1;pending_status=fault['code'];found=None
-            emit('REVIEW_RUNNING' if running_at else 'REVIEW_READY',first_error=first_error,
+            emit('REVIEW_RUNNING' if running_at else 'TASK_SUBMISSION_ATTEMPTED' if submission and submission['submission_attempts']
+                else 'REVIEW_READY',first_error=first_error,
                 last_pending_status=pending_status,storage_read_retries=storage_retries)
         if found:
             raw,audit=found
             result['observed_model_attempts']=audit['model_requests']
+            if paged:emit('MODEL_EXECUTED',observed_model_attempts=audit['model_requests'])
             audit.setdefault('submission_transport','OWNER_OPENBOT_APPLICATION_UI')
             try:
                 for suffix,value in [('reply.json',raw),('audit.json',encode(audit)+'\n')]:
@@ -343,10 +449,12 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 native_completed_at_utc=audit.get('native_completed_at_utc'),
                 owner_dispatch_seconds=max(0,(utc(audit['native_started_at_utc'])-utc(request['as_of_utc'])).total_seconds()),
                 receipt_collection_latency_seconds=max(0,(utc(clock())-utc(audit['native_completed_at_utc'])).total_seconds()))
-        if time.monotonic()>=deadline:
+        if time.monotonic()>=deadline or paged and not submission and time.monotonic()>=dispatch_deadline:
             lease=folder/(material+'.dispatch.json')
-            if observation and observation['task_state']=='MISSING':
+            if not paged and observation and observation['task_state']=='MISSING':
                 pending_status='NATIVE_DISPATCH_RESERVED_TASK_MISSING' if lease.exists() else 'NATIVE_TASK_NOT_SUBMITTED'
+            if paged and observation and observation['task_state']=='COMPLETED' and pending_status is None:
+                pending_status='NATIVE_PROVIDER_RESPONSE_NOT_OBSERVED'
             emit('REVIEW_TIMED_OUT' if wait_seconds else 'REVIEW_PENDING',first_error=first_error)
             status='NATIVE_REVIEW_TIMED_OUT' if wait_seconds else (
                 'NATIVE_NOT_INVOKED' if request.get('native_identity') else 'AWAITING_OWNER_NATIVE_APP_SUBMISSION')

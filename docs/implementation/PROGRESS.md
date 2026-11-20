@@ -1,3 +1,47 @@
+# Native handoff recovery — 20 November 2026
+
+The approved baseline `d07b450c28121da778c17888f45eb657f4c24b20` was fetched
+on `feature/external-first-market-researcher`. The owner-supplied post-mortem
+for job `20261119T022832Z-e3e2d1562cbb43f5ab602d179a391930` identified a
+reserved ticket with no `openbot.start_task` call. The full console output,
+Windows-side path read and isolated tool discovery each blocked dispatch.
+Modern Standby subsequently exhausted freshness.
+
+The v2 orchestration skill uses the main chat's OpenBot catalog and sends the
+runner's compact, exact argument object to the native task tool. The existing
+same-agent task receives the full canonical skill and evidence in numbered,
+SHA-256-bound WSL reads. The parent call, native acknowledgment and task row are
+audited separately. Submission and response have 90- and 30-second observation
+bounds respectively. App creation, provider execution, review validation and
+delivery require their own evidence. No automatic redispatch occurs. Freshness
+still expires after 600 seconds and clock discontinuities have a separate
+diagnostic.
+
+Offline checks against the pinned OpenBot 0.71.0 catalog, Zod schema and mailbox
+gate accepted the exact 1,067-byte argument object. They exercised a
+95,759-character fixture that produced 99,937 bytes as inline task arguments.
+Ten pages reproduced the full packet, with a maximum page of 11,247 bytes.
+The schema/mailbox rejected the respective oversize cases and the schema
+rejected a file argument. Fixture receipts proved one submission, matching app
+creation, complete provider input, validated advice and reconciliation. Fault
+injections covered missing attempts and responses, task acknowledgment without
+a task row, rejections, duplicate dispatch, truncation, Windows/WSL path
+translation, hash substitution and stale requests.
+
+The initial full offline suite passed 495 tests and the broad focused suite
+passed 91. The final targeted integrity suite passed 40 tests, including the
+additional duplicate-attempt, truncated-page and oversized-status-history
+assertions. Configuration validation and the 24 unchanged protected hashes
+passed. The orchestration skill is the single versioned exception in the prior
+protected manifest. Its source SHA-256 is
+`1170500f182592cf6fe89f7aae04fb74fe68b7a0de96ae68b2bb2d601f318a27`.
+The full release checks run against the published commit. Cloud preflight
+returned `NATIVE_AUDIT_CONFIG_MISSING`. Live acceptance requires the existing
+owner runtime using the v2 installation, checksum and acceptance procedure.
+[Native handoff v2](NATIVE_HANDOFF_V2.md)
+
+---
+
 # Workflow lifecycle recovery — CODEX_CLOUD, 16 November 2026
 
 **ENGINEERING_READY_FOR_LIVE_ACCEPTANCE — live OpenBot NOT_RUN_IN_CODEX_CLOUD.**

@@ -26,11 +26,19 @@ class SimulatedApp:
     def write(self,name,rows):
         p=self.f.root/'sessions'/(name+'.jsonl')
         p.write_text(''.join(json.dumps({**r,'ordinal':j})+'\n' for j,r in enumerate(rows)),encoding='utf-8')
-    def dispatch_once(self,args):
+    def dispatch_once(self,args,job=None,receipt=None):
         title=args['title']
         if title in self.submitted:return False
         self.submitted[title]=args
-        brief=args['brief'];request=json.loads(brief.split('<canonical-request>\n',1)[1].split('\n</canonical-request>',1)[0])
+        brief=args['brief'];full=brief;pages=[]
+        if job is not None:
+            material=receipt['material_sha256'];fingerprint=receipt['packet_sha256']
+            self.assert_exact_arguments(args,receipt)
+            for number in range(1,receipt['evidence_pages']+1):
+                pages.append(runner.review_page(job,material,fingerprint,number))
+            full=''.join(json.loads(page)['text'] for page in pages)
+            if digest(full.encode())!=fingerprint:raise AssertionError('packet hash')
+        request=json.loads(full.split('<canonical-request>\n',1)[1].split('\n</canonical-request>',1)[0])
         self.input_cards.extend(request['cards'])
         n=len(self.submitted);name=f'REVIEW_{n}';turn=f'TURN_{n}';thread=f'THREAD_{n}';sid=f'SESSION_{n}';at=self.clock()
         identity=self.f.agent
@@ -42,9 +50,13 @@ class SimulatedApp:
         with sqlite3.connect(self.f.config['provider_db']) as db:
             db.execute('INSERT INTO threads VALUES(?,?,?,?,?)',(name,str(self.f.root/'sessions'/(name+'.jsonl')),str(self.f.workspace),'openai',identity['model']))
         e=self.envelope
+        wrapper={'name':'openbot.start_task','arguments':args};call_id='START_TASK_'+name
+        self.f.parent.append(e(at,'response_item',{'type':'function_call','name':'tool_call','namespace':'openbot',
+            'call_id':call_id,'arguments':json.dumps(wrapper)}))
         self.f.parent.append(e(at,'event_msg',{'type':'item_completed','turn_id':'PARENT_TURN','thread_id':'PARENT',
-            'item':{'type':'DynamicToolCall','tool':'tool_call','status':'completed','success':True,
-                'arguments':{'name':'openbot.start_task','arguments':args}}}))
+            'item':{'type':'DynamicToolCall','namespace':'openbot','tool':'tool_call','status':'completed','success':True,
+                'id':call_id,'arguments':wrapper,'content_items':[{'type':'inputText',
+                    'text':json.dumps({'taskId':thread,'title':title})}]}}))
         self.write('PARENT',self.f.parent)
         rows=[e(at,'session_meta',{'id':name,'originator':'openbot','model_provider':'openai',
                 'cli_version':'0.169.0','cwd':str(self.f.workspace)}),
@@ -52,9 +64,25 @@ class SimulatedApp:
             e(at,'turn_context',{'turn_id':turn,'model':identity['model']}),
             e(at,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':name,
                 'item':{'type':'UserMessage','content':[{'type':'text','text':'OpenBot task envelope\n'+brief}]}})]
+        if pages:
+            stem=next(line for line in brief.splitlines() if line.startswith('wsl.exe ')).removesuffix('N')
+            for number,page in enumerate(pages,1):
+                call='PAGE_'+str(number);cmd=stem+str(number)
+                rows.extend([e(at,'response_item',{'type':'function_call','name':'exec_command','call_id':call,
+                        'arguments':json.dumps({'cmd':cmd,'login':False,'max_output_tokens':16000})}),
+                    e(at,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':name,
+                        'item':{'type':'CommandExecution','id':call,'status':'completed','exit_code':0,
+                            'command':['powershell.exe','-NoProfile','-Command',cmd],'aggregated_output':page}}),
+                    e(at,'response_item',{'type':'function_call_output','call_id':call,
+                        'output':'Wall time: 0.01 seconds\nProcess exited with code 0\nOutput:\n'+page})])
         self.write(name,rows)
         self.pending.append((time.monotonic()+1.1,request,name,turn,thread,rows))
         return True
+
+    @staticmethod
+    def assert_exact_arguments(args,receipt):
+        if digest(encode(args).encode())!=receipt['arguments_sha256']:
+            raise AssertionError('argument hash')
     def complete_due(self):
         for item in list(self.pending):
             due,request,name,turn,thread,rows=item
@@ -134,7 +162,8 @@ class CompleteWorkflow(unittest.TestCase):
                     self.assertEqual(second['state'],'REVIEW_DISPATCH_RESERVED')
                     self.assertNotIn('start_task_arguments',second)
                     self.assertTrue(self.thread.is_alive());self.assertFalse((runner._job(job)/(job+'.zip')).exists())
-                    self.assertTrue(self.app.dispatch_once(args));self.assertFalse(self.app.dispatch_once(args))
+                    self.assertTrue(self.app.dispatch_once(args,job,status['dispatch_receipt']))
+                    self.assertFalse(self.app.dispatch_once(args,job,status['dispatch_receipt']))
                 if status['state']=='REVIEW_RUNNING':
                     self.assertTrue(self.thread.is_alive());wait_observed=True
                 pending_before=len(self.app.pending)

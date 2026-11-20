@@ -350,7 +350,7 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
         if prepare_only:return {**result,'status':'AWAITING_NATIVE_APP_RESPONSE'}
         if identity is not None:
             from .native_runtime import collect
-            found=collect(request,private,as_of=as_of)
+            found=collect(request,private,as_of=as_of,directory=root)
             if found is None:return {**result,'status':'AWAITING_NATIVE_APP_RESPONSE'}
             raw,audit=found
         else:

@@ -18,6 +18,7 @@ from contextlib import contextmanager
 from .contracts import ContractError, digest, encode, now_utc, utc
 from .settings import ROOT
 from .native_identity import active_identity, assert_current, assert_parent, load_private, read_db, ref, under_work
+from .native_handoff import FRESH_SECONDS, JOB_ID, SHA256, SUBMISSION_SECONDS
 
 BASE=ROOT/'work/openbot-integration'
 PRIVATE=BASE/'native-audit-local.json'
@@ -27,7 +28,7 @@ FINAL={'COMPLETED','PARTIAL','FAILED','INTERRUPTED','FINAL_DELIVERED'}
 
 
 def _job(key):
-    if not isinstance(key,str) or not re.fullmatch(r'\d{8}T\d{6}Z-[0-9a-f]{32}',key):
+    if not isinstance(key,str) or not re.fullmatch(JOB_ID,key):
         raise ContractError('RUNNER_JOB_INVALID')
     return under_work(BASE/'jobs'/key)
 
@@ -57,7 +58,8 @@ def _transition(folder,state,**fields):
     if data['state'] in FINAL and state!=data['state'] and not delivery:return data
     if data['state']!=state or 'native_task_state' in fields and fields['native_task_state']!=data.get('native_task_state'):
         data.setdefault('lifecycle',[]).append({'state':state,'at_utc':at,
-            **{k:fields[k] for k in ('material_sha256','batch_index','batch_count','first_error','native_task_state') if k in fields}})
+            **{k:fields[k] for k in ('material_sha256','batch_index','batch_count','first_error','native_task_state',
+                'submission_attempts','submission_state','observed_model_attempts') if k in fields}})
     data.update(fields,state=state,updated_at_utc=at)
     _write(folder/'state.json',data)
     return data
@@ -326,6 +328,82 @@ def run_job(key):
     return status(key)
 
 
+def _paged_status(folder,data,result,include_review):
+    from .agent_review import _material
+    from .native_handoff import load_dispatch, packet
+    import tempfile
+
+    if data['state']!='REVIEW_READY':return
+    material=data['material_sha256'];directory=folder/'review'
+    if not re.fullmatch(SHA256,material):raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    lease=directory/(material+'.dispatch.json')
+    request=_read(directory/(material+'.request.json'))
+    if (request.get('material_sha256')!=material or request.get('native_identity')!=data['native_identity']
+            or digest(encode(_material(request)).encode())!=material):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    as_of=now_utc()
+    if lease.exists():
+        _,_,_,receipt=load_dispatch(directory,request,as_of=as_of)
+        result.update(state='REVIEW_DISPATCH_RESERVED',dispatch_receipt=receipt)
+        return
+    if not include_review:return
+    assert_parent(data['native_identity'],load_private(PRIVATE))
+    args,fingerprint,pages=packet(request,directory)
+    task=under_work(directory/(material+'.review-task.json'))
+    if task.read_bytes()!=encode(args).encode('utf-8'):raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    as_of=now_utc()
+    if (not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=FRESH_SECONDS
+            or not 0<=(utc(as_of)-utc(data['request_prepared_at_utc'])).total_seconds()<SUBMISSION_SECONDS
+            or _read(folder/'state.json')['state']!='REVIEW_READY'):
+        raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
+    receipt={'material_sha256':material,'arguments_sha256':digest(encode(args).encode('utf-8')),
+        'packet_sha256':fingerprint,'evidence_pages':len(pages),'reserved_at_utc':as_of,
+        'submission_policy':'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'}
+    handoff={k:result[k] for k in ('job_id','state','review_transport','material_sha256',
+        'batch_index','batch_count','trade_authorization') if k in result}
+    handoff.update(start_task_arguments=args,dispatch_receipt=receipt)
+    # Earlier batches' lifecycle records can be much larger than the current
+    # argument object. Keep them in ordinary status, outside the one-shot reply.
+    if len(encode(handoff).encode('utf-8'))+1>64*1024:raise ContractError('NATIVE_REVIEW_FILE_SIZE')
+    temporary=None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=directory,delete=False) as stream:
+            temporary=Path(stream.name)
+            stream.write(encode(receipt));stream.flush();os.fsync(stream.fileno())
+        os.link(temporary,under_work(lease))
+    except FileExistsError:
+        _,_,_,receipt=load_dispatch(directory,request,as_of=now_utc())
+        result.update(state='REVIEW_DISPATCH_RESERVED',dispatch_receipt=receipt)
+    else:
+        result.clear();result.update(handoff)
+    finally:
+        if temporary is not None:temporary.unlink(missing_ok=True)
+
+
+def review_page(key,material,fingerprint,page):
+    """Read one complete page of the pinned, unexpired packet from WSL."""
+    from .agent_review import _material
+    from .native_handoff import load_dispatch
+
+    if not isinstance(material,str) or not re.fullmatch(SHA256,material):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    folder=_job(key);directory=folder/'review';state=_read(folder/'state.json')
+    if (state['state'] not in {'REVIEW_READY','TASK_SUBMISSION_ATTEMPTED','TASK_CREATED','REVIEW_RUNNING'}
+            or state.get('material_sha256')!=material or state.get('review_transport')!='PAGED_V2'):
+        raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
+    request=_read(directory/(material+'.request.json'))
+    if (request.get('material_sha256')!=material or request.get('native_identity')!=state['native_identity']
+            or digest(encode(_material(request)).encode())!=material):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    as_of=now_utc()
+    if not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=FRESH_SECONDS:
+        raise ContractError('NATIVE_REQUEST_STALE')
+    _,expected,pages,_=load_dispatch(directory,request,as_of=as_of)
+    if fingerprint!=expected or type(page) is not int or not 1<=page<=len(pages):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    return pages[page-1]
+
+
 def status(key,include_review=False):
     folder=_job(key)
     try:data=_read(folder/'state.json')
@@ -356,12 +434,16 @@ def status(key,include_review=False):
     result={k:data[k] for k in ('schema_version','job_id','state','created_at_utc','updated_at_utc','commit',
         'stage','stage_seconds','reason','native_status','native_collector','artifact','live_acceptance','trade_authorization',
         'delivery_receipt','lifecycle','material_sha256','batch_index','batch_count','first_error','observed_model_attempts',
-        'native_task_state','native_task_observation','transport_model_attempts') if k in data}
+        'native_task_state','native_task_observation','transport_model_attempts','review_transport',
+        'submission_state','submission_attempts','attempted_at_utc','responded_at_utc','submission_error',
+        'clock_diagnostic') if k in data}
     if delivery_error:result['delivery_observation_error']=delivery_error
     from .native_identity import safe_diagnostic
     diagnostic=safe_diagnostic(data.get('native_diagnostic'))
     if diagnostic:result['native_diagnostic']=diagnostic
-    if data['state'] not in FINAL:
+    if data.get('review_transport')=='PAGED_V2':
+        _paged_status(folder,data,result,include_review)
+    elif data['state'] not in FINAL:
         material=data.get('material_sha256')
         if material and re.fullmatch('[0-9a-f]{64}',material):
             task=folder/'review'/(material+'.review-task.json')
@@ -441,10 +523,14 @@ def watch_delivery(key,*,wait_seconds=600):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['start','status','_worker','preflight'])
+    parser.add_argument('action',choices=['start','status','_worker','preflight','review-page'])
     parser.add_argument('--request-id');parser.add_argument('--job-id');parser.add_argument('--include-review',action='store_true')
+    parser.add_argument('--material');parser.add_argument('--packet-sha256');parser.add_argument('--page',type=int)
     args=parser.parse_args()
     try:
+        if args.action=='review-page':
+            sys.stdout.buffer.write(review_page(args.job_id,args.material,args.packet_sha256,args.page).encode('utf-8'))
+            return 0
         if args.action=='preflight':
             from .native_runtime import integration_preflight
             config=load_private(PRIVATE)
