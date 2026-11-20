@@ -1,0 +1,710 @@
+{
+  "credentials_used": false,
+  "function_catalog": {
+    "count": 100,
+    "kind": "formula",
+    "results": [
+      {
+        "category": "Rolling",
+        "name": "sma",
+        "signature": "sma(x, length)"
+      },
+      {
+        "category": "Rolling",
+        "name": "ema",
+        "signature": "ema(x, length)"
+      },
+      {
+        "category": "Rolling",
+        "name": "rma",
+        "signature": "rma(x, length)"
+      },
+      {
+        "category": "Rolling",
+        "name": "wma",
+        "signature": "wma(x, length)"
+      },
+      {
+        "category": "Statistics",
+        "name": "stdev",
+        "signature": "stdev(x, length)"
+      },
+      {
+        "category": "Statistics",
+        "name": "variance",
+        "signature": "variance(x, length)"
+      },
+      {
+        "category": "Statistics",
+        "name": "zscore",
+        "signature": "zscore(x, length)"
+      },
+      {
+        "category": "Rolling",
+        "name": "sum",
+        "signature": "sum(x, length)"
+      },
+      {
+        "category": "Rolling",
+        "name": "highest",
+        "signature": "highest(x, length)"
+      },
+      {
+        "category": "Rolling",
+        "name": "lowest",
+        "signature": "lowest(x, length)"
+      },
+      {
+        "category": "Statistics",
+        "name": "quantile",
+        "signature": "quantile(x, length, q)"
+      },
+      {
+        "category": "Statistics",
+        "name": "median",
+        "signature": "median(x, length)"
+      },
+      {
+        "category": "Statistics",
+        "name": "mad",
+        "signature": "mad(x, length)"
+      },
+      {
+        "category": "Statistics",
+        "name": "skewness",
+        "signature": "skewness(x, length)"
+      },
+      {
+        "category": "Statistics",
+        "name": "kurtosis",
+        "signature": "kurtosis(x, length)"
+      },
+      {
+        "category": "Statistics",
+        "name": "winsorize",
+        "signature": "winsorize(x, length, lower_q, upper_q)"
+      },
+      {
+        "category": "Statistics",
+        "name": "rank",
+        "signature": "rank(x, length)"
+      },
+      {
+        "category": "Transform",
+        "name": "normalize",
+        "signature": "normalize(x, length)"
+      },
+      {
+        "category": "Transform",
+        "name": "lag",
+        "signature": "lag(x, bars)"
+      },
+      {
+        "category": "Transform",
+        "name": "diff",
+        "signature": "diff(x, bars)"
+      },
+      {
+        "category": "Transform",
+        "name": "pct_change",
+        "signature": "pct_change(x, bars)"
+      },
+      {
+        "category": "Transform",
+        "name": "log_return",
+        "signature": "log_return(x, bars)"
+      },
+      {
+        "category": "Transform",
+        "name": "cumsum",
+        "signature": "cumsum(x)"
+      },
+      {
+        "category": "Transform",
+        "name": "cumprod",
+        "signature": "cumprod(x)"
+      },
+      {
+        "category": "Statistics",
+        "name": "drawdown",
+        "signature": "drawdown(x)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "corr",
+        "signature": "corr(x, y, length)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "covariance",
+        "signature": "covariance(x, y, length)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "beta",
+        "signature": "beta(y, x, length)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "alpha",
+        "signature": "alpha(y, x, length)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "r_squared",
+        "signature": "r_squared(y, x, length)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "beta_tstat",
+        "signature": "beta_tstat(y, x, length)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "residual",
+        "signature": "residual(y, x, length)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "autocorr",
+        "signature": "autocorr(x, length, lag)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "linreg",
+        "signature": "linreg(x, length, offset)"
+      },
+      {
+        "category": "Statistics",
+        "name": "sharpe",
+        "signature": "sharpe(x, length, periods)"
+      },
+      {
+        "category": "Statistics",
+        "name": "downside_dev",
+        "signature": "downside_dev(x, length)"
+      },
+      {
+        "category": "Risk",
+        "name": "sortino",
+        "signature": "sortino(x, length, periods)"
+      },
+      {
+        "category": "Risk",
+        "name": "information_ratio",
+        "signature": "information_ratio(active, length, periods)"
+      },
+      {
+        "category": "Risk",
+        "name": "value_at_risk",
+        "signature": "value_at_risk(returns, length, confidence)"
+      },
+      {
+        "category": "Risk",
+        "name": "expected_shortfall",
+        "signature": "expected_shortfall(returns, length, confidence)"
+      },
+      {
+        "category": "Technical",
+        "name": "atr",
+        "signature": "atr(length)"
+      },
+      {
+        "category": "Technical",
+        "name": "rsi",
+        "signature": "rsi(x, length)"
+      },
+      {
+        "category": "Technical",
+        "name": "vwap",
+        "signature": "vwap(price, volume)"
+      },
+      {
+        "category": "Technical",
+        "name": "vwma",
+        "signature": "vwma(price, volume, length)"
+      },
+      {
+        "category": "Technical",
+        "name": "bb_basis",
+        "signature": "bb_basis(x, length)"
+      },
+      {
+        "category": "Technical",
+        "name": "bb_upper",
+        "signature": "bb_upper(x, length, multiplier)"
+      },
+      {
+        "category": "Technical",
+        "name": "bb_lower",
+        "signature": "bb_lower(x, length, multiplier)"
+      },
+      {
+        "category": "Technical",
+        "name": "macd_line",
+        "signature": "macd_line(x, fast, slow)"
+      },
+      {
+        "category": "Technical",
+        "name": "macd_signal",
+        "signature": "macd_signal(x, fast, slow, signal)"
+      },
+      {
+        "category": "Technical",
+        "name": "macd_hist",
+        "signature": "macd_hist(x, fast, slow, signal)"
+      },
+      {
+        "category": "Econometrics",
+        "name": "slope",
+        "signature": "slope(x, length)"
+      },
+      {
+        "category": "Technical",
+        "name": "efficiency_ratio",
+        "signature": "efficiency_ratio(x, length)"
+      },
+      {
+        "category": "Logic",
+        "name": "if",
+        "signature": "if(condition, yes, no)"
+      },
+      {
+        "category": "Logic",
+        "name": "cross",
+        "signature": "cross(x, y)"
+      },
+      {
+        "category": "Logic",
+        "name": "cross_over",
+        "signature": "cross_over(x, y)"
+      },
+      {
+        "category": "Logic",
+        "name": "cross_under",
+        "signature": "cross_under(x, y)"
+      },
+      {
+        "category": "Logic",
+        "name": "rising",
+        "signature": "rising(x, bars)"
+      },
+      {
+        "category": "Logic",
+        "name": "falling",
+        "signature": "falling(x, bars)"
+      },
+      {
+        "category": "Logic",
+        "name": "count",
+        "signature": "count(condition, length)"
+      },
+      {
+        "category": "Logic",
+        "name": "all",
+        "signature": "all(condition, length)"
+      },
+      {
+        "category": "Logic",
+        "name": "any",
+        "signature": "any(condition, length)"
+      },
+      {
+        "category": "Logic",
+        "name": "bars_since",
+        "signature": "bars_since(condition)"
+      },
+      {
+        "category": "Logic",
+        "name": "value_when",
+        "signature": "value_when(condition, x, occurrence)"
+      },
+      {
+        "category": "Logic",
+        "name": "debounce",
+        "signature": "debounce(condition, bars)"
+      },
+      {
+        "category": "Logic",
+        "name": "sequence",
+        "signature": "sequence(setup, trigger, reset, bars)"
+      },
+      {
+        "category": "Logic",
+        "name": "latch",
+        "signature": "latch(setup, reset)"
+      },
+      {
+        "category": "Logic",
+        "name": "consecutive",
+        "signature": "consecutive(condition)"
+      },
+      {
+        "category": "Strategy",
+        "name": "signal",
+        "signature": "signal(long_condition, short_condition)"
+      },
+      {
+        "category": "Strategy",
+        "name": "position",
+        "signature": "position(long_entry, long_exit, short_entry, short_exit)"
+      },
+      {
+        "category": "Strategy",
+        "name": "long_position",
+        "signature": "long_position(entry, exit)"
+      },
+      {
+        "category": "Strategy",
+        "name": "short_position",
+        "signature": "short_position(entry, exit)"
+      },
+      {
+        "category": "Risk",
+        "name": "rolling_drawdown",
+        "signature": "rolling_drawdown(x, length)"
+      },
+      {
+        "category": "Risk",
+        "name": "ulcer_index",
+        "signature": "ulcer_index(x, length)"
+      },
+      {
+        "category": "Logic",
+        "name": "nz",
+        "signature": "nz(x, replacement)"
+      },
+      {
+        "category": "Transform",
+        "name": "abs",
+        "signature": "abs(x)"
+      },
+      {
+        "category": "Math",
+        "name": "log",
+        "signature": "log(x)"
+      },
+      {
+        "category": "Math",
+        "name": "log10",
+        "signature": "log10(x)"
+      },
+      {
+        "category": "Math",
+        "name": "exp",
+        "signature": "exp(x)"
+      },
+      {
+        "category": "Math",
+        "name": "sqrt",
+        "signature": "sqrt(x)"
+      },
+      {
+        "category": "Math",
+        "name": "pow",
+        "signature": "pow(x, exponent)"
+      },
+      {
+        "category": "Math",
+        "name": "sin",
+        "signature": "sin(x)"
+      },
+      {
+        "category": "Math",
+        "name": "cos",
+        "signature": "cos(x)"
+      },
+      {
+        "category": "Math",
+        "name": "tan",
+        "signature": "tan(x)"
+      },
+      {
+        "category": "Math",
+        "name": "atan2",
+        "signature": "atan2(y, x)"
+      },
+      {
+        "category": "Math",
+        "name": "floor",
+        "signature": "floor(x)"
+      },
+      {
+        "category": "Math",
+        "name": "ceil",
+        "signature": "ceil(x)"
+      },
+      {
+        "category": "Math",
+        "name": "round",
+        "signature": "round(x)"
+      },
+      {
+        "category": "Math",
+        "name": "min",
+        "signature": "min(x, y)"
+      },
+      {
+        "category": "Math",
+        "name": "max",
+        "signature": "max(x, y)"
+      },
+      {
+        "category": "Transform",
+        "name": "clamp",
+        "signature": "clamp(x, low, high)"
+      },
+      {
+        "category": "Technical",
+        "name": "apo",
+        "signature": "apo(x, fast, slow)"
+      },
+      {
+        "category": "Technical",
+        "name": "aroon_osc",
+        "signature": "aroon_osc(high, low, length)"
+      },
+      {
+        "category": "Technical",
+        "name": "avgprice",
+        "signature": "avgprice(open, high, low, close)"
+      },
+      {
+        "category": "Technical",
+        "name": "marketfi",
+        "signature": "marketfi(high, low, volume)"
+      },
+      {
+        "category": "Technical",
+        "name": "mesa_sine",
+        "signature": "mesa_sine(x, length)"
+      },
+      {
+        "category": "Technical",
+        "name": "mesa_lead",
+        "signature": "mesa_lead(x, length)"
+      },
+      {
+        "category": "Technical",
+        "name": "median_price",
+        "signature": "median_price(high, low)"
+      },
+      {
+        "category": "Technical",
+        "name": "pfe",
+        "signature": "pfe(x, length, smoothing)"
+      },
+      {
+        "category": "Technical",
+        "name": "projection_lower",
+        "signature": "projection_lower(high, low, close, length)"
+      },
+      {
+        "category": "Technical",
+        "name": "projection_upper",
+        "signature": "projection_upper(high, low, close, length)"
+      }
+    ]
+  },
+  "mode": "LIVE_OBSERVED",
+  "receipts": [
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 820,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T19:42:05.010581+00:00",
+      "response_bytes": 4022,
+      "response_sha256": "aada727f47b586edc974a4bd213791bc54bb638a0f1be6965bb39982470227f1",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 510,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 202,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T19:42:05.520643+00:00",
+      "response_bytes": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 541,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T19:42:06.061432+00:00",
+      "response_bytes": 68090,
+      "response_sha256": "98b5f49997dbbb9e1a2733fc0ba75286cca94e9dbea5e38ee8802338efb8e674",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 717,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T19:43:26.483493+00:00",
+      "response_bytes": 4022,
+      "response_sha256": "aada727f47b586edc974a4bd213791bc54bb638a0f1be6965bb39982470227f1",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 444,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 202,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T19:43:26.927360+00:00",
+      "response_bytes": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 501,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T19:43:27.428618+00:00",
+      "response_bytes": 68090,
+      "response_sha256": "98b5f49997dbbb9e1a2733fc0ba75286cca94e9dbea5e38ee8802338efb8e674",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 679,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T19:43:38.574719+00:00",
+      "response_bytes": 1567,
+      "response_sha256": "abd45efcad520b49a93945ea0698c0aa2883ce620dc923d9bd931c33a1d067e8",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 655,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T19:43:28.755352+00:00",
+      "response_bytes": 8944,
+      "response_sha256": "cc6f7c2ff9ec70e301bb22d8c3e1ef9718f9b99863d6cb16f43b8aed963f1b2a",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 759,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T19:43:29.514589+00:00",
+      "response_bytes": 1128,
+      "response_sha256": "a5cd7ddd92329f737d3dcd2516762be2bf7519dd9440a7d49e568eddd025af79",
+      "retry_after": null
+    }
+  ],
+  "sustained_terms_and_quota": "UNKNOWN",
+  "tools": {
+    "catalog_describe": {
+      "argument_names": ["id","kind"],
+      "input_schema_sha256": "7cc0b9c2c0b695c4fd6df8558ee6f4ebd4e5a4e9e8fc203751a251a2b8c9af44",
+      "read_only": true
+    },
+    "catalog_search": {
+      "argument_names": ["kind","limit","query"],
+      "input_schema_sha256": "5e985b8f9c6af97385bc9e4b68cc59620a3a8383c9058b1cac713f08e3b28402",
+      "read_only": true
+    },
+    "formula_evaluate": {
+      "argument_names": ["exchange","expression","includeForming","market","parameters","reduce","ref","symbol","timeframe"],
+      "input_schema_sha256": "f6190fcb30c5ceb91a125f00259d8584c9c32c84854094593c810fd9309e8de8",
+      "read_only": true
+    },
+    "market_candles": {
+      "argument_names": ["bars","exchange","market","symbol","timeframe","withDerivatives"],
+      "input_schema_sha256": "706559debc74179be7b94bc30a9eb1152fa8c7384d90956e308dee0b7a3185ac",
+      "read_only": true
+    },
+    "screener_run": {
+      "argument_names": ["exchange","limit","logic","lookback","manualSymbols","market","name","order","quote","rules","sortBy","timeframe","universeSize"],
+      "input_schema_sha256": "afddba4ce7b0a06855421392da3f5c9d2f2658ed869dc2752d255d380899b02c",
+      "read_only": true
+    }
+  },
+  "variables": {
+    "count": 13,
+    "kind": "variable",
+    "results": [
+      {
+        "alwaysAvailable": true,
+        "name": "buy_volume",
+        "summary": "Volume that lifted the offer, from the kline itself."
+      },
+      {
+        "alwaysAvailable": true,
+        "name": "sell_volume",
+        "summary": "Volume that hit the bid."
+      },
+      {
+        "alwaysAvailable": true,
+        "name": "delta",
+        "summary": "buy_volume − sell_volume: net aggression on the bar."
+      },
+      {
+        "alwaysAvailable": true,
+        "name": "delta_pct",
+        "summary": "Delta as a percentage of the bar’s volume."
+      },
+      {
+        "alwaysAvailable": true,
+        "name": "cvd",
+        "summary": "Cumulative delta across the window."
+      },
+      {
+        "alwaysAvailable": false,
+        "name": "funding",
+        "summary": "Perpetual funding rate as a fraction."
+      },
+      {
+        "alwaysAvailable": false,
+        "name": "funding_annual",
+        "summary": "The same rate annualised, in percent."
+      },
+      {
+        "alwaysAvailable": false,
+        "name": "open_interest",
+        "summary": "Open interest notional in quote currency."
+      },
+      {
+        "alwaysAvailable": false,
+        "name": "oi_change",
+        "summary": "Open-interest change against the previous bar, percent."
+      },
+      {
+        "alwaysAvailable": false,
+        "name": "oi_change_24",
+        "summary": "Open-interest change over 24 bars, percent."
+      },
+      {
+        "alwaysAvailable": false,
+        "name": "long_short_ratio",
+        "summary": "Long/short account ratio; above 1 is crowded long."
+      },
+      {
+        "alwaysAvailable": false,
+        "name": "top_trader_ratio",
+        "summary": "The same ratio among large accounts."
+      },
+      {
+        "alwaysAvailable": false,
+        "name": "taker_delta",
+        "summary": "Exchange-reported aggressor imbalance."
+      }
+    ]
+  }
+}

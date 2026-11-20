@@ -1,0 +1,64 @@
+{
+  "name": "orderflow_read",
+  "description": "EXECUTED trades only, not resting orders. For current resting liquidity or walls use orderbook_read. Aggressor-side order flow: buy and sell volume separated by who crossed the spread, delta, the footprint by price level, the point of control, and absorption or stacked imbalance. Measured from the venue aggressor tag, not inferred from bar direction \u2014 use it when the question is who is being aggressive, which candles cannot answer. For one candle pass candleTime, which reads exactly that bar; otherwise it reads the last `minutes`. Report coveredMinutes, not the minutes asked for.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "symbol": {
+        "type": "string",
+        "description": "Default: the chart."
+      },
+      "market": {
+        "type": "string",
+        "enum": [
+          "spot",
+          "futures"
+        ],
+        "description": "Default: the chart."
+      },
+      "exchange": {
+        "type": "string",
+        "enum": [
+          "binance",
+          "bybit",
+          "okx",
+          "hyperliquid"
+        ]
+      },
+      "minutes": {
+        "type": "number",
+        "description": "Default 3 for a responsive recent read, max 60. Explicit windows are preserved."
+      },
+      "endTime": {
+        "type": "number",
+        "description": "Window end, default now."
+      },
+      "candleTime": {
+        "type": "number",
+        "description": "A bar open time, s or ms: reads that whole candle."
+      },
+      "timeframe": {
+        "type": "string",
+        "description": "With candleTime. Defaults to the chart timeframe."
+      },
+      "levels": {
+        "type": "number",
+        "description": "Price rows. Default 12, max 40."
+      },
+      "bucketSize": {
+        "type": "number",
+        "description": "Price bucket width. Omit unless matching a footprint on screen."
+      },
+      "includeSignals": {
+        "type": "boolean",
+        "description": "Absorption and stacked imbalance. Default true."
+      }
+    }
+  },
+  "annotations": {
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": true
+  }
+}

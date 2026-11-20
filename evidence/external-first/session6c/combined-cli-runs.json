@@ -1,0 +1,513 @@
+[
+  {
+    "run_label": "live-combined-C",
+    "report_sha256": "fbea5cd1a4b4afe17065dd62a5638bdf0d3713c54327f35579976b0e137160df",
+    "created_at_utc": "2026-11-14T18:16:13.658979+00:00",
+    "completed_at_utc": "2026-11-14T18:18:23.657845+00:00",
+    "eligible": 519,
+    "mode": "LIVE",
+    "price_precursors": [
+      {
+        "timeframe": "15m",
+        "requested": 519,
+        "evaluated": 519,
+        "failed": 0,
+        "missing": 0
+      },
+      {
+        "timeframe": "1h",
+        "requested": 519,
+        "evaluated": 519,
+        "failed": 0,
+        "missing": 0
+      }
+    ],
+    "handoffs": 0,
+    "watches": 408,
+    "near_misses": 102,
+    "invalidations": 698,
+    "gaps": 0,
+    "native_status": "NATIVE_REVIEW_INVALID_OR_UNAVAILABLE_DETERMINISTIC_FALLBACK",
+    "native_collector": null,
+    "clock_anomalies": 0,
+    "costs": {
+      "basis_charged_units": null,
+      "by_provider": {
+        "basis": {
+          "http_requests": 27,
+          "p50_ms": 3429,
+          "p95_ms": 4097,
+          "request_body_bytes": 187800,
+          "request_url_bytes": 945,
+          "response_bytes": 2265259
+        },
+        "binance": {
+          "http_requests": 20,
+          "p50_ms": 322,
+          "p95_ms": 495,
+          "request_body_bytes": 0,
+          "request_url_bytes": 1691,
+          "response_bytes": 2567635
+        }
+      },
+      "cached_snapshot_reused": false,
+      "http_requests": 47,
+      "llm_calls": 0,
+      "p50_ms": 1292,
+      "p95_ms": 3946,
+      "process_resources": {
+        "process_peak_rss_kib": 158764,
+        "scan_cpu_system_seconds": 0.344573,
+        "scan_cpu_user_seconds": 43.683287,
+        "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+      },
+      "quota": "UNKNOWN",
+      "request_body_bytes": 187800,
+      "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+      "request_url_bytes": 2636,
+      "response_bytes": 4832894,
+      "sum_latency_ms": 88894,
+      "sustainable_cadence": "UNQUALIFIED",
+      "targeted_kline_calls": 10,
+      "wall_ms": 134211
+    },
+    "persistence": {
+      "database_bytes": 17432576,
+      "event": 2797,
+      "hypothesis": 240,
+      "interrupted_attempts": 0,
+      "lifecycle": 0,
+      "reference": 548,
+      "run_snapshots": 1,
+      "schema_version": 5,
+      "watch_revisions": 408
+    }
+  },
+  {
+    "run_label": "live-combined-C-recovery",
+    "report_sha256": "c5241b5807bcd2cebed3687d143424fd249facdc3a36fbbf61dc2b47113241b0",
+    "created_at_utc": "2026-11-14T18:26:40.575778+00:00",
+    "completed_at_utc": "2026-11-14T18:28:34.654070+00:00",
+    "eligible": 519,
+    "mode": "LIVE",
+    "price_precursors": [
+      {
+        "timeframe": "15m",
+        "requested": 519,
+        "evaluated": 519,
+        "failed": 0,
+        "missing": 0
+      },
+      {
+        "timeframe": "1h",
+        "requested": 250,
+        "evaluated": 200,
+        "failed": 319,
+        "missing": 50
+      }
+    ],
+    "handoffs": 0,
+    "watches": 490,
+    "near_misses": 94,
+    "invalidations": 762,
+    "gaps": 0,
+    "native_status": "NATIVE_REVIEW_INVALID_OR_UNAVAILABLE_DETERMINISTIC_FALLBACK",
+    "native_collector": null,
+    "clock_anomalies": 0,
+    "costs": {
+      "basis_charged_units": null,
+      "by_provider": {
+        "basis": {
+          "http_requests": 19,
+          "p50_ms": 3373,
+          "p95_ms": 4272,
+          "request_body_bytes": 135281,
+          "request_url_bytes": 665,
+          "response_bytes": 1570670
+        },
+        "binance": {
+          "http_requests": 20,
+          "p50_ms": 418,
+          "p95_ms": 981,
+          "request_body_bytes": 0,
+          "request_url_bytes": 1703,
+          "response_bytes": 2576697
+        }
+      },
+      "cached_snapshot_reused": false,
+      "http_requests": 39,
+      "llm_calls": 0,
+      "p50_ms": 746,
+      "p95_ms": 4135,
+      "process_resources": {
+        "process_peak_rss_kib": 248124,
+        "scan_cpu_system_seconds": 0.8019409999999999,
+        "scan_cpu_user_seconds": 45.172741,
+        "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+      },
+      "quota": "UNKNOWN",
+      "request_body_bytes": 135281,
+      "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+      "request_url_bytes": 2368,
+      "response_bytes": 4147367,
+      "sum_latency_ms": 65615,
+      "sustainable_cadence": "UNQUALIFIED",
+      "targeted_kline_calls": 10,
+      "wall_ms": 114169
+    },
+    "persistence": {
+      "database_bytes": 33882112,
+      "event": 3851,
+      "hypothesis": 345,
+      "interrupted_attempts": 0,
+      "lifecycle": 0,
+      "reference": 681,
+      "run_snapshots": 2,
+      "schema_version": 5,
+      "watch_revisions": 898
+    }
+  },
+  {
+    "run_label": "live-combined-C-final",
+    "report_sha256": "da152346162520a960718627fbd00255ebac80510cc35e9230327e76aa280f9a",
+    "created_at_utc": "2026-11-14T18:29:46.648689+00:00",
+    "completed_at_utc": "2026-11-14T18:29:54.117794+00:00",
+    "eligible": 519,
+    "mode": "LIVE",
+    "price_precursors": [
+      {
+        "timeframe": "15m",
+        "requested": 519,
+        "evaluated": 519,
+        "failed": 0,
+        "missing": 0
+      },
+      {
+        "timeframe": "1h",
+        "requested": 250,
+        "evaluated": 200,
+        "failed": 319,
+        "missing": 50
+      }
+    ],
+    "handoffs": 0,
+    "watches": 490,
+    "near_misses": 94,
+    "invalidations": 762,
+    "gaps": 0,
+    "native_status": "NO_CHANGED_NATIVE_REVIEW_CARDS",
+    "native_collector": null,
+    "clock_anomalies": 0,
+    "costs": {
+      "basis_charged_units": null,
+      "by_provider": {
+        "basis": {
+          "http_requests": 0,
+          "p50_ms": null,
+          "p95_ms": null,
+          "request_body_bytes": 0,
+          "request_url_bytes": 0,
+          "response_bytes": 0
+        },
+        "binance": {
+          "http_requests": 4,
+          "p50_ms": 455,
+          "p95_ms": 757,
+          "request_body_bytes": 0,
+          "request_url_bytes": 184,
+          "response_bytes": 1809300
+        }
+      },
+      "cached_snapshot_reused": true,
+      "http_requests": 4,
+      "llm_calls": 0,
+      "p50_ms": 455,
+      "p95_ms": 757,
+      "process_resources": {
+        "process_peak_rss_kib": 205012,
+        "scan_cpu_system_seconds": 0.9457900000000001,
+        "scan_cpu_user_seconds": 0.737817,
+        "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+      },
+      "quota": "UNKNOWN",
+      "request_body_bytes": 0,
+      "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+      "request_url_bytes": 184,
+      "response_bytes": 1809300,
+      "sum_latency_ms": 2125,
+      "sustainable_cadence": "UNQUALIFIED",
+      "targeted_kline_calls": 0,
+      "wall_ms": 7493
+    },
+    "persistence": {
+      "database_bytes": 33947648,
+      "event": 3851,
+      "hypothesis": 345,
+      "interrupted_attempts": 0,
+      "lifecycle": 0,
+      "reference": 681,
+      "run_snapshots": 3,
+      "schema_version": 5,
+      "watch_revisions": 898
+    }
+  },
+  {
+    "run_label": "live-combined-C-cutoff",
+    "report_sha256": "b4f14773a26919e7f156eaa6b4109f471f912b9df33da7483d146ee5da816bf6",
+    "created_at_utc": "2026-11-14T18:36:25.819293+00:00",
+    "completed_at_utc": "2026-11-14T18:38:33.606589+00:00",
+    "eligible": 519,
+    "mode": "LIVE",
+    "price_precursors": [
+      {
+        "timeframe": "15m",
+        "requested": 519,
+        "evaluated": 519,
+        "failed": 0,
+        "missing": 0
+      },
+      {
+        "timeframe": "1h",
+        "requested": 400,
+        "evaluated": 350,
+        "failed": 169,
+        "missing": 50
+      }
+    ],
+    "handoffs": 0,
+    "watches": 551,
+    "near_misses": 88,
+    "invalidations": 833,
+    "gaps": 0,
+    "native_status": "AWAITING_NATIVE_APP_RESPONSE",
+    "native_collector": null,
+    "clock_anomalies": 0,
+    "costs": {
+      "basis_charged_units": null,
+      "by_provider": {
+        "basis": {
+          "http_requests": 22,
+          "p50_ms": 3394,
+          "p95_ms": 4175,
+          "request_body_bytes": 160665,
+          "request_url_bytes": 770,
+          "response_bytes": 1879331
+        },
+        "binance": {
+          "http_requests": 20,
+          "p50_ms": 373,
+          "p95_ms": 547,
+          "request_body_bytes": 0,
+          "request_url_bytes": 1578,
+          "response_bytes": 2576587
+        }
+      },
+      "cached_snapshot_reused": false,
+      "http_requests": 42,
+      "llm_calls": 0,
+      "p50_ms": 547,
+      "p95_ms": 3947,
+      "process_resources": {
+        "process_peak_rss_kib": 254268,
+        "scan_cpu_system_seconds": 1.176024,
+        "scan_cpu_user_seconds": 52.48108,
+        "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+      },
+      "quota": "UNKNOWN",
+      "request_body_bytes": 160665,
+      "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+      "request_url_bytes": 2348,
+      "response_bytes": 4455918,
+      "sum_latency_ms": 74377,
+      "sustainable_cadence": "UNQUALIFIED",
+      "targeted_kline_calls": 10,
+      "wall_ms": 132967
+    },
+    "persistence": {
+      "database_bytes": 52297728,
+      "event": 5186,
+      "hypothesis": 475,
+      "interrupted_attempts": 0,
+      "lifecycle": 0,
+      "reference": 820,
+      "run_snapshots": 4,
+      "schema_version": 5,
+      "watch_revisions": 1449
+    }
+  },
+  {
+    "run_label": "live-combined-C-collected",
+    "report_sha256": "09fae499d1960f63044227f15793e3d9486813b2448bd85cfa163c2d81e3ca7a",
+    "created_at_utc": "2026-11-14T18:59:53.091948+00:00",
+    "completed_at_utc": "2026-11-14T19:02:39.398972+00:00",
+    "eligible": 519,
+    "mode": "LIVE",
+    "price_precursors": [
+      {
+        "timeframe": "15m",
+        "requested": 519,
+        "evaluated": 0,
+        "failed": 519,
+        "missing": 0
+      },
+      {
+        "timeframe": "1h",
+        "requested": 519,
+        "evaluated": 0,
+        "failed": 519,
+        "missing": 0
+      }
+    ],
+    "handoffs": 0,
+    "watches": 647,
+    "near_misses": 98,
+    "invalidations": 781,
+    "gaps": 119,
+    "native_status": "AWAITING_NATIVE_APP_RESPONSE",
+    "native_collector": {
+      "status": "NATIVE_RECEIPT_UNAVAILABLE_DETERMINISTIC_FALLBACK"
+    },
+    "clock_anomalies": 0,
+    "costs": {
+      "basis_charged_units": null,
+      "by_provider": {
+        "basis": {
+          "http_requests": 30,
+          "p50_ms": 3532,
+          "p95_ms": 4822,
+          "request_body_bytes": 195479,
+          "request_url_bytes": 1050,
+          "response_bytes": 2324892
+        },
+        "binance": {
+          "http_requests": 20,
+          "p50_ms": 460,
+          "p95_ms": 670,
+          "request_body_bytes": 0,
+          "request_url_bytes": 1568,
+          "response_bytes": 2576037
+        }
+      },
+      "cached_snapshot_reused": false,
+      "http_requests": 50,
+      "llm_call_semantics": "NATIVE_PROVIDER_ASSISTANT_ATTEMPTS_OBSERVED_DURING_OPT_IN_WAIT; THIS_PROCESS_INVOKES_ZERO_MODELS",
+      "llm_calls": 0,
+      "p50_ms": 1775,
+      "p95_ms": 4583,
+      "process_resources": {
+        "process_peak_rss_kib": 250380,
+        "scan_cpu_system_seconds": 1.8897339999999998,
+        "scan_cpu_user_seconds": 48.057403,
+        "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+      },
+      "quota": "UNKNOWN",
+      "request_body_bytes": 195479,
+      "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+      "request_url_bytes": 2618,
+      "response_bytes": 4900929,
+      "sum_latency_ms": 109111,
+      "sustainable_cadence": "UNQUALIFIED",
+      "targeted_kline_calls": 10,
+      "wall_ms": 166331
+    },
+    "persistence": {
+      "database_bytes": 71151616,
+      "event": 5934,
+      "hypothesis": 605,
+      "interrupted_attempts": 0,
+      "lifecycle": 3,
+      "reference": 957,
+      "run_snapshots": 5,
+      "schema_version": 5,
+      "watch_revisions": 2096
+    }
+  },
+  {
+    "run_label": "live-combined-C-imported",
+    "report_sha256": "b5c667c7303fd24968a21d34317c524198668453da0d5ffe7e47312b18be6ebd",
+    "created_at_utc": "2026-11-14T19:05:11.189761+00:00",
+    "completed_at_utc": "2026-11-14T19:17:39.973447+00:00",
+    "eligible": 519,
+    "mode": "LIVE",
+    "price_precursors": [
+      {
+        "timeframe": "15m",
+        "requested": 519,
+        "evaluated": 519,
+        "failed": 0,
+        "missing": 0
+      },
+      {
+        "timeframe": "1h",
+        "requested": 500,
+        "evaluated": 450,
+        "failed": 69,
+        "missing": 50
+      }
+    ],
+    "handoffs": 0,
+    "watches": 824,
+    "near_misses": 86,
+    "invalidations": 689,
+    "gaps": 169,
+    "native_status": "NATIVE_REQUEST_STALE_DETERMINISTIC_FALLBACK",
+    "native_collector": {
+      "status": "AWAITING_OWNER_NATIVE_APP_SUBMISSION",
+      "storage_read_retries": 591
+    },
+    "clock_anomalies": 0,
+    "costs": {
+      "basis_charged_units": null,
+      "by_provider": {
+        "basis": {
+          "http_requests": 24,
+          "p50_ms": 3410,
+          "p95_ms": 3954,
+          "request_body_bytes": 177630,
+          "request_url_bytes": 840,
+          "response_bytes": 2085412
+        },
+        "binance": {
+          "http_requests": 20,
+          "p50_ms": 366,
+          "p95_ms": 598,
+          "request_body_bytes": 0,
+          "request_url_bytes": 1569,
+          "response_bytes": 2580348
+        }
+      },
+      "cached_snapshot_reused": false,
+      "http_requests": 44,
+      "llm_call_semantics": "NATIVE_PROVIDER_ASSISTANT_ATTEMPTS_OBSERVED_DURING_OPT_IN_WAIT; THIS_PROCESS_INVOKES_ZERO_MODELS",
+      "llm_calls": 0,
+      "p50_ms": 892,
+      "p95_ms": 3776,
+      "process_resources": {
+        "process_peak_rss_kib": 252380,
+        "scan_cpu_system_seconds": 2.954386,
+        "scan_cpu_user_seconds": 56.722713000000006,
+        "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+      },
+      "quota": "UNKNOWN",
+      "request_body_bytes": 177630,
+      "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+      "request_url_bytes": 2409,
+      "response_bytes": 4665760,
+      "sum_latency_ms": 81556,
+      "sustainable_cadence": "UNQUALIFIED",
+      "targeted_kline_calls": 10,
+      "wall_ms": 748804
+    },
+    "persistence": {
+      "database_bytes": 94928896,
+      "event": 7962,
+      "hypothesis": 810,
+      "interrupted_attempts": 0,
+      "lifecycle": 3,
+      "reference": 1222,
+      "run_snapshots": 6,
+      "schema_version": 5,
+      "watch_revisions": 2920
+    }
+  }
+]

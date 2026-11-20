@@ -1,0 +1,82 @@
+{
+  "all_checks_passed": true,
+  "checks": {
+    "atr": {
+      "absolute_tolerance": "1E-9",
+      "comparisons": 19,
+      "limit": "RECURRENCE_ONLY_VENDOR_INITIAL_SEED_NOT_INDEPENDENTLY_TESTED",
+      "max_absolute_error": "6.357142857143E-13",
+      "passed": true
+    },
+    "flow_identity": {
+      "absolute_tolerance": "1E-9",
+      "comparisons": 20,
+      "max_absolute_error": "1.8189894035458565E-12",
+      "passed": true
+    },
+    "lag": {
+      "absolute_tolerance": "1E-9",
+      "comparisons": 19,
+      "max_absolute_error": "0.0",
+      "passed": true
+    },
+    "median": {
+      "absolute_tolerance": "1E-9",
+      "comparisons": 18,
+      "max_absolute_error": "0.0",
+      "passed": true
+    },
+    "no_event_bars": {
+      "comparisons": 1,
+      "limit": "UNDEFINED_OUTPUT_NOT_ZERO; OBSERVED_WINDOW_ONLY",
+      "passed": true
+    },
+    "no_event_value": {
+      "comparisons": 1,
+      "limit": "UNDEFINED_OUTPUT_NOT_ZERO; OBSERVED_WINDOW_ONLY",
+      "passed": true
+    },
+    "prior_compare": {
+      "absolute_tolerance": "1E-9",
+      "comparisons": 19,
+      "max_absolute_error": "0",
+      "passed": true
+    },
+    "prior_high": {
+      "absolute_tolerance": "1E-9",
+      "comparisons": 17,
+      "max_absolute_error": "0.0",
+      "passed": true
+    },
+    "prior_low": {
+      "absolute_tolerance": "1E-9",
+      "comparisons": 17,
+      "max_absolute_error": "0.0",
+      "passed": true
+    },
+    "quantile": {
+      "absolute_tolerance": "1E-9",
+      "comparisons": 18,
+      "max_absolute_error": "0.0",
+      "passed": true
+    },
+    "width": {
+      "absolute_tolerance": "1E-12",
+      "comparisons": 18,
+      "max_absolute_error": "1.6152573441763E-16",
+      "passed": true
+    }
+  },
+  "classification": "SAME_SOURCE_INDEPENDENT_ARITHMETIC_ONLY",
+  "does_not_qualify": [
+    "exchange authenticity",
+    "volume units",
+    "ATR seed",
+    "general quantile convention",
+    "causal multi-event lifecycle",
+    "quiet tail",
+    "historical arbitrary as_of"
+  ],
+  "independent_source_oracle": "BLOCKED_BINANCE_HTTP_451",
+  "numeric_comparisons": 167
+}

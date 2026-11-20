@@ -1,0 +1,180 @@
+"""Provider dispatch for trusted, model-flexible native receipts. Never invokes."""
+import json
+from .contracts import ContractError, digest, utc
+from .native_identity import assert_parent, read_db, ref
+
+
+def integration_preflight(config,*,as_of):
+    """Read the actual current adapter and installed skills before market I/O."""
+    from .native_host import delegated,call
+    if delegated(config):return call(config,'integration_preflight',{'as_of':as_of})
+    from .native_identity import active_identity,parent_binding,local_path
+    from .native_codex import turn_records,context_matches,SCHEMA
+    from .settings import ROOT
+    from datetime import timedelta
+    identity=active_identity(config);binding=parent_binding(identity,config)
+    if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
+    context=False
+    for row in turn_records(config,binding['external'],binding['turn'],config['agent_workspace'],
+            start=utc(binding['started_at'])-timedelta(seconds=1),end=utc(as_of),backend=identity['provider_backend']):
+        if row['type']=='turn_context':
+            context_matches(row['payload'],binding['turn'],identity['model'],config['agent_workspace']);context=True
+    if not context:raise ContractError('NATIVE_NOT_INVOKED')
+    root=str(ROOT)
+    if len(root)>2 and root[1]==':':root='/mnt/'+root[0].lower()+'/'+root[3:].replace(chr(92),'/')
+    hashes={}
+    for name,source in [('market-research-review',ROOT/'.agents/skills/market-research-review/SKILL.md'),
+            ('openbot-market-research',ROOT/'integration/openbot-market-research/SKILL.md')]:
+        expected=source.read_text(encoding='utf-8').replace('@@RESEARCH_ROOT@@',root).encode()
+        installed=[local_path(config['agent_workspace'])/prefix/'skills'/name/'SKILL.md'
+            for prefix in ('.agents','.claude')]
+        found=[p for p in installed if p.is_file()]
+        if not found or any(any(q.is_symlink() for q in (p,*p.parents)) or p.read_bytes()!=expected for p in found):
+            raise ContractError('AGENT_SKILL_HASH')
+        hashes[name]=digest(expected)
+    return {'status':'NATIVE_READER_AND_INSTALLED_SKILLS_VERIFIED','identity':identity,
+        'provider_schema':SCHEMA,'skill_sha256':hashes,'market_requests':0,'model_requests':0,
+        'native_execution_verified':False,'trade_authorization':False}
+
+
+def collect(request,config,*,as_of,directory=None):
+    from .native_host import delegated,call
+    if delegated(config):return call(config,'collect',{'request':request,'as_of':as_of,
+        'directory':str(directory) if directory is not None else None})
+    from .agent_review import parse_reply,validate_reply,REJECTION_CODES
+    identity=request.get('native_identity')
+    if not isinstance(identity,dict):raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
+    assert_parent(identity,config)
+    if not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=600:
+        raise ContractError('NATIVE_REQUEST_STALE')
+    if identity['provider']=='opencode':
+        from .native_app import collect as compatibility
+        from pathlib import Path
+        target=Path(config['agent_workspace'])/'research-review-6c'/(request['material_sha256']+'.json')
+        return compatibility(request,config,target,as_of=as_of)
+    if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
+    from .native_codex import attest,attest_handoff,observe_submission
+    from .native_handoff import runner_review,load_dispatch,packet
+    from .native_identity import under_work
+    directory=under_work(directory) if directory is not None else None
+    paged=runner_review(directory)
+    args,_,_=packet(request,directory);marker=args['title'];brief=args['brief']
+    with read_db(config['openbot_db']) as db:
+        # An agent-originated task of the very same configured existing agent.
+        rows=db.execute('''SELECT thread_id,created_at FROM projection_agent_threads
+          WHERE agent_id=? AND origin='agent' AND title=? AND created_at>=?''',
+          (identity['agent_id'],marker,request['as_of_utc'])).fetchall()
+        if not rows:return None
+        if len(rows)!=1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        thread,created=rows[0]
+        if ref(thread)==identity['thread_ref']:raise ContractError('NATIVE_SESSION_MISMATCH')
+        inputs=db.execute('''SELECT message_json FROM projection_thread_messages
+          WHERE thread_id=? AND author='agent' AND created_at>=? ORDER BY ordinal''',
+          (thread,request['as_of_utc'])).fetchall()
+        if not inputs and paged:return None
+        if not inputs or json.loads(inputs[0][0]).get('text')!=brief:
+            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        finals=db.execute('''SELECT m.message_json,t.turn_id,t.started_at,t.completed_at,
+           p.external_session_id,p.model,p.provider,t.thread_id,p.thread_id
+          FROM projection_thread_messages m JOIN projection_turns t ON t.turn_id=m.turn_id
+          JOIN projection_provider_sessions p ON p.id=t.provider_session_id
+          WHERE m.thread_id=? AND m.author='assistant' AND m.item_type='final_answer'
+          AND m.status='completed' AND t.status='completed' AND m.created_at>=?
+          ORDER BY m.ordinal''',(thread,request['as_of_utc'])).fetchall()
+        if not finals:
+            states=db.execute('SELECT status FROM projection_turns WHERE thread_id=?',(thread,)).fetchall()
+            if any(s[0] in {'failed','cancelled','interrupted'} for s in states):
+                raise ContractError('NATIVE_TASK_FAILED')
+            return None
+        if len(finals)!=1:raise ContractError('NATIVE_REVIEW_INCOMPLETE')
+    message,turn,start,end,session,model,provider,turn_thread,session_thread=finals[0]
+    if (turn_thread!=thread or session_thread!=thread or ref(session)==identity['external_session_ref']
+            or ref(turn)==identity['turn_ref']):raise ContractError('NATIVE_SESSION_MISMATCH')
+    if provider!=identity['provider'] or model!=identity['model']:raise ContractError('NATIVE_MODEL_SWITCHED')
+    if not utc(request['as_of_utc'])<=utc(created)<=utc(start)<=utc(end)<=utc(as_of):raise ContractError('AGENT_EVIDENCE_FUTURE')
+    raw=json.loads(message).get('text')
+    if not isinstance(raw,str) or len(raw.encode())>32768:raise ContractError('AGENT_REPLY_SIZE')
+    evidence=None
+    if paged:
+        args,fingerprint,pages,ticket=load_dispatch(directory,request,as_of=as_of)
+        submitted=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
+            reserved_at=ticket['reserved_at_utc'])
+        # In OpenBot 0.71.0 newly created task IDs are their thread IDs.
+        if (submitted['submission_state']!='ACKNOWLEDGED' or submitted['acknowledged_task_ref']!=ref(thread)
+                or not utc(ticket['reserved_at_utc'])<=utc(submitted['attempted_at_utc'])<=utc(submitted['responded_at_utc'])
+                or not utc(ticket['reserved_at_utc'])<=utc(created)<=utc(submitted['responded_at_utc'])):
+            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        evidence=(directory,request['material_sha256'],fingerprint,pages)
+    else:attest_handoff(config,identity,request,as_of=as_of)
+    proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
+        expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence)
+    assert_parent(identity,config)
+    try:
+        validated=validate_reply(parse_reply(raw),request)
+        validation={'reply_validation_status':'VALIDATED','validated_rows':validated['accepted']}
+    except ContractError as e:
+        if str(e) not in REJECTION_CODES:raise
+        validation={'reply_validation_status':'REJECTED','reply_rejection_reason':str(e),'validated_rows':0}
+    audit={'schema_version':'openbot.native-review.audit.v1','audit_source':'OPENBOT_APP_SCOPED_READ_ONLY_AUDIT',
+        'agent_name':identity['agent_name'],'model':model,'provider':provider,'agent_id':identity['agent_id'],
+        'native_identity':identity,'skill_sha256':request['skill_sha256'],'material_sha256':request['material_sha256'],
+        'reply_sha256':digest(raw.encode()),'native_invocation_verified':True,'native_app_turns':1,
+        'native_started_at_utc':start,'native_completed_at_utc':end,'audited_at_utc':as_of,
+        'submission_transport':'EXISTING_AGENT_START_TASK; EXACT_PROVIDER_ATTESTED_'+('PAGED_INPUT' if paged else 'INLINE_INPUT'),
+        'authority':'ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM',**proof,**validation}
+    if paged:audit.update(submission_attempts=submitted['submission_attempts'],task_ref=ref(thread),
+        arguments_sha256=ticket['arguments_sha256'],packet_sha256=fingerprint,verified_evidence_pages=len(pages))
+    return raw,audit
+
+
+def delivery_proof(state,config):
+    """Observe this job's real parent attachment and final; no send operation.
+
+    A completed worker or an attachment filename in prose is insufficient.
+    This can be observed by a later status read after OpenBot saves the final.
+    """
+    from .native_host import delegated,call
+    if delegated(config):return call(config,'delivery_proof',{'state':state})
+    from .native_identity import parent_binding,local_path
+    from .native_codex import turn_records,context_matches
+    from datetime import timedelta
+    identity=state['native_identity'];binding=parent_binding(identity,config)
+    artifact=state.get('artifact',{})
+    if not artifact:return None
+    target=local_path(artifact['attachment_path'])
+    expected=local_path(config['agent_workspace'])/'market-research-results'/(state['job_id']+'.zip')
+    if target!=expected or any(p.is_symlink() for p in (target,*target.parents)):
+        raise ContractError('NATIVE_REPLY_PROVENANCE')
+    raw_zip=target.read_bytes()
+    if digest(raw_zip)!=artifact['sha256']:raise ContractError('NATIVE_REPLY_PROVENANCE')
+    from .diagnostic_export import verify_zip
+    verify_zip(raw_zip)
+    if binding['status']!='completed' or not binding['completed_at']:return None
+    turn,start,end,session,thread=(binding[k] for k in ('turn','started_at','completed_at','external','thread'))
+    with read_db(config['openbot_db']) as db:
+        finals=db.execute('''SELECT message_json FROM projection_thread_messages
+          WHERE thread_id=? AND turn_id=? AND author='assistant' AND item_type='final_answer'
+          AND status='completed' ''',(thread,turn)).fetchall()
+    if len(finals)!=1:return None
+    raw=json.loads(finals[0][0]).get('text','')
+    if state['job_id'] not in raw or artifact['sha256'] not in raw:return None
+    attached=False;context=False;final=False
+    for row in turn_records(config,session,turn,config['agent_workspace'],start=utc(start)-timedelta(seconds=1),
+            end=utc(end)+timedelta(seconds=1),backend=identity.get('provider_backend')):
+        p=row['payload']
+        if row['type']=='turn_context':
+            context_matches(p,turn,identity['model'],config['agent_workspace']);context=True
+        if row['type']!='event_msg' or p.get('type')!='item_completed':continue
+        if p.get('turn_id')!=turn or p.get('thread_id')!=session:raise ContractError('NATIVE_SESSION_MISMATCH')
+        item=p.get('item',{});args=item.get('arguments',{})
+        if (context and item.get('type')=='DynamicToolCall' and item.get('tool')=='tool_call'
+                and item.get('success') is True and item.get('status')=='completed'
+                and args.get('name')=='openbot.attach_files_to_response'
+                and args.get('arguments')=={'paths':[artifact['attachment_path']]}):
+            attached=True
+        if (attached and item.get('type')=='AgentMessage' and item.get('phase')=='final_answer'
+                and __import__('researcher.native_codex',fromlist=['_text'])._text(item.get('content'))==raw):final=True
+    if not (attached and final):return None
+    return {'status':'VERIFIED_OPENBOT_FINAL_DELIVERY','job_id':state['job_id'],
+        'zip_sha256':artifact['sha256'],'parent_turn_ref':identity['turn_ref'],
+        'completed_at_utc':end,'trade_authorization':False}

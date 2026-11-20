@@ -1,0 +1,44 @@
+{
+  "label": "screen_finite_footer",
+  "request": {
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "id": "screen_finite_footer",
+    "params": {
+      "name": "screener_run",
+      "arguments": {
+        "exchange": "binance",
+        "market": "futures",
+        "quote": "USDT",
+        "manualSymbols": [
+          "BTCUSDT",
+          "ETHUSDT"
+        ],
+        "universeSize": 20,
+        "timeframe": "1h",
+        "lookback": 300,
+        "logic": "any",
+        "limit": 60,
+        "rules": [
+          {
+            "left": {
+              "kind": "formula",
+              "expression": "(highest(high,3)-lowest(low,3))/close"
+            },
+            "operator": "atOrAbove",
+            "right": 0
+          }
+        ]
+      }
+    }
+  },
+  "status": 200,
+  "bytes": 9099,
+  "response_sha256": "7f4ed65a94827f95bfd2c6b7cc9228eb83755e478737575edd3100469d6f2be3",
+  "elapsed_ms": 2561,
+  "received_at_utc": "2026-11-13T05:21:16.072497+00:00",
+  "safe_headers": {
+    "content-type": "application/json",
+    "date": "Fri, 13 Nov 2026 05:21:15 GMT"
+  }
+}

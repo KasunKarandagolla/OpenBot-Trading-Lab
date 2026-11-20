@@ -1,0 +1,144 @@
+{
+  "session": "OpenBot Market Researcher — Session 1.5",
+  "observed_at_utc": "2026-11-13T06:03:50Z",
+  "environment": "CODEX_CLOUD",
+  "repository": "KasunKarandagolla/OpenBot-Trading-Lab",
+  "branch": "feature/external-first-market-researcher",
+  "starting_remote_sha": "aba986518fda656a5ae3c3d5f78cced594dc4b96",
+  "final_session2_readiness": "NO_GO",
+  "inventory": {
+    "status": "BLOCKED",
+    "eligible_denominator": null,
+    "binance_exchange_info": {
+      "url": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+      "status": 451,
+      "source_evidence": "../session1/binance_exchange.receipt.json",
+      "session_1_5_retry": false,
+      "bypass_attempted": false
+    },
+    "binance_vision_archive": {
+      "status": "DOCUMENTED_HISTORY_ONLY_CURRENT_FILE_NOT_FOUND",
+      "repository": "https://github.com/binance/binance-public-data",
+      "documented_data": "USD-M futures klines; daily/monthly archives; daily availability is described as next day",
+      "documented_kline_origin": "/fapi/v1/klines",
+      "current_symbols_helper": {
+        "url": "https://github.com/binance/binance-public-data/blob/master/shell/fetch-all-trading-pairs.sh",
+        "inspected_not_executed": true,
+        "usd_m_exchange_info_url": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+        "output": "symbol strings only; no contract eligibility filters",
+        "alternate_route_to_blocked_endpoint": false
+      },
+      "probe": {
+        "method": "HEAD",
+        "url": "https://data.binance.vision/data/futures/um/daily/klines/BTCUSDT/1h/BTCUSDT-1h-2026-11-12.zip",
+        "response_at_utc": "2026-11-13T06:03:50Z",
+        "http_status": 404,
+        "response_server": "envoy",
+        "cache_header": "CloudFront Error",
+        "response_body_retained": false,
+        "retry_or_alternate_date": false
+      },
+      "data_downloaded": false,
+      "current_contract_metadata": "NOT_PROVIDED",
+      "terms": {
+        "url": "https://github.com/binance/binance-public-data/blob/master/TERMS_AND_CONDITIONS.md",
+        "license": "CC BY-NC-SA 4.0",
+        "scope": "specified noncommercial uses",
+        "redistributed_derivatives_require_attribution_and_sharealike": true,
+        "dataset_or_derived_fixture_retained": false
+      }
+    },
+    "coingecko": {
+      "status": "DOCUMENTATION_ONLY_NOT_QUALIFIED",
+      "endpoint": "https://api.coingecko.com/api/v3/derivatives",
+      "documentation": "https://coingecko-api-v3.readme.io/v3.0.1/reference/derivatives-tickers",
+      "demo_key_setup_documentation": "https://support.coingecko.com/articles/9471335603-user-guide-to-sign-up-for-coingecko-demo-api-and-generate-an-api-key",
+      "free_demo_plan": true,
+      "demo_api_key_required": true,
+      "documented_rate_limit_per_minute": 100,
+      "documented_monthly_calls": 10000,
+      "live_request_sent": false,
+      "reason_not_called": "No owner key was configured; a derivative ticker board does not provide the complete authoritative exchange inventory and filters required here.",
+      "not_documented_as_authoritative_for": [
+        "complete Binance contract eligibility",
+        "quote and settlement eligibility",
+        "listing age",
+        "price tick size",
+        "quantity lot rules",
+        "contract multiplier"
+      ]
+    }
+  },
+  "basis_quiet_tail": {
+    "status": "BLOCKED_CURRENT_INVENTORY",
+    "partitions_sent": 0,
+    "partition_size_target": 50,
+    "requested_symbols": [],
+    "eligible_denominator": null,
+    "prior_basis_footer": {
+      "status": "LIVE_TESTED_NARROW",
+      "requested_symbols": [
+        "BTCUSDT",
+        "ETHUSDT"
+      ],
+      "requested_returned": 2,
+      "provider_fillers": 18,
+      "source_evidence": "../session1/finite-footer-coverage.json"
+    },
+    "remote_formula_execution": "LIVE_TESTED_NARROW_PRIOR_SESSION; NOT_REQUALIFIED_FOR_QUIET_TAIL"
+  },
+  "independent_numerical_verification": {
+    "status": "PARTIAL",
+    "same_basis_input_comparisons_passed": 167,
+    "same_basis_input_comparisons_failed": 0,
+    "independent_market_data_rows_compared": 0,
+    "reason": "The documented Binance archive sample returned HTTP 404; no timestamp-aligned independent rows were obtained.",
+    "source_evidence": "../session1/oracle-results.json"
+  },
+  "free_service_suitability": {
+    "status": "PARTIAL",
+    "basis_source_evidence": "../session1/runtime-performance.json",
+    "basis_observed_http_requests": 33,
+    "basis_observed_response_bytes": 251961,
+    "basis_observed_request_p50_ms": 696,
+    "basis_observed_request_p95_nearest_rank_ms": 1671,
+    "basis_observed_429": 0,
+    "basis_charged_quota_units_returned": null,
+    "basis_documented_keyless_daily_calls": 1000,
+    "basis_documented_free_key_daily_calls": 10000,
+    "basis_per_minute_limit": null,
+    "basis_sustainable_cadence_qualified": false,
+    "coingecko_live_quota_or_latency_tested": false
+  },
+  "verification": {
+    "unittest_discover": {
+      "command": "python -m unittest discover -s tests -v",
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0
+    },
+    "config_validate": {
+      "command": "python -m researcher config validate",
+      "status": "VALID",
+      "families": 9,
+      "methods": 31,
+      "enabled_detectors": 0
+    },
+    "provider_status": {
+      "command": "python -m researcher provider status",
+      "basis": "LIVE_TESTED_NARROW",
+      "binance_exchange_info_status": 451,
+      "screener_enabled": false,
+      "formula_evaluate_enabled": false
+    }
+  },
+  "read_only": true,
+  "local_codex_used": false,
+  "session_2_started": false,
+  "owner_assistance": {
+    "required_to_clear_inventory_and_quiet_tail_gates": true,
+    "action": "Provide a current provenance-bound Binance USD-M USDT-perpetual inventory from an authorized lawful source, including symbol, contract type, quote/settlement, status, listing time when available, tick/lot rules, and multiplier metadata.",
+    "no_credential_requested_for_this_checkpoint": true,
+    "warning": "A plain symbol list or CoinGecko Demo API key alone is insufficient. Do not use Local Codex to change location or work around HTTP 451."
+  }
+}

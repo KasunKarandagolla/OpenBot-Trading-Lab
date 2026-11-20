@@ -1,0 +1,142 @@
+{
+  "allocation": {
+    "actual_schedule": "NEUTRAL_WITH_PROTECTED_LANES",
+    "causal_lane_starvation_fixed": true,
+    "context": [
+      "CTKUSDT",
+      "IOTAUSDT"
+    ],
+    "context_allocation": [
+      {
+        "context_inclusion_probability": "PRIORITY_STRATUM_DEPENDENT; NOT_UNIFORM",
+        "neutral_inclusion_probability": 0.5,
+        "pool": "causal",
+        "pool_size": 2,
+        "symbol": "CTKUSDT"
+      },
+      {
+        "context_inclusion_probability": "PRIORITY_STRATUM_DEPENDENT; NOT_UNIFORM",
+        "neutral_inclusion_probability": 1.0,
+        "pool": "audit",
+        "pool_size": 1,
+        "symbol": "IOTAUSDT"
+      }
+    ],
+    "history_symbol_budget": 2,
+    "neutral": [
+      "CTKUSDT",
+      "IOTAUSDT"
+    ],
+    "neutral_allocation": [
+      {
+        "context_inclusion_probability": 0.5,
+        "neutral_inclusion_probability": 0.5,
+        "pool": "causal",
+        "pool_size": 2,
+        "symbol": "CTKUSDT"
+      },
+      {
+        "context_inclusion_probability": 1.0,
+        "neutral_inclusion_probability": 1.0,
+        "pool": "audit",
+        "pool_size": 1,
+        "symbol": "IOTAUSDT"
+      }
+    ],
+    "not_reviewed_unique_symbols": 507,
+    "pool_sizes": {
+      "audit": 1,
+      "causal": 2,
+      "fallback": 509,
+      "quiet_contrary": 271,
+      "watch": 0
+    },
+    "raw_symbol_timeframe_questions": 910,
+    "scope": "PROSPECTIVE_SELECTION_PLAN; OUTCOMES_AND_DISCOVERY_LIFT_INSUFFICIENT",
+    "seed_cutoff": "2026-11-14T03:30:00+00:00",
+    "unique_nominated_symbols": 509,
+    "zero_inclusion_this_run_pools": [
+      "watch",
+      "quiet_contrary",
+      "fallback"
+    ]
+  },
+  "classification": "PROSPECTIVE_SHORT_SESSION_NO_HISTORICAL_UNIVERSE_AS_OF_OR_PROFIT_CLAIM",
+  "later_follow_up": [
+    {
+      "from": "2026-11-14T03:30:10.520348+00:00",
+      "interpretation": "SHORT_ELAPSED_POINT_OBSERVATIONS; NOT_PROFITABILITY_OR_FULL_UNIVERSE_RECALL",
+      "observed_gross_return": "-0.0122842936531149458906112899",
+      "symbol": "IOTAUSDT",
+      "to": "2026-11-14T03:33:40.794970+00:00"
+    }
+  ],
+  "long_run_recall_and_early_lead_time": "INSUFFICIENT",
+  "registration": {
+    "cheap_baseline": {
+      "top_quote_turnover": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "SOLUSDT",
+        "ZECUSDT",
+        "AKEUSDT"
+      ],
+      "top_return": [
+        "AKEUSDT",
+        "SHELLUSDT",
+        "TACUSDT",
+        "BERAUSDT",
+        "UAIUSDT"
+      ]
+    },
+    "eligible_denominator": 519,
+    "eligible_set_hash": "d64ed73119bca52b81acc4b32211cf65fc5eda34755cc049e33f563317b38075",
+    "frozen_cutoffs": {
+      "15m": "2026-11-14T03:30:00+00:00",
+      "1h": "2026-11-14T03:00:00+00:00",
+      "4h": "2026-11-14T00:00:00+00:00"
+    },
+    "non_nominated_tail_denominator": 9,
+    "outcome": "PENDING_PROSPECTIVE_OBSERVATION; NO_EARLY_LEAD_TIME_OR_RECALL_CLAIM",
+    "registered_at": "2026-11-14T03:32:37.542637+00:00",
+    "sample": [
+      {
+        "first_price_observation": {
+          "fidelity": "EXACT_REPORTED",
+          "inventory_mode": "VERIFIED_INVENTORY",
+          "kind": "ticker",
+          "native_symbol": "IOTAUSDT",
+          "received_at_utc": "2026-11-14T03:30:10.520348+00:00",
+          "source_response_sha256": "528cbf8de1f17919b08089539b846875d43b77c157e3ee6dc3ff0aa7ab9658e9",
+          "source_scope": "OFFICIAL_BINANCE_USDM",
+          "source_time_utc": "2026-11-14T03:30:02.679000+00:00",
+          "structural_coverage": false,
+          "values": {
+            "base_volume_unit": "NATIVE_BASE_ASSET",
+            "lastPrice": "0.034190",
+            "priceChangePercent": "0.205",
+            "quoteVolume": "5913290.794397",
+            "quote_volume_unit": "USDT",
+            "volume": "168013833.3",
+            "window_seconds": 86402.679,
+            "window_start_utc": "2026-11-13T03:30:00+00:00"
+          }
+        },
+        "identity_hash": "c3966767daaa5e2861171c352d9b50e02d96588d74d7db804c4d9a7623f8a1d5",
+        "price_history_reviewed": true,
+        "selection_probability": 0.1111111111111111,
+        "symbol": "IOTAUSDT"
+      }
+    ],
+    "sampling": "UNIFORM_HASH_STRATUM_LOTTERY; ONE_SELECTED_PUBLIC_OI_AUDIT"
+  },
+  "warm_follow_up": [
+    {
+      "from": "2026-11-14T03:30:10.520348+00:00",
+      "interpretation": "SHORT_ELAPSED_POINT_OBSERVATIONS; NOT_PROFITABILITY_OR_FULL_UNIVERSE_RECALL",
+      "observed_gross_return": "-0.0090669786487276981573559520",
+      "symbol": "IOTAUSDT",
+      "to": "2026-11-14T03:33:13.778757+00:00"
+    }
+  ]
+}
