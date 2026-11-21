@@ -107,6 +107,14 @@ def visible_bars(bars,as_of):
     return selected
 
 
+def is_opposing_initiative(ref, previous, bar):
+    """Qualify a later displacement directed away from the swept boundary."""
+    if ref.direction*(bar.close-bar.open)>=0 or ref.direction*(bar.close-previous.close)>=0:
+        return False
+    result=displacement(previous,bar,ref.atr,ref.tick)
+    return result['tr_atr_previous']>=D('1.2') and result['body_fraction']>=D('.5')
+
+
 def boundary_events(ref,bars,*,as_of):
     """Mirror upper/lower reference state machines. References never roll.
 
@@ -119,7 +127,7 @@ def boundary_events(ref,bars,*,as_of):
     if any(b.native_symbol!=ref.native_symbol or b.timeframe!=ref.timeframe for b in bars):
         raise ContractError("REFERENCE_BAR_IDENTITY")
     events=[];active=True;armed=True;touches=0;pressure=False;excursion=None
-    reclaim=None;opposing=None;break_bar=None;branch=None;holds=0;last=None
+    reclaim=None;opposing=None;initiative=None;break_bar=None;branch=None;holds=0;last=None
     support={"F2":[],"F4":[],"F5":[],"F6":[],"NULL":[]}
     contradiction={k:[] for k in support}
     def emit(b,kind):
@@ -146,14 +154,14 @@ def boundary_events(ref,bars,*,as_of):
             reclaim=b;holds=0;break_bar=None;branch=None
             rid=emit(b,"RECLAIM");support["F4"].append(rid);support["F6"].append(rid)
             contradiction["F2"].append(rid)
-        elif reclaim is not None and b.open_ms>reclaim.open_ms and inside and opposing is None:
+        elif reclaim is not None and b.open_ms>reclaim.open_ms and inside:
             progress=ref.direction*(reclaim.close-b.close)
             if progress>=D("0.25")*ref.atr:
-                opposing=b;support["F5"].append(emit(b,"OPPOSING_ATTEMPT"))
-                if last:
-                    d=displacement(last,b,ref.atr,ref.tick)
-                    if d["tr_atr_previous"]>=D("1.2") and d["body_fraction"]>=D("0.5"):
-                        support["F4"].append(emit(b,"OPPOSING_INITIATIVE"))
+                if opposing is None:
+                    opposing=b;support["F5"].append(emit(b,"OPPOSING_ATTEMPT"))
+                if initiative is None and not contradiction["F4"] and last and is_opposing_initiative(ref,last,b):
+                    initiative=emit(b,"OPPOSING_INITIATIVE")
+                    support["F4"].append(initiative)
         if outside and break_bar is None:
             if reclaim is None:
                 break_bar=b;branch="F2";holds=0

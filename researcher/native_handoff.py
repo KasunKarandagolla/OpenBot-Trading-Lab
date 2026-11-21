@@ -1,6 +1,7 @@
 """Exact, read-only evidence transport for the existing OpenBot task tool."""
 import json
 import re
+from datetime import timedelta
 
 from .contracts import ContractError, digest, encode, utc
 from .native_identity import under_work
@@ -75,13 +76,34 @@ def load_dispatch(directory, request, *, as_of):
     path = directory / (material + '.review-task.json')
     if read_object(path) != args or path.read_bytes() != encode(args).encode('utf-8'):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-    ticket = read_object(directory / (material + '.dispatch.json'))
+    try:
+        ticket = read_object(directory / (material + '.dispatch.json'))
+        reserved=utc(ticket['reserved_at_utc'])
+        published=utc(ticket['published_at_utc'])
+    except (FileNotFoundError, KeyError, ValueError):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED') from None
     if (ticket.get('material_sha256') != material
             or ticket.get('arguments_sha256') != digest(encode(args).encode('utf-8'))
             or ticket.get('packet_sha256') != fingerprint
-            or not utc(request['as_of_utc']) <= utc(ticket.get('reserved_at_utc')) <= utc(as_of)):
+            or ticket.get('evidence_pages') != len(pages)
+            or ticket.get('submission_policy') != 'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'
+            or not utc(request['as_of_utc']) <= published <= reserved <= utc(as_of)
+            or reserved >= published + timedelta(seconds=SUBMISSION_SECONDS)):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     return args, fingerprint, pages, ticket
+
+
+def verify_submission_window(submission, ticket):
+    """Apply phase bounds to provider occurrence times, even after a read outage."""
+    if not submission['submission_attempts']:
+        return
+    attempted=utc(submission['attempted_at_utc'])
+    if not utc(ticket['reserved_at_utc']) <= attempted < utc(ticket['published_at_utc']) + timedelta(seconds=SUBMISSION_SECONDS):
+        raise ContractError('NATIVE_SUBMISSION_OUTSIDE_WINDOW')
+    if submission.get('responded_at_utc'):
+        response=utc(submission['responded_at_utc'])
+        if not attempted <= response <= attempted + timedelta(seconds=RESPONSE_SECONDS):
+            raise ContractError('NATIVE_RESPONSE_OUTSIDE_WINDOW')
 
 
 def command_page(item, directory, material, fingerprint):

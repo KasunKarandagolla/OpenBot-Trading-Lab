@@ -37,10 +37,10 @@ def integration_preflight(config,*,as_of):
         'native_execution_verified':False,'trade_authorization':False}
 
 
-def collect(request,config,*,as_of,directory=None):
+def collect(request,config,*,as_of,directory=None,timeout_seconds=30):
     from .native_host import delegated,call
     if delegated(config):return call(config,'collect',{'request':request,'as_of':as_of,
-        'directory':str(directory) if directory is not None else None})
+        'directory':str(directory) if directory is not None else None},timeout_seconds=timeout_seconds)
     from .agent_review import parse_reply,validate_reply,REJECTION_CODES
     identity=request.get('native_identity')
     if not isinstance(identity,dict):raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
@@ -54,10 +54,12 @@ def collect(request,config,*,as_of,directory=None):
         return compatibility(request,config,target,as_of=as_of)
     if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
     from .native_codex import attest,attest_handoff,observe_submission
-    from .native_handoff import runner_review,load_dispatch,packet
+    from .native_handoff import runner_review,load_dispatch,packet,verify_submission_window,FRESH_SECONDS
     from .native_identity import under_work
     directory=under_work(directory) if directory is not None else None
     paged=runner_review(directory)
+    if paged and (utc(as_of)-utc(request['as_of_utc'])).total_seconds()>=FRESH_SECONDS:
+        raise ContractError('NATIVE_REQUEST_STALE')
     args,_,_=packet(request,directory);marker=args['title'];brief=args['brief']
     with read_db(config['openbot_db']) as db:
         # An agent-originated task of the very same configured existing agent.
@@ -99,6 +101,7 @@ def collect(request,config,*,as_of,directory=None):
         args,fingerprint,pages,ticket=load_dispatch(directory,request,as_of=as_of)
         submitted=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
             reserved_at=ticket['reserved_at_utc'])
+        verify_submission_window(submitted,ticket)
         # In OpenBot 0.71.0 newly created task IDs are their thread IDs.
         if (submitted['submission_state']!='ACKNOWLEDGED' or submitted['acknowledged_task_ref']!=ref(thread)
                 or not utc(ticket['reserved_at_utc'])<=utc(submitted['attempted_at_utc'])<=utc(submitted['responded_at_utc'])

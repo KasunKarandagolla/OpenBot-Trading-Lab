@@ -52,27 +52,38 @@ def _write(path,value):
 
 
 def _transition(folder,state,**fields):
+    with _file_guard(folder/'state.lock'):
+        return _transition_locked(folder,state,**fields)
+
+
+def _transition_locked(folder,state,**fields):
     data=_read(folder/'state.json');at=now_utc()
+    state=state or data['state']
     # A stale status/progress reader cannot overwrite a terminal worker result.
     delivery=(state=='FINAL_DELIVERED' and data['state'] in {'COMPLETED','PARTIAL'})
-    if data['state'] in FINAL and state!=data['state'] and not delivery:return data
+    delivery_timeout=(state==data['state'] and state in {'COMPLETED','PARTIAL'}
+        and fields=={'delivery_observation_status':'FINAL_DELIVERY_NOT_OBSERVED_WITHIN_BOUND'})
+    if data['state'] in FINAL and not (delivery or delivery_timeout):return data
+    if delivery:fields['delivery_observation_status']='FINAL_DELIVERY_VERIFIED'
     if data['state']!=state or 'native_task_state' in fields and fields['native_task_state']!=data.get('native_task_state'):
         data.setdefault('lifecycle',[]).append({'state':state,'at_utc':at,
             **{k:fields[k] for k in ('material_sha256','batch_index','batch_count','first_error','native_task_state',
-                'submission_attempts','submission_state','observed_model_attempts') if k in fields}})
+                'submission_attempts','submission_state','submission_observation_status','observed_model_attempts') if k in fields}})
     data.update(fields,state=state,updated_at_utc=at)
     _write(folder/'state.json',data)
     return data
 
 
 @contextmanager
-def _start_guard():
+def _file_guard(path, *, nonblocking=False):
     # The approved runner executes in WSL/POSIX. OS ownership releases this
     # guard on a crash; an abandoned exclusive-create file must not block forever.
     try:import fcntl
     except ImportError:raise ContractError('RUNNER_PROCESS_LOCK_UNSUPPORTED') from None
-    with under_work(BASE/'start.lock').open('ab') as stream:
-        try:fcntl.flock(stream,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    path=under_work(path)
+    path.parent.mkdir(parents=True,exist_ok=True)
+    with path.open('ab') as stream:
+        try:fcntl.flock(stream,fcntl.LOCK_EX | (fcntl.LOCK_NB if nonblocking else 0))
         except BlockingIOError:raise ContractError('RUNNER_ALREADY_ACTIVE') from None
         try:yield
         finally:fcntl.flock(stream,fcntl.LOCK_UN)
@@ -130,7 +141,7 @@ def start(request_id):
     BASE.mkdir(parents=True,exist_ok=True);lock=under_work(BASE/'active.json')
     # The owner message/turn is the idempotency key, even if the model invents a
     # new request id on retry. Concurrent or interrupted work never starts twice.
-    with _start_guard():
+    with _file_guard(BASE/'start.lock',nonblocking=True):
         if lock.exists():
             existing=_read(lock)
             if existing.get('turn_ref')==identity['turn_ref']:return status(existing['job_id'])
@@ -142,14 +153,16 @@ def start(request_id):
             'lifecycle':[{'state':'OWNER_AUTHORIZED','at_utc':now_utc()}],
             'trade_authorization':False,'live_acceptance':'PARTIAL; NO_LIVE_RUN_YET'}
         # Atomically publish enough state to recover a crash before state.json.
-        _write(lock,{'job_id':key,'turn_ref':identity['turn_ref'],'initial_state':initial})
-        folder=_job(key);folder.mkdir(parents=True)
-        _write(folder/'state.json',initial)
+        folder=_job(key)
+        with _file_guard(folder/'state.lock'):
+            _write(lock,{'job_id':key,'turn_ref':identity['turn_ref'],'initial_state':initial})
+            _write(folder/'state.json',initial)
     try:
         with (folder/'worker.log').open('x',encoding='utf-8') as log:
             child=subprocess.Popen([sys.executable,'-m','researcher.openbot_runner','_worker','--job-id',key],
                 cwd=ROOT,stdin=subprocess.DEVNULL,stdout=log,stderr=log,start_new_session=True)
-        _write(folder/'process.json',_process_record(child.pid))
+        with _file_guard(folder/'state.lock'):
+            _write(folder/'process.json',_process_record(child.pid))
     except OSError:
         _transition(folder,'FAILED',reason='RUNNER_PROCESS_START_FAILED');raise ContractError('RUNNER_PROCESS_START_FAILED') from None
     return status(key)
@@ -224,14 +237,19 @@ def _prior_live_packet(current):
 
 def run_job(key):
     """Called only by the detached worker. Offline tests patch the dependencies."""
-    folder=_job(key);state=_read(folder/'state.json');config=load_private(PRIVATE)
-    if state['state']!='STARTING':return status(key)  # no replay after any transition
-    if not (folder/'process.json').exists():_write(folder/'process.json',_process_record(os.getpid()))
-    # Exclusive durable claim also prevents two workers racing before transition.
-    try:
-        with (folder/'worker.claim').open('x',encoding='utf-8') as stream:
-            stream.write(encode({'claimed_at_utc':now_utc()}))
-    except FileExistsError:return status(key)
+    folder=_job(key);config=load_private(PRIVATE)
+    claimed=False
+    with _file_guard(folder/'state.lock'):
+        state=_read(folder/'state.json')
+        if state['state']=='STARTING':
+            try:
+                with (folder/'worker.claim').open('x',encoding='utf-8') as stream:
+                    stream.write(encode({'claimed_at_utc':now_utc()}))
+                claimed=True
+            except FileExistsError:pass
+            if claimed and not (folder/'process.json').exists():
+                _write(folder/'process.json',_process_record(os.getpid()))
+    if not claimed:return status(key)
     try:
         # The launching command must finish before its completed provider receipt
         # exists. Wait for that receipt only; no market operation before proof.
@@ -247,8 +265,7 @@ def run_job(key):
         _transition(folder,'COMMAND_ATTESTED',start_proof=proof,review_transport='PAGED_V2')
         from .discovery import scan_market_research
         def progress(stage,seconds):
-            current=_read(folder/'state.json')['state']
-            _transition(folder,current,stage=stage,stage_seconds=seconds)
+            _transition(folder,None,stage=stage,stage_seconds=seconds)
         def native_progress(state,**fields):
             _transition(folder,state,**fields)
         transport=None
@@ -353,33 +370,35 @@ def _paged_status(folder,data,result,include_review):
     args,fingerprint,pages=packet(request,directory)
     task=under_work(directory/(material+'.review-task.json'))
     if task.read_bytes()!=encode(args).encode('utf-8'):raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-    as_of=now_utc()
-    if (not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=FRESH_SECONDS
-            or not 0<=(utc(as_of)-utc(data['request_prepared_at_utc'])).total_seconds()<SUBMISSION_SECONDS
-            or _read(folder/'state.json')['state']!='REVIEW_READY'):
-        raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
-    receipt={'material_sha256':material,'arguments_sha256':digest(encode(args).encode('utf-8')),
-        'packet_sha256':fingerprint,'evidence_pages':len(pages),'reserved_at_utc':as_of,
-        'submission_policy':'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'}
-    handoff={k:result[k] for k in ('job_id','state','review_transport','material_sha256',
-        'batch_index','batch_count','trade_authorization') if k in result}
-    handoff.update(start_task_arguments=args,dispatch_receipt=receipt)
-    # Earlier batches' lifecycle records can be much larger than the current
-    # argument object. Keep them in ordinary status, outside the one-shot reply.
-    if len(encode(handoff).encode('utf-8'))+1>64*1024:raise ContractError('NATIVE_REVIEW_FILE_SIZE')
-    temporary=None
-    try:
-        with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=directory,delete=False) as stream:
-            temporary=Path(stream.name)
-            stream.write(encode(receipt));stream.flush();os.fsync(stream.fileno())
-        os.link(temporary,under_work(lease))
-    except FileExistsError:
-        _,_,_,receipt=load_dispatch(directory,request,as_of=now_utc())
-        result.update(state='REVIEW_DISPATCH_RESERVED',dispatch_receipt=receipt)
-    else:
+    with _file_guard(folder/'state.lock'):
+        current=_read(folder/'state.json')
+        as_of=now_utc();published=current.get('request_prepared_at_utc')
+        if (current['state']!='REVIEW_READY' or current.get('material_sha256')!=material
+                or not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<FRESH_SECONDS
+                or not 0<=(utc(as_of)-utc(published)).total_seconds()<SUBMISSION_SECONDS
+                or time.monotonic()>=current.get('submission_expires_monotonic',float('inf'))):
+            return
+        if lease.exists():
+            _,_,_,receipt=load_dispatch(directory,request,as_of=as_of)
+            result.update(state='REVIEW_DISPATCH_RESERVED',dispatch_receipt=receipt)
+            return
+        receipt={'material_sha256':material,'arguments_sha256':digest(encode(args).encode('utf-8')),
+            'packet_sha256':fingerprint,'evidence_pages':len(pages),'reserved_at_utc':as_of,
+            'published_at_utc':published,'submission_policy':'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'}
+        handoff={k:result[k] for k in ('job_id','state','review_transport','material_sha256',
+            'batch_index','batch_count','trade_authorization') if k in result}
+        handoff.update(start_task_arguments=args,dispatch_receipt=receipt)
+        # Earlier batches' lifecycle does not compete with the one-shot reply.
+        if len(encode(handoff).encode('utf-8'))+1>64*1024:raise ContractError('NATIVE_REVIEW_FILE_SIZE')
+        temporary=None
+        try:
+            with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=directory,delete=False) as stream:
+                temporary=Path(stream.name)
+                stream.write(encode(receipt));stream.flush();os.fsync(stream.fileno())
+            os.link(temporary,under_work(lease))
+        finally:
+            if temporary is not None:temporary.unlink(missing_ok=True)
         result.clear();result.update(handoff)
-    finally:
-        if temporary is not None:temporary.unlink(missing_ok=True)
 
 
 def review_page(key,material,fingerprint,page):
@@ -389,41 +408,44 @@ def review_page(key,material,fingerprint,page):
 
     if not isinstance(material,str) or not re.fullmatch(SHA256,material):
         raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
-    folder=_job(key);directory=folder/'review';state=_read(folder/'state.json')
-    if (state['state'] not in {'REVIEW_READY','TASK_SUBMISSION_ATTEMPTED','TASK_CREATED','REVIEW_RUNNING'}
-            or state.get('material_sha256')!=material or state.get('review_transport')!='PAGED_V2'):
-        raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
-    request=_read(directory/(material+'.request.json'))
-    if (request.get('material_sha256')!=material or request.get('native_identity')!=state['native_identity']
-            or digest(encode(_material(request)).encode())!=material):
-        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
-    as_of=now_utc()
-    if not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=FRESH_SECONDS:
-        raise ContractError('NATIVE_REQUEST_STALE')
-    _,expected,pages,_=load_dispatch(directory,request,as_of=as_of)
-    if fingerprint!=expected or type(page) is not int or not 1<=page<=len(pages):
-        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-    return pages[page-1]
+    folder=_job(key);directory=folder/'review'
+    with _file_guard(folder/'state.lock'):
+        state=_read(folder/'state.json')
+        if (state['state'] not in {'REVIEW_READY','TASK_SUBMISSION_ATTEMPTED','TASK_CREATED','REVIEW_RUNNING',
+                'REVIEW_SUBMISSION_UNVERIFIED'} or state.get('material_sha256')!=material
+                or state.get('review_transport')!='PAGED_V2'):
+            raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
+        request=_read(directory/(material+'.request.json'))
+        if (request.get('material_sha256')!=material or request.get('native_identity')!=state['native_identity']
+                or digest(encode(_material(request)).encode())!=material):
+            raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+        _,expected,pages,ticket=load_dispatch(directory,request,as_of=now_utc())
+        if (ticket['published_at_utc']!=state.get('request_prepared_at_utc') or fingerprint!=expected
+                or type(page) is not int or not 1<=page<=len(pages)):
+            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        if (not 0<=(utc(now_utc())-utc(request['as_of_utc'])).total_seconds()<FRESH_SECONDS
+                or time.monotonic()>=state.get('request_expires_monotonic',float('inf'))):
+            raise ContractError('NATIVE_REQUEST_STALE')
+        return pages[page-1]
 
 
 def status(key,include_review=False):
     folder=_job(key)
-    try:data=_read(folder/'state.json')
-    except FileNotFoundError:
-        reservation=_read(BASE/'active.json');initial=reservation.get('initial_state',{})
-        if (reservation.get('job_id')!=key or initial.get('job_id')!=key or
-                initial.get('native_identity',{}).get('turn_ref')!=reservation.get('turn_ref')):
-            raise ContractError('RUNNER_STATE_INVALID') from None
-        _write(folder/'state.json',initial)
-        data=_transition(folder,'INTERRUPTED',reason='RUNNER_START_PUBLICATION_INTERRUPTED; NO_AUTOMATIC_LIVE_REPLAY')
-    # Observe liveness before reserving or returning any dispatch capability.
-    # A stopped worker has no consumer for a newly created native task.
-    if data['state'] not in FINAL:
-        process=folder/'process.json'
-        if process.exists() and not _process_alive(_read(process)):
-            data=_transition(folder,'INTERRUPTED',reason='RUNNER_PROCESS_ENDED; NO_AUTOMATIC_LIVE_REPLAY')
-        elif not process.exists() and (utc(now_utc())-utc(data['created_at_utc'])).total_seconds()>30:
-            data=_transition(folder,'INTERRUPTED',reason='RUNNER_PROCESS_NOT_PUBLISHED; NO_AUTOMATIC_LIVE_REPLAY')
+    with _file_guard(folder/'state.lock'):
+        try:data=_read(folder/'state.json')
+        except FileNotFoundError:
+            reservation=_read(BASE/'active.json');initial=reservation.get('initial_state',{})
+            if (reservation.get('job_id')!=key or initial.get('job_id')!=key or
+                    initial.get('native_identity',{}).get('turn_ref')!=reservation.get('turn_ref')):
+                raise ContractError('RUNNER_STATE_INVALID') from None
+            _write(folder/'state.json',initial)
+            data=_transition_locked(folder,'INTERRUPTED',reason='RUNNER_START_PUBLICATION_INTERRUPTED; NO_AUTOMATIC_LIVE_REPLAY')
+        if data['state'] not in FINAL:
+            process=folder/'process.json'
+            if process.exists() and not _process_alive(_read(process)):
+                data=_transition_locked(folder,'INTERRUPTED',reason='RUNNER_PROCESS_ENDED; NO_AUTOMATIC_LIVE_REPLAY')
+            elif not process.exists() and (utc(now_utc())-utc(data['created_at_utc'])).total_seconds()>30:
+                data=_transition_locked(folder,'INTERRUPTED',reason='RUNNER_PROCESS_NOT_PUBLISHED; NO_AUTOMATIC_LIVE_REPLAY')
     delivery_error=None
     if data['state'] in {'COMPLETED','PARTIAL'} and data.get('artifact'):
         try:
@@ -438,7 +460,7 @@ def status(key,include_review=False):
         'delivery_receipt','lifecycle','material_sha256','batch_index','batch_count','first_error','observed_model_attempts',
         'native_task_state','native_task_observation','transport_model_attempts','review_transport',
         'submission_state','submission_attempts','attempted_at_utc','responded_at_utc','submission_error',
-        'clock_diagnostic') if k in data}
+        'clock_diagnostic','submission_observation_status','delivery_observation_status') if k in data}
     if delivery_error:result['delivery_observation_error']=delivery_error
     from .native_identity import safe_diagnostic
     diagnostic=safe_diagnostic(data.get('native_diagnostic'))

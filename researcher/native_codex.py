@@ -368,6 +368,7 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
     if not completed:
         if not started:return {'submission_state':'NOT_OBSERVED','submission_attempts':0}
         at,args=next(iter(started.values()))
+        if args!=arguments:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         return {'submission_state':'ATTEMPTED','submission_attempts':1,'attempted_at_utc':at}
     call_id,at,args,item=completed[0]
     if call_id in started and started[call_id][1]!=args:raise ContractError('NATIVE_HANDOFF_UNATTESTED')

@@ -86,9 +86,9 @@ class BasisScreenSource:
         self.client = client
         self.busy_resumptions=0
 
-    def resume_after_busy(self):
+    def resume_after_busy(self, *, max_wait=60):
         if self.busy_resumptions>=1:return False
-        if not self.client.resume_after_cooldown(max_wait=60):return False
+        if not self.client.resume_after_cooldown(max_wait=max_wait):return False
         self.busy_resumptions+=1
         return True
 
@@ -148,6 +148,9 @@ class RequestBudget:
         if self.last_started is not None:
             delay = self.interval - (self.clock() - self.last_started)
             if delay > 0:
+                if self.started is not None and self.clock()+delay-self.started>=self.max_elapsed_seconds:
+                    self.stopped_reason='SCREEN_WALL_BUDGET_EXHAUSTED'
+                    raise ProviderError(self.stopped_reason)
                 self.sleeper(delay)
         self.last_started = self.clock()
         self.calls += 1
@@ -278,14 +281,24 @@ def normalize_columns(names,data,metadata,*,pack,instruments,cutoff):
                 readings=row.get('values',[])
                 rows.append({**row,'values':readings[j:j+1] if isinstance(readings,list) else []})
                 continue
-            if not isinstance(row,dict) or not isinstance(row.get('values'),list) or len(row['values'])!=len(pack.columns):
+            if not isinstance(row,dict):
                 raise ContractError('SCREEN_SCHEMA')
-            projected_row={**row,'values':[row['values'][j]]}
-            if closes:
-                close=number(row['values'][closes[0]]['left'],positive=True)/EXPORT_SCALE
-                if abs(close-number(row['last']))>D('0.0000500001'):
-                    raise ContractError('SOURCE_PRICE_MISMATCH')
-                projected_row['last']=close
+            readings=row.get('values')
+            projected_row={**row,'values':[]}
+            if isinstance(readings,list) and len(readings)==len(pack.columns):
+                try:
+                    if closes:
+                        close=number(readings[closes[0]]['left'],positive=True)/EXPORT_SCALE
+                        if abs(close-number(row['last']))>D('0.0000500001'):
+                            raise ContractError('SOURCE_PRICE_MISMATCH')
+                        projected_row['last']=close
+                    if units=='INTEGER_EVENT_MASK':
+                        mask=number(readings[j]['left'])
+                        if mask!=int(mask) or not 0<=mask<=63:
+                            raise ContractError('INVALID_READING_SEMANTICS')
+                    projected_row['values']=[readings[j]]
+                except (ContractError,KeyError,TypeError):
+                    pass  # Retain the returned identity and let scalar validation reject the row.
             rows.append(projected_row)
         projected={**data,'rules':[data['rules'][j]],'results':rows}
         scalar=replace(pack,columns=(),expression=expression,column_id=label,units=units,required_closed_bars=history)
@@ -315,7 +328,8 @@ def normalize_columns(names,data,metadata,*,pack,instruments,cutoff):
     valid=set.intersection(*(set(r.evaluated_symbols) for r in receipts))
     errors={n:reason for r in receipts for n,reason in r.failed_symbols.items()}
     receipt=replace(receipts[0],evaluated_symbols=tuple(n for n in names if n in valid),
-                    failed_symbols={n:errors.get(n,'INCOMPLETE_CORE_ROW') for n in names if n not in valid})
+                    failed_symbols={n:errors.get(n,'INCOMPLETE_CORE_ROW') for n in names if n not in valid},
+                    source_cutoffs={n:at for n,at in receipts[0].source_cutoffs.items() if n in valid})
     return receipt,[o for o in observed if o['instrument']['native_symbol'] in valid]
 
 
@@ -333,7 +347,7 @@ def calculation_report(receipt, pack, *, provider_counts=None):
 class PartitionEngine:
     def __init__(self, source: RemoteScreenSource, budget: RequestBudget, *, partition_size=50,deferred_tool_recovery=False,
                  transient_recovery=False,unavailable_reason=None,anchor_first_response=False,max_pack_seconds=None,
-                 minimum_anchor_cutoff=None):
+                 minimum_anchor_cutoff=None,transport_remaining=None):
         partitions((), partition_size)
         self.source, self.budget, self.partition_size = source, budget, partition_size
         self.deferred_tool_recovery=deferred_tool_recovery
@@ -342,6 +356,7 @@ class PartitionEngine:
         self.anchor_first_response=anchor_first_response
         self.max_pack_seconds=max_pack_seconds
         self.minimum_anchor_cutoff=minimum_anchor_cutoff
+        self.transport_remaining=transport_remaining
 
     def run(self, inventory, pack, cutoff):
         planned_cutoff=cutoff;anchor=None
@@ -349,18 +364,21 @@ class PartitionEngine:
         instruments = {i.native_symbol: i for i in inventory.instruments}
         supported = tuple(n for n in inventory.symbols if n in pack.supported_symbols)
         unsupported = tuple(n for n in inventory.symbols if n not in pack.supported_symbols)
-        attempts, effective, observations, dispatched, pending = [], [], [], [], []
+        attempts, effective, observations, requested_logically, dispatched, pending = [], [], [], [], [], []
 
         def execute(names, recovery=False):
             nonlocal cutoff,anchor
             metadata, data, acquired, sent = {}, None, False, False
             try:
                 if self.unavailable_reason:raise ProviderError(self.unavailable_reason)
+                if self.transport_remaining is not None and self.transport_remaining()<=0:
+                    raise ProviderError('REQUEST_BUDGET_EXHAUSTED',{'request_dispatched':False})
                 if (self.max_pack_seconds is not None and
                         self.budget.clock()-pack_started>=self.max_pack_seconds):
                     raise ProviderError('PACK_TIME_SLICE_DEFERRED',{'request_dispatched':False})
                 self.budget.acquire(recovery)
                 acquired = True
+                requested_logically.extend(names)
                 data, metadata = self.source.screen(names, pack)
                 dispatched.extend(names);sent=True
                 self.budget.record(metadata)
@@ -398,7 +416,7 @@ class PartitionEngine:
                 if acquired and not sent and metadata.get('request_dispatched') is not False:
                     dispatched.extend(names);sent=True
                 receipt, values = failed_receipt(names, pack, code, metadata), []
-                if code in {"HTTP_403", "HTTP_451", "HTTP_429", "ROUTE_DISABLED", "REQUEST_BUDGET_EXHAUSTED"} or (
+                if code in {"HTTP_403", "HTTP_451", "HTTP_418", "HTTP_429", "ROUTE_DISABLED", "REQUEST_BUDGET_EXHAUSTED"} or (
                         code=='PROVIDER_BUSY_COOLDOWN' and not self.transient_recovery):
                     self.budget.stop(code)
             counts = ({key: data[key] if type(data.get(key)) is int and data[key] >= 0 else None
@@ -417,8 +435,17 @@ class PartitionEngine:
             if (self.transient_recovery and not recovery and receipt.provider_error in
                     {'PROVIDER_BUSY_COOLDOWN','PROVIDER_PENDING_EMPTY_202','NETWORK_OR_TLS_FAILURE','HTTP_502','HTTP_503','HTTP_504'}
                     and self.budget.retries<self.budget.retry_limit and self.budget.calls<self.budget.max_calls):
-                resumed=(receipt.provider_error!='PROVIDER_BUSY_COOLDOWN' or
-                    bool(getattr(self.source,'resume_after_busy',lambda:False)()))
+                if receipt.provider_error!='PROVIDER_BUSY_COOLDOWN':
+                    resumed=True
+                elif isinstance(self.source,BasisScreenSource):
+                    now=self.budget.clock()
+                    limits=[60]
+                    if self.max_pack_seconds is not None:limits.append(pack_started+self.max_pack_seconds-now)
+                    if self.budget.started is not None:limits.append(
+                        self.budget.started+self.budget.max_elapsed_seconds-now)
+                    resumed=self.source.resume_after_busy(max_wait=max(0,min(limits)))
+                else:
+                    resumed=bool(getattr(self.source,'resume_after_busy',lambda:False)())
                 attempts[-1]['bounded_resume_authorized']=resumed
                 if resumed:
                     execute(names,True)
@@ -477,7 +504,10 @@ class PartitionEngine:
             "inventory_mode": inventory.mode, "eligible_contracts": inventory.report()["eligible_contracts"],
             "provisionally_identified_contracts": list(inventory.provisional_symbols),
             "planned_symbols": list(inventory.symbols),
+            "logical_requested_symbols": list(dict.fromkeys(requested_logically)),
             "requested_symbols": list(dict.fromkeys(dispatched)),
+            "dispatched_symbols": list(dict.fromkeys(dispatched)),
+            "validated_symbols": list(evaluated),
             "not_requested_symbols": [n for n in inventory.symbols if n not in dispatched],
             "evaluated_symbols": list(evaluated), "failed_symbols": rejected if self.transient_recovery else failures,
             "failure_scope":"REQUESTED_ONLY" if self.transient_recovery else 'LEGACY_NOT_EVALUATED; SEE_REQUESTED_FAILURES',

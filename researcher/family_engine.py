@@ -11,7 +11,7 @@ from statistics import median
 from .contracts import ContractError, utc
 from .numerics import (validate_bars, wilder_atr, true_ranges, confirmed_swings,
     swing_ladder, touch_episodes, efficiency, compression, displacement, distance)
-from .structures import Reference, stable_id, event
+from .structures import Reference, stable_id, event, is_opposing_initiative
 from .measurements import persistent_residual, residual_series, residual_persistence, value_extension
 
 VERSION = 'families-6a.1'
@@ -66,15 +66,23 @@ def transition(timeline, ref, bar, kind, stage):
 
 def boundary_family(family, ref, bars, *, as_of, balance=False):
     if family not in {'F2','F4','F5','F6'}:raise ContractError('BOUNDARY_FAMILY_REQUIRED')
-    if utc(ref.available_at)>utc(as_of):return hypothesis(family,ref,state='SOURCE_UNKNOWN')
+    observed_by=utc(as_of)
+    if utc(ref.available_at)>observed_by:return hypothesis(family,ref,state='SOURCE_UNKNOWN')
     if any(b.native_symbol!=ref.native_symbol or b.timeframe!=ref.timeframe for b in bars):
         raise ContractError('REFERENCE_BAR_IDENTITY')
     direction=ref.direction if family in {'F2','F5'} else -ref.direction
-    tl=[];touches=0;armed=True;excursion=None;reclaim=None;opposing=None;broken=None;holds=0;pressure_seen=False
+    tl=[];touches=0;armed=True;excursion=None;reclaim=None;opposing=None;initiative=None;broken=None;holds=0;pressure_seen=False
     previous=None;first_distance=None;last_touch=None;retreats=[]
+    reference_start=int(utc(ref.known_at).timestamp()*1000)
+    expiry_ms=utc(ref.valid_until).timestamp()*1000
+    observation_ms=observed_by.timestamp()*1000
     for b in bars:
-        if b.open_ms<int(utc(ref.known_at).timestamp()*1000):continue
-        if utc(b.end)>utc(ref.valid_until):transition(tl,ref,b,'EXPIRED','INVALIDATED');break
+        if b.open_ms<reference_start:continue
+        if family=='F4':
+            if b.end_ms>observation_ms or max(utc(b.available_at or b.received_at),utc(b.received_at))>observed_by:
+                break
+            if previous and previous.end_ms!=b.open_ms:raise ContractError('MISSING_OR_MISALIGNED_BARS')
+        if b.end_ms>expiry_ms:transition(tl,ref,b,'EXPIRED','INVALIDATED');break
         side=ref.direction;level=ref.hi if side==1 else ref.lo
         c=side*(b.close-level);ext=side*((b.high if side==1 else b.low)-level)
         outside=c>ref.buffer;inside=c<-ref.buffer
@@ -100,15 +108,16 @@ def boundary_family(family, ref, bars, *, as_of, balance=False):
             if family=='F2':transition(tl,ref,b,'RECLAIM_DISCONFIRMS_STRAIGHT_BREAK','INVALIDATED');break
             if family in {'F4','F5'}:transition(tl,ref,b,'RECLAIM','DEVELOPING')
             if family=='F6' and balance:transition(tl,ref,b,'EDGE_REJECTION','DEVELOPING')
-        elif reclaim is not None and b.open_ms>reclaim.open_ms and inside and opposing is None:
+        elif reclaim is not None and b.open_ms>reclaim.open_ms and inside:
             progress=side*(reclaim.close-b.close)
             if progress>=D('.25')*ref.atr:
-                opposing=b
-                dp=displacement(previous,b,ref.atr,ref.tick) if previous else {}
-                if family=='F4' and dp.get('tr_atr_previous',0)>=D('1.2') and dp['body_fraction']>=D('.5'):
+                if opposing is None:
+                    opposing=b
+                    if family=='F5':transition(tl,ref,b,'OPPOSING_REVERSAL_ATTEMPT','DEVELOPING')
+                    if family=='F6' and balance:transition(tl,ref,b,'ROTATION','DEVELOPING')
+                if family=='F4' and initiative is None and previous and is_opposing_initiative(ref,previous,b):
+                    initiative=b
                     transition(tl,ref,b,'OPPOSING_INITIATIVE','DEVELOPING')
-                if family=='F5':transition(tl,ref,b,'OPPOSING_REVERSAL_ATTEMPT','DEVELOPING')
-                if family=='F6' and balance:transition(tl,ref,b,'ROTATION','DEVELOPING')
         # F6 can reject an ordinary edge visit without requiring a sweep.
         if family=='F6' and balance and touches and inside and previous and side*(previous.close-b.close)>D('.25')*ref.atr:
             transition(tl,ref,b,'ROTATION','DEVELOPING')
@@ -134,7 +143,7 @@ def boundary_family(family, ref, bars, *, as_of, balance=False):
         direction=direction,timeline=tl,details={'touch_episodes':touches,'retreat_changes':retreats,
         'same_original_reference':True,'balance_established':balance,'observed_stops':False,
         'acceptance_verified':any(e['kind']=='LATER_OUTSIDE_ACCEPTANCE' for e in tl),
-        'opposing_initiative_verified':any(e['kind']=='OPPOSING_INITIATIVE' for e in tl)})
+        'opposing_initiative_verified':initiative is not None})
 
 
 def continuation(bars,tick,*,latest=False):

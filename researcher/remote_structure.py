@@ -157,13 +157,18 @@ def scan_registered(engine,inventory,tf,cutoff,qualified_bits):
                 'source_response_hash':o['source_response_hash'],'known_by':o['received_at_utc']})
     result['positive_observations']=rows
     result['requested']=len(result['requested_symbols']);result['evaluated']=len(result['evaluated_symbols'])
-    result['returned']=len(result['returned_symbols']);result['failed']=len(result['failed_symbols'])
-    result['missing']=len(result['missing_symbols']);result['unsupported']=len(result['not_requested_symbols'])
+    result['returned']=len(result['returned_symbols']);result['failed']=len(result['requested_failed_symbols'])
+    result['missing']=len(result['missing_symbols']);result['unsupported']=len(result['unsupported_symbols'])
+    result['dispatched']=len(result['dispatched_symbols'])
+    result['logical_requested']=len(result['logical_requested_symbols'])
+    result['deferred']=len(result['deferred_symbols'])
+    result['not_evaluated']=len(result['planned_symbols'])-result['evaluated']
     result['qualified_method_predicates_evaluated']=result['evaluated']
     result['full_method_semantics_complete']=False
     result['qualification']='SOURCE_QUALIFIED_NARROW_CAUSAL_NOMINATION_TEMPLATES'
     result['per_column']={k:{'requested':result['requested'],'evaluated':result['evaluated'],
         'returned':result['returned'],'failed':result['failed'],'missing':result['missing'],
-        'unsupported':result['unsupported'],'positive':sum(any(x['column']==k for x in v) for v in rows.values())}
+        'unsupported':result['unsupported'],'deferred':result['deferred'],
+        'not_evaluated':result['not_evaluated'],'positive':sum(any(x['column']==k for x in v) for v in rows.values())}
         for k in DETECTORS}
     return result

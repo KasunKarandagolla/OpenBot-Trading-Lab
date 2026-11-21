@@ -3,6 +3,7 @@
 No provider/account login files, prompts, or model-generated identity are read.
 The path-only config is owner-managed and must be under ignored work/.
 """
+import errno
 import json
 from pathlib import Path, PureWindowsPath
 from contextlib import contextmanager
@@ -15,7 +16,9 @@ ERRORS = frozenset({'NATIVE_AUDIT_CONFIG_MISSING','NATIVE_AUDIT_CONFIG_INVALID',
     'NATIVE_IDENTITY_UNAVAILABLE','NATIVE_SESSION_MISMATCH','NATIVE_AGENT_MISMATCH',
     'NATIVE_READ_INCOMPLETE','NATIVE_REPLY_PROVENANCE','NATIVE_REVIEW_TIMED_OUT',
     'NATIVE_REVIEW_INCOMPLETE','NATIVE_UNAUTHORIZED_TOOL','NATIVE_HANDOFF_UNATTESTED',
-    'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','NATIVE_REQUEST_STALE','NATIVE_STORAGE_UNAVAILABLE','NATIVE_STORAGE_TIMED_OUT','NATIVE_TASK_FAILED'})
+    'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','NATIVE_REQUEST_STALE','NATIVE_STORAGE_UNAVAILABLE','NATIVE_STORAGE_TIMED_OUT',
+    'NATIVE_STORAGE_LOCKED','NATIVE_READER_PROCESS_UNAVAILABLE','NATIVE_TASK_FAILED',
+    'NATIVE_SUBMISSION_OUTSIDE_WINDOW','NATIVE_RESPONSE_OUTSIDE_WINDOW'})
 ADAPTERS = {'opencode': 'OPENCODE_V2_SESSION_MESSAGE', 'codex': 'CODEX_ROLLOUT_0169'}
 
 # Diagnostics are labels, never provider values or exception text.
@@ -24,17 +27,46 @@ DIAGNOSTIC_LABELS={
     'check':frozenset({'JSON','TIMESTAMP','ORDER','VERSION','IDENTITY','BACKEND','CONTEXT','TURN','INPUT','FINAL','TOOLS','COMPLETENESS'}),
     'schema_variant':frozenset({'CODEX_0169','CODEX_0169_ORDINAL','UNRECOGNIZED'})}
 
+STORAGE_LABELS={
+    'stage':{'SQLITE_OPEN','SQLITE_QUERY_ONLY','SQLITE_QUERY','READER'},
+    'category':{'SQLITE','OS'},
+    'classification':{'BUSY','IO','CANNOT_OPEN','INVALID_DATABASE','FIXED_SCHEMA_MISMATCH','OTHER',
+        'PERMISSION_DENIED','MISSING_FILE'},
+    'retryability':{'TRANSIENT','UNKNOWN','TERMINAL'}}
 
 def safe_diagnostic(value):
-    if not isinstance(value,dict) or set(value)!=set(DIAGNOSTIC_LABELS):return {}
-    if any(not isinstance(v,str) or v not in DIAGNOSTIC_LABELS[k] for k,v in value.items()):return {}
+    if not isinstance(value,dict):return {}
+    labels=STORAGE_LABELS if set(value)==set(STORAGE_LABELS) else DIAGNOSTIC_LABELS
+    if set(value)!=set(labels) or any(not isinstance(v,str) or v not in labels[k] for k,v in value.items()):
+        return {}
     return dict(value)
 
 
 class NativeEvidenceError(ContractError):
-    def __init__(self,code,stage,check,variant='UNRECOGNIZED'):
+    def __init__(self,code,stage=None,check=None,variant='UNRECOGNIZED',*,diagnostic=None):
         super().__init__(code if code in ERRORS else 'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
-        self.diagnostic=safe_diagnostic({'stage':stage,'check':check,'schema_variant':variant})
+        self.diagnostic=safe_diagnostic(diagnostic or {'stage':stage,'check':check,'schema_variant':variant})
+
+
+def storage_fault(error, stage):
+    sqlite=isinstance(error,sqlite3.Error)
+    classification='OTHER';retryability='UNKNOWN';code='NATIVE_STORAGE_UNAVAILABLE'
+    if sqlite:
+        primary=getattr(error,'sqlite_errorcode',0) & 0xff
+        if primary in {sqlite3.SQLITE_BUSY,sqlite3.SQLITE_LOCKED} or str(error).lower() in {'database is locked','database is busy'}:
+            classification='BUSY';retryability='TRANSIENT';code='NATIVE_STORAGE_LOCKED'
+        elif primary==sqlite3.SQLITE_ERROR and str(error).lower().startswith(('no such table:', 'no such column:')):
+            classification='FIXED_SCHEMA_MISMATCH';retryability='TERMINAL';code='NATIVE_PROVIDER_SCHEMA_UNSUPPORTED'
+        elif primary in {sqlite3.SQLITE_CORRUPT,sqlite3.SQLITE_NOTADB}:
+            classification='INVALID_DATABASE';retryability='TERMINAL';code='NATIVE_PROVIDER_SCHEMA_UNSUPPORTED'
+        elif primary==sqlite3.SQLITE_CANTOPEN:classification='CANNOT_OPEN'
+        elif primary==sqlite3.SQLITE_IOERR or str(error).lower()=='disk i/o error':classification='IO'
+    elif isinstance(error,OSError):
+        if error.errno in {errno.EACCES,errno.EPERM}:classification='PERMISSION_DENIED'
+        elif error.errno==errno.ENOENT:classification='MISSING_FILE'
+        elif error.errno==errno.EIO:classification='IO'
+    return code,{'stage':stage,'category':'SQLITE' if sqlite else 'OS',
+        'classification':classification,'retryability':retryability}
 
 
 def ref(value):
@@ -89,11 +121,18 @@ def load_private(value):
 
 @contextmanager
 def read_db(path):
-    db=sqlite3.connect(local_path(path).as_uri()+'?mode=ro',uri=True,timeout=.2)
+    db=None;stage='SQLITE_OPEN'
     try:
+        db=sqlite3.connect(local_path(path).as_uri()+'?mode=ro',uri=True,timeout=.2)
+        stage='SQLITE_QUERY_ONLY'
         db.execute('PRAGMA query_only=ON')
+        stage='SQLITE_QUERY'
         yield db
-    finally:db.close()
+    except sqlite3.Error as error:
+        code,diagnostic=storage_fault(error,stage)
+        raise NativeEvidenceError(code,diagnostic=diagnostic) from None
+    finally:
+        if db is not None:db.close()
 
 
 def configured_identity(config):

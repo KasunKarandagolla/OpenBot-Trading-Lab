@@ -391,7 +391,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
         nonlocal stage_started
         current=time.monotonic();stage_times[name]=round(current-stage_started,6);stage_started=current
         if progress:progress(name,stage_times[name])
-    bundles=[];verified=[];terminals=[];facts={};cards=[];references=[];reviews=[];cached=False
+    bundles=[];verified=[];terminals=[];facts={};cards=[];references=[];reviews=[];cached=False;history_status={}
     observed_times=[start]
     def evaluation_time():
         # Local UTC can step backwards between completed HTTP requests. Preserve
@@ -556,15 +556,58 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     budget=RequestBudget(spec['max_screen_requests'],retry_calls=2,
                         interval_seconds=0 if mode!='LIVE' else 1,max_elapsed_seconds=120 if recovery else None)
                     screen_source=sources.screen_source or BasisScreenSource(client)
+                    def basis_transport_remaining():
+                        return spec['max_http_requests']-len(client.http.receipts)
                     engine=PartitionEngine(screen_source,budget,deferred_tool_recovery=True,transient_recovery=bool(recovery),
                         unavailable_reason=basis_unavailable,anchor_first_response=bool(recovery),
-                        max_pack_seconds=60 if recovery else None,
+                        max_pack_seconds=60 if recovery else None,transport_remaining=basis_transport_remaining,
                         minimum_anchor_cutoff=previous.get('frozen_cutoffs',{}).get('15m')
                             if previous and previous.get('selected_research') else None)
+                    from .remote_structure import scan_registered,BITS,oracle_masks
+                    from .screening import partitions
+                    from .pack_contracts import make_remote_pack
+                    source_schema=getattr(client,'tools',{}).get('screener_run',{}).get('inputSchema')
+                    causal_enabled=(completion.get('enabled') and source_schema is not None
+                        and digest(encode(source_schema).encode())==completion['screen_schema_sha256'])
+                    route_stops={'HTTP_403','HTTP_451','HTTP_418','HTTP_429','ROUTE_DISABLED','PROVIDER_BUSY_COOLDOWN'}
+                    broad_width=len(partitions(screen_inventory.symbols))
+                    report['basis_schedule']={'phases':['PRICE_15M','CAUSAL_1H','PRICE_1H',
+                        'QUALIFIED_REGISTERED','OPTIONAL_PARTICIPATION'],
+                        'physical_http_limit':spec['max_http_requests'],'reserved_1h_price_partitions':0}
+                    def scan_causal():
+                        if not causal_enabled:
+                            report['causal_status']='SOURCE_SCHEMA_NOT_ATTESTED; NO_CAUSAL_PROMOTION'
+                            return
+                        remaining=max(0,spec['max_http_requests']-len(client.http.receipts))
+                        # Keep one logical call per 1H price partition within the
+                        # shared physical envelope. Optional work uses leftovers.
+                        price_reserve=min(broad_width,remaining//2)
+                        report['basis_schedule']['reserved_1h_price_partitions']=price_reserve
+                        ceiling=min(completion['method_screen_requests'],remaining-price_reserve)
+                        method_budget=RequestBudget(max(1,ceiling),
+                            retry_calls=min(completion['method_recovery_requests'],ceiling),
+                            interval_seconds=budget.interval,max_elapsed_seconds=30 if recovery else None)
+                        method_budget.last_started=budget.last_started
+                        block=basis_unavailable or (budget.stopped_reason if budget.stopped_reason in route_stops else None)
+                        method_engine=PartitionEngine(screen_source,method_budget,deferred_tool_recovery=True,
+                            transient_recovery=bool(recovery),
+                            unavailable_reason=block or ('REQUEST_BUDGET_EXHAUSTED' if not ceiling else None),
+                            transport_remaining=lambda:basis_transport_remaining()-price_reserve)
+                        for timeframe in completion['causal_timeframes']:
+                            cp=scan_registered(method_engine,screen_inventory,timeframe,cutoffs[timeframe],
+                                completion['qualified_bits'])
+                            report['causal_packs'].append(cp)
+                            if cp['evaluated_symbols']:
+                                verified.append(('METHOD_STRUCTURE:'+timeframe,cutoffs[timeframe],
+                                    tuple(cp['evaluated_symbols'])))
+                        if method_budget.last_started is not None:
+                            budget.last_started=method_budget.last_started
+                        if method_budget.stopped_reason in route_stops:
+                            budget.stop(method_budget.stopped_reason)
+                        report['causal_budget']={**method_budget.report(),'screen_request_limit':ceiling}
                     rows_by_tf={}
                     for tf in ('15m','1h'):
                         price_columns=[c for c in spec['qualified_price_columns'] if c!='quote_rvol32']
-                        from .pack_contracts import make_remote_pack
                         pack_id='CORE_'+('1H' if tf=='1h' else '15M')
                         if pack_id in qualified_packs:
                             pack=make_remote_pack(pack_id,inventory.eligible_symbols)
@@ -595,19 +638,35 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             'evidence':spec['qualification_evidence'],'sha256':spec['qualification_sha256']}
                         result['requested']=len(result['requested_symbols']);result['evaluated']=len(result['evaluated_symbols'])
                         result['returned']=len(result['returned_symbols']);result['missing']=len(result['missing_symbols'])
-                        result['failed']=len(result['failed_symbols']);result['unsupported']=0
+                        result['failed']=len(result.get('requested_failed_symbols',result['failed_symbols']))
+                        result['unsupported']=len(result.get('unsupported_symbols',()))
                         result['not_requested']=len(result.get('not_requested_symbols',()))
+                        result['dispatched']=len(result.get('dispatched_symbols',result['requested_symbols']))
+                        result['logical_requested']=len(result.get('logical_requested_symbols',result['requested_symbols']))
+                        result['deferred']=len(result.get('deferred_symbols',()))
+                        result['not_evaluated']=len(members)-result['evaluated']
                         result['time_accepted']=len(result.get('time_accepted_symbols',result['evaluated_symbols']))
                         result['selected_for_current_screen_count']=len(result.get('selected_for_current_screen',inventory.symbols))
                         result['rejected_after_cutoff_count']=len(result.get('rejected_after_cutoff',()))
                         result['per_formula']={f:{'eligible':len(members),'requested':result['requested'],
                             'evaluated':sum(r['values'].get(f) is not None for r in rows.values()),
                             'returned':result['returned'],'missing':result['missing'],
-                            'failed':result['failed'],'unavailable':sum(r['values'].get(f) is None for r in rows.values()),
+                            'failed':result['failed'],'deferred':result['deferred'],
+                            'not_evaluated':len(members)-sum(r['values'].get(f) is not None for r in rows.values()),
+                            'unavailable':sum(r['values'].get(f) is None for r in rows.values()),
                             'unavailable_symbols':[n for n,r in rows.items() if r['values'].get(f) is None],
                             'unsupported':0,'units':next(c[2] for c in pack.columns if c[0]==f)} for f in price_columns}
                         report['packs'].append(result);rows_by_tf[tf]=rows
                         if rows:verified.append(('PRICE_PRECURSORS:'+tf,cutoffs[tf],tuple(rows)))
+                        if tf=='15m':scan_causal()
+                    registered_results=[]
+                    for pid in sorted(qualified_packs):
+                        if pid.startswith(('CORE_','PARTICIPATION_')):continue
+                        pack=make_remote_pack(pid,inventory.eligible_symbols)
+                        registered=engine.run(screen_inventory,pack,cutoffs[pack.timeframe])
+                        registered_results.extend((pid,o) for o in registered.pop('observations'))
+                        registered['qualification']='EXACT_REGISTERED_SOURCE_SCOPE; PRECURSOR_NOT_FULL_FORMATION'
+                        report['optional_packs'].append(registered)
                     # Spend the existing ceiling on mandatory price packs first.
                     # Optional participation faults and budget omissions cannot
                     # erase price rows or starve the second timeframe.
@@ -634,38 +693,9 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 'unavailable':sum(o['value'] is None for o in values),'units':'QUOTE_VOLUME_RATIO',
                                 'scope':'SEPARATE_OPTIONAL_PARTICIPATION_PACK'}
                     report['broad_budget']=budget.report()
-                    registered_results=[]
-                    for pid in sorted(qualified_packs):
-                        if pid.startswith(('CORE_','PARTICIPATION_')):continue
-                        pack=make_remote_pack(pid,inventory.eligible_symbols)
-                        registered=engine.run(screen_inventory,pack,cutoffs[pack.timeframe])
-                        registered_results.extend((pid,o) for o in registered.pop('observations'))
-                        registered['qualification']='EXACT_REGISTERED_SOURCE_SCOPE; PRECURSOR_NOT_FULL_FORMATION'
-                        report['optional_packs'].append(registered)
-                    report['broad_budget']=budget.report()
                     report['coverage']['full_core_evaluated']=len(set.intersection(*(
                         set(p['evaluated_symbols']) for p in report['packs']))) if all(
                         p['operating_scope']=='SOURCE_QUALIFIED_CORE; NOT_FULL_METHODS' for p in report['packs']) else 0
-                    # Separate finite event packs from long quiet/RVOL columns.
-                    # The current qualified manual envelope adds ONE broad 1H
-                    # causal pass; 15M/4H broad methods remain unqualified.
-                    from .remote_structure import scan_registered,BITS,oracle_masks
-                    source_schema=getattr(client,'tools',{}).get('screener_run',{}).get('inputSchema')
-                    causal_enabled=(completion.get('enabled') and source_schema is not None
-                        and digest(encode(source_schema).encode())==completion['screen_schema_sha256'])
-                    remaining_transport=max(0,spec['max_http_requests']-len(client.http.receipts))
-                    if causal_enabled and remaining_transport:
-                        method_ceiling=min(completion['method_screen_requests'],remaining_transport)
-                        method_budget=RequestBudget(method_ceiling,
-                            retry_calls=min(completion['method_recovery_requests'],method_ceiling),
-                            max_elapsed_seconds=30 if recovery else None)
-                        method_engine=PartitionEngine(screen_source,method_budget,deferred_tool_recovery=True,transient_recovery=bool(recovery))
-                        for tf in completion['causal_timeframes']:
-                            cp=scan_registered(method_engine,screen_inventory,tf,cutoffs[tf],completion['qualified_bits'])
-                            report['causal_packs'].append(cp)
-                            if cp['evaluated_symbols']:verified.append(('METHOD_STRUCTURE:'+tf,cutoffs[tf],tuple(cp['evaluated_symbols'])))
-                        report['causal_budget']=method_budget.report()
-                    else:report['causal_status']='SOURCE_SCHEMA_NOT_ATTESTED; NO_CAUSAL_PROMOTION' if not causal_enabled else 'NOT_REVIEWED_BUDGET; BASIS_TRANSPORT_LIMIT'
                     mark_stage('basis_broad_and_causal_batches')
                     # Synchronized remote returns become breadth; rolling 24h
                     # tickers remain only turnover/economics/exception sources.
@@ -718,10 +748,6 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     # A uniform hash audit is independent of any price/volume
                     # screen and also supplies one native OI investigation lane.
                     from .audit import lottery,allocate
-                    nominated_symbols={n for n,tf in union}
-                    tail=[n for n in members if n not in {*nominated_symbols,'BTCUSDT','ETHUSDT'}]
-                    audit_pool=tail or [n for n in members if n not in {'BTCUSDT','ETHUSDT'}]
-                    audit_names=lottery(audit_pool,cutoffs['15m'])[:1]
                     ticker_rows={o['native_symbol']:o for p in pulse if p['kind']=='ticker' for o in p['observations']}
                     if recovery:
                         # Independent lightweight precursor questions for source
@@ -741,18 +767,6 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 ticker_rows[n]['source_response_sha256']]
                         report['cheap_missing_source_recovery']={'unobserved_pool':len(missing),'selected':cheap,
                             'selection':'TWO_HASH_SAMPLES_PER_TURNOVER_QUARTILE; NOT_A_METHOD_OR_OPPORTUNITY_CLAIM'}
-                    report['prospective_audit']={'registered_at':evaluation_time(),'frozen_cutoffs':cutoffs,
-                        'eligible_denominator':len(members),'eligible_set_hash':digest(encode(sorted(members)).encode()),
-                        'non_nominated_tail_denominator':len(tail),'sampling':'UNIFORM_HASH_STRATUM_LOTTERY; ONE_SELECTED_PUBLIC_OI_AUDIT',
-                        'sample':[{'symbol':n,'selection_probability':1/len(audit_pool),
-                            'identity_hash':identity[n],'first_price_observation':ticker_rows.get(n),
-                            'price_history_reviewed':False} for n in audit_names],
-                        'cheap_baseline':{'top_return':sorted(ticker_rows,key=lambda n:D(str(ticker_rows[n]['values']['priceChangePercent'])),reverse=True)[:5],
-                            'top_quote_turnover':sorted(ticker_rows,key=lambda n:D(str(ticker_rows[n]['values']['quoteVolume'])),reverse=True)[:5]},
-                        'outcome':'PENDING_PROSPECTIVE_OBSERVATION; NO_EARLY_LEAD_TIME_OR_RECALL_CLAIM'}
-                    for n in audit_names:
-                        nominate(n,'1h','C_STRATIFIED_AUDIT',tuple(f'F{i}' for i in range(1,10)),
-                            'Non-nominated-tail audit; no historical actionability reconstruction')
                     independent,specialist_faults=([],[]) if route_ablation is not None and 'B' not in route_ablation else sources.independent(as_of=evaluation_time(),eligible=members)
                     facts.update(sources.normalized_facts)
                     report['source_faults'].extend(specialist_faults)
@@ -760,6 +774,22 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         for family in candidate['families']:
                             nominate(candidate['native_symbol'],candidate['timeframe'],'B_SPECIALIST',(family,),candidate['questions'][0])
                         union[candidate['native_symbol'],candidate['timeframe']]['specialist_source']=candidate
+                    nominated_symbols={n for n,tf in union}
+                    tail=[n for n in members if n not in {*nominated_symbols,'BTCUSDT','ETHUSDT'}]
+                    audit_pool=tail or [n for n in members if n not in {'BTCUSDT','ETHUSDT'}]
+                    audit_names=lottery(audit_pool,cutoffs['15m'])[:1]
+                    report['prospective_audit']={'registered_at':evaluation_time(),'frozen_cutoffs':cutoffs,
+                        'eligible_denominator':len(members),'eligible_set_hash':digest(encode(sorted(members)).encode()),
+                        'non_nominated_tail_denominator':len(tail),'draw_pool_denominator':len(audit_pool),'sampling':'UNIFORM_HASH_STRATUM_LOTTERY; ONE_SELECTED_PUBLIC_OI_AUDIT',
+                        'sample':[{'symbol':n,'selection_probability':1/len(audit_pool),
+                            'identity_hash':identity[n],'from_non_nominated_tail':n in tail,'first_price_observation':ticker_rows.get(n),
+                            'price_history_reviewed':False} for n in audit_names],
+                        'cheap_baseline':{'top_return':sorted(ticker_rows,key=lambda n:D(str(ticker_rows[n]['values']['priceChangePercent'])),reverse=True)[:5],
+                            'top_quote_turnover':sorted(ticker_rows,key=lambda n:D(str(ticker_rows[n]['values']['quoteVolume'])),reverse=True)[:5]},
+                        'outcome':'PENDING_PROSPECTIVE_OBSERVATION; NO_EARLY_LEAD_TIME_OR_RECALL_CLAIM'}
+                    for n in audit_names:
+                        nominate(n,'1h','C_STRATIFIED_AUDIT',tuple(f'F{i}' for i in range(1,10)),
+                            'Non-nominated-tail audit; no historical actionability reconstruction')
                     if causal_enabled:
                         from .economic_sources import oi_observation
                         for n in ('BTCUSDT',*audit_names):
@@ -771,39 +801,75 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             except (ContractError,KeyError,TypeError,ValueError) as e:
                                 report['source_faults'].append({'phase':'native_oi','symbol':n,'code':safe_error(e)})
                     report['nominations']=list(union.values())
+                    from .numerics import validate_bars
                     selected={};benchmark_ids=[]
                     investigation_started=time.monotonic();history_costs=[]
                     def fetch_selected(names):
                         for n in names:
                             if n not in members:continue
+                            timeframes=('1h','15m','4h') if n in {'BTCUSDT','ETHUSDT'} else ('1h','15m')
+                            if recovery and timeframes==('1h','15m') and (n,'15m') in union and (n,'1h') not in union:
+                                timeframes=('15m','1h')
+                            for tf in timeframes:
+                                history_status[n,tf]={'selected':True,'attempted':False,'responded':False,
+                                    'accepted':False,'evaluation_completed':False,'status':'NOT_EVALUATED',
+                                    'cutoff':cutoffs[tf]}
                             if n in quarantined:
                                 report['source_faults'].append({'phase':'contract_identity','symbol':n,'code':'CONTRACT_IDENTITY_CHANGED'})
                                 continue
-                            for tf in (('1h','15m','4h') if n in {'BTCUSDT','ETHUSDT'} else ('1h','15m')):
+                            for tf in timeframes:
+                                entry=history_status[n,tf]
                                 elapsed=time.monotonic()-investigation_started
                                 estimate=sum(history_costs)/len(history_costs) if history_costs else 1
-                                if recovery and n in {'BTCUSDT','ETHUSDT'} and elapsed>=45:
+                                defer=None
+                                if recovery:
+                                    if (api.sample_calls>=getattr(api,'max_sample_calls',history_limit)
+                                            or len(api.http.receipts)>=official_limit-pending_point_reserve):
+                                        defer='SELECTED_SAMPLE_BUDGET_EXHAUSTED'
+                                    elif n in {'BTCUSDT','ETHUSDT'} and elapsed+estimate>=45:
+                                        defer='CONTEXT_SOURCE_COST_RESERVE_FOR_INDEPENDENT_ALT_RESEARCH'
+                                    elif elapsed+estimate>recovery['investigation_wall_seconds']:
+                                        defer='MEASURED_INVESTIGATION_WALL_BUDGET'
+                                if defer:
+                                    entry.update(status='DEFERRED',reason=defer)
                                     report.setdefault('investigation_deferred',[]).append({'native_symbol':n,'timeframe':tf,
-                                        'reason':'CONTEXT_SOURCE_COST_RESERVE_FOR_INDEPENDENT_ALT_RESEARCH',
-                                        'elapsed_seconds':elapsed})
-                                    continue
-                                if (recovery and n not in {'BTCUSDT','ETHUSDT'} and
-                                        elapsed+estimate>recovery['investigation_wall_seconds']):
-                                    report.setdefault('investigation_deferred',[]).append({'native_symbol':n,'timeframe':tf,
-                                        'reason':'MEASURED_INVESTIGATION_WALL_BUDGET','elapsed_seconds':elapsed,
-                                        'estimated_next_history_seconds':estimate})
+                                        'reason':defer,'elapsed_seconds':elapsed,'estimated_next_history_seconds':estimate})
                                     continue
                                 fetched_at=time.monotonic()
+                                first_receipt=len(api.http.receipts)
+                                cache_hits=getattr(api.http,'cache_hits',0)
                                 try:
                                     bars,source=api.klines(members[n],timeframe=tf,cutoff=cutoffs[tf])
+                                    reused=getattr(api.http,'cache_hits',0)>cache_hits
+                                    entry.update(attempted=not reused,responded=True,cache_reused=reused)
+                                    validate_bars(bars,cutoff=cutoffs[tf],require_current=True)
+                                    receipt=source['receipt']
+                                    if (bars[0].native_symbol!=n or bars[0].timeframe!=tf
+                                            or source['native_symbol']!=n or source['timeframe']!=tf
+                                            or utc(source['cutoff'])!=utc(cutoffs[tf])
+                                            or source['source_response_sha256']!=receipt['response_sha256']):
+                                        raise ContractError('ORACLE_SOURCE_IDENTITY')
+                                    observed_times.append(receipt['received_at_utc'])
+                                    entry.update(accepted=True,status='VALIDATED',bars=len(bars),
+                                        coverage_obtained=len(bars)>=34,
+                                        source_response_sha256=source['source_response_sha256'])
+                                    if recovery and len(bars)<34:
+                                        entry.update(status='INCOMPLETE_HISTORY',reason='INSUFFICIENT_HISTORY')
+                                        continue
                                     selected[n,tf]=(bars,source)
-                                    observed_times.append(source['receipt']['received_at_utc'])
                                     if n in {'BTCUSDT','ETHUSDT'} and tf in {'1h','4h'}:
                                         f=benchmark_fact(bars,members[n],as_of=evaluation_time(),mode=mode,qualification='QUALIFIED')
                                         facts[f.id]=f;benchmark_ids.append(f.id)
-                                except (ContractError,KeyError,ValueError,TypeError) as e:
-                                    report['source_faults'].append({'phase':'targeted_history','symbol':n,'timeframe':tf,'code':safe_error(e)})
-                                finally:history_costs.append(time.monotonic()-fetched_at)
+                                except (ContractError,OSError,KeyError,ValueError,TypeError) as e:
+                                    code=safe_error(e);receipts=api.http.receipts[first_receipt:]
+                                    entry.update(attempted=entry['attempted'] or bool(receipts),
+                                        responded=entry['responded'] or any(r.get('http_status') is not None for r in receipts),
+                                        status='FAILED',reason=code)
+                                    report['source_faults'].append({'phase':'targeted_history','symbol':n,'timeframe':tf,'code':code})
+                                    if code in {'ROUTE_DISABLED','SELECTED_SAMPLE_BUDGET_EXHAUSTED','REQUEST_BUDGET_EXHAUSTED'} and not entry['attempted']:
+                                        entry['status']='DEFERRED'
+                                finally:
+                                    if entry['attempted']:history_costs.append(time.monotonic()-fetched_at)
                     fetch_selected(('BTCUSDT','ETHUSDT'))
                     context=build_context(facts,as_of=evaluation_time(),eligible_symbols=inventory.eligible_symbols,
                         eligible_known=True,benchmark_ids=benchmark_ids,return_ids=return_ids)
@@ -832,8 +898,6 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             limit=spec['max_targeted_alt_symbols'])
                     report['allocation_study']=allocation_study
                     report['targeted_allocation']=allocations
-                    for sample in report['prospective_audit']['sample']:
-                        sample['price_history_reviewed']=sample['symbol'] in alt
                     report['not_reviewed_budget']=[{**n,'reason':'NOT_REVIEWED_BUDGET'} for n in union.values()
                         if n['native_symbol'] not in {*alt,'BTCUSDT','ETHUSDT'}]
                     fetch_selected(alt)
@@ -970,11 +1034,23 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                 'deferred_reference_budget':[r.id for r in live_refs if r not in analytical_refs],
                                 'scope':'CURRENT_RESEARCH_ALLOCATION; ALL_FROZEN_REFERENCES_RETAINED_AS_OBSTACLES',
                                 'allowance_from_measured_source_cost':allowance})
-                        report['selected_research'][-1]['analytical_engine']=analyze_selected(
-                            bars,members[n].tick_size,cutoff=cutoffs[tf],as_of=as_of,
-                            benchmark=bench[0] if bench and len(bench[0])==len(bars) else None,
-                            references=analytical_refs,inputs=sources.inputs_for(n,tf,cutoffs[tf],as_of),
-                            current_episodes=bool(recovery))
+                        try:
+                            report['selected_research'][-1]['analytical_engine']=analyze_selected(
+                                bars,members[n].tick_size,cutoff=cutoffs[tf],as_of=as_of,
+                                benchmark=bench[0] if bench and len(bench[0])==len(bars) else None,
+                                references=analytical_refs,inputs=sources.inputs_for(n,tf,cutoffs[tf],as_of),
+                                current_episodes=bool(recovery))
+                        except ContractError as error:
+                            code=safe_error(error)
+                            history_status[n,tf].update(status='EVALUATION_FAILED',reason=code)
+                            report['selected_research'].pop()
+                            report['source_faults'].append({'phase':'selected_structure','symbol':n,'timeframe':tf,'code':code})
+                            continue
+                        completed=sorted({h['family'] for h in report['selected_research'][-1]['analytical_engine']['families']
+                            if h['status'] in {'COMPUTED','NO_EVENT_IN_COMPLETE_WINDOW'}})
+                        history_status[n,tf].update(evaluation_completed=bool(completed),
+                            status='EVALUATED' if completed else 'EVALUATION_INCOMPLETE',
+                            evaluated_families=completed)
                         report['selected_research'][-1]['analytical_source_gaps']=[{
                             'family':h['family'],'status':h['status'],'reason':h.get('details',{}),
                             'source_hash':source['source_response_sha256'],'cutoff':cutoffs[tf],
@@ -1265,15 +1341,20 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             cov.update(remote_requested=cp['requested'],remote_evaluated=cp['evaluated'],
                                 remote_returned=cp['returned'],remote_failed=cp['failed'],remote_missing=cp['missing'],
                                 remote_evaluable=cp['evaluated'],qualified_remote_evaluated=cp['qualified_method_predicates_evaluated'],
-                                remote_unsupported=cp['unsupported'],qualification=cp['qualification'],
-                                unsupported_or_unqualified=cp['unsupported'],complete_method_evaluated=0,
+                                remote_unsupported=cp['unsupported'],remote_deferred=cp['deferred'],
+                                remote_not_evaluated=cp['not_evaluated'],qualification=cp['qualification'],
+                                unsupported_or_unqualified=len(members),complete_method_evaluated=0,
                                 predicate_scope='SOURCE_QUALIFIED_FIXED_AGE_BOUNDARY_F2_LOWER_F4_F5_NOMINATION_SUBCLASS',
                                 reason='FULL_METHOD_NOT_CLAIMED; F2_UPPER_POSITIVE_UNQUALIFIED; TARGETED_TICK_AND_INITIATIVE_CHECKS_REQUIRED')
                     report['coverage']['production_remote_method_evaluated']=sum(p['qualified_method_predicates_evaluated'] for p in report['causal_packs'])
                     report['coverage']['families_by_timeframe']={tf:{f'F{i}':{
                         'eligible':len(members),'remote_predicate_requested':next((p['requested'] for p in report['causal_packs'] if p['timeframe']==tf),0) if i in (2,4,5) else 0,
                         'remote_predicate_evaluated':next((p['evaluated'] for p in report['causal_packs'] if p['timeframe']==tf),0) if i in (2,4,5) else 0,
-                        'complete_family_evaluated':0,'status':'NARROW_CAUSAL_NOMINATION' if i in (2,4,5) and tf=='1h' and report['causal_packs'] else 'TARGETED_OR_UNQUALIFIED'}
+                        'remote_predicate_qualified':next((p['qualified_method_predicates_evaluated']
+                            for p in report['causal_packs'] if p['timeframe']==tf),0) if i in (2,4,5) else 0,
+                        'complete_family_evaluated':0,'status':'NARROW_CAUSAL_NOMINATION' if i in (2,4,5) and any(
+                            p['timeframe']==tf and p['qualified_method_predicates_evaluated'] for p in report['causal_packs'])
+                            else 'TARGETED_OR_UNQUALIFIED'}
                         for i in range(1,10)} for tf in ('1h','15m','4h')}
                     # Selected algorithm execution and qualified formation are
                     # distinct from broad coverage, including valid no-events.
@@ -1309,8 +1390,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     report['route_coverage']={route:{'eligible':ir['eligible_contracts'],
                         'unit':'UNIQUE_SYMBOL_TIMEFRAME',
                         'requested':len({(x['native_symbol'],x['timeframe']) for x in union.values() if any(r.startswith(route+'_') for r in x['routes'])}),
-                        'evaluated':len({(n,tf) for n,tf in selected if (n,tf) in union
-                            and any(r.startswith(route+'_') for r in union[n,tf]['routes'])}),
+                        'evaluated':len({(n,tf) for (n,tf),entry in history_status.items() if entry['evaluation_completed']
+                            and (n,tf) in union and any(r.startswith(route+'_') for r in union[n,tf]['routes'])}),
                         'returned':len({(n,tf) for n,tf in selected if (n,tf) in union
                             and any(r.startswith(route+'_') for r in union[n,tf]['routes'])}),
                         'hypothesis_card_records':len({c.id for c in cards if any(r.startswith(route+'_') for r in c.origins)}),
@@ -1359,6 +1440,28 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     if checked['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}:fresh_handoffs.append(checked)
                     else:report['near_misses'].append({**checked,'admission_reason':'SOURCE_OR_CUTOFF_AGED_BEFORE_EXPORT'})
                 report['shortlist']=fresh_handoffs
+            if report.get('prospective_audit'):
+                samples=report['prospective_audit']['sample']
+                for sample in samples:
+                    if cached:
+                        review=sample.get('history_review')
+                        if review is not None:review['snapshot_reused']=True
+                        continue
+                    timeframes={tf:history_status.get((sample['symbol'],tf),{
+                        'selected':False,'attempted':False,'responded':False,'accepted':False,
+                        'evaluation_completed':False,'status':'NOT_EVALUATED','cutoff':cutoffs[tf]})
+                        for tf in ('1h','15m')}
+                    complete=all(entry['evaluation_completed'] for entry in timeframes.values())
+                    sample['history_review']={'required_timeframes':['1h','15m'],'timeframes':timeframes,
+                        'required_history_accepted':all(entry['accepted'] for entry in timeframes.values()),
+                        'required_coverage_obtained':all(entry.get('coverage_obtained',False) for entry in timeframes.values()),
+                        'structural_evaluation_completed':complete,'snapshot_reused':False,
+                        'scope':'SELECTED_PRICE_STRUCTURE; FULL_METHOD_QUALIFICATION_SEPARATE'}
+                    sample['price_history_reviewed']=complete
+                report['prospective_audit']['history_review_counts']={'drawn':len(samples),
+                    'selected':sum(any(t['selected'] for t in s.get('history_review',{}).get('timeframes',{}).values()) for s in samples),
+                    'completed':sum(s['price_history_reviewed'] for s in samples),
+                    'incomplete_or_unreviewed':sum(not s['price_history_reviewed'] for s in samples)}
             if previous and previous.get('prospective_audit'):
                 current={o['native_symbol']:o for p in pulse if p['kind']=='ticker' for o in p['observations']} if 'pulse' in locals() else {}
                 follow=[]

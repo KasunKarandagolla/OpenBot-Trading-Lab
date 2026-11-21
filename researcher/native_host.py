@@ -9,16 +9,18 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+from .agent_review import REJECTION_CODES
 from .contracts import ContractError,encode
 from .settings import ROOT
 
 OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','assert_parent','integration_preflight','owner_proof','collect','attest_start','review_count','delivery_proof','observe_handoff'})
+READER_ERRORS=REJECTION_CODES|{'RUNNER_OWNER_START_REQUIRED','RUNNER_START_UNATTESTED','NATIVE_WINDOWS_READER_REQUIRED'}
 
 
 def delegated(config):return os.name!='nt' and bool(config.get('native_python'))
 
 
-def call(config,operation,values=None):
+def call(config,operation,values=None,*,timeout_seconds=30):
     from .native_identity import local_path,under_work
     from .native_app import _windows
     if operation not in OPERATIONS:raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
@@ -34,18 +36,17 @@ def call(config,operation,values=None):
         bootstrap="import runpy,sys; sys.path.insert(0,sys.argv.pop(1)); sys.argv[0]='native_read'; runpy.run_module('researcher.native_host',run_name='__main__')"
         command=[str(executable),'-X','utf8','-c',bootstrap,_windows(ROOT),'--operation',operation,'--input',_windows(under_work(temp))]
         result=subprocess.run(command,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
-            encoding='utf-8',timeout=30)
+            encoding='utf-8',timeout=min(30,timeout_seconds))
         if len(result.stdout.encode())>256*1024:raise ContractError('NATIVE_REVIEW_FILE_SIZE')
         try:response=json.loads(result.stdout)
         except ValueError:raise ContractError('NATIVE_STORAGE_UNAVAILABLE') from None
         if result.returncode or not isinstance(response,dict) or 'result' not in response:
-            from .native_identity import ERRORS
             code=response.get('reason') if isinstance(response,dict) else None
-            if code not in ERRORS and code not in {'RUNNER_OWNER_START_REQUIRED','RUNNER_START_UNATTESTED','AGENT_SKILL_HASH'}:
+            if not isinstance(code,str) or code not in READER_ERRORS:
                 code='NATIVE_STORAGE_UNAVAILABLE'
             from .native_identity import NativeEvidenceError,safe_diagnostic
             diagnostic=safe_diagnostic(response.get('diagnostic')) if isinstance(response,dict) else {}
-            if diagnostic:raise NativeEvidenceError(code,diagnostic['stage'],diagnostic['check'],diagnostic['schema_variant'])
+            if diagnostic:raise NativeEvidenceError(code,diagnostic=diagnostic)
             raise ContractError(code)
         return response['result']
     except subprocess.TimeoutExpired:raise ContractError('NATIVE_STORAGE_TIMED_OUT') from None
@@ -95,9 +96,11 @@ def main():
         if os.name!='nt':raise ContractError('NATIVE_WINDOWS_READER_REQUIRED')
         print(encode({'result':execute(args.operation,args.input)}));return 0
     except (ValueError,TypeError,KeyError,OSError,__import__('sqlite3').Error) as error:
-        code=str(error) if isinstance(error,ContractError) else 'NATIVE_STORAGE_UNAVAILABLE'
-        from .native_identity import safe_diagnostic
+        from .native_identity import safe_diagnostic,storage_fault
+        code=str(error) if isinstance(error,ContractError) and str(error) in READER_ERRORS else 'NATIVE_STORAGE_UNAVAILABLE'
         diagnostic=safe_diagnostic(getattr(error,'diagnostic',None))
+        if isinstance(error,(OSError,__import__('sqlite3').Error)):
+            code,diagnostic=storage_fault(error,'READER')
         print(encode({'reason':code,**({'diagnostic':diagnostic} if diagnostic else {})}));return 2
 
 

@@ -59,7 +59,7 @@ def selected(bars,tick,methods,refs,benchmark):
 def report_coverage(report):
     rows={}
     for mid,path in MEASUREMENTS.items():
-        entries=[s['analytical_engine'].get('measurements',{}).get(mid) for s in report.get('selected_research',())]
+        entries=[s.get('analytical_engine',{}).get('measurements',{}).get(mid) for s in report.get('selected_research',())]
         entries=[e for e in entries if e]
         rows[mid]={'code_path':path,'selected_symbol_timeframes':len(entries),
             'state_counts':dict(Counter(e['status'] for e in entries)),
