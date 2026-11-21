@@ -1,15 +1,16 @@
 """Provider dispatch for trusted, model-flexible native receipts. Never invokes."""
 import json
 from .contracts import ContractError, digest, utc
-from .native_identity import assert_parent, read_db, ref
+from .native_identity import NativeEvidenceError, assert_parent, checked_path, local_path, read_db, ref
 
 
 def integration_preflight(config,*,as_of):
     """Read the actual current adapter and installed skills before market I/O."""
     from .native_host import delegated,call
     if delegated(config):return call(config,'integration_preflight',{'as_of':as_of})
-    from .native_identity import active_identity,parent_binding,local_path
+    from .native_identity import active_identity,parent_binding
     from .native_codex import turn_records,context_matches,SCHEMA
+    from .native_handoff import wsl_root
     from .settings import ROOT
     from datetime import timedelta
     identity=active_identity(config);binding=parent_binding(identity,config)
@@ -20,16 +21,17 @@ def integration_preflight(config,*,as_of):
         if row['type']=='turn_context':
             context_matches(row['payload'],binding['turn'],identity['model'],config['agent_workspace']);context=True
     if not context:raise ContractError('NATIVE_NOT_INVOKED')
-    root=str(ROOT)
-    if len(root)>2 and root[1]==':':root='/mnt/'+root[0].lower()+'/'+root[3:].replace(chr(92),'/')
+    root=wsl_root()
     hashes={}
     for name,source in [('market-research-review',ROOT/'.agents/skills/market-research-review/SKILL.md'),
             ('openbot-market-research',ROOT/'integration/openbot-market-research/SKILL.md')]:
-        expected=source.read_text(encoding='utf-8').replace('@@RESEARCH_ROOT@@',root).encode()
-        installed=[local_path(config['agent_workspace'])/prefix/'skills'/name/'SKILL.md'
+        expected=checked_path(source,error='AGENT_SKILL_HASH').read_text(
+            encoding='utf-8').replace('@@RESEARCH_ROOT@@',root).encode()
+        installed=[checked_path(local_path(config['agent_workspace'])/prefix/'skills'/name/'SKILL.md',
+            error='AGENT_SKILL_HASH')
             for prefix in ('.agents','.claude')]
         found=[p for p in installed if p.is_file()]
-        if not found or any(any(q.is_symlink() for q in (p,*p.parents)) or p.read_bytes()!=expected for p in found):
+        if not found or any(p.read_bytes()!=expected for p in found):
             raise ContractError('AGENT_SKILL_HASH')
         hashes[name]=digest(expected)
     return {'status':'NATIVE_READER_AND_INSTALLED_SKILLS_VERIFIED','identity':identity,
@@ -49,8 +51,7 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30):
         raise ContractError('NATIVE_REQUEST_STALE')
     if identity['provider']=='opencode':
         from .native_app import collect as compatibility
-        from pathlib import Path
-        target=Path(config['agent_workspace'])/'research-review-6c'/(request['material_sha256']+'.json')
+        target=local_path(config['agent_workspace'])/'research-review-6c'/(request['material_sha256']+'.json')
         return compatibility(request,config,target,as_of=as_of)
     if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
     from .native_codex import attest,attest_handoff,observe_submission
@@ -92,7 +93,10 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30):
     message,turn,start,end,session,model,provider,turn_thread,session_thread=finals[0]
     if (turn_thread!=thread or session_thread!=thread or ref(session)==identity['external_session_ref']
             or ref(turn)==identity['turn_ref']):raise ContractError('NATIVE_SESSION_MISMATCH')
-    if provider!=identity['provider'] or model!=identity['model']:raise ContractError('NATIVE_MODEL_SWITCHED')
+    if provider!=identity['provider']:
+        raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_CHILD_PROVIDER')
+    if model!=identity['model']:
+        raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_CHILD_MODEL')
     if not utc(request['as_of_utc'])<=utc(created)<=utc(start)<=utc(end)<=utc(as_of):raise ContractError('AGENT_EVIDENCE_FUTURE')
     raw=json.loads(message).get('text')
     if not isinstance(raw,str) or len(raw.encode())>32768:raise ContractError('AGENT_REPLY_SIZE')
@@ -138,7 +142,7 @@ def delivery_proof(state,config):
     """
     from .native_host import delegated,call
     if delegated(config):return call(config,'delivery_proof',{'state':state})
-    from .native_identity import parent_binding,local_path
+    from .native_identity import parent_binding
     from .native_codex import turn_records,context_matches
     from datetime import timedelta
     identity=state['native_identity'];binding=parent_binding(identity,config)
@@ -146,9 +150,9 @@ def delivery_proof(state,config):
     if not artifact:return None
     target=local_path(artifact['attachment_path'])
     expected=local_path(config['agent_workspace'])/'market-research-results'/(state['job_id']+'.zip')
-    if target!=expected or any(p.is_symlink() for p in (target,*target.parents)):
+    if target!=expected:
         raise ContractError('NATIVE_REPLY_PROVENANCE')
-    raw_zip=target.read_bytes()
+    raw_zip=checked_path(target,error='NATIVE_REPLY_PROVENANCE').read_bytes()
     if digest(raw_zip)!=artifact['sha256']:raise ContractError('NATIVE_REPLY_PROVENANCE')
     from .diagnostic_export import verify_zip
     verify_zip(raw_zip)

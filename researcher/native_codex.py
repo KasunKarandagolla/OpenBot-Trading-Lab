@@ -6,7 +6,7 @@ returned. Unknown schemas and every review tool operation fail closed.
 """
 import json
 from .contracts import ContractError, encode, utc
-from .native_identity import local_path, path_key, read_db, ref, NativeEvidenceError
+from .native_identity import checked_path, local_path, path_key, read_db, ref, NativeEvidenceError
 
 SCHEMA='CODEX_ROLLOUT_0169'
 
@@ -74,7 +74,7 @@ def _stamp(value,variant):
 
 def context_matches(payload,turn,model,workspace):
     if payload.get('turn_id')!=turn:raise ContractError('NATIVE_SESSION_MISMATCH')
-    if payload.get('model')!=model:raise ContractError('NATIVE_MODEL_SWITCHED')
+    if payload.get('model')!=model:_fail('NATIVE_MODEL_SWITCHED','IDENTITY','ROLLOUT_TURN_CONTEXT_MODEL')
     if 'cwd' in payload and path_key(payload['cwd'])!=path_key(workspace):
         raise ContractError('NATIVE_SESSION_MISMATCH')
 
@@ -87,7 +87,8 @@ def _usage(value):
 
 def review_brief(request):
     from .settings import ROOT
-    skill=(ROOT/'.agents/skills/market-research-review/SKILL.md').read_text(encoding='utf-8')
+    skill=checked_path(ROOT/'.agents/skills/market-research-review/SKILL.md',
+        error='AGENT_SKILL_HASH').read_text(encoding='utf-8')
     text=('OPENBOT-RESEARCH-'+request['material_sha256']+'\n'
         'This isolated task is the bounded evidence-only native review. The complete canonical skill '
         'and request are supplied verbatim below. Read both through EOF. Use no tools, shell, network, '
@@ -116,9 +117,13 @@ def session_path(config,session,workspace):
     with read_db(state) as db:
         row=db.execute('SELECT rollout_path,cwd FROM threads WHERE id=?',(session,)).fetchone()
     if not row or path_key(row[1])!=path_key(workspace):raise ContractError('NATIVE_SESSION_MISMATCH')
-    p=local_path(row[0]);root=state.parent
-    if (not any(p.is_relative_to(root/d) for d in ('sessions','archived_sessions')) or
-            '..' in p.parts or any(x.is_symlink() for x in (p,*p.parents)) or not p.is_file()):
+    try:p=local_path(row[0])
+    except ValueError:raise ContractError('NATIVE_SESSION_MISMATCH') from None
+    root=state.parent
+    if not any(p.is_relative_to(root/d) for d in ('sessions','archived_sessions')):
+        raise ContractError('NATIVE_SESSION_MISMATCH')
+    p=checked_path(p,error='NATIVE_SESSION_MISMATCH')
+    if not p.is_file():
         raise ContractError('NATIVE_SESSION_MISMATCH')
     if p.stat().st_size>256*1024*1024:raise ContractError('NATIVE_REVIEW_FILE_SIZE')
     return p
@@ -215,7 +220,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
     rows=list(turn_records(config,session,turn,workspace,start=utc(start)-timedelta(seconds=1),end=utc(end)+timedelta(seconds=1),backend=backend))
     with read_db(config['provider_db']) as db:
         actual=db.execute('SELECT model FROM threads WHERE id=?',(session,)).fetchone()
-    if not actual or actual[0]!=model:raise ContractError('NATIVE_MODEL_SWITCHED')
+    if not actual or actual[0]!=model:_fail('NATIVE_MODEL_SWITCHED','IDENTITY','CODEX_CHILD_THREAD_MODEL')
     context=False;began=False;ended=False;inputs=[];finals=[];responses=set();usage=[]
     calls={};completed=set();delivered=set()
     if evidence is not None:directory,material,fingerprint,pages=evidence
@@ -292,7 +297,8 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
             elif typ=='thread_settings_applied':
                 if 'thread_id' in p and p['thread_id']!=session:raise ContractError('NATIVE_SESSION_MISMATCH')
                 actual=p.get('thread_settings',{}).get('model')
-                if actual is not None and actual!=model:raise ContractError('NATIVE_MODEL_SWITCHED')
+                if actual is not None and actual!=model:
+                    _fail('NATIVE_MODEL_SWITCHED','IDENTITY','ROLLOUT_SETTINGS_MODEL',variant)
             elif typ not in {'token_count'}:raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
         elif kind=='token_usage_record':
             if not (began and context):_fail('NATIVE_REVIEW_INCOMPLETE','EVIDENCE','ORDER',variant)

@@ -11,6 +11,7 @@ from pathlib import Path,PureWindowsPath
 from datetime import datetime,timezone
 from .contracts import ContractError,digest,encode,utc
 from .agent_review import AGENT,parse_reply,validate_reply
+from .native_identity import checked_path,local_path,under_work
 from .settings import ROOT
 
 
@@ -31,36 +32,35 @@ def _read_db(path):
 
 def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
     """Publish an exact request and prompt in the existing research workspace."""
-    folder=Path(directory).absolute();config_path=Path(config_file).absolute()
     if not re.fullmatch('[0-9a-f]{64}',material):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    for p in (folder,config_path):
-        if not p.is_relative_to(ROOT/'work') or '..' in p.parts or any(x.is_symlink() for x in (p,*p.parents)):
-            raise ContractError('NATIVE_REVIEW_MUST_BE_UNDER_WORK')
+    folder=under_work(directory);config_path=under_work(config_file)
     config=json.loads(config_path.read_text())
     if not isinstance(config,dict):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     config.pop('native_python',None)
     if set(config)!={'openbot_db','provider_db','agent_workspace'}:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     if os.name=='nt':config={k:_windows(v) for k,v in config.items()}
-    request=json.loads((folder/(material+'.request.json')).read_text(encoding='utf-8'))
+    request_path=under_work(folder/(material+'.request.json'))
+    request=json.loads(request_path.read_text(encoding='utf-8'))
     from .agent_review import _material
     if request.get('material_sha256')!=material or digest(encode(_material(request)).encode())!=material:
         raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
     if as_of is not None and not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=600:
         raise ContractError('NATIVE_REQUEST_STALE')
     if request.get('native_identity',{}).get('provider')=='codex':
-        from .native_identity import load_private,assert_parent,local_path
+        from .native_identity import load_private,assert_parent
         from .native_handoff import packet
         private=load_private(config_path)
         if verified_identity is not None and verified_identity!=request['native_identity']:
             raise ContractError('NATIVE_SESSION_MISMATCH')
         assert_parent(request['native_identity'],private)
         installed=local_path(private['agent_workspace'])/'.agents/skills/market-research-review/SKILL.md'
-        if digest(installed.read_bytes())!=request['skill_sha256']:raise ContractError('AGENT_SKILL_HASH')
+        if digest(checked_path(installed,error='AGENT_SKILL_HASH').read_bytes())!=request['skill_sha256']:
+            raise ContractError('AGENT_SKILL_HASH')
         args,_,_=packet(request,folder)
-        task_path=folder/(material+'.review-task.json')
+        task_path=under_work(folder/(material+'.review-task.json'))
         raw=encode(args)
         if task_path.exists():
-            if task_path.is_symlink() or task_path.read_text(encoding='utf-8')!=raw:
+            if task_path.read_text(encoding='utf-8')!=raw:
                 raise ContractError('NATIVE_REVIEW_REQUEST_COLLISION')
         else:
             import tempfile
@@ -72,19 +72,18 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
             finally:
                 if temporary is not None:temporary.unlink(missing_ok=True)
         return request,private,folder
-    workspace=Path(config['agent_workspace']).absolute()
-    skill=workspace/'.agents/skills/market-research-review/SKILL.md'
-    if any(p.is_symlink() for p in (workspace,*workspace.parents,skill,*skill.parents)):
-        raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+    workspace=local_path(config['agent_workspace'])
+    skill=checked_path(workspace/'.agents/skills/market-research-review/SKILL.md',
+        error='NATIVE_AGENT_AUDIT_REQUIRED')
     if digest(skill.read_bytes())!=request['skill_sha256']:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     target=workspace/'research-review-6c'/(material+'.json')
-    if any(p.is_symlink() for p in (target,*target.parents)):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    target.parent.mkdir(exist_ok=True)
-    raw=(folder/(material+'.request.json')).read_bytes()
-    if target.exists():
-        if target.is_symlink() or target.read_bytes()!=raw:raise ContractError('NATIVE_REVIEW_REQUEST_COLLISION')
+    target_file=checked_path(target,error='NATIVE_AGENT_AUDIT_REQUIRED')
+    target_file.parent.mkdir(exist_ok=True)
+    raw=request_path.read_bytes()
+    if target_file.exists():
+        if target_file.read_bytes()!=raw:raise ContractError('NATIVE_REVIEW_REQUEST_COLLISION')
     else:
-        with target.open('xb') as stream:stream.write(raw)
+        with target_file.open('xb') as stream:stream.write(raw)
     prompt=(f'OPENBOT-RESEARCH-{material}\n'
         'Use this existing agent and its configured model. Load market-research-review with the skill tool. '
         'Read the entire request through EOF, including its final metadata:\n'+_windows(target)+'\n'
@@ -97,7 +96,7 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
         '(for example F4), NULL or UNKNOWN; never a sentence. strongest_rival is ONLY a supplied '
         'rival label. Do not add narrative fields or put prose/numbers in label fields. '
         'Retain missing sources, chronology, first obstacle, NULL and strongest rival; advice cannot admit a trade.\n')
-    (folder/(material+'.prompt.txt')).write_text(prompt)
+    under_work(folder/(material+'.prompt.txt')).write_text(prompt)
     return request,config,target
 
 
@@ -253,7 +252,7 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
     from .native_codex import observe_submission
     from .native_handoff import load_dispatch, packet, read_object, runner_review, verify_submission_window
     from .native_host import delegated, call
-    from .native_identity import assert_parent, under_work
+    from .native_identity import assert_parent
     from .agent_review import _material
 
     directory=under_work(directory)
@@ -266,7 +265,7 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
     if (request.get('material_sha256')!=material or request.get('native_identity')!=identity
             or digest(encode(_material(request)).encode())!=material):
         raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
-    lease=directory/(material+'.dispatch.json')
+    lease=under_work(directory/(material+'.dispatch.json'))
     # The snapshot timestamp may precede a ticket published concurrently.
     missing={'submission_state':'NOT_OBSERVED','submission_attempts':0,'task_created':False,
         'task':{'count':0,'task_state':'MISSING'}}
@@ -325,10 +324,10 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         first_error=failure(error,'TASK_PUBLICATION')
         emit('REVIEW_FAILED',first_error=first_error)
         return finish('NATIVE_TASK_PUBLICATION_FAILED',terminal_error=first_error)
-    folder=Path(directory);published=clock();published_monotonic=time.monotonic()
+    folder=under_work(directory);published=clock();published_monotonic=time.monotonic()
     from .native_handoff import FRESH_SECONDS, RESPONSE_SECONDS, SUBMISSION_SECONDS, runner_review
     paged=runner_review(folder) and request.get('native_identity',{}).get('provider')=='codex'
-    config_hash=digest(Path(config_file).read_bytes())
+    config_hash=digest(under_work(config_file).read_bytes())
     result['publication_seconds']=round(time.monotonic()-began,6)
     result['request_prepared_at_utc']=published
     freshness_remaining=max(0,FRESH_SECONDS-(utc(published)-utc(request['as_of_utc'])).total_seconds())
@@ -379,7 +378,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         count=0;handoff=None
         try:
             as_of=check_freshness()
-            if digest(Path(config_file).read_bytes())!=config_hash:
+            if digest(under_work(config_file).read_bytes())!=config_hash:
                 raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
             if paged:
                 read_until=deadline if running_at or phase_closed else phase_deadline
@@ -419,7 +418,6 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             else:observed=review_count(request,config,details=True);count=observed['count']
             if count>1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
             if count:
-                from .native_identity import under_work
                 anchor={k:observed[k] for k in ('task_ref','task_created_at_utc')}
                 anchor_path=under_work(folder/(material+'.task-observation.json'))
                 try:
@@ -473,8 +471,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             audit.setdefault('submission_transport','OWNER_OPENBOT_APPLICATION_UI')
             try:
                 for suffix,value in [('reply.json',raw),('audit.json',encode(audit)+'\n')]:
-                    path=folder/(material+'.'+suffix)
-                    if path.is_symlink():raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+                    path=under_work(folder/(material+'.'+suffix))
                     if path.exists() and path.read_text(encoding='utf-8')!=value:raise ContractError('NATIVE_REVIEW_REQUEST_COLLISION')
                     if not path.exists():
                         with path.open('x',encoding='utf-8',newline='') as stream:stream.write(value)

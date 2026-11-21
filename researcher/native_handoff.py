@@ -4,7 +4,7 @@ import re
 from datetime import timedelta
 
 from .contracts import ContractError, digest, encode, utc
-from .native_identity import under_work
+from .native_identity import _ordinary_path, under_work
 from .settings import ROOT
 
 JOB_ID = r'\d{8}T\d{6}Z-[0-9a-f]{32}'
@@ -22,7 +22,7 @@ def runner_review(directory):
 
 
 def wsl_root():
-    root = str(ROOT)
+    root = _ordinary_path(ROOT)
     if len(root) > 2 and root[1] == ':':
         return '/mnt/' + root[0].lower() + '/' + root[3:].replace('\\', '/')
     return root
@@ -73,7 +73,7 @@ def load_dispatch(directory, request, *, as_of):
     """Recheck the immutable saved arguments and ticket against canonical bytes."""
     material = request['material_sha256']
     args, fingerprint, pages = packet(request, directory)
-    path = directory / (material + '.review-task.json')
+    path = under_work(directory / (material + '.review-task.json'))
     if read_object(path) != args or path.read_bytes() != encode(args).encode('utf-8'):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     try:

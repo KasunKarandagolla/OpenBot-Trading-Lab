@@ -5,9 +5,11 @@ The path-only config is owner-managed and must be under ignored work/.
 """
 import errno
 import json
+import os
 from pathlib import Path, PureWindowsPath
 from contextlib import contextmanager
 import sqlite3
+import stat
 from .contracts import ContractError, digest
 from .settings import ROOT
 
@@ -23,8 +25,11 @@ ADAPTERS = {'opencode': 'OPENCODE_V2_SESSION_MESSAGE', 'codex': 'CODEX_ROLLOUT_0
 
 # Diagnostics are labels, never provider values or exception text.
 DIAGNOSTIC_LABELS={
-    'stage':frozenset({'ENVELOPE','SESSION','EVIDENCE'}),
-    'check':frozenset({'JSON','TIMESTAMP','ORDER','VERSION','IDENTITY','BACKEND','CONTEXT','TURN','INPUT','FINAL','TOOLS','COMPLETENESS'}),
+    'stage':frozenset({'ENVELOPE','SESSION','EVIDENCE','IDENTITY'}),
+    'check':frozenset({'JSON','TIMESTAMP','ORDER','VERSION','IDENTITY','BACKEND','CONTEXT','TURN','INPUT','FINAL','TOOLS','COMPLETENESS',
+        'CONFIGURED_PROVIDER','CONFIGURED_MODEL','CONFIGURED_ADAPTER','APP_PARENT_MODEL','APP_PARENT_PROVIDER',
+        'CODEX_PARENT_THREAD_MODEL','ROLLOUT_TURN_CONTEXT_MODEL','APP_CHILD_MODEL','APP_CHILD_PROVIDER',
+        'CODEX_CHILD_THREAD_MODEL','ROLLOUT_SETTINGS_MODEL'}),
     'schema_variant':frozenset({'CODEX_0169','CODEX_0169_ORDINAL','UNRECOGNIZED'})}
 
 STORAGE_LABELS={
@@ -73,30 +78,80 @@ def ref(value):
     return digest(str(value).encode())
 
 
+WINDOWS_EXTENDED = '\\\\?\\'
+
+
+def _ordinary_path(value):
+    value=str(value)
+    extended_unc=WINDOWS_EXTENDED+'UNC\\'
+    if value[:len(extended_unc)].casefold()==extended_unc.casefold():
+        return '\\\\'+value[len(extended_unc):]
+    return value.removeprefix(WINDOWS_EXTENDED)
+
+
 def local_path(value):
-    """Translate a Windows path only on WSL; never resolve through a symlink."""
-    import os
-    value=str(value).removeprefix('\\\\?\\')
-    if os.name=='nt' and value.startswith('/mnt/') and len(value)>7 and value[6]=='/':
+    """Return a normal path for scope comparisons, without resolving links."""
+    raw=str(value)
+    value=_ordinary_path(raw)
+    if (os.name=='nt' and value.startswith('/mnt/') and value[5:6].isascii()
+            and value[5:6].isalpha() and value[6:7]=='/'):
         value=value[5].upper()+':/'+value[7:]
-    if os.name!='nt' and len(value)>2 and value[1]==':' and value[0].isalpha():
-        value='/mnt/'+value[0].lower()+'/'+value[3:].replace('\\','/')
+    if os.name=='nt' or raw.startswith(('\\\\', WINDOWS_EXTENDED)) or value[1:2]==':':
+        windows=PureWindowsPath(value)
+        drive=windows.drive
+        drive_letter=len(drive)==2 and drive[0].isascii() and drive[0].isalpha() and drive[1]==':'
+        share_parts=drive[2:].split('\\') if drive.startswith('\\\\') else []
+        unc=len(share_parts)==2 and all(share_parts) and '..' not in share_parts
+        if (not windows.is_absolute() or not (drive_letter or unc)
+                or value.startswith(('\\\\.\\','\\\\?\\')) or '\x00' in value):
+            raise ValueError('Invalid Windows path')
+        if any(part!='..' and (part.endswith(('.', ' ')) or any(c in part for c in ':*?"<>|')
+                or PureWindowsPath(part).is_reserved()) for part in (*share_parts,*windows.parts[1:])):
+            raise ValueError('Invalid Windows path component')
+        if os.name!='nt':
+            if not drive_letter:raise ValueError('Windows share requires a Windows reader')
+            return Path('/mnt',drive[0].lower(),*windows.parts[1:])
     return Path(value).absolute()
 
 
+def _filesystem_path(path):
+    if os.name!='nt':return path
+    if path.drive.startswith('\\\\'):
+        return Path(WINDOWS_EXTENDED+'UNC\\'+str(path)[2:])
+    return Path(WINDOWS_EXTENDED+str(path))
+
+
+def checked_path(value, *, root=None, error='NATIVE_AUDIT_CONFIG_INVALID'):
+    """Validate ordinary path scope before opening any component."""
+    try:
+        path=local_path(value)
+        boundary=local_path(root) if root is not None else None
+    except (ValueError, TypeError):
+        raise ContractError(error) from None
+    if '..' in path.parts or (boundary is not None and not path.is_relative_to(boundary)):
+        raise ContractError(error)
+    # On Windows the link check itself needs long-path-safe lstat. Walk
+    # top-down and reject each redirect before inspecting any descendant.
+    for component in (*reversed(path.parents),path):
+        try:
+            info=_filesystem_path(component).lstat()
+        except FileNotFoundError:
+            break
+        # Windows name-surrogate reparse points include symlinks and junctions.
+        if stat.S_ISLNK(info.st_mode) or getattr(info,'st_reparse_tag',0)&0x20000000:
+            raise ContractError(error)
+    return _filesystem_path(path)
+
+
 def path_key(value):
-    value=str(value).removeprefix('\\\\?\\')
+    value=_ordinary_path(value)
     if value.startswith('/mnt/') and len(value)>7 and value[6]=='/':
         value=value[5].upper()+':/'+value[7:]
     return str(PureWindowsPath(value)).casefold()
 
 
 def under_work(value):
-    p=local_path(value)
-    if ('..' in p.parts or not p.is_relative_to(ROOT/'work') or
-            any(x.is_symlink() for x in (p,*p.parents))):
-        raise ContractError('NATIVE_REVIEW_MUST_BE_UNDER_WORK')
-    return p
+    return checked_path(value,root=ROOT/'work',error='NATIVE_REVIEW_MUST_BE_UNDER_WORK')
 
 
 def load_private(value):
@@ -110,8 +165,7 @@ def load_private(value):
                 or not all(isinstance(v,str) and v and len(v)<2048 for v in config.values())):
             raise ValueError()
         for k,v in config.items():
-            p=local_path(v)
-            if '..' in p.parts or any(x.is_symlink() for x in (p,*p.parents)):raise ValueError()
+            p=checked_path(v)
             if k!='agent_workspace' and not p.is_file():raise ValueError()
             if k=='agent_workspace' and not p.is_dir():raise ValueError()
         return {**config,'_config_file':str(config_file)}
@@ -187,8 +241,9 @@ def parent_binding(identity,config):
     """
     current=configured_identity(config)
     if current['agent_id']!=identity.get('agent_id'):raise ContractError('NATIVE_AGENT_MISMATCH')
-    if any(current[k]!=identity.get(k) for k in ('provider','model','adapter')):
-        raise ContractError('NATIVE_MODEL_SWITCHED')
+    for field,check in (('provider','CONFIGURED_PROVIDER'),('model','CONFIGURED_MODEL'),('adapter','CONFIGURED_ADAPTER')):
+        if current[field]!=identity.get(field):
+            raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY',check)
     with read_db(config['openbot_db']) as db:
         rows=db.execute('''SELECT h.thread_id,t.turn_id,p.id,p.external_session_id,
           p.model,p.provider,t.started_at,t.completed_at,t.status
@@ -200,12 +255,16 @@ def parent_binding(identity,config):
     if len(matches)!=1:raise ContractError('NATIVE_SESSION_MISMATCH')
     thread,turn,sid,external,model,provider,start,end,status=matches[0]
     if identity.get('parent_started_at_utc',start)!=start:raise ContractError('NATIVE_SESSION_MISMATCH')
-    if model!=identity['model'] or provider!=identity['provider']:raise ContractError('NATIVE_MODEL_SWITCHED')
+    if provider!=identity['provider']:
+        raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_PROVIDER')
+    if model!=identity['model']:
+        raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_MODEL')
     if provider=='codex':
         with read_db(config['provider_db']) as db:
             row=db.execute('SELECT model_provider,model,cwd FROM threads WHERE id=?',(external,)).fetchone()
         if not row or path_key(row[2])!=path_key(config['agent_workspace']):raise ContractError('NATIVE_SESSION_MISMATCH')
-        if row[1]!=model:raise ContractError('NATIVE_MODEL_SWITCHED')
+        if row[1]!=model:
+            raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','CODEX_PARENT_THREAD_MODEL')
         if row[0]!=identity.get('provider_backend'):raise ContractError('NATIVE_SESSION_MISMATCH')
     from .contracts import utc
     utc(start)

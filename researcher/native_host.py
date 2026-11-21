@@ -21,11 +21,13 @@ def delegated(config):return os.name!='nt' and bool(config.get('native_python'))
 
 
 def call(config,operation,values=None,*,timeout_seconds=30):
-    from .native_identity import local_path,under_work
+    from .native_identity import checked_path,under_work
     from .native_app import _windows
     if operation not in OPERATIONS:raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
-    executable=local_path(config.get('native_python',''))
-    if executable.name.casefold()!='python.exe' or not executable.is_file() or not config.get('_config_file'):
+    if not config.get('native_python') or not config.get('_config_file'):
+        raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
+    executable=checked_path(config['native_python'])
+    if executable.name.casefold()!='python.exe' or not executable.is_file():
         raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
     request={'config_file':str(config['_config_file']),'values':values or {}}
     temp=None
