@@ -1,3 +1,20 @@
+# Windows native receipt recovery
+
+The recovery uses tested baseline `27addd0a0ea3d39799aad7f8ac0ba602c103fe42`.
+The Windows reader validated ordinary drive paths before reopening them through
+the same extended path for file metadata and bytes, preserving the link and
+scope checks. A 272-character regression fails against the baseline and passes
+against `7282cf92ea7f185d38f87396f1ccfe3c51ec960e`. The full offline suite passed **527** tests.
+
+The historical `NATIVE_MODEL_SWITCHED` comparison remains unresolved on the
+intended host. The scoped reader now reports the failing comparison and keeps
+exact model, provider and adapter equality. Protected skill sources and the
+source configuration were verified against the baseline. The original job's
+Windows packet, identity and receipt still require a read-only host readback.
+[Recovery report and readback procedure](NATIVE_RECEIPT_WINDOWS_RECOVERY.md)
+
+---
+
 # Consolidated Market Researcher recovery
 
 The recovery starts from the approved `62395f3ff3057c096724498dca5648e06f5da6bb` on
