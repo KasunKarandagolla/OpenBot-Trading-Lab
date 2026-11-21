@@ -1,3 +1,26 @@
+# Consolidated Market Researcher recovery
+
+The recovery starts from the approved `62395f3ff3057c096724498dca5648e06f5da6bb` on
+`feature/external-first-market-researcher`. The tested implementation is
+`27addd0a0ea3d39799aad7f8ac0ba602c103fe42`. Draft PR #24 carries the implementation and its verification.
+
+The scan protects 15M breadth, runs the qualified causal 1H pack before optional
+work and reports actual dispatch, validation and deferred coverage. Selected
+audit draws require completed price-structure assessment on both timeframes.
+F4 recognizes a later qualifying move after weak opposing progress. The native
+runner closes submission observation on deadline, preserves a reserved packet
+within its original freshness during a reader outage, and serializes terminal
+state and final delivery.
+
+The full offline suite passed **517** tests. Configuration, 320
+independent ATR comparisons and 25 protected paths passed. No market or native
+task/model calls were made. The eight independent audit files were unavailable.
+Current Basis 1H breadth, Windows receipt access, genuine native execution and
+final ZIP delivery remain pending one controlled owner-host acceptance.
+[Recovery report and acceptance procedure](CONSOLIDATED_RECOVERY_IMPLEMENTATION.md)
+
+---
+
 # Native handoff recovery — 20 November 2026
 
 The approved baseline `d07b450c28121da778c17888f45eb657f4c24b20` was fetched
