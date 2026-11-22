@@ -1,5 +1,9 @@
 # Windows native receipt recovery
 
+For a historical receipt after a Researcher model change, use the dynamic
+identity release and its checkout instructions.
+[Dynamic model identity and owner-host readback](NATIVE_DYNAMIC_MODEL_IDENTITY.md)
+
 | Release reference | Value |
 |---|---|
 | Tested baseline | `27addd0a0ea3d39799aad7f8ac0ba602c103fe42` |

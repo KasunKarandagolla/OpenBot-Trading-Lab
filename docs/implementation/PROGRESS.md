@@ -1,3 +1,21 @@
+# Dynamic native model identity
+
+From tested baseline `7282cf92ea7f185d38f87396f1ccfe3c51ec960e`, the owner-confirmed
+`CONFIGURED_MODEL` failure was reproduced after a legitimate selection change.
+The implementation at `c4e93d31f3dbc0074f6652f68b1cb4215c3382fe` verifies historical receipts against
+the captured parent, child and model. Active native work still checks the
+configured model against the captured job. The next authorized job captures
+its own model from the live configuration and attested session.
+
+The full offline suite passed **532** tests in 529.223 seconds.
+Configuration and 25 protected path checks passed. The configuration manifest
+SHA-256 is `9afd9d38838c2f767db5bb995633928380db3ac8b09c8f5014f3a15c805623e3`.
+The owner reported successful Windows packet and ten-page readback.
+The original job's historical model receipt remains pending bounded host
+verification. [Recovery and readback procedure](NATIVE_DYNAMIC_MODEL_IDENTITY.md)
+
+---
+
 # Windows native receipt recovery
 
 The recovery uses tested baseline `27addd0a0ea3d39799aad7f8ac0ba602c103fe42`.
