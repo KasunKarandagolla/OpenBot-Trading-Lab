@@ -187,7 +187,7 @@ def recorded_launch_matches(item,request_id,root,host_os):
 def attest_start(state,config):
     from .native_host import delegated,call
     if delegated(config):return call(config,'attest_start',{'state':state})
-    from .native_codex import turn_records,context_matches
+    from .native_codex import turn_records,check_turn_model
     from datetime import timedelta
     identity=state['native_identity'];assert_current(identity,config)
     if _owner_proof(identity,config,expected_commit=state['commit'])['owner_message_sha256']!=state['owner_message_sha256']:
@@ -202,9 +202,7 @@ def attest_start(state,config):
     context=False;proof=None
     for x in turn_records(config,session,turn,config['agent_workspace'],start=utc(start_at)-timedelta(seconds=1),end=utc(now_utc()),backend=identity.get('provider_backend')):
         p=x['payload']
-        if x['type']=='turn_context':
-            context_matches(p,turn,identity['model'],config['agent_workspace'])
-            context=True
+        context=check_turn_model(x,session,turn,identity['model'],config['agent_workspace'],context)
         if x['type']=='event_msg' and p.get('type')=='item_completed' and p.get('turn_id')==turn:
             if p.get('thread_id')!=session:raise ContractError('NATIVE_SESSION_MISMATCH')
             item=p.get('item',{})

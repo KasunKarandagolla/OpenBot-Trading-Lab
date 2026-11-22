@@ -1,3 +1,24 @@
+# Historical native receipt compatibility
+
+The approved code baseline was `c4e93d31f3dbc0074f6652f68b1cb4215c3382fe`.
+The integration branch advanced through the documentation-only upstream
+revision `e606f9e6f3f603c0084e8a3e537b83c7a8b06c83` before publication.
+Historical Codex model checks now use the exact bound parent and child turns.
+The active path still verifies the configured model and session projections.
+The paged reader validates the observed Code Mode envelope and its paired
+literal command, successful execution and model-facing page bytes.
+
+Windows readback of `20261121T155516Z-817636a12ff84a4797555d0d2887de42` passed
+inside its original freshness envelope. It verified one acknowledged parent
+submission, the child execution, ten pages and the final reply. The saved job
+is `PARTIAL`, and the historical advice has expired for current use. All 536
+offline tests, configuration validation and 28 protected-path comparisons
+passed. A future live acceptance requires separate owner authorization and a
+passing preflight for the active runtime and installed skills.
+[Verification details and evidence hashes](NATIVE_DYNAMIC_MODEL_IDENTITY.md#receipt-compatibility-verification)
+
+---
+
 # Dynamic native model identity
 
 From tested baseline `7282cf92ea7f185d38f87396f1ccfe3c51ec960e`, the owner-confirmed

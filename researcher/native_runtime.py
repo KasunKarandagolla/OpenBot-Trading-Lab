@@ -9,18 +9,14 @@ def integration_preflight(config,*,as_of):
     from .native_host import delegated,call
     if delegated(config):return call(config,'integration_preflight',{'as_of':as_of})
     from .native_identity import active_identity,parent_binding
-    from .native_codex import turn_records,context_matches,SCHEMA
+    from .native_codex import attest_turn_model,SCHEMA
     from .native_handoff import wsl_root
     from .settings import ROOT
-    from datetime import timedelta
     identity=active_identity(config);binding=parent_binding(identity,config,require_configured_model=True)
     if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
-    context=False
-    for row in turn_records(config,binding['external'],binding['turn'],config['agent_workspace'],
-            start=utc(binding['started_at'])-timedelta(seconds=1),end=utc(as_of),backend=identity['provider_backend']):
-        if row['type']=='turn_context':
-            context_matches(row['payload'],binding['turn'],identity['model'],config['agent_workspace']);context=True
-    if not context:raise ContractError('NATIVE_NOT_INVOKED')
+    attest_turn_model(config,binding['external'],binding['turn'],identity['model'],config['agent_workspace'],
+        start=utc(binding['started_at']),end=utc(as_of),backend=identity['provider_backend'],
+        missing='NATIVE_NOT_INVOKED')
     root=wsl_root()
     hashes={}
     for name,source in [('market-research-review',ROOT/'.agents/skills/market-research-review/SKILL.md'),
@@ -48,7 +44,7 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
     from .agent_review import parse_reply,validate_reply,REJECTION_CODES
     identity=request.get('native_identity')
     if not isinstance(identity,dict):raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
-    assert_parent(identity,config,require_configured_model=require_configured_model)
+    assert_parent(identity,config,require_configured_model=require_configured_model,as_of=as_of)
     if request.get('model')!=identity['model']:raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
     if not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=600:
         raise ContractError('NATIVE_REQUEST_STALE')
@@ -93,12 +89,13 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
                 raise ContractError('NATIVE_TASK_FAILED')
             return None
         if len(finals)!=1:raise ContractError('NATIVE_REVIEW_INCOMPLETE')
-    message,turn,start,end,session,model,provider,turn_thread,session_thread=finals[0]
+    message,turn,start,end,session,session_model,provider,turn_thread,session_thread=finals[0]
     if (turn_thread!=thread or session_thread!=thread or ref(session)==identity['external_session_ref']
             or ref(turn)==identity['turn_ref']):raise ContractError('NATIVE_SESSION_MISMATCH')
     if provider!=identity['provider']:
         raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_CHILD_PROVIDER')
-    if model!=identity['model']:
+    model=identity['model']
+    if require_configured_model and session_model!=model:
         raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_CHILD_MODEL')
     if not utc(request['as_of_utc'])<=utc(created)<=utc(start)<=utc(end)<=utc(as_of):raise ContractError('AGENT_EVIDENCE_FUTURE')
     raw=json.loads(message).get('text')
@@ -117,8 +114,9 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
         evidence=(directory,request['material_sha256'],fingerprint,pages)
     else:attest_handoff(config,identity,request,as_of=as_of,require_configured_model=require_configured_model)
     proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
-        expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence)
-    assert_parent(identity,config,require_configured_model=require_configured_model)
+        expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence,
+        require_thread_model=require_configured_model)
+    assert_parent(identity,config,require_configured_model=require_configured_model,as_of=as_of)
     try:
         validated=validate_reply(parse_reply(raw),request)
         validation={'reply_validation_status':'VALIDATED','validated_rows':validated['accepted']}
@@ -147,8 +145,9 @@ def delivery_proof(state,config):
     if delegated(config):return call(config,'delivery_proof',{'state':state})
     from .native_identity import parent_binding
     from .native_codex import turn_records,context_matches
+    from .contracts import now_utc
     from datetime import timedelta
-    identity=state['native_identity'];binding=parent_binding(identity,config,require_configured_model=False)
+    identity=state['native_identity'];binding=parent_binding(identity,config,require_configured_model=False,as_of=now_utc())
     artifact=state.get('artifact',{})
     if not artifact:return None
     target=local_path(artifact['attachment_path'])

@@ -69,7 +69,7 @@ def execute(operation,input_file):
     if operation=='active_identity':return identity.active_identity(config)
     if operation=='assert_current':return identity.assert_current(v['identity'],config)
     if operation=='assert_parent':return identity.assert_parent(v['identity'],config,
-        require_configured_model=v.get('require_configured_model',False))
+        require_configured_model=v.get('require_configured_model',False),as_of=v.get('as_of'))
     if operation=='collect':
         from .native_runtime import collect
         return collect(v['request'],config,as_of=v['as_of'],directory=v.get('directory'),

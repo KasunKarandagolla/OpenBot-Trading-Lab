@@ -121,7 +121,12 @@ class CodexRuntimeFixtures(unittest.TestCase):
         self.assertEqual(before,encode(self.request))
 
     def test_child_wrong_model_agent_session_are_rejected(self):
-        mutations=[("UPDATE projection_provider_sessions SET model='wrong' WHERE id='CHILD_SESSION'",'MODEL_SWITCHED'),
+        with sqlite3.connect(self.config['openbot_db']) as db:
+            db.execute("UPDATE projection_provider_sessions SET model='wrong' WHERE id='CHILD_SESSION'")
+        with self.assertRaisesRegex(ContractError,'MODEL_SWITCHED'):
+            collect(self.request,self.config,as_of=self.time(5),require_configured_model=True)
+        self.assertEqual(self.get()[1]['model'],self.identity['model'])
+        mutations=[
             ("UPDATE projection_agent_threads SET agent_id='wrong'",None),
             ("UPDATE projection_provider_sessions SET external_session_id='unrelated' WHERE id='CHILD_SESSION'",'SESSION_MISMATCH')]
         backup=Path(self.config['openbot_db']).read_bytes()

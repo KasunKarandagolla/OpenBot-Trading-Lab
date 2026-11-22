@@ -57,7 +57,7 @@ class DynamicModelIdentity(unittest.TestCase):
         self.assertEqual(len(f.app.submitted), 1)
         self.assertTrue(raw)
 
-    def test_next_owner_job_captures_and_executes_its_own_supported_model(self):
+    def test_reused_session_captures_new_model_and_preserves_original_turn_receipt(self):
         f = self.job
         self.complete_first()
         first_identity = dict(f.f.identity)
@@ -68,35 +68,36 @@ class DynamicModelIdentity(unittest.TestCase):
         cfg = f.f.config
         with sqlite3.connect(cfg['openbot_db']) as db:
             db.execute("UPDATE projection_turns SET status='completed',completed_at=? WHERE turn_id='PARENT_TURN'", (at,))
-            db.execute("UPDATE projection_provider_sessions SET state='closed' WHERE id='PARENT_SESSION'")
+            db.execute("UPDATE projection_provider_sessions SET model=? WHERE id='PARENT_SESSION'", (model,))
             db.execute("UPDATE projection_threads SET active_turn_id='NEXT_TURN' WHERE thread_id='MAIN'")
-            db.execute('INSERT INTO projection_provider_sessions VALUES(?,?,?,?,?,?)',
-                       ('NEXT_SESSION','MAIN','codex','NEXT',model,'active'))
             db.execute('INSERT INTO projection_turns VALUES(?,?,?,?,?,?)',
-                       ('NEXT_TURN','MAIN','NEXT_SESSION','running',at,None))
+                       ('NEXT_TURN','MAIN','PARENT_SESSION','running',f.f.time(f.seconds + 1),None))
             db.execute('INSERT INTO projection_deliveries VALUES(?,?,?)', ('NEXT_TURN','AGENT','OWNER_NEXT'))
             db.execute('INSERT INTO projection_mailbox_messages VALUES(?,?,?)',
                        ('OWNER_NEXT','Run the complete market research now.','user'))
         with sqlite3.connect(cfg['provider_db']) as db:
-            db.execute('INSERT INTO threads VALUES(?,?,?,?,?)', ('NEXT',
-                       str(f.f.root/'sessions/NEXT.jsonl'), str(f.f.workspace), 'openai', model))
+            db.execute("UPDATE threads SET model=? WHERE id='PARENT'", (model,))
+        f.seconds += 1
+        at = f.clock()
         key = 'b'*32
         record = f.app.envelope
-        f.f.parent = [
-            record(at,'session_meta',{'id':'NEXT','originator':'openbot','model_provider':'openai',
-                   'cli_version':'0.169.0','cwd':str(f.f.workspace)}),
+        f.f.parent.extend([
+            record(at,'event_msg',{'type':'thread_settings_applied','thread_id':'PARENT',
+                   'thread_settings':{'model':model}}),
+            record(at,'event_msg',{'type':'task_started','turn_id':'NEXT_TURN'}),
             record(at,'turn_context',{'turn_id':'NEXT_TURN','model':model}),
-            record(at,'event_msg',{'type':'item_completed','turn_id':'NEXT_TURN','thread_id':'NEXT',
+            record(at,'event_msg',{'type':'item_completed','turn_id':'NEXT_TURN','thread_id':'PARENT',
                    'item':{'type':'CommandExecution','status':'completed','exit_code':0,'cwd':str(ROOT),
-                           'command':['python3','-m','researcher.openbot_runner','start','--request-id',key]}})]
-        f.app.parent_session='NEXT'
+                           'command':['python3','-m','researcher.openbot_runner','start','--request-id',key]}})])
         f.app.parent_turn='NEXT_TURN'
-        f.app.write('NEXT', f.f.parent)
+        f.app.write('PARENT', f.f.parent)
         f.job=runner.start(key)['job_id']
         f.folder=runner._job(f.job)
         state=runner._read(f.folder/'state.json')
         self.assertEqual(state['native_identity']['model'], model)
-        self.assertNotEqual(state['native_identity']['session_ref'], first_identity['session_ref'])
+        for ref_key in ('thread_ref', 'session_ref', 'external_session_ref'):
+            self.assertEqual(state['native_identity'][ref_key], first_identity[ref_key])
+        self.assertNotEqual(state['native_identity']['turn_ref'], first_identity['turn_ref'])
         self.assertEqual(runner.attest_start(state,cfg)['status'], 'VERIFIED_OPENBOT_AGENT_COMMAND')
 
         f.f.identity=state['native_identity']
@@ -109,9 +110,36 @@ class DynamicModelIdentity(unittest.TestCase):
         self.complete_review()
         _, second=collect(f.request,cfg,as_of=f.clock(),directory=f.directory,require_configured_model=True)
         _, first=collect(first_request,cfg,as_of=f.clock(),directory=first_dir)
+        observed = observe_handoff(cfg, identity=first_identity, directory=first_dir,
+                                   material=first_request['material_sha256'], as_of=f.clock())
+        self.assertTrue(observed['task_created'])
+        self.assertEqual(observed['submission_attempts'], 1)
         self.assertEqual((first['model'],second['model']), (first_identity['model'],model))
         self.assertEqual(second['reply_validation_status'],'VALIDATED')
         self.assertEqual(len(f.app.submitted),2)
+
+    def test_historical_child_model_remains_bound_to_the_original_turn(self):
+        f = self.job
+        self.complete_first()
+        model = 'fixture-later-child-model'
+        with sqlite3.connect(f.f.config['openbot_db']) as db:
+            db.execute("UPDATE projection_provider_sessions SET model=? WHERE id='SESSION_1'", (model,))
+            db.execute('INSERT INTO projection_turns VALUES(?,?,?,?,?,?)',
+                       ('LATER_CHILD', 'THREAD_1', 'SESSION_1', 'running', f.f.time(f.seconds + 2), None))
+        with sqlite3.connect(f.f.config['provider_db']) as db:
+            db.execute("UPDATE threads SET model=? WHERE id='REVIEW_1'", (model,))
+        path = f.f.root/'sessions/REVIEW_1.jsonl'
+        records = [json.loads(line) for line in path.read_text().splitlines()]
+        records.extend([
+            f.app.envelope(f.f.time(f.seconds + 2), 'event_msg', {'type':'task_started','turn_id':'LATER_CHILD'}),
+            f.app.envelope(f.f.time(f.seconds + 2), 'turn_context', {'turn_id':'LATER_CHILD','model':model}),
+        ])
+        f.app.write('REVIEW_1', records)
+        _, audit = collect(f.request, f.f.config, as_of=f.clock(), directory=f.directory)
+        self.assertEqual(audit['model'], f.f.identity['model'])
+        self.assertEqual(audit['verified_evidence_pages'], 10)
+        with self.assertRaisesRegex(ContractError, 'NATIVE_MODEL_SWITCHED'):
+            collect(f.request, f.f.config, as_of=f.clock(), directory=f.directory, require_configured_model=True)
 
     def test_midflight_change_rejects_active_observation_and_advice_import(self):
         f = self.job

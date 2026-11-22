@@ -244,13 +244,13 @@ def _assert_configured_owner(identity,current,*,require_configured_model):
     if not isinstance(model,str) or not model:raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
 
 
-def parent_binding(identity,config,*,require_configured_model=True):
+def parent_binding(identity,config,*,require_configured_model=True,as_of=None):
     """Resolve the captured parent from durable relations, never active pointers.
 
     Internal to the storage host: raw identifiers never cross native_host.
-    The historical model comes from the captured job and its provider records.
-    Active callers also require matching configuration, without following the
-    active pointer, which can legitimately move to a child during review.
+    The Codex historical model comes from the exact bound turn. The model
+    columns on its app session and Codex thread follow later executions.
+    Active callers also pin the configuration and both projections.
     """
     current=configured_identity(config)
     _assert_configured_owner(identity,current,require_configured_model=require_configured_model)
@@ -267,28 +267,35 @@ def parent_binding(identity,config,*,require_configured_model=True):
     if identity.get('parent_started_at_utc',start)!=start:raise ContractError('NATIVE_SESSION_MISMATCH')
     if provider!=identity['provider']:
         raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_PROVIDER')
-    if model!=identity['model']:
+    if (require_configured_model or provider!='codex') and model!=identity['model']:
         raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_MODEL')
+    from .contracts import utc
+    started_at=utc(start)
+    completed_at=utc(end) if end is not None else None
+    if completed_at is not None and completed_at<started_at:raise ContractError('NATIVE_SESSION_MISMATCH')
     if provider=='codex':
         with read_db(config['provider_db']) as db:
             row=db.execute('SELECT model_provider,model,cwd FROM threads WHERE id=?',(external,)).fetchone()
         if not row or path_key(row[2])!=path_key(config['agent_workspace']):raise ContractError('NATIVE_SESSION_MISMATCH')
-        if row[1]!=model:
+        if require_configured_model and row[1]!=identity['model']:
             raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','CODEX_PARENT_THREAD_MODEL')
         if row[0]!=identity.get('provider_backend'):raise ContractError('NATIVE_SESSION_MISMATCH')
-    from .contracts import utc
-    utc(start)
-    if end is not None and utc(end)<utc(start):raise ContractError('NATIVE_SESSION_MISMATCH')
+        if not require_configured_model:
+            from .native_codex import attest_turn_model
+            bound_end=completed_at if completed_at is not None else (utc(as_of) if as_of is not None else None)
+            if bound_end is None or bound_end<started_at:raise ContractError('NATIVE_REVIEW_INCOMPLETE')
+            attest_turn_model(config,external,turn,identity['model'],config['agent_workspace'],
+                start=started_at,end=bound_end,backend=row[0])
     return {'thread':thread,'turn':turn,'session_id':sid,'external':external,
         'started_at':start,'completed_at':end,'status':status}
 
 
-def assert_parent(identity,config,*,require_configured_model=False):
+def assert_parent(identity,config,*,require_configured_model=False,as_of=None):
     """Check the original owner and parent, optionally for active work."""
     from .native_host import delegated,call
     if delegated(config):return call(config,'assert_parent',{'identity':identity,
-        'require_configured_model':require_configured_model})
-    parent_binding(identity,config,require_configured_model=require_configured_model)
+        'require_configured_model':require_configured_model,'as_of':as_of})
+    parent_binding(identity,config,require_configured_model=require_configured_model,as_of=as_of)
     return {key:identity[key] for key in ('agent_id','agent_name','provider','model','adapter')}
 
 

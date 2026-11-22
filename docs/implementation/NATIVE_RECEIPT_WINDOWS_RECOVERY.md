@@ -232,12 +232,13 @@ timeout 90s "$receipt_python" -X utf8 "$(wslpath -w "$PWD/work/native-receipt-ch
   "$(wslpath -w "$PWD")" "$RECEIPT_MATERIAL"
 ```
 
-Require `WINDOWS_SAVED_PACKET` for storage and exact matches across all recorded
-identity layers for receipt verification. Require `PARENT_RECEIPT` with the
-matched acknowledgment and `HISTORICAL_RECEIPT` with `verified=true` and ten
-pages to establish the original receipt. A late or missing child final remains
-unverified within the original window. Retain the sanitized failing stage for
-any further diagnosis.
+Require `WINDOWS_SAVED_PACKET`, exact ownership and turn binding, and exact
+model evidence for the original turns. For the receipt compatibility revision,
+the configured and session-level model comparisons are informational.
+Require `PARENT_RECEIPT` with the matched acknowledgment and
+`HISTORICAL_RECEIPT` with `verified=true` and ten pages to establish the
+original receipt. A late or missing child final remains unverified within the
+original window. Retain the sanitized failing stage for any further diagnosis.
 
 Before another live acceptance, the owner host must demonstrate the saved
 packet readback, resolve any actual identity discrepancy, and verify exact

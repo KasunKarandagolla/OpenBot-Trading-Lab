@@ -1,15 +1,29 @@
-# Dynamic native model identity
+# Dynamic native model identity and receipt compatibility
+
+The recovery for job `20261121T155516Z-817636a12ff84a4797555d0d2887de42`
+uses the exact parent and child Codex turn contexts for historical model
+verification. OpenBot's event log records later model selections on the same
+provider session. Both parent projections now
+record `gpt-6.1-sol`. The original parent and child contexts record
+`gpt-6-luna`. These are distinct model selections.
+
+The child ran the ten page reads through the Codex 0.169 ordinal Code Mode
+wrapper. The receipt reader matches one complete literal page-read script
+to the successful command event and the paired model-facing output. It checks
+the order, turn, call IDs, exit status and canonical bytes for each page. The
+reader never evaluates persisted code. The existing flat receipt format
+remains supported. Unknown wrappers or mixed transports fail closed.
 
 | Revision | Commit |
 |---|---|
-| Approved tested baseline | `7282cf92ea7f185d38f87396f1ccfe3c51ec960e` |
-| Tested implementation for owner-host readback | `c4e93d31f3dbc0074f6652f68b1cb4215c3382fe` |
+| Prior Windows long-path baseline | `7282cf92ea7f185d38f87396f1ccfe3c51ec960e` |
+| Approved receipt compatibility baseline | `c4e93d31f3dbc0074f6652f68b1cb4215c3382fe` |
 
 The owner deliberately selected a different model after job
 `20261121T155516Z-817636a12ff84a4797555d0d2887de42`. The earlier verifier
 rejected that job with `NATIVE_MODEL_SWITCHED / IDENTITY / CONFIGURED_MODEL`
 because the historical path compared its captured model with the current
-Researcher configuration. The new regression reproduced that failure with a
+Researcher configuration. The earlier regression reproduced that failure with a
 complete simulated ten-page receipt.
 
 ## Identity rules
@@ -27,19 +41,20 @@ complete simulated ten-page receipt.
   original parent while allowing OpenBot's active pointer to move to a
   child. The Windows reader receives the same active check.
 - **Historical receipt.** Read-only submission observation, receipt collection
-  and final-delivery proof use the original owner, session and model. They
-  compare the captured identity to the exact parent app session, Codex thread
-  and rollout, and check the child against the same historical model.
-  The current model can differ. Current agent and workspace ownership,
-  existing provider and adapter checks, packet hashes, page proof, one-shot
-  dispatch and freshness remain enforced.
+  and final-delivery proof bind the original owner, workspace, provider,
+  backend, session and turn. For Codex, the original turn's one recorded
+  model context must exactly match the captured model. Relevant settings
+  records must agree. App and provider model projections can advance after
+  session reuse. The child gets the same per-turn check in its own distinct
+  session. Packet hashes, page proof, one-shot dispatch and freshness remain
+  enforced.
 
 The changes are in `native_identity.py`, `native_runtime.py`, `native_app.py`,
 `native_host.py`, `native_workflow.py`, `openbot_runner.py`,
 `agent_review.py` and `native_codex.py`. Both paths share the existing exact
 Codex rollout checks.
 
-## Verification
+## Earlier verification at the approved baseline
 
 The full offline suite passed **532 tests** in 529.223 seconds.
 The focused identity and receipt suite passed **63 tests**. Configuration
@@ -47,14 +62,42 @@ validation, syntax checks and 25 protected paths passed.
 The new fixtures cover a completed model-A job after a selection change,
 a second authorized job with model B, rejection of changes during preflight
 and native work, tampering and expiry.
-Existing independent fixtures still reject discrepancies in the parent app
-session, Codex thread and rollout, and child model. The Windows long-path
-regressions also pass. The original Windows packet and ten saved pages were
-verified by the owner. The readback below also verified a simulated ten-page
-receipt after a configured model change. The original model receipt remains
-pending host readback.
+The earlier tests treated parent session and Codex thread model drift as
+errors. They kept both models synchronized for historical fixtures and emitted
+the flat child tool format. The Windows long-path regression and simulated
+ten-page receipt passed at that checkpoint. The actual host evidence exposed
+the two compatibility gaps described above.
 
 [Regression tests](../../tests/test_dynamic_model_identity.py) · [Draft PR and CI](https://github.com/KasunKarandagolla/OpenBot-Trading-Lab/pull/24/checks)
+
+## Receipt compatibility verification
+
+The same-session parent regression, historical child projection regression and
+ten-page Code Mode regression all failed on the approved baseline. They pass
+with the compatibility changes. The complete offline suite passed all 536
+tests in 1249.342 seconds. Configuration validation and byte comparisons
+against the baseline for 28 protected paths passed. The tests cover later
+model selection on the same session, genuine same-turn contradictions,
+missing and duplicate contexts, ownership and task binding, both page-read
+formats, command and output tampering, expiry and Windows long paths.
+
+The existing read-only helper ran under Windows Python 3.12.10 against the
+original saved job and returned exit 0. The original request was timestamped
+`2026-11-21T15:58:19.798240Z`. The observation cutoff was
+`2026-11-21T16:08:19.798239Z`, one microsecond before its original expiry.
+
+| Historical check | Status | Evidence |
+|---|---|---|
+| Request and material | PASS | Request SHA-256 `72e3bae7c8182d3848f0890fa579447f05b5c452f5b41c133e666280bcf3c22b` and matching material. |
+| Ticket and saved arguments | PASS | Arguments SHA-256 `40dd586bb62538bb9592b50e824001714574b81a02c514533e7a1c78c87dc181`. |
+| Exact parent identity and submission | PASS | Exact turn model `gpt-6-luna`. One submission at `15:58:51.960Z`, acknowledged at `15:58:51.996Z` with the matching child task. |
+| Child execution | PASS | Distinct child turn, model `gpt-6-luna`, with 11 provider response IDs. Completed at `16:00:21.710Z` within the original envelope. |
+| Code Mode page proof | PASS | 10 of 10 pages. Canonical packet SHA-256 `e1d6cfe133b7dab615698d3a9d7c46cb4b9b30f30d1b119dcb0e72ea6e627728`. |
+| Final reply | PASS | Exact app and provider final, reply validation `VALIDATED`. |
+| Saved evidence | PASS | State, request, arguments and dispatch file hashes agree before and after readback. |
+
+The saved job status is `PARTIAL`. The historical reply is expired for
+current research. The readback used saved evidence only.
 
 ## Bounded owner-host readback
 
@@ -63,16 +106,13 @@ the remote is `KasunKarandagolla/OpenBot-Trading-Lab`. Fast-forward to the teste
 implementation while the worktree is clean. Continue only if the block succeeds.
 
 ```bash
-receipt_commit=c4e93d31f3dbc0074f6652f68b1cb4215c3382fe
+receipt_commit=${RECEIPT_COMMIT:?Set the verified receipt compatibility commit}
 test "$(git branch --show-current)" = feature/external-first-market-researcher &&
 test -z "$(git status --porcelain)" &&
 git fetch --no-tags origin refs/heads/feature/external-first-market-researcher &&
 git merge-base --is-ancestor "$receipt_commit" FETCH_HEAD &&
 git merge --ff-only "$receipt_commit" &&
-git diff --exit-code "$receipt_commit" HEAD -- . \
-  ':(exclude)docs/implementation/NATIVE_DYNAMIC_MODEL_IDENTITY.md' \
-  ':(exclude)docs/implementation/NATIVE_RECEIPT_WINDOWS_RECOVERY.md' \
-  ':(exclude)docs/implementation/PROGRESS.md'
+test "$(git rev-parse HEAD)" = "$receipt_commit"
 ```
 
 Copy the Python block from the Windows readback procedure as
@@ -89,15 +129,16 @@ timeout 90s "$receipt_python" -B -X utf8 "$(wslpath -w "$PWD/work/native-receipt
   "$(wslpath -w "$PWD")" "$RECEIPT_MATERIAL"
 ```
 
-`CONFIGURED_RESEARCHER.model` is informational in this readback, so the owner's
-subsequent choice can differ. Require the historical app, Codex thread and
-attested rollout model to match exactly. Require the original packet hashes,
-`PARENT_RECEIPT` with an acknowledged task, and `HISTORICAL_RECEIPT` with
-`verified=true` and ten pages. Compare the reported request, arguments and
-packet SHA-256 values with the original saved evidence where available. Keep the sanitized stage if verification fails.
+The configured, app-session and Codex-thread model comparisons are
+informational on historical readback. Require the exact captured model in both
+original provider turns, the original packet hashes, `PARENT_RECEIPT` with an
+acknowledged matching task, and `HISTORICAL_RECEIPT` with `verified=true` and
+ten pages. Keep the sanitized stage if verification fails.
 
 The verifier opens the saved records read-only and holds the receipt in
 memory. It checks the original recorded freshness window. Expired advice
-stays outside current-market research. A later live acceptance requires
-a successful owner-host receipt check and separate owner authorization for
-a run using the then-current Researcher and installed skills.
+stays outside current-market research. A future live acceptance requires a
+clean checkout at the approved revision, a passing read-only preflight for the
+then-current provider schema and installed skill hashes, and separate owner
+authorization in the existing Researcher's main chat. Capture the active model
+from that new turn and verify its own submission, child reply and delivery.

@@ -1,4 +1,5 @@
 """Offline transport tests using OpenBot 0.71.0 and Codex 0.169 record shapes."""
+import copy
 import json
 import sqlite3
 import unittest
@@ -6,10 +7,11 @@ from unittest.mock import patch
 
 from researcher import openbot_runner as runner
 from researcher.agent_review import _material, exchange
-from researcher.contracts import ContractError, digest, encode
+from researcher.contracts import ContractError, digest, encode, utc
 from researcher.native_app import wait_for_reply
 from researcher.native_codex import review_brief
 from researcher.native_handoff import command_page, packet
+from researcher.native_runtime import collect
 import test_openbot_runner as jobs
 from test_workflow_e2e import SimulatedApp
 
@@ -112,6 +114,94 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(imported['status'],'VALIDATED_ADVISORY_ONLY',imported)
         self.assertEqual(imported['accepted'],1)
         self.assertFalse(imported['trade_authorization'])
+
+    def code_mode_rollout(self):
+        def ready():
+            self.ticket()
+            self.assertTrue(self.app.dispatch_once(self.args, self.job, self.receipt))
+            self.on_sleep = self.app.complete_due
+
+        self.assertEqual(self.wait(ready)['status'], 'NATIVE_RECEIPT_COLLECTED')
+        path = self.f.root/'sessions/REVIEW_1.jsonl'
+        records = [json.loads(line) for line in path.read_text().splitlines()]
+        for row in records:
+            payload = row['payload']
+            at = utc(row['timestamp']).timestamp()
+            metadata = {'turn_id': 'TURN_1', 'create_time': at}
+            if payload.get('type') == 'function_call':
+                cmd = json.loads(payload['arguments'])['cmd']
+                row['payload'] = {
+                    'type': 'custom_tool_call', 'id': 'ctc_'+payload['call_id'],
+                    'status': 'completed', 'call_id': payload['call_id'], 'name': 'exec',
+                    'input': 'const r = await tools.exec_command({cmd:'+json.dumps(cmd)
+                             +',login:false,max_output_tokens:16000}); text(r.output);\n',
+                    'internal_chat_message_metadata_passthrough': metadata,
+                }
+            elif payload.get('item', {}).get('type') == 'CommandExecution':
+                item = payload['item']
+                item.update(id='inner_'+item['id'], source='unified_exec_startup')
+                payload.update(started_at_ms=int(at*1000), completed_at_ms=int(at*1000))
+            elif payload.get('type') == 'function_call_output':
+                page = payload['output'].split('\nOutput:\n', 1)[1]
+                row['payload'] = {
+                    'type': 'custom_tool_call_output', 'id': 'ctco_'+payload['call_id'],
+                    'call_id': payload['call_id'],
+                    'output': [{'type':'input_text','text':'Script completed\nWall time 0.5 seconds\nOutput:\n'},
+                               {'type':'input_text','text':page}],
+                    'internal_chat_message_metadata_passthrough': metadata,
+                }
+        return records
+
+    def test_code_mode_owner_host_shape_attests_all_ten_page_reads(self):
+        self.app.write('REVIEW_1', self.code_mode_rollout())
+        observed = collect(self.request, self.f.config, as_of=self.clock(), directory=self.directory)
+        self.assertEqual(observed[1]['verified_evidence_pages'], 10)
+        self.assertEqual(observed[1]['submission_attempts'], 1)
+        self.assertEqual(observed[1]['reply_validation_status'], 'VALIDATED')
+
+    def test_code_mode_rejects_extra_commands_and_broken_page_relationships(self):
+        original = self.code_mode_rollout()
+        first = next(i for i, row in enumerate(original) if row['payload'].get('type') == 'custom_tool_call')
+        for fault, code in (
+                ('extra_code', 'UNAUTHORIZED_TOOL'), ('wrong_tool', 'UNAUTHORIZED_TOOL'),
+                ('changed_execution', 'UNAUTHORIZED_TOOL'), ('wrong_call_id', 'UNAUTHORIZED_TOOL'),
+                ('wrong_turn', 'UNAUTHORIZED_TOOL'), ('nonzero_exit', 'READ_INCOMPLETE'),
+                ('reordered', 'UNAUTHORIZED_TOOL'), ('duplicate_page', 'UNAUTHORIZED_TOOL'),
+                ('missing_page', 'READ_INCOMPLETE'), ('missing_output', 'UNAUTHORIZED_TOOL'),
+                ('truncated_output', 'READ_INCOMPLETE'), ('truncated_execution', 'READ_INCOMPLETE'),
+                ('wrong_final', 'REPLY_PROVENANCE')):
+            with self.subTest(fault=fault):
+                records = copy.deepcopy(original)
+                call, execution, output = (records[i]['payload'] for i in range(first, first+3))
+                if fault == 'extra_code':
+                    call['input'] += 'text(r);'
+                elif fault == 'wrong_tool':
+                    call['name'] = 'other'
+                elif fault == 'changed_execution':
+                    execution['item']['command'][-1] += '; Write-Output x'
+                elif fault == 'wrong_call_id':
+                    output['call_id'] = 'different'
+                elif fault == 'wrong_turn':
+                    output['internal_chat_message_metadata_passthrough']['turn_id'] = 'other'
+                elif fault == 'nonzero_exit':
+                    execution['item']['exit_code'] = 1
+                elif fault == 'reordered':
+                    records[first+1], records[first+2] = records[first+2], records[first+1]
+                elif fault == 'duplicate_page':
+                    records[first+3]['payload']['input'] = call['input']
+                elif fault == 'missing_page':
+                    del records[first:first+3]
+                elif fault == 'missing_output':
+                    del records[first+2]
+                elif fault == 'truncated_output':
+                    output['output'][1]['text'] = output['output'][1]['text'][:-1]
+                elif fault == 'truncated_execution':
+                    execution['item']['aggregated_output'] = execution['item']['aggregated_output'][:-1]
+                elif fault == 'wrong_final':
+                    records[-1]['payload']['last_agent_message'] = 'altered'
+                self.app.write('REVIEW_1', records)
+                with self.assertRaisesRegex(ContractError, code):
+                    collect(self.request, self.f.config, as_of=self.clock(), directory=self.directory)
 
     def test_windows_uses_wsl_and_rejects_added_shell_operations(self):
         with patch('researcher.native_handoff.ROOT',r'C:\OpenBot Labs\Researcher'):

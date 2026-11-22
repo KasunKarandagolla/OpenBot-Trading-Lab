@@ -12,6 +12,7 @@ from unittest.mock import patch
 from researcher import native_codex as codex, openbot_runner as runner, native_host
 from researcher.contracts import ContractError,encode,utc
 from researcher.native_identity import NativeEvidenceError,safe_diagnostic
+from researcher.native_runtime import collect
 from researcher.settings import ROOT
 import test_openbot_runner as runner_fixture
 
@@ -181,10 +182,45 @@ class ObservedCodexCompatibility(unittest.TestCase):
 
     def test_provider_db_model_and_review_context_workspace_are_verified(self):
         with sqlite3.connect(self.f.config['provider_db']) as db:db.execute("UPDATE threads SET model='switched' WHERE id='CHILD'")
-        with self.assertRaisesRegex(ContractError,'MODEL_SWITCHED'):self.f.get()
+        with self.assertRaisesRegex(ContractError,'MODEL_SWITCHED'):
+            collect(self.f.request,self.f.config,as_of=self.f.time(5),require_configured_model=True)
+        self.assertEqual(self.f.get()[1]['model'],self.f.identity['model'])
         with sqlite3.connect(self.f.config['provider_db']) as db:db.execute("UPDATE threads SET model=? WHERE id='CHILD'",(self.f.agent['model'],))
         self.f.child[2]['payload']['cwd']='different-workspace';self.write()
         with self.assertRaisesRegex(ContractError,'SESSION_MISMATCH'):self.f.get()
+
+    def test_historical_parent_and_child_require_one_consistent_model_context(self):
+        for name, turn, session in (('parent','PARENT_TURN','PARENT'), ('child','CHILD_TURN','CHILD')):
+            original=copy.deepcopy(getattr(self.f,name))
+            index=next(i for i,row in enumerate(original) if row['type']=='turn_context')
+            for mutation, error in (
+                    ('missing','REVIEW_INCOMPLETE'), ('duplicate','REVIEW_INCOMPLETE'),
+                    ('contradictory','MODEL_SWITCHED'), ('missing_model','MODEL_SWITCHED'),
+                    ('changed_settings','MODEL_SWITCHED'), ('malformed_settings','SCHEMA_UNSUPPORTED')):
+                with self.subTest(turn=name,mutation=mutation):
+                    revised=copy.deepcopy(original)
+                    context=revised[index]
+                    if mutation=='missing':
+                        if name=='child':
+                            del revised[index]
+                        else:
+                            revised[index]=self.f.record(-10,'event_msg',{'type':'task_started','turn_id':turn})
+                    elif mutation=='duplicate':
+                        revised.insert(index+1,copy.deepcopy(context))
+                    elif mutation=='contradictory':
+                        revised.insert(index+1,copy.deepcopy(context))
+                        revised[index+1]['payload']['model']='fixture-different-model'
+                    elif mutation=='missing_model':
+                        del context['payload']['model']
+                    else:
+                        settings={'model':'fixture-different-model'} if mutation=='changed_settings' else []
+                        revised.insert(index+1,{'timestamp':context['timestamp'],'type':'event_msg',
+                            'payload':{'type':'thread_settings_applied','thread_id':session,'thread_settings':settings}})
+                    setattr(self.f,name,revised)
+                    self.write()
+                    with self.assertRaisesRegex(ContractError,error):self.f.get()
+            setattr(self.f,name,original)
+            self.write()
 
     def test_late_context_switch_and_unknown_record_kind_cannot_follow_a_valid_receipt(self):
         original=copy.deepcopy(self.f.parent)

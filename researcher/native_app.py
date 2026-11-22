@@ -263,7 +263,7 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
     if delegated(config):return call(config,'observe_handoff',{'identity':identity,'directory':str(directory),
         'material':material,'as_of':as_of,'require_configured_model':require_configured_model},
         timeout_seconds=timeout_seconds)
-    assert_parent(identity,config,require_configured_model=require_configured_model)
+    assert_parent(identity,config,require_configured_model=require_configured_model,as_of=as_of)
     request=read_object(directory/(material+'.request.json'))
     if (request.get('material_sha256')!=material or request.get('native_identity')!=identity
             or digest(encode(_material(request)).encode())!=material):
