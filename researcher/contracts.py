@@ -88,14 +88,15 @@ def digest(body: bytes) -> str:
     return hashlib.sha256(body).hexdigest()
 
 
-def encode(value: Any) -> str:
+def encode(value: Any, *, compact: bool = False) -> str:
     def default(obj):
         if isinstance(obj, Decimal):
             return str(obj)
         if hasattr(obj, "__dataclass_fields__"):
             return asdict(obj)
         raise TypeError(type(obj).__name__)
-    return json.dumps(value, default=default, sort_keys=True, indent=2, allow_nan=False)
+    return json.dumps(value, default=default, sort_keys=True, allow_nan=False,
+        **({'separators':(',',':')} if compact else {'indent':2}))
 
 
 @dataclass(frozen=True)

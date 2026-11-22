@@ -1,3 +1,61 @@
+# November 22 second live acceptance recovery
+
+Job `20261122T104452Z-dff48ef326cb419aaccf56dc101916b9` ran at
+`b98f73841209650465a7b016473d95b05c0b6e5a`. Its ZIP SHA-256 is
+`5c205b425ebf3c1ae2b14a67e49da3203d971bd7b3b8671419ba4c4d1465fd44`.
+
+- Batch 1 delivered all ten pages and attested 11 provider responses. The
+  first ATUSDT support ID (`a1157d76…386f`) appears nowhere in the immutable
+  request. The other cited event and the two ZROUSDT citations are present.
+  The original reply remains rejected. New packets give an exact card-local
+  copy-and-check rule, while the validator retains strict ID membership.
+- Replaying the collection snapshot at `10:52:19.284Z` returned
+  `AGENT_EVIDENCE_FUTURE`. The recorded child completion was `10:52:23.358Z`.
+  At the stored audit time, `10:52:24.100Z`, receipt collection reached the
+  citation check. The timestamp rule remains enforced.
+- Batch 2 was reserved at `10:53:28.757Z`. The sole exact start call at
+  `10:54:29.280Z` was 31.120 seconds beyond the old publication deadline.
+  OpenBot acknowledged and created a child after the runner's missing-task
+  decision. All nine page commands returned `NATIVE_DISPATCH_WINDOW_CLOSED`.
+  New request-bound tickets retain the 90-second reservation phase, then
+  allow a single submission within 90 seconds of reservation. Old tickets
+  retain their original cutoff. Response and overall freshness limits stay
+  in force, and the one-shot reply exposes `submit_before_utc`.
+- The retained PARTIUSDT graph lists 92 card support IDs and 135 distinct
+  potential IDs across the card, reference and events. Each of its two events
+  repeats all 42 reference source IDs in the same order. The old single-card
+  packet was never published, so its exact wire size is unknown. New packets
+  factor identical provenance and the exact repeated reference suffix, and
+  use compact JSON when needed. The retained topology with synthetic 48-byte
+  fact values fit in 95,501 characters. The same topology with synthetic
+  100-byte values still exceeded the 100,000-character limit. The projection
+  preserves IDs, source order, eligible values, causal times and the full
+  skill. Irreducible cards still report explicit omissions. Planning omissions
+  have their own field and cannot mask a failed native batch.
+- Basis made 21 physical requests against 40 allowed. The seventh causal
+  screen returned a tool-level cooldown after 300 successful evaluations.
+  All 519 broad 15m contracts were evaluated and zero broad 1h requests were
+  dispatched. The remaining broad budget was 38.889 seconds against the
+  60-second cooldown. A fixed-dispatch-count sensitivity check trades one
+  50-contract causal partition for one broad partition in both saved traces.
+  The provider's busy threshold under a different order is unestablished.
+  The existing schedule and scope remain in place.
+
+Nine focused regressions and all 548 offline tests passed. Configuration
+validated, the registered revision 4 and both skill mirrors matched, and
+all 28 protected paths matched the baseline. Read-only Windows replay
+reproduced the original future timestamp, citation and dispatch rejections.
+
+The original job remains PARTIAL. Its running delivery watcher recorded
+`FINAL_DELIVERY_NOT_OBSERVED_WITHIN_BOUND` during the investigation. That
+changed the mutable job state. The report, ZIP, requests, tickets, reply and
+audit matched their initial hashes. Historical inspection did not import
+advice, rerun market requests, or submit native tasks. Fresh acceptance and
+delivery must be verified independently. Keep PR #24 draft and
+`trade_authorization=false`.
+
+---
+
 # November 22 live acceptance recovery
 
 Job `20261122T090259Z-8d6f07e2d94347a5b159951b28b6ef26` ran at

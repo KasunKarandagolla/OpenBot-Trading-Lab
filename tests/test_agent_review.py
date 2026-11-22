@@ -7,6 +7,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from researcher.agent_review import make_request,validate_reply,parse_reply,consume_reply,exchange,REPLY,AGENT,MODEL
 from researcher.contracts import ContractError,encode,utc,digest
+from researcher.native_codex import review_brief
 from researcher.settings import ROOT
 from test_session4 import case
 
@@ -33,6 +34,62 @@ class NativeReviewContract(unittest.TestCase):
         with self.assertRaisesRegex(ContractError,'AGENT_REPLY_CITATION'):validate_reply(self.reply,self.request)
         self.row['supporting_evidence_ids']=['seq'];self.row['card_id']='another-symbol-card'
         with self.assertRaisesRegex(ContractError,'AGENT_REPLY_CARD'):validate_reply(self.reply,self.request)
+
+    def test_november_22_absent_citation_cannot_be_recovered_from_other_metadata(self):
+        fake='a1157d76f07ce6001105b5b59ca25295e5cce908cb188d4bfb7ad3e8589d0386f'
+        request=make_request([self.card],self.facts,as_of=self.bars[-1].end,
+            skill_sha256='a'*64,context={'source_id':fake},native_identity={'provider':'codex','model':'fixture'})
+        self.assertIn('check each citation against those two places character for character',review_brief(request))
+        reply={**self.reply,'material_sha256':request['material_sha256']}
+        self.row['supporting_evidence_ids']=[fake,'seq']
+        with self.assertRaisesRegex(ContractError,'AGENT_REPLY_CITATION'):validate_reply(reply,request)
+        self.row['supporting_evidence_ids']=['seq']
+        self.assertEqual(validate_reply(reply,request)['accepted'],1)
+
+    def test_large_native_card_preserves_evidence_ids_timestamps_and_full_skill(self):
+        ids=tuple(digest(str(i).encode()) for i in range(92))
+        facts={**self.facts,**{i:replace(self.facts['seq'],id=i,value='v'*100,
+            response_hash='a'*64) for i in ids}}
+        card=replace(self.card,evidence_ids=(*self.card.evidence_ids,*ids))
+        request=make_request([card],facts,as_of=self.bars[-1].end,skill_sha256='a'*64,
+            context={'observations':'x'*7373},native_identity={'provider':'codex','model':'fixture'})
+        self.assertEqual(len(request['cards']),1)
+        brief=review_brief(request)
+        skill,payload=brief.split('<canonical-skill>\n',1)[1].split('</canonical-skill>\n<canonical-request>\n',1)
+        payload=payload.removesuffix('\n</canonical-request>\n')
+        self.assertLessEqual(len(brief),100000)
+        self.assertEqual(skill,(ROOT/'.agents/skills/market-research-review/SKILL.md').read_text(encoding='utf-8'))
+        reconstructed=json.loads(payload)
+        self.assertEqual(reconstructed,json.loads(encode(request)))
+        self.assertTrue(set(ids)<=set(reconstructed['cards'][0]['evidence']))
+        projected=reconstructed['cards'][0]
+        expanded={i:{**projected['evidence_provenance'].get(row.get('provenance_ref'),{}),
+            **{k:v for k,v in row.items() if k!='provenance_ref'}} for i,row in projected['evidence'].items()}
+        for i in ids:
+            original={**self.request['cards'][0]['evidence']['seq'],'value':'v'*100,'response_hash':'a'*64}
+            self.assertEqual(expanded[i],original)
+        projected['evidence']=expanded
+        self.assertGreater(len(brief)-len(payload)+len(encode(reconstructed)),100000)
+        self.assertEqual(projected['events'],json.loads(encode(self.card.events)))
+
+        self.row['supporting_evidence_ids']=[ids[-1]]
+        reply={**self.reply,'material_sha256':request['material_sha256']}
+        self.assertEqual(validate_reply(reply,reconstructed)['accepted'],1)
+
+    def test_paged_card_preserves_shared_reference_sources_in_original_event_order(self):
+        ids=tuple(digest(f'source-{i}'.encode()) for i in range(42))
+        ref=replace(self.card.reference,source_ids=ids)
+        events=tuple({**e,'source_ids':(*e['source_ids'][:1],*ids),'reference_id':ref.id} for e in self.card.events)
+        card=replace(self.card,reference=ref,events=events)
+        request=make_request([card],self.facts,as_of=self.bars[-1].end,skill_sha256='a'*64,
+            native_identity={'provider':'codex','model':'fixture'})
+        exported=request['cards'][0]
+        self.assertIn('to obtain its complete original source list',review_brief(request))
+        self.assertEqual(exported['ordered_event_transport']['complete_graph_sha256'],digest(encode(events).encode()))
+        for original, row in zip(events,exported['events']):
+            self.assertTrue(row['append_reference_source_ids'])
+            self.assertEqual(row['id'],original['id'])
+            self.assertEqual((*row['source_ids'],*exported['reference']['source_ids']),original['source_ids'])
 
     def test_numeric_claim_must_match_identity_units_time_and_value_exactly(self):
         f=self.request['cards'][0]['evidence']['RESEARCH_PRICE']

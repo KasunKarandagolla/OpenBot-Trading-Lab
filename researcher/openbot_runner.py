@@ -15,6 +15,7 @@ import sys
 import time
 import uuid
 from contextlib import contextmanager
+from datetime import timedelta
 from .contracts import ContractError, digest, encode, now_utc, utc
 from .settings import ROOT
 from .native_identity import active_identity, assert_current, assert_parent, load_private, read_db, ref, under_work
@@ -347,7 +348,8 @@ def run_job(key):
 
 def _paged_status(folder,data,result,include_review):
     from .agent_review import _material
-    from .native_handoff import load_dispatch, packet
+    from .native_handoff import (RESERVED_SUBMISSION_POLICY, load_dispatch, packet, request_dispatch_policy,
+        submission_deadline)
     import tempfile
 
     if data['state']!='REVIEW_READY':return
@@ -370,22 +372,25 @@ def _paged_status(folder,data,result,include_review):
     if task.read_bytes()!=encode(args).encode('utf-8'):raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     with _file_guard(folder/'state.lock'):
         current=_read(folder/'state.json')
-        as_of=now_utc();published=current.get('request_prepared_at_utc')
+        as_of=now_utc();reserved_monotonic=time.monotonic();published=current.get('request_prepared_at_utc')
         if (current['state']!='REVIEW_READY' or current.get('material_sha256')!=material
                 or not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<FRESH_SECONDS
                 or not 0<=(utc(as_of)-utc(published)).total_seconds()<SUBMISSION_SECONDS
-                or time.monotonic()>=current.get('submission_expires_monotonic',float('inf'))):
+                or reserved_monotonic>=current.get('submission_expires_monotonic',float('inf'))):
             return
         if lease.exists():
             _,_,_,receipt=load_dispatch(directory,request,as_of=as_of)
             result.update(state='REVIEW_DISPATCH_RESERVED',dispatch_receipt=receipt)
             return
+        policy=request_dispatch_policy(request)
         receipt={'material_sha256':material,'arguments_sha256':digest(encode(args).encode('utf-8')),
             'packet_sha256':fingerprint,'evidence_pages':len(pages),'reserved_at_utc':as_of,
-            'published_at_utc':published,'submission_policy':'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'}
+            'published_at_utc':published,'submission_policy':policy}
+        if policy==RESERVED_SUBMISSION_POLICY:receipt['reserved_monotonic']=reserved_monotonic
         handoff={k:result[k] for k in ('job_id','state','review_transport','material_sha256',
             'batch_index','batch_count','trade_authorization') if k in result}
-        handoff.update(start_task_arguments=args,dispatch_receipt=receipt)
+        submit_before=min(submission_deadline(receipt),utc(request['as_of_utc'])+timedelta(seconds=FRESH_SECONDS))
+        handoff.update(start_task_arguments=args,dispatch_receipt=receipt,submit_before_utc=submit_before.isoformat())
         # Earlier batches' lifecycle does not compete with the one-shot reply.
         if len(encode(handoff).encode('utf-8'))+1>64*1024:raise ContractError('NATIVE_REVIEW_FILE_SIZE')
         temporary=None

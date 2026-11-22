@@ -10,7 +10,8 @@ from researcher.agent_review import _material, exchange
 from researcher.contracts import ContractError, digest, encode, utc
 from researcher.native_app import wait_for_reply
 from researcher.native_codex import review_brief
-from researcher.native_handoff import command_page, packet
+from researcher.native_handoff import (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY, command_page, packet,
+    verify_submission_window)
 from researcher.native_runtime import collect
 import test_openbot_runner as jobs
 from test_workflow_e2e import SimulatedApp
@@ -30,7 +31,8 @@ class NativeHandoff(unittest.TestCase):
         self.f.parent=self.f.parent[:2];self.f.write()
         with sqlite3.connect(self.f.config['openbot_db']) as db:
             db.execute('DELETE FROM projection_agent_threads')
-        self.request=dict(self.f.request,context={'fixture_evidence':'','unicode':'漢字'},as_of_utc=self.clock())
+        self.request=dict(self.f.request,context={'fixture_evidence':'','unicode':'漢字'},as_of_utc=self.clock(),
+            dispatch_reservation_policy=RESERVED_SUBMISSION_POLICY)
         padding=95_759-len(review_brief(self.request))
         self.request['context']['fixture_evidence']=('Evidence with spaces and delimiters [ ] { } / ' * padding)[:padding]
         self.material=digest(encode(_material(self.request)).encode())
@@ -239,6 +241,37 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(result['submission_attempts'],0)
         self.assertLessEqual(result['elapsed_seconds'],91)
         self.assertNotIn('start_task_arguments',runner.status(self.job,include_review=True))
+
+    def test_second_live_timing_preserves_one_ticket_and_accepts_the_exact_attempt(self):
+        def tick():
+            if self.monotonic==61:
+                status=self.ticket()
+                self.assertEqual((utc(status['submit_before_utc'])-utc(self.clock())).total_seconds(),90)
+            if self.monotonic==121:
+                repeated=runner.status(self.job,include_review=True)
+                self.assertEqual(repeated['state'],'REVIEW_DISPATCH_RESERVED')
+                self.assertNotIn('start_task_arguments',repeated)
+                self.assertTrue(self.app.dispatch_once(self.args,self.job,self.receipt))
+                legacy={**self.receipt,'submission_policy':LEGACY_SUBMISSION_POLICY}
+                with self.assertRaisesRegex(ContractError,'NATIVE_SUBMISSION_OUTSIDE_WINDOW'):
+                    verify_submission_window({'submission_attempts':1,'attempted_at_utc':self.clock()},legacy)
+            self.app.complete_due()
+
+        result=self.wait(lambda:setattr(self,'on_sleep',tick))
+        self.assertEqual(result['status'],'NATIVE_RECEIPT_COLLECTED',result)
+        self.assertEqual(result['submission_attempts'],1)
+        self.assertEqual(result['observed_model_attempts'],1)
+        self.assertEqual(len(self.app.submitted),1)
+
+    def test_attempt_at_reservation_deadline_is_rejected_and_pages_close(self):
+        def tick():
+            if self.monotonic==61:self.ticket()
+            if self.monotonic==151:self.record_submission()
+
+        result=self.wait(lambda:setattr(self,'on_sleep',tick))
+        self.assertEqual(result['status'],'NATIVE_SUBMISSION_OUTSIDE_WINDOW',result)
+        with self.assertRaisesRegex(ContractError,'NATIVE_DISPATCH_WINDOW_CLOSED'):
+            runner.review_page(self.job,self.material,self.receipt['packet_sha256'],1)
 
     def test_no_handoff_ticket_fails_at_submission_bound(self):
         result=self.wait()

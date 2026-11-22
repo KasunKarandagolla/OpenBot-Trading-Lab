@@ -7,11 +7,14 @@ it. Delivery and a genuine native invocation receipt are separate requirements.
 import json
 import sqlite3
 from dataclasses import asdict
+from collections import Counter
 from .contracts import ContractError, digest, encode, utc
 from .handoff import ALLOWED_QUESTIONS
 
 REQUEST='openbot.research-review.request.v1'
 REPLY='openbot.research-review.reply.v1'
+EXACT_CARD_CITATIONS='EXACT_CARD_LOCAL_CITATIONS_V1'
+REQUEST_FILE_BYTES=131072
 AGENT='Trading Lab Market Researcher'
 # Historical fixture compatibility only. Live exchange requires a trusted runtime identity.
 MODEL='opencode/deepseek-v4.1-flash-free'
@@ -48,6 +51,25 @@ def _bounded_context(context):
                     'complete_list_sha256':digest(encode(values).encode())}
         claims.append(claim)
     return {**context,'claims':claims}
+
+
+def request_file_text(request):
+    text=encode(request)+'\n'
+    if len(text.encode())>REQUEST_FILE_BYTES and request.get('reply_citation_policy')==EXACT_CARD_CITATIONS:
+        text=encode(request,compact=True)+'\n'
+    if len(text.encode())>REQUEST_FILE_BYTES:raise ContractError('AGENT_INPUT_SIZE')
+    return text
+
+
+def _share_fact_provenance(catalog):
+    """Keep each exact fact id, value and chronology while factoring repeated metadata."""
+    fields=('source_id','response_hash','fidelity','complete','qualification','mode','cluster','max_age_seconds','reason')
+    keys={i:tuple(row[field] for field in fields) for i,row in catalog.items()}
+    groups={key:str(n) for n,(key,count) in enumerate(Counter(keys.values()).items(),1) if count>1}
+    shared={group:dict(zip(fields,key)) for key,group in groups.items()}
+    rows={i:{**{k:v for k,v in row.items() if k not in fields},'provenance_ref':groups[keys[i]]}
+        if keys[i] in groups else row for i,row in catalog.items()}
+    return rows,shared
 
 
 def reasoning_registry():
@@ -103,7 +125,9 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
     registry=reasoning_registry()
     context_bytes=len(encode(context).encode())
     if context_bytes>16384:raise ContractError('AGENT_INPUT_SIZE')
-    card_budget=min(98304,114688-context_bytes-len(encode(registry).encode()))
+    native_codex=native_identity is not None and native_identity.get('provider')=='codex'
+    def size(value):return len(encode(value,compact=native_codex).encode())
+    card_budget=min(98304,114688-size(context)-size(registry))
     by_review={r['card_id']:r for r in reviews};selected=[];omitted=[];seen=set()
     for card in cards:
         if card.id in seen:
@@ -168,7 +192,14 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
             'research_disposition':review.get('stage','UNKNOWN'),
             'primary_method_observations':card.formation['families'][card.primary_family].get('details',{}) if card.formation else {},
             'method_observation_scope':'DERIVED_SELECTED_SOURCE_ANALYSIS; NUMERIC_CLAIMS_MUST_STILL_CITE_EXACT_CATALOG_FACTS'}
-        if len(encode(selected+[item]).encode())>card_budget:
+        if native_codex and len(catalog)>32:
+            shared_rows,shared=_share_fact_provenance(catalog)
+            if shared:item.update(evidence=shared_rows,evidence_provenance=shared)
+        if native_codex and len(card.reference.source_ids)>1:
+            suffix=tuple(card.reference.source_ids);size_of_suffix=len(suffix)
+            item['events']=[{**e,'source_ids':e['source_ids'][:-size_of_suffix],'append_reference_source_ids':True}
+                if tuple(e['source_ids'][-size_of_suffix:])==suffix else e for e in events]
+        if size(selected+[item])>card_budget:
             omitted.append({'card_id':card.id,'reason':'NOT_REVIEWED_INPUT_BUDGET'});continue
         selected.append(item)
     if not isinstance(skill_sha256,str) or len(skill_sha256)!=64 or any(c not in '0123456789abcdef' for c in skill_sha256):
@@ -181,16 +212,20 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
         'admission_authority':'DETERMINISTIC_SOURCE_CLOCK_CAUSAL_ECONOMIC_GATES_ONLY'}
     if native_identity is not None:
         body['native_identity']=dict(native_identity)
+        if native_codex:
+            from .native_handoff import RESERVED_SUBMISSION_POLICY
+            body['reply_citation_policy']=EXACT_CARD_CITATIONS
+            body['dispatch_reservation_policy']=RESERVED_SUBMISSION_POLICY
     if len(omitted)>8:
-        from collections import Counter
         body['omitted']=omitted[:8]
         body['omission_summary']={'total':len(omitted),'listed':8,
             'by_reason':dict(Counter(o['reason'] for o in omitted)),
             'complete_omission_list_sha256':digest(encode(omitted).encode())}
     # Request time alone must not trigger another model call for unchanged facts.
     material=_material(body)
-    if len(encode(body).encode())>131072:raise ContractError('AGENT_INPUT_SIZE')
-    return {**body,'material_sha256':digest(encode(material).encode())}
+    request={**body,'material_sha256':digest(encode(material).encode())}
+    request_file_text(request)
+    return request
 
 
 def validate_reply(reply,request):
@@ -277,7 +312,7 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
         if path.stat().st_size>limit:raise ContractError('NATIVE_REVIEW_FILE_SIZE')
         return path.read_text(encoding='utf-8')
     def publish(path,value):
-        checked(path);body=encode(value)+'\n'
+        checked(path);body=request_file_text(value)
         if path.exists():
             old=json.loads(read(path,131072))
             # The material hash deliberately excludes only request time.

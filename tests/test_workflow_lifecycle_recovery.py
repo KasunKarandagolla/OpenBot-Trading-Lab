@@ -47,9 +47,17 @@ class WorkflowLifecycleRecovery(unittest.TestCase):
                 reply['interpretations'][0]['priority']='INVALID_ENUM'
             return reply
         self.w.app.reply_transform=transform
-        job,state,report=self.w.run_workflow()
+        from researcher.native_workflow import plan_batches
+        def with_oversized(*args,**kwargs):
+            groups,omitted=plan_batches(*args,**kwargs)
+            return groups,[*omitted,{'card_id':'oversized_fixture','native_symbol':'PARTIUSDT',
+                'reason':'SINGLE_CARD_EXCEEDS_PROVIDER_INPUT_LIMIT; FULL_SKILL_RETAINED'}]
+        with patch('researcher.native_workflow.plan_batches',side_effect=with_oversized):
+            job,state,report=self.w.run_workflow()
         self.assertEqual(state['state'],'PARTIAL')
         self.assertEqual(report['consultant']['status'],'NATIVE_REVIEW_INCOMPLETE')
+        self.assertEqual(report['consultant']['planning_error']['code'],'AGENT_INPUT_SIZE')
+        self.assertEqual(report['consultant']['first_error']['code'],'AGENT_REPLY_ADVICE')
         self.assertGreater(report['consultant']['accepted'],0)
         self.assertTrue(report['native_control_comparison']['accepted_current_advice'])
         self.assertEqual(report['llm_calls'],len(self.w.app.submitted))

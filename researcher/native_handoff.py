@@ -13,6 +13,8 @@ PAGE_CHARS = 10_000
 FRESH_SECONDS = 600
 SUBMISSION_SECONDS = 90
 RESPONSE_SECONDS = 30
+LEGACY_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'
+RESERVED_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; 90_SECONDS_FROM_RESERVATION; NEVER_AUTOMATICALLY_RESUBMIT'
 
 
 def runner_review(directory):
@@ -69,6 +71,13 @@ def read_object(path):
     return obj
 
 
+def request_dispatch_policy(request):
+    policy=request.get('dispatch_reservation_policy',LEGACY_SUBMISSION_POLICY)
+    if policy not in (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    return policy
+
+
 def load_dispatch(directory, request, *, as_of):
     """Recheck the immutable saved arguments and ticket against canonical bytes."""
     material = request['material_sha256']
@@ -86,11 +95,19 @@ def load_dispatch(directory, request, *, as_of):
             or ticket.get('arguments_sha256') != digest(encode(args).encode('utf-8'))
             or ticket.get('packet_sha256') != fingerprint
             or ticket.get('evidence_pages') != len(pages)
-            or ticket.get('submission_policy') != 'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'
+            or ticket.get('submission_policy') != request_dispatch_policy(request)
+            or (ticket['submission_policy'] == RESERVED_SUBMISSION_POLICY
+                and (type(ticket.get('reserved_monotonic')) not in {int, float}
+                     or not 0 <= ticket['reserved_monotonic'] < float('inf')))
             or not utc(request['as_of_utc']) <= published <= reserved <= utc(as_of)
             or reserved >= published + timedelta(seconds=SUBMISSION_SECONDS)):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     return args, fingerprint, pages, ticket
+
+
+def submission_deadline(ticket):
+    anchor = 'reserved_at_utc' if ticket.get('submission_policy') == RESERVED_SUBMISSION_POLICY else 'published_at_utc'
+    return utc(ticket[anchor]) + timedelta(seconds=SUBMISSION_SECONDS)
 
 
 def verify_submission_window(submission, ticket):
@@ -98,7 +115,7 @@ def verify_submission_window(submission, ticket):
     if not submission['submission_attempts']:
         return
     attempted=utc(submission['attempted_at_utc'])
-    if not utc(ticket['reserved_at_utc']) <= attempted < utc(ticket['published_at_utc']) + timedelta(seconds=SUBMISSION_SECONDS):
+    if not utc(ticket['reserved_at_utc']) <= attempted < submission_deadline(ticket):
         raise ContractError('NATIVE_SUBMISSION_OUTSIDE_WINDOW')
     if submission.get('responded_at_utc'):
         response=utc(submission['responded_at_utc'])

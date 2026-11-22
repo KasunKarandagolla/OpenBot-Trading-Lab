@@ -329,7 +329,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         emit('REVIEW_FAILED',first_error=first_error)
         return finish('NATIVE_TASK_PUBLICATION_FAILED',terminal_error=first_error)
     folder=under_work(directory);published=clock();published_monotonic=time.monotonic()
-    from .native_handoff import FRESH_SECONDS, RESPONSE_SECONDS, SUBMISSION_SECONDS, runner_review
+    from .native_handoff import (FRESH_SECONDS, RESPONSE_SECONDS, SUBMISSION_SECONDS, RESERVED_SUBMISSION_POLICY,
+        load_dispatch, read_object, runner_review)
     paged=runner_review(folder) and request.get('native_identity',{}).get('provider')=='codex'
     config_hash=digest(under_work(config_file).read_bytes())
     result['publication_seconds']=round(time.monotonic()-began,6)
@@ -346,10 +347,23 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             if paged else {}))
     # Publication/reader startup consumes the same request freshness envelope.
     deadline=published_monotonic+min(wait_seconds,freshness_remaining)
-    phase_deadline=min(deadline,published_monotonic+SUBMISSION_SECONDS)
+    reservation_deadline=min(deadline,published_monotonic+SUBMISSION_SECONDS)
+    phase_deadline=reservation_deadline;ticket_observed=False
     pending_status=None;observation=None;submission=None;response_anchor=None;phase_closed=False
     prior_wall=utc(published);prior_monotonic=published_monotonic
     lease=folder/(material+'.dispatch.json')
+
+    def observe_ticket(stamp):
+        nonlocal phase_deadline,ticket_observed
+        if ticket_observed or not lease.is_file():return
+        if utc(read_object(lease).get('reserved_at_utc'))>utc(stamp):return
+        _,_,_,ticket=load_dispatch(folder,request,as_of=stamp)
+        if ticket['submission_policy']==RESERVED_SUBMISSION_POLICY:
+            at=ticket['reserved_monotonic']
+            if not published_monotonic<=at<reservation_deadline:
+                raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            phase_deadline=min(deadline,at+SUBMISSION_SECONDS)
+        ticket_observed=True
 
     def check_freshness():
         nonlocal prior_wall,prior_monotonic
@@ -385,6 +399,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             if digest(under_work(config_file).read_bytes())!=config_hash:
                 raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
             if paged:
+                observe_ticket(as_of)
                 read_until=deadline if running_at or phase_closed else phase_deadline
                 if time.monotonic()>=deadline and (running_at or phase_closed):
                     found=None
@@ -393,6 +408,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                     material=material,as_of=as_of,timeout_seconds=max(.001,read_until-time.monotonic()),
                     require_configured_model=True)
                 stamp=check_freshness()
+                observe_ticket(stamp)
                 observed=handoff['task'];count=observed['count'] if handoff['task_created'] else 0
                 phase={k:v for k,v in handoff.items() if k not in {'task','task_created','acknowledged_task_ref'}}
                 if not submission or phase['submission_attempts']>=submission['submission_attempts']:
@@ -461,6 +477,9 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 return finish(fault['code'],terminal_error=fault)
             storage_retries+=1;pending_status=fault['code'];found=None
             if paged and not running_at and time.monotonic()>=phase_deadline:
+                if not ticket_observed and lease.is_file() and not phase_closed and time.monotonic()<deadline:
+                    time.sleep(min(1,max(0,deadline-time.monotonic())))
+                    continue
                 if not lease.is_file():
                     result['submission_observation_status']='DEADLINE_UNVERIFIED'
                     result['submission_observation_closed_seconds']=round(time.monotonic()-published_monotonic,6)

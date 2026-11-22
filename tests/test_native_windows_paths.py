@@ -167,7 +167,7 @@ class NativeWindowsPaths(unittest.TestCase):
         ticket = {'material_sha256':material,'arguments_sha256':digest(encode(args).encode()),
                   'packet_sha256':fingerprint,'evidence_pages':10,'published_at_utc':stamp,'reserved_at_utc':stamp,
                   'submission_policy':'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'}
-        self.write(self.review/(material+'.dispatch.json'),encode(ticket).encode())
+        ticket_file=self.write(self.review/(material+'.dispatch.json'),encode(ticket).encode())
         private = self.review/('p'*90+'.json')
         files = {'openbot_db':self.review/'fixture-app.sqlite','provider_db':self.review/'fixture-provider.sqlite',
                  'agent_workspace':self.checkout/'work'}
@@ -185,7 +185,9 @@ class NativeWindowsPaths(unittest.TestCase):
             self.assertEqual(verified['reserved_at_utc'],stamp)
             self.assertEqual(native_handoff.load_dispatch(self.review,request,as_of=stamp)[1:3],(fingerprint,pages))
         for path,raw,code in ((saved,encode({**request,'context':{}}),'REVIEW_REQUEST_HASH'),
-                              (args_file,encode({**args,'brief':args['brief']+'!'}),'HANDOFF_UNATTESTED')):
+                              (args_file,encode({**args,'brief':args['brief']+'!'}),'HANDOFF_UNATTESTED'),
+                              (ticket_file,encode({**ticket,'submission_policy':native_handoff.RESERVED_SUBMISSION_POLICY,
+                                  'reserved_monotonic':1}),'HANDOFF_UNATTESTED')):
             original = path.read_bytes()
             path.write_text(raw,encoding='utf-8')
             try:

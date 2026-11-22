@@ -5,7 +5,7 @@ exact arguments. Batches cover distinct cards; repeated polling is read only.
 """
 import time
 from .contracts import ContractError,digest,encode,utc
-from .agent_review import make_request,exchange
+from .agent_review import EXACT_CARD_CITATIONS,make_request,exchange,request_file_text
 from .native_identity import active_identity,assert_parent,load_private
 from .native_codex import review_brief
 from .settings import ROOT
@@ -33,6 +33,9 @@ def probe_captured_request(directory,source,*,native_identity,audit_config,clock
             'source_material_sha256':original['material_sha256'],'captured_at_utc':original['as_of_utc'],
             'current_market_interpretation':False})
     request['cards']=request['cards'][:1]
+    if native_identity['provider']=='codex':
+        from .native_handoff import RESERVED_SUBMISSION_POLICY
+        request.update(reply_citation_policy=EXACT_CARD_CITATIONS,dispatch_reservation_policy=RESERVED_SUBMISSION_POLICY)
     request['omitted']=[{'card_id':c['card_id'],'reason':'ARCHIVED_TRANSPORT_SINGLE_CARD_SAMPLE'} for c in original['cards'][1:]]
     for card in request['cards']:
         card['mode']='AUTHENTIC_REPLAY'
@@ -45,7 +48,7 @@ def probe_captured_request(directory,source,*,native_identity,audit_config,clock
         saved=json.loads(target.read_text(encoding='utf-8'))
         if _material(saved)!=_material(request):raise ContractError('NATIVE_REVIEW_REQUEST_COLLISION')
     else:
-        with target.open('x',encoding='utf-8') as f:f.write(encode(request)+'\n');f.flush();os.fsync(f.fileno())
+        with target.open('x',encoding='utf-8') as f:f.write(request_file_text(request));f.flush();os.fsync(f.fileno())
     receipt=wait_for_reply(folder,request['material_sha256'],audit_config,wait_seconds=wait_seconds,
         clock=clock,progress=progress,verified_identity=native_identity)
     result=exchange(folder,(),{},as_of=clock(),cached=True,previous={'material_sha256':request['material_sha256']},
@@ -92,7 +95,8 @@ def review_batches(directory,cards,facts,*,clock,context,reviews,audit_config,
     assert_parent(identity,private,require_configured_model=True)
     groups,omitted=plan_batches(cards,facts,as_of=clock(),context=context,reviews=reviews,
         max_cards=max_cards,identity=identity)
-    if omitted:first_error={'stage':'BATCH_PLANNING','code':'AGENT_INPUT_SIZE'}
+    planning_error={'stage':'BATCH_PLANNING','code':'AGENT_INPUT_SIZE'} if omitted else None
+    first_batch_error=None
     for index,group in enumerate(groups,1):
         def notify(state,**fields):
             if progress:progress(state,batch_index=index,batch_count=len(groups),**fields)
@@ -120,7 +124,8 @@ def review_batches(directory,cards,facts,*,clock,context,reviews,audit_config,
         batches.append(current)
         first_error=first_error or current.get('native_collector',{}).get('first_error')
         if current['status']!='VALIDATED_ADVISORY_ONLY':
-            first_error=first_error or {'stage':'REVIEW_IMPORT','code':current.get('reason',current['status'])}
+            first_batch_error=first_batch_error or current.get('native_collector',{}).get('terminal_error') or {
+                'stage':'REVIEW_IMPORT','code':current.get('reason',current['status'])}
         # Never manufacture a retry after an integrity/config/identity fault.
         if current.get('reason') in {'NATIVE_MODEL_SWITCHED','NATIVE_SESSION_MISMATCH','NATIVE_AGENT_MISMATCH',
                 'NATIVE_AUDIT_CONFIG_INVALID','NATIVE_UNAUTHORIZED_TOOL','NATIVE_HANDOFF_UNATTESTED',
@@ -159,7 +164,8 @@ def review_batches(directory,cards,facts,*,clock,context,reviews,audit_config,
         'reviewed_card_ids':sorted(reviewed),'not_reviewed':sorted(wanted-reviewed),'omitted':omitted,
         'unique_symbols':len({c.native_symbol for c in cards}),
         'unique_references':len({c.reference.id for c in cards}),
-        'batch_count':len(batches),'batches':batches,'first_error':first_error,
+        'batch_count':len(batches),'batches':batches,
+        'first_error':first_batch_error or first_error or planning_error,'planning_error':planning_error,
         'observed_model_attempts':attempts,'calls':0,'audited_prior_model_requests':attempts,
         'material_sha256':digest(encode(keys).encode()),
         'request_created_at_utc':min(created,key=utc) if created else None,
@@ -167,6 +173,6 @@ def review_batches(directory,cards,facts,*,clock,context,reviews,audit_config,
         'reply':{'interpretations':rows},'native_receipt':{'native_identity':identity,
             'model_requests':attempts,'batch_receipts':receipts},
         'native_collector':{'status':'NATIVE_RECEIPT_COLLECTED' if complete and wanted else 'NATIVE_REVIEW_INCOMPLETE',
-            'observed_model_attempts':attempts,'first_error':first_error},
+            'observed_model_attempts':attempts,'first_error':first_batch_error or first_error or planning_error},
         'elapsed_seconds':round(time.monotonic()-began,6),'trade_authorization':False,
         'can_override_deterministic_admission':False}
