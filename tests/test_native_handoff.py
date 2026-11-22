@@ -6,13 +6,14 @@ import unittest
 from unittest.mock import patch
 
 from researcher import openbot_runner as runner
-from researcher.agent_review import _material, exchange
+from researcher.agent_review import _material, exchange, parse_reply
 from researcher.contracts import ContractError, digest, encode, utc
 from researcher.native_app import wait_for_reply
 from researcher.native_codex import review_brief
-from researcher.native_handoff import (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY, VERBATIM_PAGE_COMMANDS, command_page, packet,
-    verify_submission_window)
+from researcher.native_handoff import (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY,
+    TICKET_BOUND_PAGE_COMMANDS, VERBATIM_PAGE_COMMANDS, command_page, packet, verify_submission_window)
 from researcher.native_runtime import collect
+from researcher.settings import ROOT
 import test_openbot_runner as jobs
 from test_workflow_e2e import SimulatedApp
 
@@ -35,12 +36,15 @@ class NativeHandoff(unittest.TestCase):
             dispatch_reservation_policy=RESERVED_SUBMISSION_POLICY,page_command_policy=VERBATIM_PAGE_COMMANDS)
         padding=95_759-len(review_brief(self.request))
         self.request['context']['fixture_evidence']=('Evidence with spaces and delimiters [ ] { } / ' * padding)[:padding]
+        self.pin_request()
+        self.app=SimulatedApp(self.f,self.clock)
+        self.on_sleep=lambda:None
+
+    def pin_request(self):
         self.material=digest(encode(_material(self.request)).encode())
         self.request['material_sha256']=self.material
         self.request_path=self.directory/(self.material+'.request.json')
         self.request_path.write_text(encode(self.request),encoding='utf-8')
-        self.app=SimulatedApp(self.f,self.clock)
-        self.on_sleep=lambda:None
 
     def sleep(self,seconds):
         self.seconds+=seconds;self.monotonic+=seconds;self.on_sleep()
@@ -172,6 +176,106 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(attestation['verified_evidence_pages'], 10)
         self.assertEqual(attestation['submission_attempts'], 1)
         self.assertEqual(attestation['reply_validation_status'], 'VALIDATED')
+
+    @staticmethod
+    def saved_page_seven():
+        return json.loads((ROOT/'tests/fixtures/native-codex-0171-page-seven.json').read_text(encoding='utf-8'))
+
+    def test_saved_page_seven_digest_deletion_still_fails_closed(self):
+        saved=self.saved_page_seven()
+        decoder=json.JSONDecoder()
+        script=saved['stored_script']
+        offset=script.index('cmd: ')+len('cmd: ')
+        command,_=decoder.raw_decode(script,offset)
+        expected=saved['delivered_next_command']
+        wanted=expected.split('--packet-sha256 ',1)[1].split()[0]
+        wrong=command.split('--packet-sha256 ',1)[1].split()[0]
+        self.assertEqual(expected.replace(wanted,wrong),command)
+        self.assertEqual(wanted[44:46],'c3')
+        self.assertEqual(wrong,wanted[:44]+wanted[46:])
+        self.assertEqual(saved['call_record']['ordinal'],60)
+        self.assertEqual(saved['command_record']['exit_code'],1)
+        self.assertEqual(json.loads(saved['command_record']['stdout'])['reason'],'NATIVE_HANDOFF_UNATTESTED')
+        self.assertEqual(saved['model_output_record']['output'][1]['text'],saved['command_record']['stdout'])
+        with self.assertRaisesRegex(ContractError,'AGENT_REPLY_JSON'):
+            parse_reply(saved['child_final'])
+        records=self.code_mode_rollout(multiline=True)
+        calls=[r['payload'] for r in records if r['payload'].get('type')=='custom_tool_call']
+        fingerprint=self.receipt['packet_sha256']
+        calls[6]['input']=calls[6]['input'].replace(fingerprint,fingerprint[:44]+fingerprint[46:])
+        self.app.write('REVIEW_1',records)
+        with self.assertRaisesRegex(ContractError,'^NATIVE_UNAUTHORIZED_TOOL$'):
+            collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+
+    def test_ticket_bound_code_mode_reads_all_pages_and_validates_the_reply(self):
+        self.request['page_command_policy']=TICKET_BOUND_PAGE_COMMANDS
+        self.pin_request()
+        records=self.code_mode_rollout(multiline=True)
+        args,fingerprint,pages=packet(self.request,self.directory)
+        self.assertIn(f'The expected packet SHA-256 is {fingerprint}.',args['brief'])
+        first=next(line for line in args['brief'].splitlines() if line.startswith('wsl.exe '))
+        commands=[first,*[json.loads(page)['next_command'] for page in pages[:-1]]]
+        self.assertTrue(all('--packet-sha256' not in command for command in commands))
+        self.assertEqual(len(commands),10)
+        self.assertEqual(digest(''.join(json.loads(page)['text'] for page in pages).encode()),fingerprint)
+        self.app.write('REVIEW_1',records)
+        _,proof=collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+        self.assertEqual(proof['verified_evidence_pages'],10)
+        self.assertEqual(proof['validated_rows'],len(self.request['cards']))
+        self.assertEqual(proof['reply_validation_status'],'VALIDATED')
+        self.assertEqual(proof['submission_attempts'],1)
+        self.assertEqual(proof['packet_sha256'],fingerprint)
+        seventh=next(i for i,r in enumerate(records) if r['payload'].get('type')=='custom_tool_call'
+                     and '--page 7"' in r['payload']['input'])
+        saved=self.saved_page_seven()
+        for fault,error in [('changed_material','NATIVE_UNAUTHORIZED_TOOL'),('extra_hash','NATIVE_UNAUTHORIZED_TOOL'),
+                ('extra_shell','NATIVE_UNAUTHORIZED_TOOL'),('altered_page','NATIVE_READ_INCOMPLETE'),
+                ('failed_read','NATIVE_READ_INCOMPLETE'),('other_turn','NATIVE_UNAUTHORIZED_TOOL'),
+                ('unsupported_tool','NATIVE_UNAUTHORIZED_TOOL')]:
+            with self.subTest(fault=fault):
+                changed=copy.deepcopy(records)
+                call,execution,output=(r['payload'] for r in changed[seventh:seventh+3])
+                if fault=='changed_material':
+                    call['input']=call['input'].replace(self.material,'0'*64)
+                elif fault=='extra_hash':
+                    call['input']=call['input'].replace('--page 7',f'--packet-sha256 {fingerprint} --page 7')
+                elif fault=='extra_shell':
+                    call['input']=call['input'].replace('login: false','shell: "powershell", login: false')
+                elif fault=='altered_page':
+                    output['output'][1]['text']=pages[6][:-1]
+                elif fault=='failed_read':
+                    event=saved['command_record']
+                    execution['item'].update(status='failed',exit_code=event['exit_code'],aggregated_output=event['stdout'])
+                    output['output']=saved['model_output_record']['output']
+                elif fault=='other_turn':
+                    call['internal_chat_message_metadata_passthrough']['turn_id']='UNBOUND_TURN'
+                elif fault=='unsupported_tool':
+                    call['type']='web_search_call'
+                self.app.write('REVIEW_1',changed)
+                with self.assertRaisesRegex(ContractError,f'^{error}$'):
+                    collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+
+    def test_ticket_bound_reader_recomputes_both_saved_hashes(self):
+        self.request['page_command_policy']=TICKET_BOUND_PAGE_COMMANDS
+        self.pin_request()
+
+        def ready():
+            self.ticket()
+            path=self.directory/(self.material+'.dispatch.json')
+            saved=path.read_bytes()
+            for field in ('packet_sha256','arguments_sha256'):
+                with self.subTest(field=field):
+                    path.write_text(encode({**self.receipt,field:'0'*64}),encoding='utf-8')
+                    with self.assertRaisesRegex(ContractError,'^NATIVE_HANDOFF_UNATTESTED$'):
+                        runner.review_page(self.job,self.material,None,7)
+            path.write_bytes(saved)
+            with self.assertRaisesRegex(ContractError,'^NATIVE_HANDOFF_UNATTESTED$'):
+                runner.review_page(self.job,self.material,self.receipt['packet_sha256'],7)
+            self.assertTrue(self.app.dispatch_once(self.args,self.job,self.receipt))
+            self.on_sleep=self.app.complete_due
+
+        result=self.wait(ready)
+        self.assertEqual(result['status'],'NATIVE_RECEIPT_COLLECTED')
 
     def test_exact_page_commands_are_supplied_without_path_or_number_substitution(self):
         args,fingerprint,pages=packet(self.request,self.directory)

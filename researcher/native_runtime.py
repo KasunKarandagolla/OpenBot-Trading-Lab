@@ -54,7 +54,7 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
         return compatibility(request,config,target,as_of=as_of)
     if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
     from .native_codex import attest,attest_handoff,observe_submission
-    from .native_handoff import runner_review,load_dispatch,packet,verify_submission_window,FRESH_SECONDS
+    from .native_handoff import runner_review,load_dispatch,packet,page_command_fingerprint,verify_submission_window,FRESH_SECONDS
     from .native_identity import under_work
     directory=under_work(directory) if directory is not None else None
     paged=runner_review(directory)
@@ -115,7 +115,7 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
                 or not utc(ticket['reserved_at_utc'])<=utc(submitted['attempted_at_utc'])<=utc(submitted['responded_at_utc'])
                 or not utc(ticket['reserved_at_utc'])<=utc(created)<=utc(submitted['responded_at_utc'])):
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-        evidence=(directory,request['material_sha256'],fingerprint,pages)
+        evidence=(directory,request['material_sha256'],page_command_fingerprint(request,fingerprint),pages)
     else:attest_handoff(config,identity,request,as_of=as_of,require_configured_model=require_configured_model)
     proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
         expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence,

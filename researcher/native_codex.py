@@ -326,7 +326,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
     context=False;began=False;ended=False;inputs=[];finals=[];responses=set();usage=[]
     calls={};completed=set();delivered=set()
     code_items=set();command_ids=set();pending_code=None
-    if evidence is not None:directory,material,fingerprint,pages=evidence
+    if evidence is not None:directory,material,command_fingerprint,pages=evidence
     for x in rows:
         p=x['payload'];kind=x['type'];typ=p.get('type')
         variant=x['_schema_variant']
@@ -338,7 +338,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 call_id=_code_mode_item(x,turn,code_items,{'name','status','input'})
                 command=_code_mode_command(p)
-                page=command_page({'command':['powershell.exe','-Command',command]},directory,material,fingerprint)
+                page=command_page({'command':['powershell.exe','-Command',command]},directory,material,command_fingerprint)
                 if call_id in calls or page is None or not 1<=page<=len(pages) or page in calls.values():
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 if page!=len(delivered)+1:raise ContractError('NATIVE_READ_INCOMPLETE')
@@ -362,9 +362,11 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 # Validate the literal command before associating the result. The
                 # completed event must also attest what the shell actually ran.
-                page=command_page({'command':['powershell.exe','-Command',args['cmd']]},directory,material,fingerprint)
+                page=command_page({'command':['powershell.exe','-Command',args['cmd']]},directory,material,command_fingerprint)
                 if page is None or not 1<=page<=len(pages) or page in calls.values():
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+                if command_fingerprint is None and page!=len(delivered)+1:
+                    raise ContractError('NATIVE_READ_INCOMPLETE')
                 calls[call_id]=page
                 continue
             if evidence is not None and typ=='function_call_output':
@@ -416,7 +418,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                     call_id=pending_code[0] if pending_code is not None else item_id
                     page=calls.get(call_id)
                     if (page is None or call_id in completed
-                            or command_page(item,directory,material,fingerprint)!=page):
+                            or command_page(item,directory,material,command_fingerprint)!=page):
                         raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                     output=item.get('aggregated_output')
                     if pending_code is not None:

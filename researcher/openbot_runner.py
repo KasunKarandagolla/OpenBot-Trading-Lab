@@ -407,7 +407,7 @@ def _paged_status(folder,data,result,include_review):
 def review_page(key,material,fingerprint,page):
     """Read one complete page of the pinned, unexpired packet from WSL."""
     from .agent_review import _material
-    from .native_handoff import load_dispatch
+    from .native_handoff import load_dispatch, page_command_fingerprint
 
     if not isinstance(material,str) or not re.fullmatch(SHA256,material):
         raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
@@ -423,7 +423,8 @@ def review_page(key,material,fingerprint,page):
                 or digest(encode(_material(request)).encode())!=material):
             raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
         _,expected,pages,ticket=load_dispatch(directory,request,as_of=now_utc())
-        if (ticket['published_at_utc']!=state.get('request_prepared_at_utc') or fingerprint!=expected
+        if (ticket['published_at_utc']!=state.get('request_prepared_at_utc')
+                or fingerprint!=page_command_fingerprint(request,expected)
                 or type(page) is not int or not 1<=page<=len(pages)):
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         if (not 0<=(utc(now_utc())-utc(request['as_of_utc'])).total_seconds()<FRESH_SECONDS

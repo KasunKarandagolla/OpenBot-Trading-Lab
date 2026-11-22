@@ -1,3 +1,47 @@
+# November 22 native page 7 recovery
+
+Job `20261122T145844Z-859c591ced8d42b4b644ef6991d56083` ran at
+`07e9d1e7e4d152be09f54c125235fb1fd74b66da`. The retained ZIP SHA-256 is
+`402a0bd1ffc1a324fba0fd1e646ec870ba9b3cde66f37f6ab92739a12bebbbeb`.
+
+- The parent's only child submission was acknowledged at `15:06:40.995Z`.
+  The Codex 0.171.0 child delivered pages 1–6 byte for byte. Its page 7
+  `response_item.custom_tool_call` at ordinal 60, `15:07:47.124Z`, omitted
+  `c3` from the literal `--packet-sha256`. The exact command allowlist
+  rejected that record. The actual command completion at ordinal 62 exited 1,
+  and ordinal 63 delivered `NATIVE_HANDOFF_UNATTESTED` to the model. The job
+  was still `REVIEW_RUNNING`. With the original request and ticket and the
+  historical open state reconstructed in memory, the same arguments failed
+  and the canonical arguments served page 7. Pages 8–10 were never requested.
+  The persisted final was prose and failed `AGENT_REPLY_JSON`. The unchanged
+  historic collector rejection was reproduced and no advice was imported.
+- New materials use literal commands bound to the immutable ticket by job
+  and material. The exact parent brief and every page still contain the full
+  canonical packet digest. The page reader recomputes and checks the saved
+  ticket, and the verifier matches the exact authorized command and both
+  persisted outputs for each ordered page. Legacy packets retain their
+  original commands and exact digests. The saved failure fixture preserves
+  the offending script and output with the local checkout path redacted.
+
+All 558 offline tests passed across the discovery groups and workflow reruns.
+Four cases initially hit the harness deadline under local contention. The
+baseline reproduced the deadline failure during simulated scanning. All seven
+workflow cases passed after increasing only the test harness limit from 90 to
+180 seconds. The receipt, citation, and reconciliation tests cover complete
+ordered delivery, altered commands and outputs, incorrect turn identity, and
+finalist coverage without duplicate processing. The Windows receipt collector
+still rejects the unchanged historical trace.
+
+Configuration validated and 25 protected files matched the baseline.
+Registered orchestration revision 4 and both
+workspace mirrors matched the rendered source. Both review mirrors matched
+the protected review skill. The owner-host job remains partial. No market
+requests, native task submissions or model calls were performed. Fresh
+acceptance remains a separate owner action. Keep PR #24 draft and
+`trade_authorization=false`.
+
+---
+
 # November 22 priority recovery
 
 Recovered from `a81d3ebff60b8468b0c63961d2febe274cf49b7a` using job

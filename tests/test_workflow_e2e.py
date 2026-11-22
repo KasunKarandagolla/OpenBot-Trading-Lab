@@ -4,6 +4,7 @@ No scanner, family reducer, admission function, receipt validator, ledger or
 exporter is mocked. Provider replies below are fixtures, never live LLM calls.
 """
 import io,json,os,sqlite3,threading,time,unittest,zipfile
+import shlex
 from dataclasses import replace
 from datetime import timedelta
 from pathlib import Path
@@ -31,12 +32,18 @@ class SimulatedApp:
         title=args['title']
         if title in self.submitted:return False
         self.submitted[title]=args
-        brief=args['brief'];full=brief;pages=[]
+        brief=args['brief'];full=brief;pages=[];commands=[]
         if job is not None:
-            material=receipt['material_sha256'];fingerprint=receipt['packet_sha256']
+            fingerprint=receipt['packet_sha256']
             self.assert_exact_arguments(args,receipt)
+            first_command=next(line for line in brief.splitlines() if line.startswith('wsl.exe '))
             for number in range(1,receipt['evidence_pages']+1):
-                pages.append(runner.review_page(job,material,fingerprint,number))
+                if first_command.endswith('N'):cmd=first_command.removesuffix('N')+str(number)
+                else:cmd=first_command if number==1 else json.loads(pages[-1])['next_command']
+                argv=shlex.split(cmd.split(' -- python3 -m researcher.openbot_runner ',1)[1])
+                cli=dict(zip(argv[1::2],argv[2::2],strict=True))
+                pages.append(runner.review_page(cli['--job-id'],cli['--material'],cli.get('--packet-sha256'),int(cli['--page'])))
+                commands.append(cmd)
             full=''.join(json.loads(page)['text'] for page in pages)
             if digest(full.encode())!=fingerprint:raise AssertionError('packet hash')
         request=json.loads(full.split('<canonical-request>\n',1)[1].split('\n</canonical-request>',1)[0])
@@ -66,11 +73,8 @@ class SimulatedApp:
             e(at,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':name,
                 'item':{'type':'UserMessage','content':[{'type':'text','text':'OpenBot task envelope\n'+brief}]}})]
         if pages:
-            first_command=next(line for line in brief.splitlines() if line.startswith('wsl.exe '))
-            for number,page in enumerate(pages,1):
+            for number,(cmd,page) in enumerate(zip(commands,pages,strict=True),1):
                 call='PAGE_'+str(number)
-                if first_command.endswith('N'):cmd=first_command.removesuffix('N')+str(number)
-                else:cmd=first_command if number==1 else json.loads(pages[number-2])['next_command']
                 rows.extend([e(at,'response_item',{'type':'function_call','name':'exec_command','call_id':call,
                         'arguments':json.dumps({'cmd':cmd,'login':False,'max_output_tokens':16000})}),
                     e(at,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':name,
@@ -156,7 +160,9 @@ class CompleteWorkflow(unittest.TestCase):
             self.thread=t;return SimpleNamespace(pid=os.getpid())
         with patch('subprocess.Popen',side_effect=launch) as spawned:
             job=runner.start(self.request_id)['job_id'];go.set()
-            seen=[];deadline=time.monotonic()+90;wait_observed=False
+            # Bound the offline harness separately from the runner's dispatch
+            # and freshness limits. Fake scanning alone can take 90s on WSL.
+            seen=[];deadline=time.monotonic()+180;wait_observed=False
             while time.monotonic()<deadline:
                 status=runner.status(job,include_review=True);seen.append(status['state'])
                 if status['state']=='REVIEW_READY':

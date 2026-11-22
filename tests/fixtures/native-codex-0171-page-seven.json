@@ -1,0 +1,31 @@
+{
+  "stored_script": "const r = await tools.exec_command({cmd: \"wsl.exe --cd '@@CHECKOUT@@' -- python3 -m researcher.openbot_runner review-page --job-id 20261122T145844Z-859c591ced8d42b4b644ef6991d56083 --material e72c18016ec54c55b8192f7e4f91f009647235878993b278051477a147c77150 --packet-sha256 5287a5395a49d910646bf8d9c24b2e4066673b7cc3d5f5e49cd9fec62e4906 --page 7\", login: false, max_output_tokens: 16000});\ntext(r.output);\n",
+  "delivered_next_command": "wsl.exe --cd '@@CHECKOUT@@' -- python3 -m researcher.openbot_runner review-page --job-id 20261122T145844Z-859c591ced8d42b4b644ef6991d56083 --material e72c18016ec54c55b8192f7e4f91f009647235878993b278051477a147c77150 --packet-sha256 5287a5395a49d910646bf8d9c24b2e4066673b7cc3d5c3f5e49cd9fec62e4906 --page 7",
+  "call_record": {
+    "ordinal": 60,
+    "type": "response_item",
+    "payload_type": "custom_tool_call",
+    "timestamp": "2026-11-22T15:07:47.124Z"
+  },
+  "command_record": {
+    "ordinal": 62,
+    "timestamp": "2026-11-22T15:07:49.547Z",
+    "exit_code": 1,
+    "stdout": "{\n  \"reason\": \"NATIVE_HANDOFF_UNATTESTED\",\n  \"state\": \"REJECTED\",\n  \"trade_authorization\": false\n}\n"
+  },
+  "model_output_record": {
+    "ordinal": 63,
+    "timestamp": "2026-11-22T15:07:49.599Z",
+    "output": [
+      {
+        "type": "input_text",
+        "text": "Script completed\nWall time 2.4 seconds\nOutput:\n"
+      },
+      {
+        "type": "input_text",
+        "text": "{\n  \"reason\": \"NATIVE_HANDOFF_UNATTESTED\",\n  \"state\": \"REJECTED\",\n  \"trade_authorization\": false\n}\n"
+      }
+    ]
+  },
+  "child_final": "Not completed: page 7 returned `REJECTED` with reason `NATIVE_HANDOFF_UNATTESTED`, not a page record. I stopped as instructed; pages 8–10 remain unread, so there is no valid review JSON to return."
+}

@@ -16,6 +16,7 @@ RESPONSE_SECONDS = 30
 LEGACY_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'
 RESERVED_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; 90_SECONDS_FROM_RESERVATION; NEVER_AUTOMATICALLY_RESUBMIT'
 VERBATIM_PAGE_COMMANDS = 'VERBATIM_NEXT_PAGE_V1'
+TICKET_BOUND_PAGE_COMMANDS = 'VERBATIM_TICKET_BOUND_PAGE_V2'
 
 
 def runner_review(directory):
@@ -31,6 +32,24 @@ def wsl_root():
     return root
 
 
+def page_command_fingerprint(request, fingerprint):
+    """New commands use the saved ticket for the full packet SHA-256."""
+    policy = request.get('page_command_policy')
+    if policy == TICKET_BOUND_PAGE_COMMANDS:
+        return None
+    if policy not in (None, VERBATIM_PAGE_COMMANDS):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    return fingerprint
+
+
+def _page_argv(directory, material, command_fingerprint):
+    argv = ['python3', '-m', 'researcher.openbot_runner', 'review-page',
+            '--job-id', directory.parent.name, '--material', material]
+    if command_fingerprint is not None:
+        argv.extend(['--packet-sha256', command_fingerprint])
+    return [*argv, '--page']
+
+
 def packet(request, directory):
     """Derive both the exact native argument object and every expected page."""
     from .native_codex import review_brief
@@ -43,12 +62,9 @@ def packet(request, directory):
     fingerprint = digest(full.encode('utf-8'))
     chunks = tuple(full[i:i + PAGE_CHARS] for i in range(0, len(full), PAGE_CHARS))
     root = wsl_root().replace("'", "''")
-    command = (f"wsl.exe --cd '{root}' -- python3 -m researcher.openbot_runner review-page "
-               f"--job-id {directory.parent.name} --material {material} --packet-sha256 {fingerprint} --page ")
-    command_policy = request.get('page_command_policy')
-    if command_policy not in (None, VERBATIM_PAGE_COMMANDS):
-        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-    verbatim = command_policy == VERBATIM_PAGE_COMMANDS
+    command_fingerprint = page_command_fingerprint(request, fingerprint)
+    command = f"wsl.exe --cd '{root}' -- " + ' '.join(_page_argv(directory, material, command_fingerprint)) + ' '
+    verbatim = request.get('page_command_policy') is not None
     if verbatim:
         instructions = (
             "For page 1 copy this complete literal command verbatim:\n"
@@ -57,6 +73,10 @@ def packet(request, directory):
             "Use exec_command with exactly cmd, login:false, max_output_tokens:16000. Do not specify shell, cwd, or other arguments. "
             "If a read fails, stop and report the failure. Do not retry or change the command. "
         )
+        if command_fingerprint is None:
+            # Bind the full packet to the parent's exact native submission
+            # without relying on the child to transcribe the digest on each read.
+            instructions += f"The expected packet SHA-256 is {fingerprint}. Use it to check the returned pages. "
     else:
         instructions = (
             "For each page use login=false and max_output_tokens=16000, with exactly this command stem and the page number:\n"
@@ -141,7 +161,7 @@ def verify_submission_window(submission, ticket):
             raise ContractError('NATIVE_RESPONSE_OUTSIDE_WINDOW')
 
 
-def command_page(item, directory, material, fingerprint):
+def command_page(item, directory, material, command_fingerprint):
     """Identify the exact fixed command in a provider CommandExecution item."""
     import shlex
     from pathlib import PureWindowsPath
@@ -165,9 +185,7 @@ def command_page(item, directory, material, fingerprint):
             return None
     elif str(item.get('cwd')) != str(ROOT):
         return None
-    expected = ['python3', '-m', 'researcher.openbot_runner', 'review-page',
-                '--job-id', directory.parent.name, '--material', material,
-                '--packet-sha256', fingerprint, '--page']
+    expected = _page_argv(directory, material, command_fingerprint)
     if len(argv) != len(expected) + 1 or argv[:-1] != expected or not re.fullmatch(r'[1-9][0-9]?', argv[-1]):
         return None
     return int(argv[-1])
