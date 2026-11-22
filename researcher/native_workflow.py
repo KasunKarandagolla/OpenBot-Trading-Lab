@@ -89,7 +89,7 @@ def review_batches(directory,cards,facts,*,clock,context,reviews,audit_config,
     began=time.monotonic();batches=[];omitted=[];first_error=None
     private=load_private(audit_config)
     identity=dict(native_identity) if native_identity is not None else active_identity(private)
-    assert_parent(identity,private)
+    assert_parent(identity,private,require_configured_model=True)
     groups,omitted=plan_batches(cards,facts,as_of=clock(),context=context,reviews=reviews,
         max_cards=max_cards,identity=identity)
     if omitted:first_error={'stage':'BATCH_PLANNING','code':'AGENT_INPUT_SIZE'}

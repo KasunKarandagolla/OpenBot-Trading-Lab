@@ -68,10 +68,12 @@ def execute(operation,input_file):
     if operation=='configured_identity':return identity.configured_identity(config)
     if operation=='active_identity':return identity.active_identity(config)
     if operation=='assert_current':return identity.assert_current(v['identity'],config)
-    if operation=='assert_parent':return identity.assert_parent(v['identity'],config)
+    if operation=='assert_parent':return identity.assert_parent(v['identity'],config,
+        require_configured_model=v.get('require_configured_model',False))
     if operation=='collect':
         from .native_runtime import collect
-        return collect(v['request'],config,as_of=v['as_of'],directory=v.get('directory'))
+        return collect(v['request'],config,as_of=v['as_of'],directory=v.get('directory'),
+            require_configured_model=v.get('require_configured_model',False))
     if operation=='observe_handoff':
         from .native_app import observe_handoff
         return observe_handoff(config,**v)

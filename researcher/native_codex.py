@@ -328,11 +328,12 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
         'input_proof':'PROVIDER_ATTESTED_COMPLETE_INPUT_BYTES; NOT_A_CLAIM_ABOUT_HIDDEN_COGNITION'}
 
 
-def observe_submission(config, identity, request_at, arguments, *, as_of, reserved_at=None):
+def observe_submission(config, identity, request_at, arguments, *, as_of, reserved_at=None,
+                       require_configured_model=True):
     """Observe the scoped native call and response without performing either."""
     from datetime import timedelta
     from .native_identity import parent_binding
-    binding=parent_binding(identity,config)
+    binding=parent_binding(identity,config,require_configured_model=require_configured_model)
     session,turn,start=binding['external'],binding['turn'],binding['started_at']
     end=min(utc(as_of),utc(binding['completed_at'])) if binding['completed_at'] else utc(as_of)
     context=False;started={};completed=[]
@@ -398,8 +399,9 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
     return {**result,'submission_state':'ACKNOWLEDGED','acknowledged_task_ref':ref(response['taskId'])}
 
 
-def attest_handoff(config,identity,request,*,as_of):
+def attest_handoff(config,identity,request,*,as_of,require_configured_model=True):
     args={'title':'OPENBOT-RESEARCH-'+request['material_sha256'],'brief':review_brief(request)}
-    observed=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of)
+    observed=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
+        require_configured_model=require_configured_model)
     if observed['submission_state']=='ACKNOWLEDGED':return True
     raise ContractError('NATIVE_HANDOFF_UNATTESTED')

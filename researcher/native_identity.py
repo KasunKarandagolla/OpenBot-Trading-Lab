@@ -232,18 +232,28 @@ def active_identity(config):
         'session_ref':ref(sid),'external_session_ref':ref(external),'parent_started_at_utc':started}
 
 
-def parent_binding(identity,config):
+def _assert_configured_owner(identity,current,*,require_configured_model):
+    if any(current[field]!=identity.get(field) for field in ('agent_id','agent_name')):
+        raise ContractError('NATIVE_AGENT_MISMATCH')
+    fields=[('provider','CONFIGURED_PROVIDER'),('adapter','CONFIGURED_ADAPTER')]
+    if require_configured_model:fields.append(('model','CONFIGURED_MODEL'))
+    for field,check in fields:
+        if current[field]!=identity.get(field):
+            raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY',check)
+    model=identity.get('model')
+    if not isinstance(model,str) or not model:raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
+
+
+def parent_binding(identity,config,*,require_configured_model=True):
     """Resolve the captured parent from durable relations, never active pointers.
 
     Internal to the storage host: raw identifiers never cross native_host.
-    Closing a turn/session does not change its identity. Reassigning its agent,
-    thread, provider, model or external session does.
+    The historical model comes from the captured job and its provider records.
+    Active callers also require matching configuration, without following the
+    active pointer, which can legitimately move to a child during review.
     """
     current=configured_identity(config)
-    if current['agent_id']!=identity.get('agent_id'):raise ContractError('NATIVE_AGENT_MISMATCH')
-    for field,check in (('provider','CONFIGURED_PROVIDER'),('model','CONFIGURED_MODEL'),('adapter','CONFIGURED_ADAPTER')):
-        if current[field]!=identity.get(field):
-            raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY',check)
+    _assert_configured_owner(identity,current,require_configured_model=require_configured_model)
     with read_db(config['openbot_db']) as db:
         rows=db.execute('''SELECT h.thread_id,t.turn_id,p.id,p.external_session_id,
           p.model,p.provider,t.started_at,t.completed_at,t.status
@@ -273,22 +283,22 @@ def parent_binding(identity,config):
         'started_at':start,'completed_at':end,'status':status}
 
 
-def assert_parent(identity,config):
-    """Check immutable parent ownership while permitting active-turn changes."""
+def assert_parent(identity,config,*,require_configured_model=False):
+    """Check the original owner and parent, optionally for active work."""
     from .native_host import delegated,call
-    if delegated(config):return call(config,'assert_parent',{'identity':identity})
-    parent_binding(identity,config)
-    return configured_identity(config)
+    if delegated(config):return call(config,'assert_parent',{'identity':identity,
+        'require_configured_model':require_configured_model})
+    parent_binding(identity,config,require_configured_model=require_configured_model)
+    return {key:identity[key] for key in ('agent_id','agent_name','provider','model','adapter')}
 
 
 def assert_current(identity,config):
     from .native_host import delegated,call
     if delegated(config):return call(config,'assert_current',{'identity':identity})
     current=configured_identity(config)
-    if current['agent_id']!=identity.get('agent_id'):raise ContractError('NATIVE_AGENT_MISMATCH')
-    if any(current[k]!=identity.get(k) for k in ('provider','model','adapter')):
-        raise ContractError('NATIVE_MODEL_SWITCHED')
+    _assert_configured_owner(identity,current,require_configured_model=True)
     active=active_identity(config)
+    _assert_configured_owner(identity,active,require_configured_model=True)
     if any(active.get(k)!=identity.get(k) for k in ('thread_ref','turn_ref','session_ref','external_session_ref','provider_backend')):
         raise ContractError('NATIVE_SESSION_MISMATCH')
     if identity.get('parent_started_at_utc',active['parent_started_at_utc'])!=active['parent_started_at_utc']:

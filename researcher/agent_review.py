@@ -311,7 +311,7 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
                 identity=json.loads(read(root/(key+'.request.json'),131072)).get('native_identity')
                 if not isinstance(identity,dict):raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
             else:identity=active_identity(private)
-            assert_parent(identity,private)
+            assert_parent(identity,private,require_configured_model=True)
         skill=digest((ROOT/'.agents/skills/market-research-review/SKILL.md').read_bytes())
         if cards:
             by_review={r['card_id']:r for r in reviews}
@@ -350,7 +350,7 @@ def exchange(directory,cards,facts,*,as_of,context=None,reviews=(),previous=None
         if prepare_only:return {**result,'status':'AWAITING_NATIVE_APP_RESPONSE'}
         if identity is not None:
             from .native_runtime import collect
-            found=collect(request,private,as_of=as_of,directory=root)
+            found=collect(request,private,as_of=as_of,directory=root,require_configured_model=True)
             if found is None:return {**result,'status':'AWAITING_NATIVE_APP_RESPONSE'}
             raw,audit=found
         else:

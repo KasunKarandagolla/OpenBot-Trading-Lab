@@ -52,7 +52,7 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
         private=load_private(config_path)
         if verified_identity is not None and verified_identity!=request['native_identity']:
             raise ContractError('NATIVE_SESSION_MISMATCH')
-        assert_parent(request['native_identity'],private)
+        assert_parent(request['native_identity'],private,require_configured_model=True)
         installed=local_path(private['agent_workspace'])/'.agents/skills/market-research-review/SKILL.md'
         if digest(checked_path(installed,error='AGENT_SKILL_HASH').read_bytes())!=request['skill_sha256']:
             raise ContractError('AGENT_SKILL_HASH')
@@ -104,7 +104,8 @@ def collect(request,config,target,*,as_of,timeout_seconds=30):
     """One bounded read of the exact task; never inspect preceding chat history."""
     if request.get('native_identity',{}).get('provider')=='codex':
         from .native_runtime import collect as dynamic_collect
-        return dynamic_collect(request,config,as_of=as_of,directory=target,timeout_seconds=timeout_seconds)
+        return dynamic_collect(request,config,as_of=as_of,directory=target,timeout_seconds=timeout_seconds,
+            require_configured_model=True)
     expected_model=request['model']
     if request.get('native_identity'):
         from .native_identity import assert_current
@@ -247,7 +248,8 @@ def task_observation(config,*,agent_id,title,details=False):
     return result
 
 
-def observe_handoff(config, *, identity, directory, material, as_of, timeout_seconds=30):
+def observe_handoff(config, *, identity, directory, material, as_of, timeout_seconds=30,
+                    require_configured_model=False):
     """Bind the one-time ticket, provider call/response and app task projection."""
     from .native_codex import observe_submission
     from .native_handoff import load_dispatch, packet, read_object, runner_review, verify_submission_window
@@ -259,8 +261,9 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
     if not runner_review(directory) or not re.fullmatch('[0-9a-f]{64}',material):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     if delegated(config):return call(config,'observe_handoff',{'identity':identity,'directory':str(directory),
-        'material':material,'as_of':as_of},timeout_seconds=timeout_seconds)
-    assert_parent(identity,config)
+        'material':material,'as_of':as_of,'require_configured_model':require_configured_model},
+        timeout_seconds=timeout_seconds)
+    assert_parent(identity,config,require_configured_model=require_configured_model)
     request=read_object(directory/(material+'.request.json'))
     if (request.get('material_sha256')!=material or request.get('native_identity')!=identity
             or digest(encode(_material(request)).encode())!=material):
@@ -273,12 +276,13 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
         if utc(read_object(lease).get('reserved_at_utc'))>utc(as_of):return missing
         args,_,_,ticket=load_dispatch(directory,request,as_of=as_of)
         result=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
-            reserved_at=ticket['reserved_at_utc'])
+            reserved_at=ticket['reserved_at_utc'],require_configured_model=require_configured_model)
         verify_submission_window(result,ticket)
         result['reserved_at_utc']=ticket['reserved_at_utc']
     else:
         args,_,_=packet(request,directory)
-        result=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of)
+        result=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
+            require_configured_model=require_configured_model)
         if result['submission_attempts']:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         # The native reader and main chat run concurrently. If a ticket was
         # issued during this read, let the next observation bind the new data.
@@ -386,7 +390,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                     found=None
                     break
                 handoff=observe_handoff(config,identity=request['native_identity'],directory=folder,
-                    material=material,as_of=as_of,timeout_seconds=max(.001,read_until-time.monotonic()))
+                    material=material,as_of=as_of,timeout_seconds=max(.001,read_until-time.monotonic()),
+                    require_configured_model=True)
                 stamp=check_freshness()
                 observed=handoff['task'];count=observed['count'] if handoff['task_created'] else 0
                 phase={k:v for k,v in handoff.items() if k not in {'task','task_created','acknowledged_task_ref'}}

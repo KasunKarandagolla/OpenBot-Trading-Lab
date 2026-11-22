@@ -366,7 +366,7 @@ def _paged_status(folder,data,result,include_review):
         result.update(state='REVIEW_DISPATCH_RESERVED',dispatch_receipt=receipt)
         return
     if not include_review:return
-    assert_parent(data['native_identity'],load_private(PRIVATE))
+    assert_parent(data['native_identity'],load_private(PRIVATE),require_configured_model=True)
     args,fingerprint,pages=packet(request,directory)
     task=under_work(directory/(material+'.review-task.json'))
     if task.read_bytes()!=encode(args).encode('utf-8'):raise ContractError('NATIVE_HANDOFF_UNATTESTED')
@@ -484,7 +484,7 @@ def status(key,include_review=False):
                 raise ContractError('NATIVE_HANDOFF_UNATTESTED')
             try:
                 private=load_private(PRIVATE)
-                assert_parent(data['native_identity'],private)
+                assert_parent(data['native_identity'],private,require_configured_model=True)
                 from .native_app import review_count
                 observed=review_count({'native_identity':data['native_identity'],
                     'material_sha256':ready[0].name.split('.')[0]},private,details=True)

@@ -213,7 +213,8 @@ class NativeModelComparison(unittest.TestCase):
         model = 'different-model'
         with sqlite3.connect(f.config['openbot_db']) as db:
             db.execute('UPDATE projection_agents SET model=?,agent_json=?',(model,encode({**f.agent,'model':model})))
-        self.check_rejection(lambda:native_identity.parent_binding(f.identity,f.config),'CONFIGURED_MODEL')
+        self.check_rejection(lambda:native_identity.parent_binding(f.identity,f.config,
+            require_configured_model=True),'CONFIGURED_MODEL')
 
     def test_app_parent_provider_session_keeps_exact_captured_model(self):
         f = self.fixture

@@ -22,6 +22,7 @@ class SimulatedApp:
     def __init__(self,fixture,clock):
         self.f=fixture;self.clock=clock;self.submitted={};self.pending=[];self.input_cards=[]
         self.reply_transform=None
+        self.parent_session='PARENT';self.parent_turn='PARENT_TURN'
     def envelope(self,at,kind,payload):return {'timestamp':at,'type':kind,'payload':payload}
     def write(self,name,rows):
         p=self.f.root/'sessions'/(name+'.jsonl')
@@ -53,11 +54,11 @@ class SimulatedApp:
         wrapper={'name':'openbot.start_task','arguments':args};call_id='START_TASK_'+name
         self.f.parent.append(e(at,'response_item',{'type':'function_call','name':'tool_call','namespace':'openbot',
             'call_id':call_id,'arguments':json.dumps(wrapper)}))
-        self.f.parent.append(e(at,'event_msg',{'type':'item_completed','turn_id':'PARENT_TURN','thread_id':'PARENT',
+        self.f.parent.append(e(at,'event_msg',{'type':'item_completed','turn_id':self.parent_turn,'thread_id':self.parent_session,
             'item':{'type':'DynamicToolCall','namespace':'openbot','tool':'tool_call','status':'completed','success':True,
                 'id':call_id,'arguments':wrapper,'content_items':[{'type':'inputText',
                     'text':json.dumps({'taskId':thread,'title':title})}]}}))
-        self.write('PARENT',self.f.parent)
+        self.write(self.parent_session,self.f.parent)
         rows=[e(at,'session_meta',{'id':name,'originator':'openbot','model_provider':'openai',
                 'cli_version':'0.169.0','cwd':str(self.f.workspace)}),
             e(at,'event_msg',{'type':'task_started','turn_id':turn}),

@@ -116,7 +116,8 @@ class CodexRuntimeFixtures(unittest.TestCase):
         with sqlite3.connect(self.config['openbot_db']) as db:
             self.agent['model']='different'
             db.execute('UPDATE projection_agents SET model=?,agent_json=?',('different',encode(self.agent)))
-        with self.assertRaisesRegex(ContractError,'NATIVE_MODEL_SWITCHED'):self.get()
+        with self.assertRaisesRegex(ContractError,'NATIVE_MODEL_SWITCHED'):
+            collect(self.request,self.config,as_of=self.time(5),require_configured_model=True)
         self.assertEqual(before,encode(self.request))
 
     def test_child_wrong_model_agent_session_are_rejected(self):
