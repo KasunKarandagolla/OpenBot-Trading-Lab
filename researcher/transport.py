@@ -106,6 +106,7 @@ class PublicHTTP:
         url = ENDPOINTS[endpoint] + ("?" + urlencode(query) if query else "")
         req = urllib.request.Request(url, data=data, headers=headers or {},
                                      method="POST" if data is not None else "GET")
+        started_at_utc = now_utc()
         started = time.monotonic()
         try:
             response = self.opener.open(req, timeout=self.timeout)
@@ -123,14 +124,14 @@ class PublicHTTP:
         except OSError:
             receipt = {"endpoint": ENDPOINTS[endpoint], "http_status": None,
                        "request_body_bytes":len(data) if data else 0,"request_url_bytes":len(url.encode()),
-                       "received_at_utc": now_utc(), "response_bytes": None,
+                       "received_at_utc": now_utc(), "local_request_started_at_utc": started_at_utc, "response_bytes": None,
                        "response_sha256": None, "elapsed_ms": round((time.monotonic() - started) * 1000),
                        "retry_after": None, "quota_charged_units": None}
             self.receipts.append(receipt)
             raise ProviderError("NETWORK_OR_TLS_FAILURE", receipt) from None
         receipt = {"endpoint": ENDPOINTS[endpoint], "http_status": status,
                    "request_body_bytes":len(data) if data else 0,"request_url_bytes":len(url.encode()),
-                   "received_at_utc": now_utc(), "response_bytes": len(body),
+                   "received_at_utc": now_utc(), "local_request_started_at_utc": started_at_utc, "response_bytes": len(body),
                    "response_sha256": digest(body),
                    "elapsed_ms": round((time.monotonic() - started) * 1000),
                    "retry_after": safe_retry_after(private_headers.get("retry-after")),

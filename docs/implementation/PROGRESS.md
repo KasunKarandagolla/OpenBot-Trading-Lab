@@ -1,3 +1,62 @@
+# November 22 priority recovery
+
+Recovered from `a81d3ebff60b8468b0c63961d2febe274cf49b7a` using job
+`20261122T121818Z-af613474da394f86a0850b7f3dd3788f`. The original ZIP SHA-256 is
+`241dd4ebd74fc2bcf95a7bc2ce3504cefdea6b1f9efa9d2c16b73c96cac94206`.
+
+- The first rejected provider record was `response_item.custom_tool_call`,
+  ordinal 18 at `12:25:00.376Z`. All eleven wrappers supplied an unauthorized
+  `shell` argument. Page 5 also used a misspelled path on its first attempt
+  (ordinal 46), and WSL exited 1. The second attempt (ordinal 53) used the
+  correct path and delivered page 5 once, with the same unauthorized argument.
+  Independent byte comparison found all ten pages in model-facing output.
+  The first child turn completed with 12 distinct provider response records
+  and three citation-valid JSON rows. Receipt verification still rejects the
+  original turn and none of those rows was imported. A later prose follow-up
+  is outside the brief-bearing turn, which now anchors completion selection.
+  New packets provide literal commands in sequence and explicitly forbid extra
+  arguments and retries. Legacy packets retain their exact bytes and checks.
+- Sequential local HTTP receipts moved backward, and the 38 reported clock
+  samples came from eight held high-water marks. A current read-only comparison
+  found a multi-second Windows/WSL UTC difference. Historical System records
+  did not identify the clock adjustment mechanism. The reader now uses raw UTC
+  for native checks, preserves the research watermark, and records local
+  request brackets and grouped clock diagnostics. The `NO_READY` gate and the
+  original evidence times are preserved.
+- The retained phase order covered 519/519 broad 15m, 350 causal 1h, and 150
+  broad 1h contracts. The fourth broad 1h partition encountered cooldown. With
+  21.736 seconds left, the 60-second pause could not fit despite physical cap
+  headroom. Interleaving at the same observed dispatch limit exchanged 50
+  causal rows for 50 broader rows in the sensitivity check. Three selected
+  1h gaps had bounded local fallback. The schedule and source scope are kept.
+- The 652 nominations represented 480 unique symbols, including the benchmark
+  context. The trace had 47 investigated nominations, 605 deferred, and 22
+  investigated non-context symbols with no duplicate selected history keys.
+  The priority heuristic was combining distance from one timeframe with
+  pressure from another. Retained-input replay found 23 order-sensitive
+  scores before the fix and zero after. Reversing inputs changed three of 22
+  selected symbols before the fix and none after when both comparisons omitted
+  unavailable turnover tiebreaks. Fair lanes and history caps remain.
+- Attachment output used the Windows spelling of the same checked WSL ZIP
+  path. The patched reader verified the original attachment and final response
+  read-only while retaining exact artifact identity and checksum controls.
+  Unattested model-request totals are now unknown instead of conflated with zero
+  verified requests. Existing oversized-card, citation, and planning diagnostics
+  passed the native workflow fixtures.
+
+The end-to-end fixture validated seven advisory rows covering all six finalists
+across three simulated provider responses, reconciled them against deterministic
+controls, and independently verified the ZIP and final delivery.
+Fourteen focused tests and all 555 offline tests passed. Configuration validated,
+installed skill revision 4 and both review mirrors matched, and all 28 protected
+paths and six original artifact and evidence hashes matched their baselines.
+
+No expired advice was imported and no live market request, model call or task
+was made. The original job remains PARTIAL, with its artifact and evidence
+unchanged. Keep PR #24 draft and `trade_authorization=false`.
+
+---
+
 # November 22 second live acceptance recovery
 
 Job `20261122T104452Z-dff48ef326cb419aaccf56dc101916b9` ran at

@@ -58,6 +58,9 @@ class WorkflowLifecycleRecovery(unittest.TestCase):
         self.assertEqual(report['consultant']['status'],'NATIVE_REVIEW_INCOMPLETE')
         self.assertEqual(report['consultant']['planning_error']['code'],'AGENT_INPUT_SIZE')
         self.assertEqual(report['consultant']['first_error']['code'],'AGENT_REPLY_ADVICE')
+        self.assertEqual(report['consultant']['invalid_reply_batches'],1)
+        self.assertEqual(report['consultant']['unverified_dispatch_tickets'],0)
+        self.assertEqual(report['consultant']['model_requests_total'],report['consultant']['verified_model_requests'])
         self.assertGreater(report['consultant']['accepted'],0)
         self.assertTrue(report['native_control_comparison']['accepted_current_advice'])
         self.assertEqual(report['llm_calls'],len(self.w.app.submitted))
@@ -80,6 +83,23 @@ class WorkflowLifecycleRecovery(unittest.TestCase):
         self.assertEqual(report['consultant']['cards'],0)
         self.assertFalse(report['trade_authorization'])
         self.assertTrue(verify_zip(Path(state['artifact']['attachment_path']).read_bytes()))
+
+    def test_unattested_dispatched_batch_does_not_report_zero_actual_model_requests(self):
+        from researcher.contracts import ContractError
+        from researcher.native_app import collect
+        def reject_completed(*args,**kwargs):
+            if collect(*args,**kwargs) is not None:
+                raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+        with patch('researcher.native_app.collect',side_effect=reject_completed):
+            _,state,report=self.w.run_workflow()
+        native=report['consultant']
+        self.assertEqual(state['state'],'PARTIAL')
+        self.assertEqual(native['first_error']['code'],'NATIVE_UNAUTHORIZED_TOOL')
+        self.assertEqual(native['verified_model_requests'],0)
+        self.assertIsNone(native['model_requests_total'])
+        self.assertEqual(native['unverified_dispatch_tickets'],1)
+        self.assertEqual(native['invalid_reply_batches'],0)
+        self.assertEqual(native['accepted'],0)
 
     def test_exact_setup_message_archive_preflight_then_full_current_scan_are_one_workflow(self):
         w=self.w

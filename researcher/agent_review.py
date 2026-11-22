@@ -213,9 +213,10 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
     if native_identity is not None:
         body['native_identity']=dict(native_identity)
         if native_codex:
-            from .native_handoff import RESERVED_SUBMISSION_POLICY
+            from .native_handoff import RESERVED_SUBMISSION_POLICY, VERBATIM_PAGE_COMMANDS
             body['reply_citation_policy']=EXACT_CARD_CITATIONS
             body['dispatch_reservation_policy']=RESERVED_SUBMISSION_POLICY
+            body['page_command_policy']=VERBATIM_PAGE_COMMANDS
     if len(omitted)>8:
         body['omitted']=omitted[:8]
         body['omission_summary']={'total':len(omitted),'listed':8,

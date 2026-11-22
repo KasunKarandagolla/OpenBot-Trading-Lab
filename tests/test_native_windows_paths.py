@@ -12,6 +12,7 @@ from unittest.mock import patch
 from researcher import native_app, native_codex, native_handoff, native_host, native_identity, settings
 from researcher.agent_review import _material
 from researcher.contracts import ContractError, digest, encode
+from researcher.native_runtime import _attached_path_matches
 from researcher.settings import ROOT
 import test_native_runtime as runtime_fixture
 
@@ -86,6 +87,18 @@ class NativeWindowsPaths(unittest.TestCase):
         with patch.object(os, 'name', 'nt'), patch.object(WindowsPathFixture, 'mount', self.mount), \
                 patch.object(native_identity, 'Path', WindowsPathFixture), patch.object(native_identity, 'ROOT', self.checkout):
             yield
+
+    def test_delivery_path_matches_windows_and_wsl_spelling_of_only_the_verified_file(self):
+        target=self.checkout/'market-research-results'/'report.zip'
+        self.write(target,b'fixture')
+        wsl='/mnt/c/OpenBot/Checkout/market-research-results/report.zip'
+        with self.windows():
+            for path in (str(target),wsl):
+                self.assertTrue(_attached_path_matches({'paths':[path]},target))
+            for path in ('market-research-results/report.zip',wsl.replace('report.zip','other.zip'),
+                         wsl.replace('/report.zip','/../market-research-results/report.zip')):
+                self.assertFalse(_attached_path_matches({'paths':[path]},target))
+            self.assertFalse(_attached_path_matches({'paths':[str(target),wsl]},target))
 
     def test_long_windows_request_is_read_through_existing_native_reader(self):
         self.assertEqual(len(str(self.path)), 272)

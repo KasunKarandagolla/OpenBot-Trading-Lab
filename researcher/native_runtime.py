@@ -70,21 +70,25 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
         if len(rows)!=1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         thread,created=rows[0]
         if ref(thread)==identity['thread_ref']:raise ContractError('NATIVE_SESSION_MISMATCH')
-        inputs=db.execute('''SELECT message_json FROM projection_thread_messages
+        inputs=db.execute('''SELECT turn_id,message_json FROM projection_thread_messages
           WHERE thread_id=? AND author='agent' AND created_at>=? ORDER BY ordinal''',
           (thread,request['as_of_utc'])).fetchall()
         if not inputs and paged:return None
-        if not inputs or json.loads(inputs[0][0]).get('text')!=brief:
+        if (not inputs or not isinstance(inputs[0][0],str) or not inputs[0][0]
+                or json.loads(inputs[0][1]).get('text')!=brief):
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        input_turn=inputs[0][0]
+        # Only the turn that received the immutable brief can answer it.
         finals=db.execute('''SELECT m.message_json,t.turn_id,t.started_at,t.completed_at,
            p.external_session_id,p.model,p.provider,t.thread_id,p.thread_id
           FROM projection_thread_messages m JOIN projection_turns t ON t.turn_id=m.turn_id
           JOIN projection_provider_sessions p ON p.id=t.provider_session_id
-          WHERE m.thread_id=? AND m.author='assistant' AND m.item_type='final_answer'
+          WHERE m.thread_id=? AND m.turn_id=?
+          AND m.author='assistant' AND m.item_type='final_answer'
           AND m.status='completed' AND t.status='completed' AND m.created_at>=?
-          ORDER BY m.ordinal''',(thread,request['as_of_utc'])).fetchall()
+          ORDER BY m.ordinal''',(thread,input_turn,request['as_of_utc'])).fetchall()
         if not finals:
-            states=db.execute('SELECT status FROM projection_turns WHERE thread_id=?',(thread,)).fetchall()
+            states=db.execute('SELECT status FROM projection_turns WHERE thread_id=? AND turn_id=?',(thread,input_turn)).fetchall()
             if any(s[0] in {'failed','cancelled','interrupted'} for s in states):
                 raise ContractError('NATIVE_TASK_FAILED')
             return None
@@ -135,6 +139,22 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
     return raw,audit
 
 
+def _attached_path_matches(arguments, target):
+    from pathlib import PurePosixPath, PureWindowsPath
+    if not isinstance(arguments,dict) or set(arguments)!={'paths'}:
+        return False
+    paths=arguments['paths']
+    if not isinstance(paths,list) or len(paths)!=1 or not isinstance(paths[0],str):
+        return False
+    path=paths[0]
+    if not (PurePosixPath(path).is_absolute() or PureWindowsPath(path).is_absolute()):
+        return False
+    try:
+        return checked_path(path,root=target.parent,error='NATIVE_REPLY_PROVENANCE')==checked_path(target,error='NATIVE_REPLY_PROVENANCE')
+    except ContractError:
+        return False
+
+
 def delivery_proof(state,config):
     """Observe this job's real parent attachment and final; no send operation.
 
@@ -179,7 +199,7 @@ def delivery_proof(state,config):
         if (context and item.get('type')=='DynamicToolCall' and item.get('tool')=='tool_call'
                 and item.get('success') is True and item.get('status')=='completed'
                 and args.get('name')=='openbot.attach_files_to_response'
-                and args.get('arguments')=={'paths':[artifact['attachment_path']]}):
+                and _attached_path_matches(args.get('arguments'),target)):
             attached=True
         if (attached and item.get('type')=='AgentMessage' and item.get('phase')=='final_answer'
                 and __import__('researcher.native_codex',fromlist=['_text'])._text(item.get('content'))==raw):final=True

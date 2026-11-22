@@ -66,9 +66,11 @@ class SimulatedApp:
             e(at,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':name,
                 'item':{'type':'UserMessage','content':[{'type':'text','text':'OpenBot task envelope\n'+brief}]}})]
         if pages:
-            stem=next(line for line in brief.splitlines() if line.startswith('wsl.exe ')).removesuffix('N')
+            first_command=next(line for line in brief.splitlines() if line.startswith('wsl.exe '))
             for number,page in enumerate(pages,1):
-                call='PAGE_'+str(number);cmd=stem+str(number)
+                call='PAGE_'+str(number)
+                if first_command.endswith('N'):cmd=first_command.removesuffix('N')+str(number)
+                else:cmd=first_command if number==1 else json.loads(pages[number-2])['next_command']
                 rows.extend([e(at,'response_item',{'type':'function_call','name':'exec_command','call_id':call,
                         'arguments':json.dumps({'cmd':cmd,'login':False,'max_output_tokens':16000})}),
                     e(at,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':name,

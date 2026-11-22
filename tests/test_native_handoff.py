@@ -10,7 +10,7 @@ from researcher.agent_review import _material, exchange
 from researcher.contracts import ContractError, digest, encode, utc
 from researcher.native_app import wait_for_reply
 from researcher.native_codex import review_brief
-from researcher.native_handoff import (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY, command_page, packet,
+from researcher.native_handoff import (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY, VERBATIM_PAGE_COMMANDS, command_page, packet,
     verify_submission_window)
 from researcher.native_runtime import collect
 import test_openbot_runner as jobs
@@ -32,7 +32,7 @@ class NativeHandoff(unittest.TestCase):
         with sqlite3.connect(self.f.config['openbot_db']) as db:
             db.execute('DELETE FROM projection_agent_threads')
         self.request=dict(self.f.request,context={'fixture_evidence':'','unicode':'漢字'},as_of_utc=self.clock(),
-            dispatch_reservation_policy=RESERVED_SUBMISSION_POLICY)
+            dispatch_reservation_policy=RESERVED_SUBMISSION_POLICY,page_command_policy=VERBATIM_PAGE_COMMANDS)
         padding=95_759-len(review_brief(self.request))
         self.request['context']['fixture_evidence']=('Evidence with spaces and delimiters [ ] { } / ' * padding)[:padding]
         self.material=digest(encode(_material(self.request)).encode())
@@ -173,11 +173,36 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(attestation['submission_attempts'], 1)
         self.assertEqual(attestation['reply_validation_status'], 'VALIDATED')
 
+    def test_exact_page_commands_are_supplied_without_path_or_number_substitution(self):
+        args,fingerprint,pages=packet(self.request,self.directory)
+        first=next(line for line in args['brief'].splitlines() if line.startswith('wsl.exe '))
+        self.assertIn('Do not specify shell, cwd, or other arguments.',args['brief'])
+        commands=[first,*[json.loads(page)['next_command'] for page in pages[:-1]]]
+        self.assertNotIn('next_command',json.loads(pages[-1]))
+        self.assertEqual([command_page({'command':['powershell.exe','-Command',cmd]},
+            self.directory,self.material,fingerprint) for cmd in commands],list(range(1,11)))
+
+    def test_followup_answer_cannot_obscure_or_replace_the_original_child_turn(self):
+        self.app.write('REVIEW_1',self.code_mode_rollout(multiline=True))
+        at=self.clock()
+        with sqlite3.connect(self.f.config['openbot_db']) as db:
+            db.execute('INSERT INTO projection_turns VALUES(?,?,?,?,?,?)',
+                ('FOLLOWUP','THREAD_1','SESSION_1','completed',at,at))
+            db.execute('INSERT INTO projection_thread_messages VALUES(?,?,?,?,?,?,?,?)',
+                ('THREAD_1','FOLLOWUP','assistant','final_answer','completed',at,2,encode({'text':'unrelated'})))
+        proof=collect(self.request,self.f.config,as_of=at,directory=self.directory)[1]
+        self.assertEqual(proof['reply_validation_status'],'VALIDATED')
+        self.assertEqual(proof['verified_evidence_pages'],10)
+        with sqlite3.connect(self.f.config['openbot_db']) as db:
+            db.execute("DELETE FROM projection_thread_messages WHERE turn_id='TURN_1' AND item_type='final_answer'")
+        self.assertIsNone(collect(self.request,self.f.config,as_of=at,directory=self.directory))
+
     def test_code_mode_rejects_extra_commands_and_broken_page_relationships(self):
         original = self.code_mode_rollout(multiline=True)
         first = next(i for i, row in enumerate(original) if row['payload'].get('type') == 'custom_tool_call')
         for fault, code in (
                 ('extra_code', 'UNAUTHORIZED_TOOL'), ('wrong_tool', 'UNAUTHORIZED_TOOL'),
+                ('explicit_shell', 'UNAUTHORIZED_TOOL'), ('wrong_checkout', 'UNAUTHORIZED_TOOL'),
                 ('embedded_comment', 'UNAUTHORIZED_TOOL'), ('computed_command', 'UNAUTHORIZED_TOOL'),
                 ('changed_execution', 'UNAUTHORIZED_TOOL'), ('wrong_call_id', 'UNAUTHORIZED_TOOL'),
                 ('wrong_turn', 'UNAUTHORIZED_TOOL'), ('nonzero_exit', 'READ_INCOMPLETE'),
@@ -190,6 +215,10 @@ class NativeHandoff(unittest.TestCase):
                 call, execution, output = (records[i]['payload'] for i in range(first, first+3))
                 if fault == 'extra_code':
                     call['input'] += 'text(r);'
+                elif fault == 'explicit_shell':
+                    call['input'] = call['input'].replace('  login:', '  shell: "powershell",\n  login:')
+                elif fault == 'wrong_checkout':
+                    call['input'] = call['input'].replace("' -- python3", "-codex' -- python3", 1)
                 elif fault == 'embedded_comment':
                     call['input'] = call['input'].replace('  login:', '  /* extra */ login:')
                 elif fault == 'computed_command':
@@ -226,7 +255,7 @@ class NativeHandoff(unittest.TestCase):
         with patch('researcher.native_handoff.ROOT',r'C:\OpenBot Labs\Researcher'):
             args,fingerprint,pages=packet(self.request,self.directory)
             stem=next(line for line in args['brief'].splitlines() if line.startswith('wsl.exe '))
-            command=stem.removesuffix('N')+'1'
+            command=stem
             self.assertTrue(command.startswith("wsl.exe --cd '/mnt/c/OpenBot Labs/Researcher' -- "))
             argv=[r'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe','-NoProfile','-Command',command]
             self.assertEqual(command_page({'command':argv},self.directory,self.material,fingerprint),1)

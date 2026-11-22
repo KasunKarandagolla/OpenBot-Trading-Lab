@@ -34,8 +34,9 @@ def probe_captured_request(directory,source,*,native_identity,audit_config,clock
             'current_market_interpretation':False})
     request['cards']=request['cards'][:1]
     if native_identity['provider']=='codex':
-        from .native_handoff import RESERVED_SUBMISSION_POLICY
-        request.update(reply_citation_policy=EXACT_CARD_CITATIONS,dispatch_reservation_policy=RESERVED_SUBMISSION_POLICY)
+        from .native_handoff import RESERVED_SUBMISSION_POLICY, VERBATIM_PAGE_COMMANDS
+        request.update(reply_citation_policy=EXACT_CARD_CITATIONS,dispatch_reservation_policy=RESERVED_SUBMISSION_POLICY,
+            page_command_policy=VERBATIM_PAGE_COMMANDS)
     request['omitted']=[{'card_id':c['card_id'],'reason':'ARCHIVED_TRANSPORT_SINGLE_CARD_SAMPLE'} for c in original['cards'][1:]]
     for card in request['cards']:
         card['mode']='AUTHENTIC_REPLAY'
@@ -144,10 +145,12 @@ def review_batches(directory,cards,facts,*,clock,context,reviews,audit_config,
                     'reason':'REVIEW_HALTED_AFTER_TERMINAL_TRANSPORT_OR_INTEGRITY_FAILURE'} for c in remaining)
             break
     rows=[];reviewed=set();receipts=[]
-    by_card={};attempts=0;created=[]
+    by_card={};attempts=0;created=[];unverified_tickets=0;invalid_replies=0
     for batch in batches:
         collector=batch.get('native_collector',{})
         attempts+=collector.get('observed_model_attempts',0)
+        unverified_tickets+=int(bool(batch.get('dispatch_receipt')) and collector.get('status')!='NATIVE_RECEIPT_COLLECTED')
+        invalid_replies+=int(collector.get('reply_validation_status')=='REJECTED')
         if batch.get('native_receipt'):receipts.append(batch['native_receipt'])
         if batch.get('request_created_at_utc'):created.append(batch['request_created_at_utc'])
         if batch['status']=='VALIDATED_ADVISORY_ONLY':
@@ -167,6 +170,8 @@ def review_batches(directory,cards,facts,*,clock,context,reviews,audit_config,
         'batch_count':len(batches),'batches':batches,
         'first_error':first_batch_error or first_error or planning_error,'planning_error':planning_error,
         'observed_model_attempts':attempts,'calls':0,'audited_prior_model_requests':attempts,
+        'verified_model_requests':attempts,'model_requests_total':None if unverified_tickets else attempts,
+        'unverified_dispatch_tickets':unverified_tickets,'invalid_reply_batches':invalid_replies,
         'material_sha256':digest(encode(keys).encode()),
         'request_created_at_utc':min(created,key=utc) if created else None,
         'card_review_provenance':by_card,

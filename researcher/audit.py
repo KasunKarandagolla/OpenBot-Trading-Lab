@@ -91,14 +91,13 @@ def investigate(nominations,context,cutoffs,rows_by_tf,tickers,*,protected=2,cap
         x['routes'].update(row['routes']);x['families'].update(row['families']);x['evidence_ids'].update(row['evidence_ids'])
         v=rows_by_tf.get(row['timeframe'],{}).get(n,{}).get('values',{})
         atr=D(str(v.get('atr_explicit') or 0));close=D(str(v.get('close') or 0))
-        if atr>0 and close>0:
-            distances=[D(str(v[k]))*close/atr for k in ('upper_distance','lower_distance') if v.get(k) is not None]
-            if distances:x['distances'].append(min(distances))
+        distances=[D(str(v[k]))*close/atr for k in ('upper_distance','lower_distance') if v.get(k) is not None] if atr>0 and close>0 else []
+        if distances:x['distances'].append(min(distances))
         pressure=max(D(str(v.get(k) or 0)) for k in ('pressure_upper','pressure_lower'))
         quiet=D(str(v['quiet_percentile'])) if v.get('quiet_percentile') is not None else None
         # Max across TFs avoids rewarding duplicated representations of one fact.
         score=min(pressure,D(3))+(D(1) if quiet is not None and quiet<=D('.25') else D(0))
-        if x['distances']:score+=max(D(0),D(3)-min(x['distances']))
+        if distances:score+=max(D(0),D(3)-min(distances))
         x['score']=max(x['score'],score)
     for n,x in by.items():
         r=x['routes']

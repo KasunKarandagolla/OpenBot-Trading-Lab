@@ -13,6 +13,7 @@ from researcher.audit import investigate
 from researcher.basis import BasisMCP
 from researcher.candidate_review import review_card,conditional_research,active_coin_watches
 from researcher.contracts import ContractError
+from researcher.discovery import _RunClock
 from researcher.screening import PartitionEngine,RequestBudget
 from researcher.transport import ProviderError,Response
 from researcher.settings import load_config
@@ -24,6 +25,42 @@ from test_session4 import case,context
 
 
 class RecoveryContracts(unittest.TestCase):
+    def test_investigation_scores_are_order_independent_and_keep_timeframes_separate(self):
+        nominations=[{'native_symbol':'TESTUSDT','timeframe':tf,'routes':['A_REMOTE_CAUSAL'],
+            'families':['F4'],'evidence_ids':[tf]} for tf in ('1h','15m')]
+        rows={'1h':{'TESTUSDT':{'values':{'atr_explicit':1,'close':100,'upper_distance':'.01'}}},
+            '15m':{'TESTUSDT':{'values':{'atr_explicit':1,'close':100,'upper_distance':'.04','pressure_upper':3}}}}
+        for order in (nominations,list(reversed(nominations))):
+            picked,receipts,_=investigate(order,context(),{'15m':CUTOFF,'1h':CUTOFF},rows,{},protected=0,capacity=1)
+            self.assertEqual(picked,['TESTUSDT'])
+            self.assertEqual(receipts[0]['score'],D(7))
+            self.assertEqual(receipts[0]['distance_to_rolling_boundary_atr'],D(1))
+            self.assertEqual(receipts[0]['evidence_ids'],['15m','1h'])
+
+    def test_interleaved_receipts_and_equal_wall_samples_do_not_create_clock_faults(self):
+        report={};clock=_RunClock('2026-11-22T12:20:00Z',report)
+        clock.observe_receipts('BINANCE',[{'local_request_started_at_utc':'2026-11-22T12:20:02Z',
+            'received_at_utc':'2026-11-22T12:20:03Z','elapsed_ms':1000}])
+        clock.observe_receipts('BASIS',[{'local_request_started_at_utc':'2026-11-22T12:20:01Z',
+            'received_at_utc':'2026-11-22T12:20:02Z','elapsed_ms':1000}])
+        for _ in range(2):self.assertEqual(clock.sample('2026-11-22T12:20:03Z'),'2026-11-22T12:20:03Z')
+        self.assertNotIn('clock_anomalies',report)
+
+    def test_clock_regression_preserves_raw_native_time_and_groups_repeated_holds(self):
+        report={};clock=_RunClock('2026-11-22T12:28:55.775724Z',report)
+        floor='2026-11-22T12:28:55.775724Z';raw='2026-11-22T12:28:50.909218Z'
+        self.assertEqual(clock.sample(raw,native=True),raw)
+        self.assertEqual(clock.sample('2026-11-22T12:28:51Z'),floor)
+        hold,=report['clock_anomalies']
+        self.assertEqual((hold['seconds'],hold['samples'],hold['raw_wall_regressions']),(4.866506,2,1))
+        receipts=[{'local_request_started_at_utc':floor,'received_at_utc':raw,'elapsed_ms':557}]
+        clock.observe_receipts('BASIS',receipts)
+        clock.observe_receipts('BASIS',receipts)
+        self.assertEqual(len(report['clock_anomalies']),2)
+        self.assertEqual(report['clock_anomalies'][-1]['kind'],'LOCAL_HTTP_UTC_REGRESSION')
+        self.assertEqual(report['clock_anomalies'][-1]['elapsed_monotonic_ms'],557)
+        self.assertEqual(receipts[0]['received_at_utc'],raw)
+
     def test_operational_capacity_is_additive_and_cross_tf_deduplicated(self):
         noms=[];rows={'1h':{},'15m':{}}
         for j in range(40):

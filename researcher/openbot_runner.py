@@ -533,6 +533,11 @@ def status(key,include_review=False):
             coverage=coverage_summary(report) if scanned else 'NOT_SCANNED',
             watches=watch_summary(report) if scanned else 'NOT_REFRESHED; PREVIOUS_LEDGER_UNCHANGED',
             costs=report.get('costs'),native_review={'status':native.get('status'),'accepted':native.get('accepted'),
+                'verified_model_requests':native.get('verified_model_requests',native.get('observed_model_attempts')),
+                'model_requests_total':native.get('model_requests_total'),
+                'unverified_dispatch_tickets':native.get('unverified_dispatch_tickets'),
+                'invalid_reply_batches':native.get('invalid_reply_batches'),
+                'unreviewed_cards':len(native['not_reviewed']) if 'not_reviewed' in native else None,
                 'reply':native.get('reply'),'decision_delta':report.get('native_control_comparison')},
             native_transport_preflight=report.get('native_transport_preflight'))
     return result

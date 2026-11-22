@@ -7,6 +7,60 @@ from .settings import MANIFEST, load_config, provider_status
 from .transport import ProviderError
 
 
+class _RunClock:
+    """Keep causal evidence watermarks separate from the live UTC reading."""
+
+    def __init__(self, start, report):
+        self.high = self.last_wall = start
+        self.report = report
+        self.held = None
+        self.receipt_offsets = {}
+        self.last_local_receipt = {}
+
+    def observe(self, stamp):
+        self.high = max(self.high, stamp, key=utc)
+
+    def observe_receipts(self, lane, receipts):
+        # These append-only lists interleave in real time. Only compare physical
+        # request brackets within the same locally stamped transport.
+        previous = self.last_local_receipt.get(lane)
+        for receipt in receipts[self.receipt_offsets.get(lane, 0):]:
+            end = receipt['received_at_utc']
+            self.observe(end)
+            start = receipt.get('local_request_started_at_utc')
+            if start is None:continue
+            later = max(start, previous or start, key=utc)
+            earlier = min(start, end, key=utc)
+            if utc(earlier) < utc(later):
+                self.report.setdefault('clock_anomalies', []).append({
+                    'kind':'LOCAL_HTTP_UTC_REGRESSION', 'transport':lane,
+                    'local_request_started_at_utc':start, 'received_at_utc':end,
+                    'prior_local_receipt_utc':previous, 'elapsed_monotonic_ms':receipt.get('elapsed_ms'),
+                    'seconds':(utc(later)-utc(earlier)).total_seconds(), 'original_source_times_modified':False})
+            previous = end
+        self.last_local_receipt[lane] = previous
+        self.receipt_offsets[lane] = len(receipts)
+
+    def sample(self, wall, *, native=False):
+        regressed = utc(wall) < utc(self.last_wall)
+        self.observe(wall)
+        if utc(wall) < utc(self.high):
+            gap = (utc(self.high)-utc(wall)).total_seconds()
+            if self.held is None or self.held['conservative_known_by_bound'] != self.high:
+                self.held = {'kind':'HOST_UTC_REGRESSION_OR_RECEIPT_SKEW',
+                    'observed_wall_utc':wall, 'conservative_known_by_bound':self.high,
+                    'seconds':gap, 'samples':0, 'raw_wall_regressions':0, 'original_source_times_modified':False}
+                self.report.setdefault('clock_anomalies', []).append(self.held)
+            self.held['samples'] += 1
+            self.held['raw_wall_regressions'] += int(regressed)
+            if gap > self.held['seconds']:
+                self.held.update(seconds=gap, observed_wall_utc=wall)
+        else:
+            self.held = None
+        self.last_wall = wall
+        return wall if native else self.high
+
+
 def implementation_revision():
     """Closed-source caches cannot survive a change to their analyzer code."""
     from .settings import ROOT
@@ -392,32 +446,22 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
         current=time.monotonic();stage_times[name]=round(current-stage_started,6);stage_started=current
         if progress:progress(name,stage_times[name])
     bundles=[];verified=[];terminals=[];facts={};cards=[];references=[];reviews=[];cached=False;history_status={}
-    observed_times=[start]
-    def evaluation_time():
-        # Local UTC can step backwards between completed HTTP requests. Preserve
-        # every original receipt/availability; use a conservative logical upper
-        # bound for metadata ordering and disclose the clock uncertainty.
-        wall_at=clock()
-        received=[r['received_at_utc'] for r in (*api.http.receipts,*client.http.receipts)]
-        bound=max([wall_at,*observed_times,*received],key=utc)
-        if utc(bound)>utc(wall_at):
-            report.setdefault('clock_anomalies',[]).append({'kind':'HOST_UTC_REGRESSION_OR_RECEIPT_SKEW',
-                'observed_wall_utc':wall_at,'conservative_known_by_bound':bound,
-                'seconds':(utc(bound)-utc(wall_at)).total_seconds(),
-                'original_source_times_modified':False})
-        observed_times.append(bound)
-        return bound
+    run_clock=_RunClock(start,report)
+    def evaluation_time(*, native=False):
+        run_clock.observe_receipts('BINANCE',api.http.receipts)
+        run_clock.observe_receipts('BASIS',client.http.receipts)
+        return run_clock.sample(clock(),native=native)
     try:
         with ledger.writer(start) as attempt:
             previous=ledger.latest();prior_watches={w['id']:w for w in previous['watches']} if previous else {}
             prior_active_coins=previous.get('active_coin_watchlist',()) if previous else ()
             report['consumed_obstacles']=[x for x in previous.get('consumed_obstacles',())
                 if utc(x['valid_until'])>=utc(start)] if previous else []
-            if previous:observed_times.append(previous['completed_at_utc'])
+            if previous:run_clock.observe(previous['completed_at_utc'])
             old_cutoffs=ledger.cutoffs()
             try:
                 inventory=api.inventory();members={i.native_symbol:i for i in inventory.instruments}
-                observed_times.append(inventory.received_at_utc)
+                run_clock.observe(inventory.received_at_utc)
                 ir=inventory.report();report['inventory']={k:v for k,v in ir.items() if k!='instruments'}
                 report['inventory']['source_total_rows']=len(inventory.symbols)+len(inventory.excluded)
                 report['coverage']['eligible_contracts']=ir['eligible_contracts']
@@ -795,7 +839,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         for n in ('BTCUSDT',*audit_names):
                             try:
                                 oi=oi_observation(api,members[n]);report['specialist_observations'].append(oi)
-                                observed_times.append(oi['received'])
+                                run_clock.observe(oi['received'])
                                 if oi['nomination']:nominate(n,'1h','B_NATIVE_OI_CHANGE',('F9','F8'),
                                     'Native aggregate OI changed; discriminate price shock, carry and ordinary positioning without inferring direction')
                             except (ContractError,KeyError,TypeError,ValueError) as e:
@@ -849,7 +893,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                             or utc(source['cutoff'])!=utc(cutoffs[tf])
                                             or source['source_response_sha256']!=receipt['response_sha256']):
                                         raise ContractError('ORACLE_SOURCE_IDENTITY')
-                                    observed_times.append(receipt['received_at_utc'])
+                                    run_clock.observe(receipt['received_at_utc'])
                                     entry.update(accepted=True,status='VALIDATED',bars=len(bars),
                                         coverage_obtained=len(bars)>=34,
                                         source_response_sha256=source['source_response_sha256'])
@@ -928,7 +972,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         for n in alt[:recovery.get('targeted_depth_symbols',len(alt))]:
                             try:
                                 depth=depth_snapshot(api,members[n]);report['economic_observations'].append(depth)
-                                observed_times.append(depth['received'])
+                                run_clock.observe(depth['received'])
                             except (ContractError,KeyError,TypeError,ValueError) as e:
                                 report['source_faults'].append({'phase':'native_depth','symbol':n,'code':safe_error(e)})
                     # Only decision-relevant current economics are refreshed;
@@ -1241,7 +1285,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             import sqlite3
                             try:
                                 report['consultant']=review_batches(native_review_dir,pre_cards,facts,
-                                    clock=evaluation_time,context=report.get('context'),reviews=native_reviews,
+                                    clock=lambda:evaluation_time(native=True),context=report.get('context'),reviews=native_reviews,
                                     audit_config=native_audit_config,wait_seconds=native_wait_seconds,
                                     max_cards=native_max_cards,progress=native_progress,native_identity=native_identity)
                             except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
@@ -1501,7 +1545,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     try:
                         from .native_app import wait_for_reply
                         receipt=wait_for_reply(native_review_dir,report['consultant']['material_sha256'],
-                            native_audit_config,wait_seconds=native_wait_seconds,clock=evaluation_time)
+                            native_audit_config,wait_seconds=native_wait_seconds,clock=lambda:evaluation_time(native=True))
                         report['completed_at_utc']=evaluation_time()
                         report['consultant']=exchange(native_review_dir,(),{},as_of=report['completed_at_utc'],
                             previous=report['consultant'],cached=True)
