@@ -19,8 +19,9 @@ _CLI_ENVELOPES={
 }
 _CODE_MODE_METADATA='internal_chat_message_metadata_passthrough'
 _CODE_MODE_FIELDS={'type','id','call_id',_CODE_MODE_METADATA}
-_PAGE_SCRIPT_PREFIX='const r = await tools.exec_command({cmd:'
-_PAGE_SCRIPT_SUFFIX=',login:false,max_output_tokens:16000}); text(r.output);'
+_PAGE_SCRIPT_PREFIX=re.compile(r'const r = await tools\.exec_command\(\{[ \t\r\n]*cmd:[ \t\r\n]*')
+_PAGE_SCRIPT_SUFFIX=re.compile(r',[ \t\r\n]*login:[ \t\r\n]*false,[ \t\r\n]*'
+    r'max_output_tokens:[ \t\r\n]*16000[ \t\r\n]*\}\);[ \t\r\n]*text\(r\.output\);[ \t\r\n]*')
 _CODE_MODE_HEADER=re.compile(r'Script completed\nWall time [0-9]{1,6}(?:\.[0-9]{1,6})? seconds\nOutput:\n')
 
 
@@ -272,17 +273,16 @@ def _code_mode_command(payload):
     if (payload.get('name')!='exec' or payload.get('status')!='completed'
             or not isinstance(script,str) or len(script)>8192):
         raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
-    # Decode only a string literal within the complete observed wrapper.
+    # Allow formatting whitespace in the observed wrapper and decode only its literal command.
     # Neither JavaScript nor the decoded command is executed by the reader.
-    script=script.removesuffix('\n')
-    if not script.startswith(_PAGE_SCRIPT_PREFIX) or not script.endswith(_PAGE_SCRIPT_SUFFIX):
+    prefix=_PAGE_SCRIPT_PREFIX.match(script)
+    if prefix is None or not script.startswith('"',prefix.end()):
         raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
-    literal=script[len(_PAGE_SCRIPT_PREFIX):-len(_PAGE_SCRIPT_SUFFIX)]
     try:
-        command,offset=json.JSONDecoder().raw_decode(literal)
+        command,offset=json.JSONDecoder().raw_decode(script,prefix.end())
     except (ValueError,RecursionError):
         raise ContractError('NATIVE_UNAUTHORIZED_TOOL') from None
-    if not isinstance(command,str) or offset!=len(literal):
+    if _PAGE_SCRIPT_SUFFIX.fullmatch(script,offset) is None:
         raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
     return command
 

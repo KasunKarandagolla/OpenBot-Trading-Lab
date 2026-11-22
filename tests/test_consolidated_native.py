@@ -2,6 +2,7 @@
 import json
 import multiprocessing
 import sqlite3
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -131,6 +132,23 @@ class ObservationRecovery(unittest.TestCase):
             with self.assertRaisesRegex(ContractError,'NATIVE_REVIEW_REQUEST_HASH'):
                 native_host.call(config,'observe_handoff',timeout_seconds=1.5)
         self.assertEqual(reader.call_args.kwargs['timeout'],1.5)
+
+    def test_windows_reader_timeout_records_operation_and_bound_without_private_text(self):
+        f=self.fixture
+        exe=f.f.root/'python.exe';exe.touch()
+        config={'native_python':str(exe),'_config_file':str(f.j.private)}
+        for operation, seconds, bound, stage, classification in (
+                ('observe_handoff',1.5,1.5,'WINDOWS_OBSERVE_HANDOFF','CALLER_DEADLINE'),
+                ('collect',50,30,'WINDOWS_COLLECT','PROCESS_TIMEOUT')):
+            with self.subTest(operation=operation):
+                expired=subprocess.TimeoutExpired('PRIVATE_COMMAND',bound,output=b'PRIVATE_OUTPUT')
+                with patch.object(native_host.subprocess,'run',side_effect=expired) as reader:
+                    with self.assertRaisesRegex(ContractError,'^NATIVE_STORAGE_TIMED_OUT$') as failure:
+                        native_host.call(config,operation,timeout_seconds=seconds)
+                self.assertEqual(reader.call_args.kwargs['timeout'],bound)
+                self.assertEqual(native_app.failure(failure.exception,'RECEIPT_COLLECTION'),{
+                    'stage':'RECEIPT_COLLECTION','code':'NATIVE_STORAGE_TIMED_OUT','diagnostic':{
+                        'stage':stage,'category':'PROCESS','classification':classification,'retryability':'TRANSIENT'}})
 
 
 def _interleaved_worker(folder,ready,release):

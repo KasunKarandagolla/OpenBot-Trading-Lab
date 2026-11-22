@@ -115,7 +115,7 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(imported['accepted'],1)
         self.assertFalse(imported['trade_authorization'])
 
-    def code_mode_rollout(self):
+    def code_mode_rollout(self, *, multiline=False):
         def ready():
             self.ticket()
             self.assertTrue(self.app.dispatch_once(self.args, self.job, self.receipt))
@@ -129,12 +129,17 @@ class NativeHandoff(unittest.TestCase):
             at = utc(row['timestamp']).timestamp()
             metadata = {'turn_id': 'TURN_1', 'create_time': at}
             if payload.get('type') == 'function_call':
-                cmd = json.loads(payload['arguments'])['cmd']
+                literal = json.dumps(json.loads(payload['arguments'])['cmd'])
+                script = ('const r = await tools.exec_command({cmd:'+literal
+                          +',login:false,max_output_tokens:16000}); text(r.output);\n')
+                if multiline:
+                    script = ('const r = await tools.exec_command({\n'
+                              f'  cmd: {literal},\n'
+                              '  login: false,\n  max_output_tokens: 16000\n});\ntext(r.output);')
                 row['payload'] = {
                     'type': 'custom_tool_call', 'id': 'ctc_'+payload['call_id'],
                     'status': 'completed', 'call_id': payload['call_id'], 'name': 'exec',
-                    'input': 'const r = await tools.exec_command({cmd:'+json.dumps(cmd)
-                             +',login:false,max_output_tokens:16000}); text(r.output);\n',
+                    'input': script,
                     'internal_chat_message_metadata_passthrough': metadata,
                 }
             elif payload.get('item', {}).get('type') == 'CommandExecution':
@@ -159,11 +164,19 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(observed[1]['submission_attempts'], 1)
         self.assertEqual(observed[1]['reply_validation_status'], 'VALIDATED')
 
+    def test_code_mode_november_22_multiline_receipt_attests_all_ten_pages(self):
+        self.app.write('REVIEW_1', self.code_mode_rollout(multiline=True))
+        _, attestation = collect(self.request, self.f.config, as_of=self.clock(), directory=self.directory)
+        self.assertEqual(attestation['verified_evidence_pages'], 10)
+        self.assertEqual(attestation['submission_attempts'], 1)
+        self.assertEqual(attestation['reply_validation_status'], 'VALIDATED')
+
     def test_code_mode_rejects_extra_commands_and_broken_page_relationships(self):
-        original = self.code_mode_rollout()
+        original = self.code_mode_rollout(multiline=True)
         first = next(i for i, row in enumerate(original) if row['payload'].get('type') == 'custom_tool_call')
         for fault, code in (
                 ('extra_code', 'UNAUTHORIZED_TOOL'), ('wrong_tool', 'UNAUTHORIZED_TOOL'),
+                ('embedded_comment', 'UNAUTHORIZED_TOOL'), ('computed_command', 'UNAUTHORIZED_TOOL'),
                 ('changed_execution', 'UNAUTHORIZED_TOOL'), ('wrong_call_id', 'UNAUTHORIZED_TOOL'),
                 ('wrong_turn', 'UNAUTHORIZED_TOOL'), ('nonzero_exit', 'READ_INCOMPLETE'),
                 ('reordered', 'UNAUTHORIZED_TOOL'), ('duplicate_page', 'UNAUTHORIZED_TOOL'),
@@ -175,6 +188,10 @@ class NativeHandoff(unittest.TestCase):
                 call, execution, output = (records[i]['payload'] for i in range(first, first+3))
                 if fault == 'extra_code':
                     call['input'] += 'text(r);'
+                elif fault == 'embedded_comment':
+                    call['input'] = call['input'].replace('  login:', '  /* extra */ login:')
+                elif fault == 'computed_command':
+                    call['input'] = call['input'].replace(',\n  login:', ' + "",\n  login:', 1)
                 elif fault == 'wrong_tool':
                     call['name'] = 'other'
                 elif fault == 'changed_execution':

@@ -27,7 +27,9 @@ class CoverageScreen(ScenarioScreen):
 
     def screen(self,names,spec):
         causal=spec.id.startswith('METHOD_STRUCTURE')
-        if (causal and self.fault=='cooldown') or (spec.timeframe=='15m' and self.fault=='15m_failure'):
+        cooldown=causal and (self.fault=='cooldown' or (self.fault=='cooldown_after_four'
+            and sum(pack.id==spec.id for _,pack in self.calls)==4))
+        if cooldown or (spec.timeframe=='15m' and self.fault=='15m_failure'):
             self.calls.append((names,spec))
             receipt={'received_at_utc':self.api.at,'http_status':200,'request_dispatched':True,
                 'response_sha256':'SYNTHETIC_PROVIDER_FAULT','response_bytes':25,'elapsed_ms':1}
@@ -118,6 +120,22 @@ class OfflineCoverage(unittest.TestCase):
         self.assertEqual(len(screen.calls),2)
         self.assertEqual(report['causal_packs'][0]['evaluated'],0)
         self.assertTrue(any('C_SAVED_WATCH' in n['routes'] for n in report['nominations']))
+
+    def test_november_22_causal_cooldown_defers_broad_1h_without_dispatch(self):
+        names=('BTCUSDT','ETHUSDT',*(f'TEST{i:03d}USDT' for i in range(517)))
+        api=ScenarioAPI(names=names);api.max_sample_calls=6
+        report,screen=self.scan('cooldown_after_four',api=api)
+        self.assertEqual([len(names) for names,_ in screen.calls],[50]*10+[19]+[50]*5)
+        self.assertEqual([pack.timeframe for _,pack in screen.calls],['15m']*11+['1h']*5)
+        self.assertTrue(all(pack.id.startswith('METHOD_STRUCTURE') for _,pack in screen.calls[11:]))
+        self.assertEqual(report['basis_schedule']['reserved_1h_price_partitions'],11)
+        price_15m,price_1h=report['packs'][:2]
+        self.assertEqual(price_15m['evaluated'],519)
+        self.assertEqual([price_1h[k] for k in ('dispatched','evaluated','deferred')],[0,0,519])
+        causal=report['causal_packs'][0]
+        self.assertEqual([causal[k] for k in ('requested','dispatched','evaluated','deferred')],[250,250,200,269])
+        self.assertEqual(set(price_1h['deferred_symbols'].values()),{'PROVIDER_BUSY_COOLDOWN'})
+        self.assertEqual(report['causal_budget']['stopped_reason'],'PROVIDER_BUSY_COOLDOWN')
 
     def test_failed_15m_still_runs_1h_and_source_limit_defers_remaining_packs(self):
         api=ScenarioAPI(names=NAMES);api.max_sample_calls=6

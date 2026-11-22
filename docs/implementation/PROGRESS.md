@@ -1,3 +1,47 @@
+# November 22 live acceptance recovery
+
+Job `20261122T090259Z-8d6f07e2d94347a5b159951b28b6ef26` ran at
+`bf8a40596cbc6f0adf6cf42c7ed38ce67982a1f5`. The original child rollout's
+record 19 (ordinal 18) was the authorized page-1 read at `09:08:18.757Z`.
+The verifier expected a single-line Code Mode wrapper and rejected the
+observed indentation and line breaks. The reader now allows ASCII formatting
+whitespace around the same fixed tokens and still binds the exact literal
+command, execution, output bytes, turn, and page order.
+
+The regular WSL-to-Windows reader verified one parent acknowledgment, ten
+distinct successful page reads and their exact model-facing output, and an
+attested final reply with two valid rows and 11 provider model responses.
+This was historical verification within the job's original time bounds,
+including a pass with the live configured-model checks enabled. The
+original terminal rejection halted eight planned later batches (14 cards).
+The first error was a separate Windows subprocess timeout during the parent
+handoff observation at `09:07:56.659Z`. The collector recovered and verified
+the acknowledgment at `09:08:00.428Z`. Retained logs do not identify where
+the process stalled or which timeout bound expired. New allowlisted
+diagnostics identify the read operation and binding timeout; bounds and
+retry behavior are preserved.
+
+The report's 19 physical Basis requests comprise three setup requests,
+eleven successful 15m screens, and five causal 1h screens. Causal 1h returned
+200 valid rows before its fifth partition hit the tool-level 60-second
+cooldown. The shared stop deferred all 519 broad 1h contracts before any
+broad 1h dispatch despite 11 reserved partitions. An offline regression
+reproduces those denominators and the zero-dispatch result. Phase order stays
+in place pending evidence that a bounded interleave can improve coverage
+while preserving causal reads, freshness and fair allocation.
+
+Saved report SHA-256 `6a71cb66c417207f26967dffda22d9253c451ca3fe30831f7ab30103370e9d45`.
+Canonical packet SHA-256 `cf4b976a1582fc83b5d3e66d51065ac2c1e35b9930d12791860635d7b1dfac63`.
+Five focused tests and all 542 offline tests passed. Configuration validated,
+28 protected paths matched the baseline and the saved job hashes matched
+their initial readbacks.
+The saved job remains PARTIAL. The replay made no market or model calls and
+imported no advice. Fresh end-to-end acceptance requires separate owner
+authorization, current native review and reconciliation, and verified final
+delivery. PR #24 stays draft and `trade_authorization=false`.
+
+---
+
 # Setup-only native preflight compatibility
 
 From `fb6f8e3bb880e510929a737a744bedb5aeb995b5`, the reader now allows exact
