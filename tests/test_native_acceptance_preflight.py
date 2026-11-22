@@ -39,6 +39,37 @@ class AcceptancePreflight(unittest.TestCase):
         self.assertFalse(result['native_execution_verified']);self.assertEqual(len(result['skill_sha256']),2)
         self.assertEqual(result['identity']['model'],self.f.agent['model'])
 
+    def test_observed_0171_ordinal_setup_scope_passes_without_new_execution(self):
+        self.f.parent[0]['payload'].update(cli_version='0.171.0', history_mode='paginated')
+        context = self.f.parent[1]['payload']
+        context.update(root_turn_id='PARENT_TURN', cwd=str(self.f.workspace),
+                       approval_policy='on-request', permission_profile={'type':'disabled'})
+        self.f.parent.insert(1,self.f.record(-10,'event_msg',{'type':'task_started','turn_id':'PARENT_TURN',
+            'root_turn_id':'PARENT_TURN','turn_attribution':{}}))
+        self.f.parent.append(self.f.record(6,'compacted',{'replacement_history':[]}))
+        SimulatedApp(self.f,self.f.time).write('PARENT',self.f.parent)
+        result=integration_preflight(self.f.config,as_of=self.f.time(5))
+        self.assertEqual(result['status'],'NATIVE_READER_AND_INSTALLED_SKILLS_VERIFIED')
+        self.assertEqual((result['model_requests'],result['market_requests']),(0,0))
+        self.assertFalse(result['trade_authorization'])
+        with self.assertRaisesRegex(ContractError,'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED') as unsupported:
+            integration_preflight(self.f.config,as_of=self.f.time(6))
+        self.assertEqual(unsupported.exception.diagnostic['stage'],'ENVELOPE')
+
+    def test_0171_requires_the_observed_ordinal_envelope_and_rejects_unknown_releases(self):
+        self.f.parent[0]['payload']['cli_version']='0.171.0'
+        self.f.write()
+        with self.assertRaisesRegex(ContractError,'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED') as unknown:
+            integration_preflight(self.f.config,as_of=self.f.time(5))
+        self.assertEqual(unknown.exception.diagnostic['check'],'VERSION')
+        for version in ('0.171.1','0.172.0','0.171.0-dev',{}):
+            with self.subTest(version=version):
+                self.f.parent[0]['payload']['cli_version']=version
+                SimulatedApp(self.f,self.f.time).write('PARENT',self.f.parent)
+                with self.assertRaisesRegex(ContractError,'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED') as unknown:
+                    integration_preflight(self.f.config,as_of=self.f.time(5))
+                self.assertEqual(unknown.exception.diagnostic['check'],'VERSION')
+
     def test_unknown_provider_version_and_modified_installed_skill_block_preflight(self):
         self.f.parent[0]['payload']['cli_version']='unsupported';self.f.write()
         with self.assertRaisesRegex(ContractError,'SCHEMA_UNSUPPORTED'):integration_preflight(self.f.config,as_of=self.f.time(5))

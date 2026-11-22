@@ -1,4 +1,4 @@
-"""Read-only Codex 0.169 rollout adapter for one exact OpenBot task.
+"""Read-only Codex rollout adapter for one exact OpenBot task.
 
 The provider's persisted records, not the reply text, attest model and turn.
 Only the matching session/turn is examined. Reasoning and account data are never
@@ -11,6 +11,12 @@ from .contracts import ContractError, encode, utc
 from .native_identity import checked_path, local_path, path_key, read_db, ref, NativeEvidenceError
 
 SCHEMA='CODEX_ROLLOUT_0169'
+# Explicit release/format pairs. The observed 0.171.0 runtime uses the same
+# ordinal envelope for a bounded turn before context compaction.
+_CLI_ENVELOPES={
+    '0.169.0': ('CODEX_0169','CODEX_0169_ORDINAL'),
+    '0.171.0': ('CODEX_0169_ORDINAL',),
+}
 _CODE_MODE_METADATA='internal_chat_message_metadata_passthrough'
 _CODE_MODE_FIELDS={'type','id','call_id',_CODE_MODE_METADATA}
 _PAGE_SCRIPT_PREFIX='const r = await tools.exec_command({cmd:'
@@ -188,7 +194,8 @@ def records(config,session,workspace,*,start,end,backend=None):
             if kind=='session_meta':
                 if meta is not None:_fail('NATIVE_SESSION_MISMATCH','SESSION','IDENTITY',variant)
                 meta=payload
-                if payload.get('cli_version')!='0.169.0':
+                version=payload.get('cli_version')
+                if not isinstance(version,str) or variant not in _CLI_ENVELOPES.get(version,()):
                     _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','SESSION','VERSION',variant)
                 if (payload.get('id')!=session or payload.get('originator')!='openbot' or
                         payload.get('model_provider')!=backend or path_key(payload.get('cwd',''))!=path_key(workspace)):

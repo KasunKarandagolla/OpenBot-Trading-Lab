@@ -1,3 +1,22 @@
+# Setup-only native preflight compatibility
+
+From `fb6f8e3bb880e510929a737a744bedb5aeb995b5`, the reader now allows exact
+Codex CLI `0.171.0` ordinal envelopes alongside the two supported `0.169.0`
+formats. Windows Python verified the retained setup scope through its
+original preflight command. Its later compaction remains unsupported. The
+documented command returned `NATIVE_NOT_INVOKED` while the Researcher was idle.
+All 539 offline tests, 58 focused tests, configuration validation and 28
+protected-path comparisons passed.
+
+Overall setup is not ready. The local registered orchestration revision
+still supplies older inline instructions despite matching workspace
+mirrors. The Full access and auto-approval profile also requires an owner
+decision. No skill, profile, configured model or private record was changed.
+There were zero market requests, model requests or task submissions.
+[Evidence and separate owner gates](NATIVE_PREFLIGHT_COMPATIBILITY.md)
+
+---
+
 # Historical native receipt compatibility
 
 The approved code baseline was `c4e93d31f3dbc0074f6652f68b1cb4215c3382fe`.

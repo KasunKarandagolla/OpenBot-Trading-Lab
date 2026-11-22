@@ -64,6 +64,19 @@ class ObservedCodexCompatibility(unittest.TestCase):
         for value in (audit,self.proof()):
             self.assertNotIn('PRIVATE_',encode(value));self.assertNotIn(str(self.f.workspace),encode(value))
 
+    def test_0171_ordinal_uses_the_same_parent_and_child_attestation_checks(self):
+        for rollout in (self.f.parent,self.f.child):
+            rollout[0]['payload'].update(cli_version='0.171.0',history_mode='paginated')
+        self.write()
+        self.assertEqual(self.proof()['status'],'VERIFIED_OPENBOT_AGENT_COMMAND')
+        raw,audit=self.f.get()
+        self.assertEqual(raw,self.f.raw)
+        self.assertTrue(audit['native_invocation_verified'])
+        self.assertEqual(audit['schema_variant'],'CODEX_0169_ORDINAL')
+        self.f.child[2]['payload']['model']='fixture-wrong-model'
+        self.write()
+        with self.assertRaisesRegex(ContractError,'NATIVE_MODEL_SWITCHED'):self.f.get()
+
     def test_json_key_order_and_whitespace_are_irrelevant(self):
         for session in ('PARENT','CHILD'):
             p=self.f.root/'sessions'/(session+'.jsonl')
