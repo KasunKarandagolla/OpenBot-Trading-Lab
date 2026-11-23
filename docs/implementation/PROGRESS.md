@@ -1,3 +1,61 @@
+# November 23 final code-first continuation — partial, native gate open
+
+Started from clean `5c9499abadf5a434ec719dba18c2640da95976a6` on the existing
+feature branch. The complete mandatory documents and historical consultation
+were read before a Context Acceptance Receipt and application edits. No model,
+market, native-task or paid-provider calls were made in this Cloud continuation.
+The original blueprint, historical evidence, plan and current provider/agent
+configuration were not edited. `trade_authorization=false` remains mandatory.
+
+## Completed and blocked
+
+* **P0, OpenCode/DeepSeek compact integration: BLOCKED / NOT NATIVE VERIFIED.**
+  The real older OpenCode evidence in `SESSION_06C_NATIVE_REVIEW.md` does not
+  establish the installed compact task/page/turn/reply boundary. Upstream ACP
+  source alone is not installed-host evidence. The runner and preflight retain
+  their non-Codex rejection. `native_runtime.collect` additionally prevents
+  compact requests from being misrepresented as verified by the legacy OpenCode
+  session reader. No provider receipt or native capability was invented.
+  `OPENCODE_DEEPSEEK_BOUNDARY.md` records the smallest owner-host diagnostic and
+  the subsequent acceptance gates; the existing orchestration skill still needs
+  owner-approved installation/readback when a supported adapter exists.
+* `ai_core` permits a different family only through a separate transmitted,
+  independently qualified same-symbol/timeframe/reference card, citing that
+  card's own formation evidence, and re-applies current admission gates. This
+  is offline-tested; it does not qualify an untested model or source. Existing
+  discovery, selective inquiry and shortlist stages remain distinct.
+* **M32 and M33: SHADOW/TRIAL, selected history only, not qualified.**
+  `shadow_methods.py` freezes a first 32-bar balance and evaluates later
+  Spring/UTAD, response, retest and LPS/LPSY candidates with explicit volume
+  unknowns. M33 requires a preselected completed 4H parent and explicit bounded
+  aligned 5M history, a later outside body close and separate later inside
+  close; source gaps, delayed availability and expiry are explicit. Shared bar
+  IDs retain common observation roots. M33 supplied inputs are accepted only
+  for synthetic/authentic replay; no live 5M adapter, warehouse, universe
+  scanner or source qualification was added. Optional invalid input cannot
+  disable the baseline selected engine. Offline shadow observations can appear
+  as unqualified shortlist context; no live ranking or admission is changed.
+  The fixed-window trials are not full prospective range nomination, full
+  lifecycle/source qualification, independent event-counting qualification,
+  or evidence of profitability. Room/friction and broader multi-timeframe
+  context remain unimplemented. M01–M31, M05 and M12 remain intact.
+* Local implementation increments: `ae00b5f` (OpenCode fail-closed guard) and
+  `6b2eb33` (bounded shadow trials and qualified alternative handling).
+
+## Verification and release status
+
+Focused compact/native regression: 17 passed. Focused AI/shadow regression:
+20 passed. Existing session 6A analytical regression: 58 passed. Config
+validation: VALID, 31 configured methods, nine families, zero production
+ detectors and zero full-core packs. These are offline checks, not native or
+source certification. Full-suite and remote CI results are recorded in the
+final session handoff after actual execution; this document cannot contain its
+own final commit SHA. First native action and required evidence are specified in
+`OPENCODE_DEEPSEEK_BOUNDARY.md`. Do not declare the workflow released or PR #24
+ready while that gate remains open.
+
+---
+
 # November 23 compact native-child implementation
 
 The owner selected Option A and reported a real owner-host compact **inline**
