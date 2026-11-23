@@ -14,6 +14,7 @@ from researcher import openbot_runner as runner
 from researcher.diagnostic_export import export_job
 from researcher.native_workflow import reconcile_archived_smoke
 from researcher.contracts import encode
+from researcher.agent_review import _material
 import test_openbot_runner as jobs
 
 
@@ -42,10 +43,12 @@ class ReconciliationRecovery(unittest.TestCase):
         key=runner.start(j.key)['job_id'];folder=runner._job(key)
         directory=folder/'review';directory.mkdir()
         source=directory/'archived.request.json'
-        source.write_text(encode({'material_sha256':'c'*64,'cards':[{'card_id':self.c.id}]}))
+        request={'cards':[{'card_id':self.c.id}]}
+        request['material_sha256']=digest(encode(_material(request)).encode())
+        source.write_text(encode(request))
         before=source.read_bytes()
         report={'job_id':key,'mode':'LIVE','conditional_research_candidates':self.candidates,
-            'consultant':{'batches':[{'material_sha256':'c'*64}]},'trade_authorization':False}
+            'consultant':{'batches':[{'material_sha256':request['material_sha256']}]},'trade_authorization':False}
         artifact=export_job(folder,report,j.f.config)
         runner._transition(folder,'PARTIAL',artifact=artifact)
         result=reconcile_archived_smoke(source,self.advice,as_of=self.at)

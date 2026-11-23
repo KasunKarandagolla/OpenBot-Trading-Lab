@@ -38,10 +38,15 @@ def reconcile_archived_smoke(source, result, *, as_of):
         report=json.loads(z.read('report.json'))
     request=json.loads(source.read_bytes())
     material=request.get('material_sha256')
+    from .agent_review import _material
     if (report.get('job_id')!=state.get('job_id') or
+            digest(encode(_material(request)).encode())!=material or
             material not in {b.get('material_sha256') for b in report.get('consultant',{}).get('batches',())}):
         raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
     selected=request['cards'][0]['card_id']
+    if (result.get('status')=='VALIDATED_ADVISORY_ONLY'
+            and selected not in {row.get('card_id') for row in result.get('reply',{}).get('interpretations',())}):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
     candidates=[c for c in report.get('conditional_research_candidates',()) if c.get('card_id')==selected]
     if len(candidates)!=1:
         return {'status':'SOURCE_CANDIDATE_UNAVAILABLE','current_market_interpretation':False}
