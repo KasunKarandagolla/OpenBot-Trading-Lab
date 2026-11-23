@@ -11,6 +11,14 @@
 
 ---
 
+## Non-negotiable owner clarifications: IN-PLACE REFACTOR + dynamic provider/model
+
+**Do not build a new Trading Lab from scratch.** Start with a reuse/change matrix for existing modules and contracts: researcher/ai_core.py, openbot_runner.py, native_*.py, original external-first screening/evidence source adapters, causal ledger, F1–F9, M01–M31, skills and test suite. Label each REUSED_UNCHANGED, REFINED_IN_PLACE, ADDED_MINIMAL, or DEFERRED and justify every new file. This is a narrow integration refactor, not a greenfield project.
+
+**Provider/model are not hardcoded.** Read the current OpenBot Researcher's selected provider and exact model at runtime; honor the owner's choices between jobs, freeze and independently verify the identity during each run. Do not embed codex, openai, gpt-6-luna, or any other exact model as the architecture's required provider/model. Keep a provider-neutral core and a small, explicit adapter boundary for actual provider turn/tool/response attestation. Reuse existing Codex attestation logic as one adapter; assess OpenCode from real supported recorder/tool formats and add only if technically justified. An unsupported configured provider/model returns an honest typed compatibility failure; do not silently switch providers or invent receipts. Make the ability to add certified provider adapters **without rewriting the research pipeline** a tested design criterion.
+
+The single Cloud session must not expand into speculative full-vendor integrations at the expense of the genuine AI communication boundary. If live OpenBot recorder evidence is unavailable, ship honest adapter contracts and tests for known formats, report remaining actual-host certification, and keep any unsupported provider out of claimed native acceptance.
+
 ## STEP 0 — mandatory contextual understanding BEFORE ANY CODE EDIT
 
 1. Fetch the correct GitHub branch and verify actual HEAD and clean checkout. Do not assume main includes the feature branch. Never force push or merge PR #24.
@@ -61,7 +69,7 @@ Implement the smallest coherent path using existing Python modules and existing 
 5. Real AI DISCOVERY invocation from original broad qualified evidence BEFORE costly targeted history; preserve complete nomination/omission ledger and model's ability to ask counter-hypothesis/source questions.
 6. Accepted DISCOVERY directs permitted deterministic inquiry with actual source/contract/interval/type, bounded research budget and UNKNOWN for unavailable source.
 7. Separate real AI SHORTLIST decision on qualified investigated facts, citations and objective economic/room/clock gates; legitimate zero shortlisted; model may choose a better-supported rival family where independently qualified.
-8. Independent read-only provider-turn attester (initial Codex only) proving actual expected model/session, page outputs, submitted reply and no forbidden actions. Do not treat a model-supplied hash or fixture-shaped JSON as provider receipt.
+8. Independent, provider-neutral interface to a small set of independently qualified provider-turn attesters proving actual selected provider/model/session, page outputs, submitted reply and no forbidden actions. Reuse the current Codex implementation as an initial adapter but do not hardcode Codex as a required Market Researcher provider. Assess OpenCode support separately where authentic installed evidence exists; fail closed if selected provider lacks qualification. Do not treat a model-supplied hash or fixture-shaped JSON as provider receipt.
 9. Safe checkpoint/partial states, independent artifact ZIP and separately verified attachment/delivery. No new standalone event bus/Local Scripts controller.
 10. Adapt existing SKILL.md in-place preserving installed skill identity/revision history. Do not silently assume a repo file update installs a new skill on the owner's host.
 
@@ -77,7 +85,7 @@ Minimum offline tests:
 - malformed submit JSON, absent/invalid citation, wrong material id, unsupported alternate family;
 - full bounded page receipt, clipped model-facing output, missing/late page, unexpected tool action;
 - actual clock isolation: old archived material remains archived; live closed-bar freshness still gated;
-- workspace/session/agent/model identity mismatch and unsupported provider format fail;
+- workspace/session/agent/provider/model identity mismatch, mid-run model change and unsupported provider receipt format fail; switching model or provider between completed runs must not invalidate original historical receipts;
 - proof that both accepted stages are real provider-turn dependent, not mock-verified;
 - existing AI Discovery vs final Shortlist ordering and question-driven investigation;
 - source undercoverage, quiet-tail, no BTC veto, zero-valid-candidate reporting and no trading;
