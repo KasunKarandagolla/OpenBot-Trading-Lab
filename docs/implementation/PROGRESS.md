@@ -21,6 +21,12 @@ Two native tasks remain the limit. The observation budget covers up to twelve
 provider responses to account for the bounded reads.
 [Dispatch protocol and diagnostic](AI_CORE_DISPATCH_RECOVERY.md)
 
+A concurrent local full run surfaced a race between separate status and
+preview snapshots. One poll kept an earlier REVIEW_READY label after the
+worker advanced and could no longer provide its preview. The confirmed
+preview now uses the same locked snapshot as status. A focused regression
+checks that the lock remains held while rendering the preview.
+
 The next dependency is one owner-authorized archived smoke on the existing
 installation with the newly pinned orchestration skill. This Cloud work
 started no native tasks and made zero market requests. PR #24 stays draft.

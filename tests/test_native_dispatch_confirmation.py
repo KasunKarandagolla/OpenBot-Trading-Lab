@@ -166,6 +166,19 @@ class ConfirmedDispatch(unittest.TestCase):
         self.assertEqual(self.preview(),raw)
         self.assertTrue(self.accept(frame))
 
+    def test_ready_status_and_preview_use_the_same_locked_snapshot(self):
+        self.publish()
+        render = runner._confirmed_status
+        def under_lock(folder,state,result,include_review):
+            with self.assertRaisesRegex(ContractError,'RUNNER_ALREADY_ACTIVE'):
+                with runner._file_guard(folder/'state.lock',nonblocking=True):
+                    self.fail('preview reacquired the status lock')
+            return render(folder,state,result,include_review)
+        with patch.object(runner,'_confirmed_status',side_effect=under_lock):
+            frame = json.loads(self.preview())
+        self.assertEqual(frame['state'],'REVIEW_READY')
+        self.assertEqual(frame['start_task_arguments'],packet(self.request,self.directory)[0])
+
     def test_concurrent_confirmations_grant_only_once(self):
         from concurrent.futures import ThreadPoolExecutor
         from threading import Barrier

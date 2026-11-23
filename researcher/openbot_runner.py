@@ -457,38 +457,36 @@ def _preview_metadata(frame, stamp):
     return {'preview_sha256': digest((encode(frame, compact=True)+'\n').encode()), 'previewed_at_utc': stamp}
 
 
-def _confirmed_status(folder, result, include_review):
-    """A preview offers bytes and remains safe to repeat until a grant exists."""
+def _confirmed_status(folder, state, result, include_review):
+    """Render a recoverable preview from the caller's locked state snapshot."""
     from .native_handoff import load_dispatch
 
-    with _file_guard(folder/'state.lock'):
-        state = _read(folder/'state.json')
-        material = state.get('material_sha256')
-        if state['state'] != 'REVIEW_READY' or state.get('review_transport') != CONFIRMED_PAGES:
-            return
-        directory = folder/'review'
-        lease = directory/(material+'.dispatch.json')
-        preview = directory/(material+'.preview.json')
-        if not include_review and not lease.is_file():
-            preview_error = directory/(material+'.preview-error.json')
-            if preview_error.is_file():
-                result['dispatch_state'] = _read(preview_error)['reason']
-            elif preview.is_file():
-                result['dispatch_state'] = 'PACKET_DELIVERABLE'
-            else:
-                result['dispatch_state'] = 'PACKET_PREPARED'
-            return
-        stamp = now_utc()
-        request, frame = _confirmed_review(folder, state, material, stamp, check_reservation_window=not lease.is_file())
-        if lease.is_file():
-            _, _, _, receipt = load_dispatch(directory, request, as_of=stamp)
-            result.update(state='REVIEW_DISPATCH_RESERVED', dispatch_state='DISPATCH_RESERVED',
-                          submission_permitted=False, dispatch_receipt=receipt)
-            return
-        if not preview.is_file():
-            _write(preview, _preview_metadata(frame, stamp))
-        result.clear()
-        result.update(frame)
+    material = state.get('material_sha256')
+    if state['state'] != 'REVIEW_READY' or state.get('review_transport') != CONFIRMED_PAGES:
+        return
+    directory = folder/'review'
+    lease = directory/(material+'.dispatch.json')
+    preview = directory/(material+'.preview.json')
+    if not include_review and not lease.is_file():
+        preview_error = directory/(material+'.preview-error.json')
+        if preview_error.is_file():
+            result['dispatch_state'] = _read(preview_error)['reason']
+        elif preview.is_file():
+            result['dispatch_state'] = 'PACKET_DELIVERABLE'
+        else:
+            result['dispatch_state'] = 'PACKET_PREPARED'
+        return
+    stamp = now_utc()
+    request, frame = _confirmed_review(folder, state, material, stamp, check_reservation_window=not lease.is_file())
+    if lease.is_file():
+        _, _, _, receipt = load_dispatch(directory, request, as_of=stamp)
+        result.update(state='REVIEW_DISPATCH_RESERVED', dispatch_state='DISPATCH_RESERVED',
+                      submission_permitted=False, dispatch_receipt=receipt)
+        return
+    if not preview.is_file():
+        _write(preview, _preview_metadata(frame, stamp))
+    result.clear()
+    result.update(frame)
 
 
 def reserve_review(key, material, proof=None, end=None):
@@ -639,6 +637,7 @@ def review_page(key,material,fingerprint,page):
 
 def status(key,include_review=False):
     folder=_job(key)
+    confirmed_result={}
     with _file_guard(folder/'state.lock'):
         try:data=_read(folder/'state.json')
         except FileNotFoundError:
@@ -654,6 +653,11 @@ def status(key,include_review=False):
                 data=_transition_locked(folder,'INTERRUPTED',reason='RUNNER_PROCESS_ENDED; NO_AUTOMATIC_LIVE_REPLAY')
             elif not process.exists() and (utc(now_utc())-utc(data['created_at_utc'])).total_seconds()>30:
                 data=_transition_locked(folder,'INTERRUPTED',reason='RUNNER_PROCESS_NOT_PUBLISHED; NO_AUTOMATIC_LIVE_REPLAY')
+        if data.get('review_transport')==CONFIRMED_PAGES:
+            # A second snapshot could pair a stale REVIEW_READY status with no
+            # preview after the worker has advanced to a different phase.
+            _confirmed_status(folder,data,confirmed_result,include_review)
+    if 'begin_frame' in confirmed_result:return confirmed_result
     delivery_error=None
     if data['state'] in {'COMPLETED','PARTIAL'} and data.get('artifact'):
         try:
@@ -680,7 +684,7 @@ def status(key,include_review=False):
     if data.get('review_transport') == CONFIRMED_PAGES:
         if data['state'] not in FINAL:
             result.pop('lifecycle',None)
-        _confirmed_status(folder,result,include_review)
+        result.update(confirmed_result)
     elif data.get('review_transport') in {'PAGED_V2','INLINE_AI_CORE_V1'}:
         # The main chat must see the current state even when earlier batches
         # have accumulated more history than the status console can return.
