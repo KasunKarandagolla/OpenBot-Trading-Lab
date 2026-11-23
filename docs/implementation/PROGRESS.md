@@ -16,6 +16,10 @@ the existing 600-second request freshness limit. The subsequent one-time
 submission deadline remains 90 seconds from grant. Historical materials keep
 their original windows and packet protocol.
 
+The initial CI run exposed two historical workflow fixtures that needed to
+request their unchanged legacy `--include-review` transport explicitly.
+The fixture harness now follows the transport indicated by each READY state.
+
 A separate owner-authorized polling integration test uses a single synthetic
 empty-discovery native task, the existing verified receipt path, and zero
 market sources. Its exact owner message and installation instructions are in

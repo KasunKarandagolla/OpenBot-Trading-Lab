@@ -211,6 +211,10 @@ class CompleteWorkflow(unittest.TestCase):
                         reservation=runner.reserve_review(job,status['material_sha256'],
                             command[command.index('--confirm')+1],status['z_end_frame'])
                         self.assertTrue(reservation['submission_permitted'])
+                    else:
+                        # Historical paged material still requires its
+                        # original explicit one-shot dispatch request.
+                        status=runner.status(job,include_review=True)
                     args=status['start_task_arguments']
                     second=runner.status(job,include_review=True)
                     self.assertEqual(second['state'],'REVIEW_DISPATCH_RESERVED')
