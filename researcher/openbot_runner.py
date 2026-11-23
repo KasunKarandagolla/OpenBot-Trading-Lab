@@ -21,7 +21,7 @@ from datetime import timedelta
 from .contracts import ContractError, digest, encode, now_utc, utc
 from .settings import ROOT
 from .native_identity import active_identity, assert_current, assert_parent, load_private, read_db, ref, under_work
-from .native_handoff import FRESH_SECONDS, JOB_ID, SHA256, SUBMISSION_SECONDS
+from .native_handoff import CONFIRMED_PAGES, FRESH_SECONDS, JOB_ID, SHA256, SUBMISSION_SECONDS
 
 BASE=ROOT/'work/openbot-integration'
 PRIVATE=BASE/'native-audit-local.json'
@@ -425,6 +425,131 @@ def _run_ai_smoke(key,folder,state,config,progress,native_progress):
     return report
 
 
+def _confirmed_review(folder, state, material, stamp, *, check_reservation_window=True):
+    from .agent_review import _material
+    from .native_handoff import dispatch_frame, packet
+
+    if (state['state'] != 'REVIEW_READY' or state.get('material_sha256') != material
+            or state.get('review_transport') != CONFIRMED_PAGES
+            or not isinstance(material, str) or not re.fullmatch(SHA256, material)):
+        raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
+    directory = folder/'review'
+    request = _read(directory/(material+'.request.json'))
+    if (request.get('material_sha256') != material or request.get('input_transport') != CONFIRMED_PAGES
+            or request.get('native_identity') != state['native_identity']
+            or digest(encode(_material(request)).encode()) != material):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    published = state['request_prepared_at_utc']
+    if (not 0 <= (utc(stamp)-utc(request['as_of_utc'])).total_seconds() < FRESH_SECONDS
+            or check_reservation_window and (
+                not 0 <= (utc(stamp)-utc(published)).total_seconds() < SUBMISSION_SECONDS
+                or time.monotonic() >= state['submission_expires_monotonic'])):
+        raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
+    args, fingerprint, pages = packet(request, directory)
+    task = under_work(directory/(material+'.review-task.json'))
+    if task.read_bytes() != encode(args).encode():
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    frame = dispatch_frame(folder.name, material, request['stage'], args, fingerprint, pages)
+    return request, frame
+
+
+def _preview_metadata(frame, stamp):
+    return {'preview_sha256': digest((encode(frame, compact=True)+'\n').encode()), 'previewed_at_utc': stamp}
+
+
+def _confirmed_status(folder, result, include_review):
+    """A preview offers bytes and remains safe to repeat until a grant exists."""
+    from .native_handoff import load_dispatch
+
+    with _file_guard(folder/'state.lock'):
+        state = _read(folder/'state.json')
+        material = state.get('material_sha256')
+        if state['state'] != 'REVIEW_READY' or state.get('review_transport') != CONFIRMED_PAGES:
+            return
+        directory = folder/'review'
+        lease = directory/(material+'.dispatch.json')
+        preview = directory/(material+'.preview.json')
+        if not include_review and not lease.is_file():
+            preview_error = directory/(material+'.preview-error.json')
+            if preview_error.is_file():
+                result['dispatch_state'] = _read(preview_error)['reason']
+            elif preview.is_file():
+                result['dispatch_state'] = 'PACKET_DELIVERABLE'
+            else:
+                result['dispatch_state'] = 'PACKET_PREPARED'
+            return
+        stamp = now_utc()
+        request, frame = _confirmed_review(folder, state, material, stamp, check_reservation_window=not lease.is_file())
+        if lease.is_file():
+            _, _, _, receipt = load_dispatch(directory, request, as_of=stamp)
+            result.update(state='REVIEW_DISPATCH_RESERVED', dispatch_state='DISPATCH_RESERVED',
+                          submission_permitted=False, dispatch_receipt=receipt)
+            return
+        if not preview.is_file():
+            _write(preview, _preview_metadata(frame, stamp))
+        result.clear()
+        result.update(frame)
+
+
+def reserve_review(key, material, proof=None, end=None):
+    """Grant once, only after a round trip of the complete canonical arguments."""
+    from .native_handoff import confirm_dispatch, load_dispatch, request_dispatch_policy, submission_deadline
+
+    folder = _job(key)
+    directory = folder/'review'
+    with _file_guard(folder/'state.lock'):
+        state = _read(folder/'state.json')
+        stamp = now_utc()
+        request, frame = _confirmed_review(folder, state, material, stamp)
+        lease = directory/(material+'.dispatch.json')
+        if lease.is_file():
+            _, _, _, receipt = load_dispatch(directory, request, as_of=stamp)
+            return {'state': 'REVIEW_DISPATCH_RESERVED', 'submission_permitted': False,
+                    'material_sha256': material, 'arguments_sha256': receipt['arguments_sha256'],
+                    'trade_authorization': False}
+        try:
+            confirm_dispatch(frame, proof, end)
+        except ContractError as error:
+            _write(directory/(material+'.preview-error.json'), {'reason': str(error)})
+            return {'state': 'REVIEW_READY', 'dispatch_state': str(error), 'reason': str(error),
+                    'material_sha256': material, 'submission_permitted': False, 'trade_authorization': False}
+        preview = _read(directory/(material+'.preview.json'))
+        if (preview != _preview_metadata(frame, preview.get('previewed_at_utc'))
+                or not utc(state['request_prepared_at_utc']) <= utc(preview['previewed_at_utc']) <= utc(stamp)):
+            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        identity = state['native_identity']
+
+    # Keep the lock free during the one scoped identity check. Recheck the
+    # publication window and the ticket under the lock before granting.
+    assert_parent(identity, load_private(PRIVATE), require_configured_model=True)
+    with _file_guard(folder/'state.lock'):
+        state = _read(folder/'state.json')
+        stamp = now_utc()
+        request, frame = _confirmed_review(folder, state, material, stamp)
+        if request['native_identity'] != identity:
+            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        if lease.is_file():
+            _, _, _, receipt = load_dispatch(directory, request, as_of=stamp)
+            return {'state': 'REVIEW_DISPATCH_RESERVED', 'submission_permitted': False,
+                    'material_sha256': material, 'arguments_sha256': receipt['arguments_sha256'],
+                    'trade_authorization': False}
+        confirm_dispatch(frame, proof, end)
+        reserved_monotonic = time.monotonic()
+        if reserved_monotonic >= state['submission_expires_monotonic']:
+            raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
+        integrity = frame['argument_integrity']
+        ticket = {'material_sha256': material, 'arguments_sha256': integrity['arguments_sha256'],
+                  'packet_sha256': frame['packet_sha256'], 'evidence_pages': frame['evidence_pages'],
+                  'reserved_at_utc': stamp, 'published_at_utc': state['request_prepared_at_utc'],
+                  'reserved_monotonic': reserved_monotonic, 'submission_policy': request_dispatch_policy(request),
+                  'parent_delivery': 'EXACT_ARGUMENT_BYTES_CONFIRMED', 'argument_integrity': integrity, **preview}
+        _write(lease, ticket)
+        submit_before = min(submission_deadline(ticket), utc(request['as_of_utc'])+timedelta(seconds=FRESH_SECONDS))
+        return {'state': 'REVIEW_DISPATCH_RESERVED', 'submission_permitted': True,
+                'material_sha256': material, 'arguments_sha256': integrity['arguments_sha256'],
+                'submit_before_utc': submit_before.isoformat(), 'trade_authorization': False}
+
+
 def _paged_status(folder,data,result,include_review):
     from .agent_review import _material
     from .native_handoff import (RESERVED_SUBMISSION_POLICY, load_dispatch, packet, request_dispatch_policy,
@@ -495,7 +620,7 @@ def review_page(key,material,fingerprint,page):
         state=_read(folder/'state.json')
         if (state['state'] not in {'REVIEW_READY','TASK_SUBMISSION_ATTEMPTED','TASK_CREATED','REVIEW_RUNNING',
                 'REVIEW_SUBMISSION_UNVERIFIED'} or state.get('material_sha256')!=material
-                or state.get('review_transport')!='PAGED_V2'):
+                or state.get('review_transport') not in {'PAGED_V2',CONFIRMED_PAGES}):
             raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
         request=_read(directory/(material+'.request.json'))
         if (request.get('material_sha256')!=material or request.get('native_identity')!=state['native_identity']
@@ -552,7 +677,11 @@ def status(key,include_review=False):
     from .native_identity import safe_diagnostic
     diagnostic=safe_diagnostic(data.get('native_diagnostic'))
     if diagnostic:result['native_diagnostic']=diagnostic
-    if data.get('review_transport') in {'PAGED_V2','INLINE_AI_CORE_V1'}:
+    if data.get('review_transport') == CONFIRMED_PAGES:
+        if data['state'] not in FINAL:
+            result.pop('lifecycle',None)
+        _confirmed_status(folder,result,include_review)
+    elif data.get('review_transport') in {'PAGED_V2','INLINE_AI_CORE_V1'}:
         # The main chat must see the current state even when earlier batches
         # have accumulated more history than the status console can return.
         if data['state'] not in FINAL:result.pop('lifecycle',None)
@@ -679,6 +808,9 @@ def replay_native(key):
                 _,audit=result
                 entry={'status':'VERIFIED_RECEIPT','verified_evidence_pages':audit.get('verified_evidence_pages'),
                     'reply_validation_status':audit['reply_validation_status'],'validated_rows':audit['validated_rows']}
+                if audit.get('parent_delivery'):
+                    entry.update(parent_delivery=audit['parent_delivery'],
+                        arguments_sha256=audit['arguments_sha256'],packet_sha256=audit['packet_sha256'])
         except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
             entry={'status':'REJECTED','error':failure(error,'HISTORICAL_RECEIPT')}
         entries.append({'material_sha256':material,'ai_stage':request.get('stage'),**entry})
@@ -715,9 +847,10 @@ def replay_native(key):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['start','status','_worker','preflight','review-page','replay-native'])
+    parser.add_argument('action',choices=['start','status','_worker','preflight','review-page','replay-native','reserve-review'])
     parser.add_argument('--request-id');parser.add_argument('--job-id');parser.add_argument('--include-review',action='store_true')
     parser.add_argument('--material');parser.add_argument('--packet-sha256');parser.add_argument('--page',type=int)
+    parser.add_argument('--confirm');parser.add_argument('--end-frame')
     args=parser.parse_args()
     try:
         if args.action=='review-page':
@@ -733,10 +866,11 @@ def main():
         elif args.action=='replay-native':result=replay_native(args.job_id)
         elif args.action=='start':result=start(args.request_id)
         elif args.action=='status':result=status(args.job_id,args.include_review)
+        elif args.action=='reserve-review':result=reserve_review(args.job_id,args.material,args.confirm,args.end_frame)
         else:
             result=run_job(args.job_id)
             if result['state'] in {'COMPLETED','PARTIAL'}:result=watch_delivery(args.job_id)
-        print(encode(result));return 0
+        print(encode(result,compact='begin_frame' in result));return 0
     except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
         code=str(error) if isinstance(error,ContractError) else 'RUNNER_PRIVATE_DEPENDENCY_UNAVAILABLE'
         print(encode({'state':'REJECTED','reason':code,'trade_authorization':False}));return 2

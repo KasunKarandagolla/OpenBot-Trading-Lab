@@ -6,7 +6,7 @@ from time import monotonic
 from .agent_review import AGENT, _material, parse_reply
 from .contracts import ContractError, digest, encode, utc
 from .handoff import ALLOWED_QUESTIONS
-from .native_handoff import RESERVED_SUBMISSION_POLICY
+from .native_handoff import CONFIRMED_PAGES, MAX_EVIDENCE_PAGES, RESERVED_SUBMISSION_POLICY
 from .research import fact_id
 from .settings import ROOT
 
@@ -39,7 +39,7 @@ DEEP = frozenset({'READY_FOR_DEEP', 'FAST_WITH_ROOM', 'CONDITIONAL_FOR_DEEP'})
 @dataclass(frozen=True)
 class Limits:
     max_native_tasks: int = 2
-    max_provider_attempts: int = 2
+    max_provider_attempts: int = 2 * (MAX_EVIDENCE_PAGES + 1)
     max_input_bytes: int = MAX_BRIEF_BYTES
     max_broad_rows: int = 36
     max_questions: int = 6
@@ -48,7 +48,7 @@ class Limits:
     freshness_seconds: int = 600
 
     def __post_init__(self):
-        maximum = (2, 2, MAX_BRIEF_BYTES, 100, 12, 12, 600, 600)
+        maximum = (2, 2 * (MAX_EVIDENCE_PAGES + 1), MAX_BRIEF_BYTES, 100, 12, 12, 600, 600)
         if any(type(v) is not int or not 0 < v <= cap
                for v,cap in zip(asdict(self).values(),maximum,strict=True)):
             raise ContractError('AGENT_INPUT_SIZE')
@@ -203,7 +203,7 @@ class AIResearch:
         body = {'schema_version': REQUEST, 'agent_name': AGENT,
             'stage': stage, 'evidence_as_of_utc': at, 'mode': mode, 'evidence': evidence,
             'skill_sha256': digest((ROOT / '.agents/skills/market-research-review/SKILL.md').read_bytes()),
-            'guidance_sha256': digest(GUIDANCE.read_bytes()), 'input_transport': INLINE,
+            'guidance_sha256': digest(GUIDANCE.read_bytes()), 'input_transport': CONFIRMED_PAGES,
             'max_input_bytes': self.limits.max_input_bytes,
             'model': self.identity['model'] if self.identity else None,
             'dispatch_reservation_policy': RESERVED_SUBMISSION_POLICY,

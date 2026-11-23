@@ -2,7 +2,7 @@
 name: openbot-market-research
 description: Run the on-demand Market Researcher with the existing OpenBot agent and verify the research artifact.
 metadata:
-  version: "3.0.0"
+  version: "4.0.0"
 ---
 
 Installed isolated checkout: `@@RESEARCH_ROOT@@` in WSL.
@@ -26,18 +26,24 @@ only. Keep the existing provider, model, agent, permissions and trading controls
    wsl.exe --cd '@@RESEARCH_ROOT@@' -- python3 -m researcher.openbot_runner start --request-id LITERAL_32_HEX_ID
    ```
 
-3. Poll the returned job using the same fixed command prefix and
-   `status --job-id JOB_ID`. Wait about 5–10 seconds between polls and share
-   progress at least once per minute. At each `REVIEW_READY`, issue one
-   `status --job-id JOB_ID --include-review` with `max_output_tokens:30000`.
-   When it returns a complete `start_task_arguments`, call native
-   `openbot.tool_call` with `name: openbot.start_task` and that exact
-   `arguments` object. Preserve every byte of both field values. If the
-   result is truncated, continue polling for the diagnostic artifact.
-   A reservation does not count as a submission. Never resubmit a reserved
-   packet. For `INLINE_AI_CORE_V1` the child receives the whole packet in its
-   brief and uses no tools. Continue to poll for the final reasoning task and
-   the terminal job. Historical paged jobs retain their original instructions.
+3. Poll the same job with `status --job-id JOB_ID` every 5–10 seconds and
+   share progress at least once per minute. For each `REVIEW_READY`, run
+   `status --job-id JOB_ID --include-review`. For
+   `CONFIRMED_AI_CORE_PAGES_V2`, require the entire JSON frame, including
+   `begin_frame`, the whole `start_task_arguments`, `reserve_command_prefix`
+   and `z_end_frame`. If it is clipped or incomplete, report it with
+   `reserve-review --job-id JOB_ID --material MATERIAL_SHA256` using the same
+   fixed WSL prefix and no confirmation flags. A preview can be read again
+   before a reservation and within the window. Keep the same job and stage.
+   With a complete frame, run the literal `reserve_command_prefix` followed
+   by one space and the exact `z_end_frame` value. Wait for
+   `submission_permitted: true` and check its `arguments_sha256` against the
+   same preview. Then call native `openbot.tool_call` once, with
+   `name: openbot.start_task` and the preview's exact `start_task_arguments`.
+   Keep the brief's newline. A repeat poll or duplicate reservation does
+   not grant permission. Continue polling for the next stage and terminal
+   result. The child follows the task's bounded, read-only evidence commands.
+   Historical paged jobs use their original one-time dispatch instructions.
 4. A task appearing in OpenBot is not model proof. The runner checks the
    acknowledged task ID, configured provider/model, exact app and provider
    input, final output, citations, and tool use. Discovery can direct approved

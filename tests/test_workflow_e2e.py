@@ -13,6 +13,7 @@ from unittest.mock import patch
 from researcher import openbot_runner as runner
 from researcher.contracts import digest,encode,utc
 from researcher.diagnostic_export import verify_zip
+from researcher.native_handoff import CONFIRMED_PAGES, PARENT_OUTPUT_BYTES
 from researcher.settings import ROOT
 import test_native_runtime as native
 from workflow_fixtures import ScenarioAPI,ScenarioScreen,FakeClient,AT
@@ -22,7 +23,7 @@ class SimulatedApp:
     """App storage + real-shaped 0.169 ordinal envelopes, scoped by exact task."""
     def __init__(self,fixture,clock):
         self.f=fixture;self.clock=clock;self.submitted={};self.pending=[];self.input_cards=[]
-        self.reply_transform=None
+        self.reply_transform=None;self.provider_attempts=0
         self.parent_session='PARENT';self.parent_turn='PARENT_TURN'
     def envelope(self,at,kind,payload):return {'timestamp':at,'type':kind,'payload':payload}
     def write(self,name,rows):
@@ -49,7 +50,7 @@ class SimulatedApp:
         request=json.loads(full.split('<canonical-request>\n',1)[1].split('\n</canonical-request>',1)[0])
         if request.get('input_transport'):
             self.assert_exact_arguments(args,receipt)
-            if digest(brief.encode())!=receipt['packet_sha256']:raise AssertionError('inline packet hash')
+            if digest(full.encode())!=receipt['packet_sha256']:raise AssertionError('AI packet hash')
             if request['stage']=='SHORTLIST':self.input_cards.extend(request['evidence'])
         else:self.input_cards.extend(request['cards'])
         n=len(self.submitted);name=f'REVIEW_{n}';turn=f'TURN_{n}';thread=f'THREAD_{n}';sid=f'SESSION_{n}';at=self.clock()
@@ -78,6 +79,10 @@ class SimulatedApp:
                 'item':{'type':'UserMessage','content':[{'type':'text','text':'OpenBot task envelope\n'+brief}]}})]
         if pages:
             for number,(cmd,page) in enumerate(zip(commands,pages,strict=True),1):
+                if request.get('input_transport')==CONFIRMED_PAGES:
+                    self.provider_attempts+=1
+                    rows.append(e(at,'token_usage_record',{'turn_id':turn,'thread_id':name,
+                        'response_id':f'FIXTURE_{name}_PAGE_{number}','usage':{'input_tokens':100,'output_tokens':100}}))
                 call='PAGE_'+str(number)
                 command_args={'cmd':cmd,'login':False,'max_output_tokens':16000}
                 if 'yield_time_ms:30000' in brief:command_args['yield_time_ms']=30000
@@ -135,6 +140,7 @@ class SimulatedApp:
                         'falsifying_question':'FIRST_OBSTACLE','priority':'INVESTIGATE' if c['native_symbol']=='BEARUSDT' else 'WATCH','claims':[]})
             if self.reply_transform:reply=self.reply_transform(request,reply)
             raw=encode(reply);e=self.envelope
+            self.provider_attempts+=1
             rows.extend([e(at,'token_usage_record',{'turn_id':turn,'thread_id':name,'response_id':'FIXTURE_'+name,
                     'usage':{'input_tokens':100,'output_tokens':100}}),
                 e(at,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':name,
@@ -196,13 +202,22 @@ class CompleteWorkflow(unittest.TestCase):
             while time.monotonic()<deadline:
                 status=runner.status(job,include_review=True);seen.append(status['state'])
                 if status['state']=='REVIEW_READY':
+                    if status.get('review_transport')==CONFIRMED_PAGES:
+                        wire=(encode(status,compact=True)+'\n').encode()
+                        self.assertLessEqual(len(wire),PARENT_OUTPUT_BYTES)
+                        status=json.loads(wire[:8192])
+                        self.assertEqual(runner.status(job,include_review=True),status)
+                        command=shlex.split(status['reserve_command_prefix'].split(' reserve-review ',1)[1])
+                        reservation=runner.reserve_review(job,status['material_sha256'],
+                            command[command.index('--confirm')+1],status['z_end_frame'])
+                        self.assertTrue(reservation['submission_permitted'])
                     args=status['start_task_arguments']
                     second=runner.status(job,include_review=True)
                     self.assertEqual(second['state'],'REVIEW_DISPATCH_RESERVED')
                     self.assertNotIn('start_task_arguments',second)
                     self.assertTrue(self.thread.is_alive());self.assertFalse((runner._job(job)/(job+'.zip')).exists())
-                    self.assertTrue(self.app.dispatch_once(args,job,status['dispatch_receipt']))
-                    self.assertFalse(self.app.dispatch_once(args,job,status['dispatch_receipt']))
+                    self.assertTrue(self.app.dispatch_once(args,job,second['dispatch_receipt']))
+                    self.assertFalse(self.app.dispatch_once(args,job,second['dispatch_receipt']))
                 if status['state']=='REVIEW_RUNNING':
                     self.assertTrue(self.thread.is_alive());wait_observed=True
                 pending_before=len(self.app.pending)
@@ -225,11 +240,15 @@ class CompleteWorkflow(unittest.TestCase):
         ai=r['ai_research']
         finalists=ai['stages']['SHORTLIST']['supplied_ids']
         self.assertEqual(ai['state'],'AI_RESEARCH_COMPLETE')
-        self.assertEqual(len(self.app.submitted),r['llm_calls'],2)
+        self.assertEqual(len(self.app.submitted),2)
+        self.assertEqual(r['llm_calls'],self.app.provider_attempts)
+        self.assertGreater(r['llm_calls'],2)
         self.assertEqual(ai['stages']['DISCOVERY']['status'],'AI_DISCOVERY_VERIFIED')
         self.assertEqual(ai['stages']['SHORTLIST']['status'],'AI_SHORTLIST_VERIFIED')
         for stage in ai['stages'].values():
-            self.assertEqual(stage['receipt']['verified_evidence_pages'],0)
+            self.assertIn(stage['receipt']['verified_evidence_pages'],range(1,6))
+            self.assertEqual(stage['receipt']['model_requests'],stage['receipt']['verified_evidence_pages']+1)
+            self.assertEqual(stage['receipt']['parent_delivery'],'EXACT_ARGUMENT_BYTES_CONFIRMED')
             self.assertTrue(stage['receipt']['native_invocation_verified'])
         self.assertEqual(ai['investigations'][0]['native_symbol'],'BEARUSDT')
         self.assertEqual(ai['investigations'][0]['status'],'VERIFIED_SOURCE_OBSERVATION')

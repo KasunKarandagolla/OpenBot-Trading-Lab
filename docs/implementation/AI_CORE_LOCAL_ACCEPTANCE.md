@@ -18,10 +18,10 @@ Update the existing `openbot-market-research` skill with the checkout's
 `@@RESEARCH_ROOT@@` with the absolute WSL checkout path. Use the protected
 skill installation procedure in [Native handoff v2](NATIVE_HANDOFF_V2.md), with
 the orchestration source hash set to
-`12e008b91a6cb2c58be6dfd233c071773e68ed0c17e455a657d514f88dab4154`.
+`1386fa4ec69eb4dffc27ae5713832dea699515f4fdf66cb4456f0057bbbf7530`.
 Keep the existing `market-research-review` skill. Its hash in that procedure
-still applies. The staged methodology guide is sent inline by the runner
-from the pinned checkout.
+still applies. The pinned checkout supplies the staged methodology guide and evidence
+through bounded, hash-checked child reads.
 
 ## Copy the canonical owner instruction
 
@@ -41,10 +41,15 @@ python3 -m researcher.openbot_runner replay-native --job-id JOB_ID
 ```
 
 Acceptance requires two independently verified child receipts for
-`DISCOVERY` and `SHORTLIST`, exact inline packet verification, accepted
-citations, `AI_RESEARCH_COMPLETE` in the archive reconciliation, zero market
-requests, a verified archive, and `delivery: VERIFIED`. An empty qualified
+`DISCOVERY` and `SHORTLIST`, one confirmed reservation per stage, exact native arguments and complete
+provider-attested page delivery, accepted citations, `AI_RESEARCH_COMPLETE` in the archive reconciliation, zero market
+requests, a verified archive, and `VERIFIED` delivery. An empty qualified
 shortlist can pass. The result is archived only.
+
+The preview is repeatable before reservation. Each first grant permits one
+call to the native task tool. If the grant result is clipped or uncertain,
+continue polling the job and keep the artifact. A duplicate grant response
+cannot authorize a submission.
 
 ## Rollback
 

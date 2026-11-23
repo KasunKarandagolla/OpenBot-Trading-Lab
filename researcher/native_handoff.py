@@ -1,4 +1,6 @@
 """Exact, read-only evidence transport for the existing OpenBot task tool."""
+import base64
+import binascii
 import json
 import re
 from datetime import timedelta
@@ -18,6 +20,11 @@ RESERVED_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; 90_SECONDS_FROM_RESERVATION; N
 VERBATIM_PAGE_COMMANDS = 'VERBATIM_NEXT_PAGE_V1'
 TICKET_BOUND_PAGE_COMMANDS = 'VERBATIM_TICKET_BOUND_PAGE_V2'
 BOUNDED_WAIT_PAGE_COMMANDS = 'VERBATIM_TICKET_BOUND_WAIT_30S_V3'
+CONFIRMED_PAGES = 'CONFIRMED_AI_CORE_PAGES_V2'
+DISPATCH_FRAME = 'OPENBOT_NATIVE_DISPATCH_V2'
+PARENT_OUTPUT_BYTES = 4096
+EVIDENCE_PAGE_BYTES = 12288
+MAX_EVIDENCE_PAGES = 5
 
 
 def runner_review(directory):
@@ -36,7 +43,7 @@ def wsl_root():
 def page_command_fingerprint(request, fingerprint):
     """New commands use the saved ticket for the full packet SHA-256."""
     policy = request.get('page_command_policy')
-    if policy in (TICKET_BOUND_PAGE_COMMANDS, BOUNDED_WAIT_PAGE_COMMANDS):
+    if request.get('input_transport') == CONFIRMED_PAGES or policy in (TICKET_BOUND_PAGE_COMMANDS, BOUNDED_WAIT_PAGE_COMMANDS):
         return None
     if policy not in (None, VERBATIM_PAGE_COMMANDS):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
@@ -58,6 +65,8 @@ def packet(request, directory):
     material = request['material_sha256']
     full = review_brief(request)
     args = {'title': 'OPENBOT-RESEARCH-' + material, 'brief': full}
+    if request.get('input_transport') == CONFIRMED_PAGES:
+        return confirmed_packet(args, full, directory, material)
     if request.get('input_transport'):
         return args, digest(full.encode('utf-8')), ()
     if not runner_review(directory):
@@ -105,6 +114,100 @@ def packet(request, directory):
     return args, fingerprint, pages
 
 
+def confirmed_packet(args, full, directory, material):
+    """Keep the whole canonical input with a few byte-bounded, exact reads."""
+    if not runner_review(directory):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    fingerprint = digest(full.encode('utf-8'))
+    root = wsl_root().replace("'", "''")
+    command = f"wsl.exe --cd '{root}' -- " + ' '.join(_page_argv(directory, material, None)) + ' '
+
+    def frame(part, number, total, more):
+        return encode({'page': number, 'pages': total, 'packet_sha256': fingerprint,
+                       'text': part, 'end_page': number,
+                       **({'next_command': f'{command}{number + 1}'} if more else {})},
+                      compact=True)
+
+    chunks = []
+    remaining = full
+    for number in range(1, MAX_EVIDENCE_PAGES + 1):
+        if len(frame(remaining, number, number, False).encode()) <= EVIDENCE_PAGE_BYTES:
+            chunks.append(remaining)
+            break
+        lo, hi = 0, len(remaining)
+        while lo + 1 < hi:
+            mid = (lo + hi) // 2
+            if len(frame(remaining[:mid], number, MAX_EVIDENCE_PAGES, True).encode()) <= EVIDENCE_PAGE_BYTES:
+                lo = mid
+            else:
+                hi = mid
+        if not lo:
+            raise ContractError('AGENT_INPUT_SIZE')
+        chunks.append(remaining[:lo])
+        remaining = remaining[lo:]
+    else:
+        raise ContractError('AGENT_INPUT_SIZE')
+
+    total = len(chunks)
+    pages = tuple(frame(part, number, total, number < total) for number, part in enumerate(chunks, 1))
+    args['brief'] = (
+        f"{args['title']}\nRead all {total} evidence pages in order using only exec_command. "
+        "Use exactly cmd, login:false, max_output_tokens:16000, yield_time_ms:30000. "
+        "Copy the first command below and then each next_command verbatim. "
+        f"Check the complete JSON frame, matching page/end_page and packet SHA-256 {fingerprint}. "
+        "Join text fields in order. Follow the canonical skill and return its reply JSON only. "
+        "If a read is incomplete, stop. No other tools, retries, writes or delegation. First command:\n"
+        f"{command}1")
+    return args, fingerprint, pages
+
+
+def argument_integrity(args):
+    raw = encode(args).encode('utf-8')
+    brief = args['brief']
+    return {'arguments_sha256': digest(raw), 'arguments_bytes': len(raw),
+            'brief_sha256': digest(brief.encode('utf-8')), 'brief_bytes': len(brief.encode('utf-8')),
+            'brief_characters': len(brief), 'brief_utf16_units': len(brief.encode('utf-16-le')) // 2,
+            'title_characters': len(args['title'])}
+
+
+def dispatch_frame(key, material, stage, args, fingerprint, pages):
+    integrity = argument_integrity(args)
+    if (args['title'] != 'OPENBOT-RESEARCH-' + material or args['brief'] != args['brief'].strip()
+            or not 1 <= integrity['title_characters'] <= 120
+            or not 1 <= integrity['brief_utf16_units'] <= 100000):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    # The confirmation contains all argument bytes, so a digest or a visible
+    # tail marker alone cannot reserve a ticket after a clipped read.
+    proof = base64.urlsafe_b64encode(encode(args).encode('utf-8')).decode('ascii').rstrip('=')
+    end = 'END_' + DISPATCH_FRAME + '_' + integrity['arguments_sha256']
+    root = wsl_root().replace("'", "''")
+    command = (f"wsl.exe --cd '{root}' -- python3 -m researcher.openbot_runner reserve-review "
+               f"--job-id {key} --material {material} --confirm {proof} --end-frame")
+    result = {'begin_frame': DISPATCH_FRAME, 'state': 'REVIEW_READY', 'dispatch_state': 'PACKET_DELIVERABLE',
+              'review_transport': CONFIRMED_PAGES, 'material_sha256': material, 'job_id': key,
+              'ai_stage': stage, 'trade_authorization': False, 'start_task_arguments': args,
+              'argument_integrity': integrity, 'packet_sha256': fingerprint, 'evidence_pages': len(pages),
+              'reserve_command_prefix': command, 'z_end_frame': end}
+    if len(encode(result, compact=True).encode('utf-8')) + 1 > PARENT_OUTPUT_BYTES:
+        raise ContractError('NATIVE_PARENT_OUTPUT_TOO_LARGE')
+    return result
+
+
+def confirm_dispatch(frame, proof, end):
+    expected = encode(frame['start_task_arguments']).encode('utf-8')
+    expected_proof = base64.urlsafe_b64encode(expected).decode('ascii').rstrip('=')
+    if not isinstance(proof, str) or len(proof) < len(expected_proof) or not end:
+        raise ContractError('NATIVE_PARENT_OUTPUT_TRUNCATED')
+    if len(proof) > PARENT_OUTPUT_BYTES or not re.fullmatch(r'[A-Za-z0-9_-]+', proof):
+        raise ContractError('NATIVE_PARENT_ARGUMENT_MISMATCH')
+    try:
+        received = base64.b64decode(proof + '=' * (-len(proof) % 4), altchars=b'-_', validate=True)
+    except (ValueError, binascii.Error):
+        raise ContractError('NATIVE_PARENT_ARGUMENT_MISMATCH') from None
+    if proof != expected_proof or received != expected or end != frame['z_end_frame']:
+        raise ContractError('NATIVE_PARENT_ARGUMENT_MISMATCH')
+
+
 def read_object(path):
     path = under_work(path)
     if path.stat().st_size > 256 * 1024:
@@ -146,6 +249,15 @@ def load_dispatch(directory, request, *, as_of):
             or not utc(request['as_of_utc']) <= published <= reserved <= utc(as_of)
             or reserved >= published + timedelta(seconds=SUBMISSION_SECONDS)):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    if request.get('input_transport') == CONFIRMED_PAGES:
+        frame = dispatch_frame(directory.parent.name, material, request['stage'], args, fingerprint, pages)
+        integrity = frame['argument_integrity']
+        if (ticket.get('parent_delivery') != 'EXACT_ARGUMENT_BYTES_CONFIRMED'
+                or ticket.get('argument_integrity') != integrity
+                or ticket.get('preview_sha256') != digest((encode(frame, compact=True) + '\n').encode())
+                or not isinstance(ticket.get('previewed_at_utc'),str)
+                or not published <= utc(ticket['previewed_at_utc']) <= reserved):
+            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     return args, fingerprint, pages, ticket
 
 

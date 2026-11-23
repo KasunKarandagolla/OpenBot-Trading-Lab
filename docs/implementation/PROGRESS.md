@@ -1,3 +1,33 @@
+# November 23 AI-core dispatch truncation recovery
+
+The owner brief reports that Local job
+`20261123T084728Z-df41c5be1afc410796a1097cce9326d7` at
+`7cadbf9edc8d1e3e8df7add520191de4e2390276` clipped a 39,263-byte
+discovery brief after creating a one-time ticket. The stated diagnostic ZIP
+SHA-256 is `778ab36e05c20b042a6176aacbb863b7fb00cce170392eeb231a06a83cca3f02`.
+Its bytes and the original clipped result were unavailable in Cloud.
+An 8 KiB synthetic parent cap reproduced the stranded ticket in a detached
+checkout of the failing commit. The same-size corrected fixture used a
+3,402-byte preview and four exact evidence pages. The cap is a fixture input.
+[Hashed reproduction](../../evidence/external-first/ai-core-dispatch/transport-regression.json)
+
+Both mandatory stages now confirm every compact native argument byte before
+a one-time grant. Missing tails and altered confirmations leave the preview
+recoverable within its window. Receipt collection waits locally before the
+grant. Provider-shaped tests exercise truncation, delayed projections,
+Windows timeouts, duplicate polling, invalid receipts, exact child page
+receipts, archived replay, and genuine zero-handoff semantics using fixtures.
+Two native tasks remain the limit. The observation budget covers up to twelve
+provider responses to account for the bounded reads.
+[Dispatch protocol and diagnostic](AI_CORE_DISPATCH_RECOVERY.md)
+
+The next dependency is one owner-authorized archived smoke on the existing
+installation with the newly pinned orchestration skill. This Cloud work
+started no native tasks and made zero market requests. PR #24 stays draft.
+[Canonical installation and acceptance](AI_CORE_LOCAL_ACCEPTANCE.md)
+
+---
+
 # November 23 AI-core implementation
 
 Continued draft PR #24 from `7fd0865c062889b228b9d0a1a336173f104ee8a1`.

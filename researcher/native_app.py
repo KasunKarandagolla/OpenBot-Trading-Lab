@@ -48,7 +48,7 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
         raise ContractError('NATIVE_REQUEST_STALE')
     if request.get('native_identity',{}).get('provider')=='codex':
         from .native_identity import load_private,assert_parent
-        from .native_handoff import packet
+        from .native_handoff import CONFIRMED_PAGES, dispatch_frame, packet
         private=load_private(config_path)
         if verified_identity is not None and verified_identity!=request['native_identity']:
             raise ContractError('NATIVE_SESSION_MISMATCH')
@@ -56,7 +56,9 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
         installed=local_path(private['agent_workspace'])/'.agents/skills/market-research-review/SKILL.md'
         if digest(checked_path(installed,error='AGENT_SKILL_HASH').read_bytes())!=request['skill_sha256']:
             raise ContractError('AGENT_SKILL_HASH')
-        args,_,_=packet(request,folder)
+        args,fingerprint,pages=packet(request,folder)
+        if request.get('input_transport')==CONFIRMED_PAGES:
+            dispatch_frame(folder.parent.name,material,request['stage'],args,fingerprint,pages)
         task_path=under_work(folder/(material+'.review-task.json'))
         raw=encode(args)
         if task_path.exists():
@@ -313,7 +315,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
     if type(wait_seconds) is not int or not 0<=wait_seconds<=600:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     clock=clock or (lambda:datetime.now(timezone.utc).isoformat())
     began=time.monotonic();first_error=None;storage_retries=0;running_at=None
-    result={'observed_model_attempts':0,'storage_read_retries':0,
+    result={'observed_model_attempts':0,'submission_attempts':0,'storage_read_retries':0,
         'configured_wait_seconds':wait_seconds,'trade_authorization':False}
     def finish(status,**fields):
         return {**result,'status':status,'storage_read_retries':storage_retries,
@@ -329,11 +331,12 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         emit('REVIEW_FAILED',first_error=first_error)
         return finish('NATIVE_TASK_PUBLICATION_FAILED',terminal_error=first_error)
     folder=under_work(directory);published=clock();published_monotonic=time.monotonic()
-    from .native_handoff import (FRESH_SECONDS, RESPONSE_SECONDS, SUBMISSION_SECONDS, RESERVED_SUBMISSION_POLICY,
-        load_dispatch, read_object, runner_review)
+    from .native_handoff import (CONFIRMED_PAGES,FRESH_SECONDS,RESPONSE_SECONDS,SUBMISSION_SECONDS,
+        RESERVED_SUBMISSION_POLICY,load_dispatch,read_object,runner_review)
     reserved=runner_review(folder) and request.get('native_identity',{}).get('provider')=='codex'
     inline=bool(request.get('input_transport'))
-    transport='INLINE_AI_CORE_V1' if inline else 'PAGED_V2'
+    confirmed=request.get('input_transport')==CONFIRMED_PAGES
+    transport=request.get('input_transport') if inline else 'PAGED_V2'
     config_hash=digest(under_work(config_file).read_bytes())
     result['publication_seconds']=round(time.monotonic()-began,6)
     result['request_prepared_at_utc']=published
@@ -344,6 +347,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             'native_task_state':'MISSING','native_task_observation':None,'observed_model_attempts':0,
             'attempted_at_utc':None,'responded_at_utc':None,'submission_error':None,'clock_diagnostic':None,
             'submission_observation_status':'OPEN',
+            **({'dispatch_state':'PACKET_PREPARED'} if confirmed else {}),
             'request_expires_monotonic':published_monotonic+freshness_remaining,
             'submission_expires_monotonic':published_monotonic+min(wait_seconds,SUBMISSION_SECONDS,freshness_remaining)}
             if reserved else {}))
@@ -382,7 +386,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         return stamp
 
     def dispatch_failure(code):
-        fault={'stage':'TASK_SUBMISSION','code':code}
+        stage='PARENT_ARGUMENT_DELIVERY' if code.startswith('NATIVE_PARENT_') else 'TASK_SUBMISSION'
+        fault={'stage':stage,'code':code}
         emit('REVIEW_FAILED',first_error=first_error or fault)
         return finish(code,first_error=first_error or fault,terminal_error=fault)
 
@@ -403,6 +408,20 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
             if reserved:
                 observe_ticket(as_of)
+                if confirmed and not ticket_observed:
+                    # Publication and parent confirmation are Linux-local. A
+                    # Windows receipt read cannot observe an authorized task
+                    # until the one-time ticket exists.
+                    if time.monotonic()>=reservation_deadline:
+                        preview_error=folder/(material+'.preview-error.json')
+                        if preview_error.is_file():
+                            code=read_object(preview_error).get('reason')
+                            if code in {'NATIVE_PARENT_OUTPUT_TRUNCATED','NATIVE_PARENT_ARGUMENT_MISMATCH'}:
+                                return dispatch_failure(code)
+                        return dispatch_failure('NATIVE_PARENT_DELIVERY_UNCONFIRMED'
+                            if (folder/(material+'.preview.json')).is_file() else 'NATIVE_TASK_NOT_SUBMITTED')
+                    time.sleep(min(1,max(0,reservation_deadline-time.monotonic())))
+                    continue
                 read_until=deadline if running_at or phase_closed else phase_deadline
                 if time.monotonic()>=deadline and (running_at or phase_closed):
                     found=None

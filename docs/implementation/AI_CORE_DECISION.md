@@ -12,7 +12,7 @@ preserved. Baseline is feature branch commit
 | AI could only advise on existing cards | The discovery contract accepts source-cited methodology hypotheses from any transmitted observation, with rivals and time-to-decision |
 | Follow-up questions were internally selected | `QueryPlanner.opportunity` verifies the citation, method/family pair, exact contract and closed interval, then executes an approved method calculation with the existing source adapter |
 | Final selection inherited deterministic membership | `AIResearch.shortlist` compares supplied reconstructed cards. `reconcile` applies model membership and priority to candidates that still satisfy deterministic gates |
-| Model-operated evidence-page reads caused completeness failures | New tasks carry a whole bounded, trim-stable brief. The receipt still binds dispatch, provider input, output, model identity and exact task |
+| Large inline arguments were clipped in the parent tool output | New tasks use a compact trim-stable brief, a recoverable argument confirmation, and bounded hash-checked child reads |
 | Optional review failures allowed completed results | Required stages, investigation and freshness gate the shortlist and the runner's completion status |
 
 ## Evidence and analytical authority
@@ -40,12 +40,13 @@ and staged expansion remain separately qualified.
 
 `openbot_runner` publishes two independently identified materials using the
 owner's existing agent. The scoped Windows reader verifies the parent call and
-acknowledgment, matching app projection, exact provider input, authentic
+acknowledgment, matching app projection, exact provider input and evidence reads, authentic
 provider turn and usage, reply bytes and absence of child tool operations.
 Archived paged materials retain their builder and verifier. Packet omissions
 are decided before dispatch. Missing or altered packet bytes fail closed.
-After an observed acknowledgment, the inline collector uses the scoped app
-projection between parent observations and independently checks the parent
+The collector waits locally for an exact argument confirmation before
+observing submissions. After acknowledgment it uses the scoped app projection
+between parent observations and independently checks the parent
 receipt again at import. Reads have bounded timeouts. App records that advance
 past an earlier observation timestamp require a newer observation. Invalid
 record chronology is rejected.
@@ -59,10 +60,11 @@ analysis with zero qualified handoffs is a valid completed analysis. Final
 delivery requires a separately observed attachment and matching final response.
 
 Limits are in `researcher/config/discovery_specs.json`. The new runner allows
-at most two child tasks and accepts at most two provider attempts across
-them. An independently observed over-budget result fails the stage. The
-model cannot call sources, request arbitrary formulas, execute code or change
-settings. A later owner run binds the current configured model and verifies
+at most two child tasks and accepts up to twelve provider response records
+across them, accounting for up to five page reads followed by one answer
+per task. An independently observed over-budget result fails the stage. The model reads only its own evidence pages through the fixed command.
+Source queries, arbitrary formulas, other code and settings changes are outside
+the task. A later owner run binds the current configured model and verifies
 its own receipts. Cross-job stage resume and reuse of a prior model's
 decision are outside the implemented slice.
 
