@@ -1,3 +1,94 @@
+# November 23 Design 1+ Cloud capability gate — STOP
+
+The owner requested the in-place Design 1+ refactor and M32/M33 shadow work,
+subject to the hard native-boundary stop in
+[the single-session brief](CODEX_CLOUD_SINGLE_SESSION_DESIGN1_PLUS.md).
+This session fetched the feature branch at
+`97188ca169df8cb840dd58dc23f94e81e06d884c`, verified a clean worktree and
+issued the Context Acceptance Receipt before editing. The original blueprint
+and implementation plan still match their recorded SHA-256 values
+`cf7a58fd9ed5f5d1010673406c26a405c8112b907216a47f88a9ebee1bd3d45c`
+and `245591eea0f92cd185c51db3420043031c11c1d941f91ecdb31fd64a34e0c232`.
+
+## Evidence and decision
+
+* The checked-in runner exposes `start`, `status`, `review-page`,
+  `reserve-review`, `replay-native` and `preflight`. The repository skill
+  describes the existing timed, confirmed child-task flow. The pinned upstream
+  `start_task` schema accepts `title` and `brief`; it does not establish a
+  parent-stage JSON submission channel. These are source observations, not
+  evidence of the version or capabilities currently installed on the owner host.
+* This Cloud checkout does not contain the owner's installed OpenBot, its
+  main-chat command-tool schema, active agent/session, or original Incident III
+  parent command and event records. The available Codex receipt code observes
+  historical child-task formats; it does not establish that actual parent page
+  outputs and dynamically submitted response bytes can be independently bound
+  to one owner-authorized main turn. An OpenCode entry in the identity map and
+  a compatibility branch are not certification of a Design 1+ parent adapter.
+  No current provider or model was observed or changed in this session.
+* The first Incident III mismatch remains **UNCLASSIFIED**: without its original
+  command there is no defensible first-byte offset, length/hash comparison or
+  proof-versus-end-marker attribution. No historical job was retried.
+* **STOP / NATIVE_INTERFACE_UNQUALIFIED:** no supported main-turn submission
+  mechanism or independent parent-turn attestation was demonstrated. In
+  accordance with Step 1, no speculative transport, adapter, new protocol,
+  stage wiring or method implementation was added. Existing AI-core code and
+  fixtures are not a native Design 1+ acceptance. In particular, the existing
+  `ai_core.validate` requires a HANDOFF interpretation to equal the card's
+  primary family; a qualified-rival change remains unimplemented.
+
+## Reuse and remaining work
+
+| Existing surface | This session | Dependency / future minimal delta |
+|---|---|---|
+| `discovery.py`, screening and source adapters, query planner, causal ledger, F1–F9 and M01–M31 | REUSED_UNCHANGED | Preserve partial source status, identity, clocks and historical evidence. |
+| `ai_core.py` | REUSED_UNCHANGED | After the gate, reuse the two stages and citation/economic validators; independently prove any alternate-family formation before relaxing the primary-family restriction. |
+| `openbot_runner.py`, `native_handoff.py` | REUSED_UNCHANGED | Only after a supported submit path is demonstrated, add one versioned parent flow in place while retaining old child replay. |
+| `native_identity.py`, `native_runtime.py`, `native_codex.py`, `native_app.py` | REUSED_UNCHANGED | Verify selected provider/model and actual parent page/submit records through a qualified adapter; fail closed on unsupported formats. Historical Codex child receipts do not prove this new boundary. |
+| Existing skills and configuration | REUSED_UNCHANGED | A future repository skill change does not install or register a host revision; confirm approved revision and permissions separately on the host. |
+| M32/M33 | DEFERRED | Only after stable core: append trial-only shadow variants and temporal/source oracles, with M12/M05 unchanged and shared-event roots. No live method or economic qualification is claimed. |
+
+No new source file, agent, provider, market call, model call, native task,
+subscription, trading permission or Local Scripts controller was introduced.
+Source coverage remains partial; the previous Cloud Binance 451 remains a
+stop, and no denied route was retried. `trade_authorization=false` remains the
+research contract. M32 and M33 remain published **TRIAL_SPEC**, not registered
+or implemented; their source qualification, prospective utility and economic
+edge are unproven.
+
+## Smallest owner-host gate
+
+In the existing Researcher's owner-authorized main chat, inspect the actual
+installed command-tool schema and its permitted input/output and record format.
+If it documents a bounded way to pass model-authored structured bytes to a
+fixed, scoped validator without shell-quoting a long JSON body or changing
+permissions, demonstrate that one channel with a tiny synthetic non-market
+payload and capture only sanitized lengths, hashes, tool/turn references and
+whether the provider record independently exposes the exact submitted bytes and
+model-facing output. Also establish whether the same turn can continue after
+the tool result. Stop if any capability is missing; do not assume stdin or
+write to private provider records. This is a **capability probe**, not an
+acceptance of a Design 1+ implementation. After a supported path is implemented,
+the first native certification is one no-market, no-trade model-authored
+discovery with complete evidence-page observation, a cited rival/falsifier,
+independent owner/provider/model and reply verification, and negative checks
+for a missing page and invalid citation plus an identical-submit retry. Two
+authentic stages and delivery require later separate evidence.
+
+## Cloud verification
+
+* `python -m unittest discover -s tests -v`: **596 tests passed** in
+  686.872 seconds. These are offline tests; simulated provider-shaped records
+  do not certify native model execution or the proposed parent transport.
+* `python -m researcher config validate`: **VALID**; nine families, 31 methods,
+  zero production detectors and zero full-core packs enabled. Manifest SHA-256:
+  `fe6826b1df739c3e859abadeb44cead3057bc853e7d4da62efa9c79e9c6f8272`.
+* `git diff --check`: passed. The two immutable design files retained the
+  SHA-256 values listed above. No Cloud market, model or native task calls
+  were made. The pinned upstream OpenBot task schema was read over HTTPS.
+
+---
+
 # November 23 parent polling correction
 
 Owner-supplied forensic timeline reports job
