@@ -1,3 +1,18 @@
+## Current amended architecture — mandatory reading (23 November 2026)
+
+**OpenBot Market Researcher sessions and reviews MUST read the following in full before coding:**
+
+1. [Original immutable external-first blueprint](OpenBot_Final_External_First_Market_Discovery_Blueprint.md) — unchanged source/method/safety contract.
+2. [Approved AI-core decision](AI_CORE_DECISION.md) — mandatory AI discovery before investigation and AI final comparison.
+3. [Design 1+ amended blueprint](OPENBOT_DESIGN1_PLUS_AMENDED_BLUEPRINT_2026-11-23.md) — owner-selected AI-led parent-turn architecture, minimal deterministic control, source and receipt boundaries, no speculative native claims.
+4. [Wyckoff and CRT+TBS method companion](M32_M33_WYCKOFF_CRT_TBS_SPEC_2026-11-23.md) and [full analytical consultation](references/ANALYTICAL_METHOD_EXPANSION_PROPOSAL_2026-11-14.md) — deep SHADOW methodology definitions and qualification oracles.
+5. [One Codex Cloud implementation session](CODEX_CLOUD_SINGLE_SESSION_DESIGN1_PLUS.md) — ordered implementation and strict stop/acceptance gates.
+6. [Latest progress and failure record](PROGRESS.md), relevant current source, regression tests and skills.
+
+Produce a **Context Acceptance Receipt** before changing code. Do not mistake document publication for installed OpenBot support, completed AI-core native verification, or source-qualified new methods. Original blueprint SHA must remain unchanged. The preceding historical reference lists below are preserved for provenance.
+
+---
+
 Session 5.5: narrow source-qualified causal nominations, public depth/OI and repair work; **PARTIAL**, integration gates still open. See [acceptance matrix](SESSION_05_5_RUNBOOK.md).
 
 # OpenBot Market Researcher — Implementation References
