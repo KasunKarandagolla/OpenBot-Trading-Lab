@@ -112,6 +112,12 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
     if not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=600:
         raise ContractError('NATIVE_REQUEST_STALE')
     if identity['provider']=='opencode':
+        # The historical OpenCode collector proves only its original native
+        # skill/file-read contract. It cannot attest a parent task call or a
+        # compact page transport. Never reinterpret a new AI-core request as
+        # that older protocol, even when the schemas happen to look alike.
+        if request.get('input_transport'):
+            raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
         from .native_app import collect as compatibility
         target=local_path(config['agent_workspace'])/'research-review-6c'/(request['material_sha256']+'.json')
         return compatibility(request,config,target,as_of=as_of)

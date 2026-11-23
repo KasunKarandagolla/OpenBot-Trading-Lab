@@ -158,3 +158,12 @@ class CompactNative(unittest.TestCase):
         result=research.gateway(self.h.request,60)
         self.assertNotIn('receipt',result)
         self.assertEqual(result['collector']['terminal_error']['code'],'NATIVE_PROVIDER_UNSUPPORTED')
+
+    def test_opencode_compact_cannot_fall_back_to_legacy_file_reader(self):
+        h=self.h
+        request={**h.request,'native_identity':{**h.f.identity,'provider':'opencode'}}
+        with patch('researcher.native_runtime.assert_parent'), \
+             patch('researcher.native_app.collect') as legacy:
+            with self.assertRaisesRegex(ContractError,'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED'):
+                collect(request,h.f.config,as_of=h.clock(),directory=h.directory)
+        legacy.assert_not_called()
