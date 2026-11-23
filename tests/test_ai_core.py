@@ -154,6 +154,38 @@ class AICore(unittest.TestCase):
         self.assertIsNone(decision)
         self.assertEqual(research.status['state'],'AI_RECEIPT_UNVERIFIED')
 
+    def test_rival_handoff_requires_independently_qualified_same_reference_card(self):
+        original={'id':'A','native_symbol':'TESTUSDT','timeframe':'1h','reference':{'id':'REF'},
+            'primary_family':'F2','families':['F2','F4'],'eligible':False,'qualification':'TRIAL',
+            'citations':{'a':{},'b':{}},'formation_citations':['a'],'qualified_alternatives':{'F4':'B'}}
+        rival={'id':'B','native_symbol':'TESTUSDT','timeframe':'1h','reference':{'id':'REF'},
+            'primary_family':'F4','families':['F2','F4'],'eligible':True,'qualification':'QUALIFIED',
+            'citations':{'b':{}},'formation_citations':['b']}
+        request={'stage':FINAL,'material_sha256':'material','card_limit':2,
+            'evidence':[original,rival],'assessment_evidence':{'a':{}}}
+        row={'id':'A','interpretation':'F4','rival':'F2','stage':'READY_FOR_DEEP',
+            'decision':'HANDOFF','support':['b'],'contradiction':[],
+            'next_question':'FIRST_OBSTACLE','deciding_factor':'ORDERED_CONFIRMATION'}
+        other={**row,'id':'B','interpretation':'NULL','rival':'F2','stage':'UNKNOWN','decision':'DECLINE'}
+        reply=envelope(request,[row,other],finding='RESEARCH_HANDOFFS')
+        self.assertEqual(validate(reply,request)['accepted'],2)
+        for change in ({'qualification':'TRIAL'},{'eligible':False},{'reference':{'id':'OTHER'}},
+                       {'formation_citations':[]}):
+            bad=deepcopy(request);bad['evidence'][1].update(change)
+            with self.subTest(change=change),self.assertRaises(ContractError):validate(reply,bad)
+        bad=deepcopy(request);bad['evidence'][0]['citations'].pop('b')
+        with self.assertRaisesRegex(ContractError,'AGENT_REPLY_CITATION'):validate(reply,bad)
+        bad=deepcopy(request);bad['evidence'][0]['citations']['b']={'different':'content'}
+        with self.assertRaisesRegex(ContractError,'AGENT_REPLY_CITATION'):validate(reply,bad)
+
+        research=AIResearch();research.status['stages'][FINAL]={'primary_families':{'A':'F2','B':'F4'},
+            'qualified_alternatives':{'A':{'F4':'B'}},'supplied_ids':['A','B']}
+        report={'mode':'SYNTHETIC','operation_status':'PARTIAL'}
+        reviews=[{'card_id':'B','instrument':'TESTUSDT','primary_family':'F4','stage':'READY_FOR_DEEP'}]
+        reconcile(report,research,[row],reviews,[],as_of='2026-01-20T12:00:00Z')
+        self.assertEqual(report['shortlist'][0]['card_id'],'B')
+        self.assertEqual(report['shortlist'][0]['primary_family'],'F4')
+
 
 if __name__ == '__main__':
     unittest.main()

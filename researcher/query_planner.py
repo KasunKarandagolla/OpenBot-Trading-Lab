@@ -369,6 +369,7 @@ class ResearchSources:
         raw={**self.selected_inputs.get((symbol,tf),{}),**self.normalized_inputs.get((symbol,tf),{})}
         # Caller-provided candle proxies cannot enter specialist reducers.
         return {k:v for k,v in raw.items() if k in mids or
+            k=='M33' and self.mode in {'SYNTHETIC','AUTHENTIC_REPLAY'} or
             k=='true_profiles' and 'M17' in mids or k=='event_anchor' and 'M19' in mids or
             k=='observed_liquidation' and 'M28' in mids}
 

@@ -28,6 +28,7 @@ FAMILY_PATHS={'F1':'continuation','F2':'boundary_family','F3':'compression_famil
 
 def manifest(config):
     from .method_engine import DEPENDENCIES
+    from .shadow_methods import SHADOW_METHODS
     methods=[]
     for m in config['methods']:
         mid=m['id'];pending=mid in {'M14','M15'};dependent=mid in DEPENDENCIES and not pending
@@ -40,6 +41,8 @@ def manifest(config):
             'test_oracle':'tests/test_session6a.py + inherited authentic regression suites',
             'live_qualification':'SESSION_3_LOCAL_REQUIRED; NOT_ESTABLISHED_BY_CLOUD_FIXTURES'})
     return {'version':'analytical-capabilities-6a.1','methods':methods,
+        'shadow_methods':[dict(m,whole_universe_coverage=False,empirically_useful=False,
+            qualification='TRIAL_ONLY; SOURCE_AND_OWNER_ADMISSION_REQUIRED') for m in SHADOW_METHODS],
         'families':[{'id':f,'code_path':'researcher.family_engine.'+p,'status':OFFLINE,
             'implemented_code':True,'source_supported':False,'method_formation_verified':False,
             'whole_universe_coverage':False,'empirically_useful':False,'production_enabled':False}
@@ -51,15 +54,22 @@ def manifest(config):
 def analyze_selected(bars,tick,*,cutoff,as_of,benchmark=None,references=(),inputs=None,current_episodes=False):
     from .family_engine import evaluate_families
     from .method_engine import evaluate_methods
+    from .shadow_methods import crt_tbs_shadow, supplied_crt_tbs_shadow, wyckoff_shadow
     inputs=inputs or {}
     families=evaluate_families(bars,tick,cutoff=cutoff,as_of=as_of,benchmark=benchmark,references=references,
         profiles=inputs.get('true_profiles',()),event_anchor=inputs.get('event_anchor'),
         liquidation=inputs.get('observed_liquidation'),current_episodes=current_episodes)
     methods=evaluate_methods(bars,tick,cutoff=cutoff,as_of=as_of,benchmark=benchmark,
         references=references,families=families,inputs=inputs)
+    shadow=[wyckoff_shadow(bars,tick,cutoff=cutoff,as_of=as_of)]
+    if 'M33' in inputs:
+        shadow.append(supplied_crt_tbs_shadow(inputs['M33'],cutoff=cutoff,as_of=as_of,tick=tick))
+    else:
+        shadow.append(crt_tbs_shadow(None,(),selection_known_at=cutoff,cutoff=cutoff,as_of=as_of,
+            tick=tick,atr_ref=1,source_complete=False))
     from .measurement_coverage import selected
     measurements=selected(bars,tick,methods,references,benchmark)
-    return {'families':families,'methods':methods,'measurements':measurements,'execution_scope':'BOUNDED_SELECTED_ORACLE_RECONSTRUCTION',
+    return {'families':families,'methods':methods,'shadow_methods':shadow,'measurements':measurements,'execution_scope':'BOUNDED_SELECTED_ORACLE_RECONSTRUCTION',
         'mode':'OFFLINE_OR_SOURCE_RECONSTRUCTION; NOT_PROSPECTIVE_LIVE_QUALIFICATION',
         'episode_selection':'LATEST_CAUSALLY_CONFIRMED_REFERENCE' if current_episodes else 'FIRST_RETAINED_EPISODE',
         'production_enabled':False,'new_orders_created':0,'remote_requests':0}

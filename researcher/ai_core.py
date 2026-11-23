@@ -123,7 +123,9 @@ def validate(reply, request):
             _need(row['id'] not in previous, 'AGENT_REPLY_CARD')
             previous.add(row['id'])
             card = supplied[row['id']]
-            _choice(row['interpretation'], set(card['families']) | {'NULL', 'UNKNOWN'})
+            alternatives=card.get('qualified_alternatives',{})
+            _need(isinstance(alternatives,dict), 'AGENT_REPLY_CONTRACT')
+            _choice(row['interpretation'], set(card['families']) | set(alternatives) | {'NULL', 'UNKNOWN'})
             _choice(row['rival'], set(card['families']) | {'NULL', 'UNKNOWN'})
             _choice(row['stage'], STAGES)
             _choice(row['decision'], {'HANDOFF', 'WATCH', 'DECLINE', 'UNKNOWN'})
@@ -133,10 +135,20 @@ def validate(reply, request):
                 'NO_SUPPORTED_FORMATION'})
             _citations(row['support'], row['contradiction'], set(card['citations']))
             if row['decision'] == 'HANDOFF':
-                _need(row['interpretation'] == card['primary_family'] and
-                      row['stage'] in {'READY_FOR_DEEP', 'FAST_WITH_ROOM'} and card['eligible'],
+                target=card
+                if row['interpretation'] != card['primary_family']:
+                    target=supplied.get(alternatives.get(row['interpretation']))
+                    _need(isinstance(target,dict) and target['primary_family']==row['interpretation']
+                        and target.get('qualification')=='QUALIFIED'
+                        and target['native_symbol']==card['native_symbol']
+                        and target['timeframe']==card['timeframe']
+                        and target['reference']['id']==card['reference']['id'], 'AGENT_REPLY_ADVICE')
+                    _need(any(c in row['support'] and c in card['citations'] and
+                        card['citations'][c]==target['citations'].get(c) for c in target['formation_citations']),
+                        'AGENT_REPLY_CITATION')
+                _need(row['stage'] in {'READY_FOR_DEEP', 'FAST_WITH_ROOM'} and target['eligible'],
                       'AGENT_REPLY_ADVICE')
-                _need(bool(set(row['support']).intersection(card['formation_citations'])),
+                _need(bool(set(row['support']).intersection(target['formation_citations'])),
                       'AGENT_REPLY_CITATION')
                 selected += 1
         _need(selected <= 5, 'AGENT_REPLY_ADVICE')
@@ -251,6 +263,10 @@ class AIResearch:
                     request_evidence_as_of_utc=at, request_created_at_utc=request['as_of_utc'],
                     packet_bytes=len(review_brief(request).encode()),
                     input_sha256=digest(review_brief(request).encode()))
+                if stage==FINAL:
+                    detail['primary_families']={e['id']:e['primary_family'] for e in request['evidence']}
+                    detail['qualified_alternatives']={e['id']:e.get('qualified_alternatives',{})
+                        for e in request['evidence'] if e.get('qualified_alternatives')}
                 self.status['model_tasks'] += 1
                 collected = self.gateway(request, max(0, int(self.limits.deadline_seconds - (monotonic() - self.started))))
                 collector = collected['collector']
@@ -337,7 +353,7 @@ class AIResearch:
             extra={'context': context, 'omitted_count': max(0, len(rows) - self.limits.max_broad_rows),
                    'cutoffs': cutoffs, 'closed_history_question_budget': self.limits.max_questions}, config=config)
 
-    def shortlist(self, cards, reviews, facts, *, at, mode, context, config, conditional):
+    def shortlist(self, cards, reviews, facts, *, at, mode, context, config, conditional, shadow_selected=()):
         by_review = {r['card_id']: r for r in reviews}
         admissible = {row['card_id'] for row in conditional}
         evidence = []
@@ -359,6 +375,21 @@ class AIResearch:
             salient = sorted(catalog, key=lambda i: (catalog[i].measurement not in useful,
                                                       catalog[i].measurement, i))[:8]
             values = {**{i: _projection(catalog[i]) for i in salient}, **events}
+            # Retained/synthetic comparisons may inspect the same source-bar
+            # roots as the shadow methods. Live admission remains unaffected.
+            shadow_rows=[]
+            if mode in {'SYNTHETIC','AUTHENTIC_REPLAY'}:
+                for selected in shadow_selected:
+                    if (selected.get('native_symbol')!=card.native_symbol or
+                            selected.get('timeframe')!=card.timeframe):
+                        continue
+                    for method in selected.get('analytical_engine',{}).get('shadow_methods',()):
+                        shadow_rows.append({k:method[k] for k in ('id','variant_id','state','mode','rank_eligible')})
+                        for observation in method.get('events',())[-2:]:
+                            if utc(observation['available_at'])<=utc(at):
+                                values.setdefault(observation['event_root_id'],{
+                                    'method':method['id'],'variant':method['variant_id'],
+                                    'scope':'SHADOW_ONLY_UNQUALIFIED','observation':observation})
             if not values:
                 continue
             formation_ids = sorted(required.intersection(events))
@@ -379,6 +410,7 @@ class AIResearch:
                 'event_order': list(events), 'omitted_facts': len(catalog) - len(salient),
                 'omitted_events': len(card.events) - len(events), 'qualification': card.qualification,
                 'rivals': rivals, 'missing': review['missing_necessary_inputs'],
+                **({'shadow_methods':shadow_rows} if shadow_rows else {}),
                 'room': {k:v for k,v in room.items() if k not in {'evidence_ids','missing_source_ids'}},
                 'economics': {k:v for k,v in review['economics'].items() if k not in {'evidence_ids','assumption_evidence_ids'}},
                 'exposure_cluster': review['exposure_cluster']})
@@ -392,6 +424,28 @@ class AIResearch:
                 evidence.append(per_symbol[key].popleft())
                 if not per_symbol[key]:
                     del per_symbol[key]
+        evidence=evidence[:self.limits.max_cards]
+        # A rival can replace a provisional family only if a separate card for
+        # the same reference already passed its own qualification and review.
+        for current in evidence:
+            alternatives={}
+            for other in evidence:
+                family=other['primary_family']
+                if (other['id']==current['id'] or family==current['primary_family'] or family in alternatives
+                        or not other['eligible'] or other['qualification']!='QUALIFIED'
+                        or not other['formation_citations'] or other['native_symbol']!=current['native_symbol']
+                        or other['timeframe']!=current['timeframe']
+                        or other['reference']['id']!=current['reference']['id']):
+                    continue
+                if any(citation in current['citations'] and
+                        current['citations'][citation]!=other['citations'].get(citation)
+                        for citation in other['formation_citations']):
+                    continue
+                alternatives[family]=other['id']
+                for citation in other['formation_citations']:
+                    if citation in other['citations']:
+                        current['citations'].setdefault(citation,other['citations'][citation])
+            if alternatives:current['qualified_alternatives']=alternatives
         # Give a zero-card comparison a source-cited observation to interpret.
         baseline = next(r for r in self.discovery_rows.values()
                         if r['id'] in self.status['stages'][DISCOVERY]['supplied_ids'])
@@ -401,7 +455,7 @@ class AIResearch:
             if investigation.get('evidence_id'):
                 assessment_evidence[investigation['evidence_id']] = {
                     'hypothesis': investigation['hypothesis'], 'status': investigation['status']}
-        return self._run(FINAL, evidence[:self.limits.max_cards], at=at, mode=mode, extra={
+        return self._run(FINAL, evidence, at=at, mode=mode, extra={
             'context': context, 'assessment_evidence': assessment_evidence, 'omitted_count': len(cards) - min(len(evidence), self.limits.max_cards),
             'discovery_material_sha256': self.status['stages'][DISCOVERY]['material_sha256'],
             'investigations': self.status['investigations']}, config=config)
@@ -485,7 +539,12 @@ def reconcile(report, research, decisions, reviews, conditional, *, as_of):
             cid = decision['id']
             reason = decision['decision']
             if reason == 'HANDOFF':
-                row = strict.get(cid) or qualified_conditional.get(cid)
+                primary=final.get('primary_families',{}).get(cid)
+                target=(cid if decision['interpretation']==primary else
+                    final.get('qualified_alternatives',{}).get(cid,{}).get(decision['interpretation']))
+                if target not in final.get('supplied_ids',[]):
+                    target=cid if target==cid else None
+                row = strict.get(target) or qualified_conditional.get(target)
                 if row is None:
                     reason = 'CURRENT_ADMISSION_GATE'
                 elif row['instrument'] in seen:
@@ -494,7 +553,7 @@ def reconcile(report, research, decisions, reviews, conditional, *, as_of):
                     seen.add(row['instrument'])
                     chosen = {**row, 'rank': len(seen), 'ai_reasoning': decision,
                               'reasoning_status': 'VERIFIED_AI_SHORTLIST'}
-                    if cid in strict:
+                    if target in strict:
                         chosen['next_deep_analyst_question'] = decision['next_question']
                         selected.append(chosen)
                     else:

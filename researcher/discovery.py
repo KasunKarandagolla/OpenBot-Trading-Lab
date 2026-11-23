@@ -1309,7 +1309,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         conditional,_=conditional_research(reviews,cards,facts,references,as_of=as_of,
                             max_count=len(cards),deduplicate=False)
                         ai_decisions=ai_research.shortlist(cards,reviews,facts,at=as_of,mode=mode,
-                            context=report['context'],config=config,conditional=conditional)
+                            context=report['context'],config=config,conditional=conditional,
+                            shadow_selected=report['selected_research'] if mode!='LIVE' else ())
                         mark_stage('ai_structural_interpretation')
                         if mode=='LIVE' and cards and recovery:
                             cards,depths,point_faults,as_of=refresh_selected(cards,facts,references,api,inventory,

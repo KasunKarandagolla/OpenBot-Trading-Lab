@@ -12,6 +12,9 @@ from .observations import WIDTHS, iso_seconds
 
 D = Decimal
 ZERO = D(0)
+# 5M is supported only for bounded, explicitly supplied shadow oracle bars.
+# This does not enable a remote pack, a source adapter or a live 5M scan.
+BAR_WIDTHS = {**WIDTHS, '5m': 300}
 
 
 @dataclass(frozen=True)
@@ -35,7 +38,7 @@ class Bar:
 
     @cached_property
     def end_ms(self):
-        return self.open_ms + WIDTHS[self.timeframe] * 1000
+        return self.open_ms + BAR_WIDTHS[self.timeframe] * 1000
 
     @cached_property
     def end(self):
@@ -69,9 +72,9 @@ def validate_bars(bars, *, cutoff=None, require_current=False):
         raise ContractError("BOUNDED_HISTORY_REQUIRED")
     first = bars[0]
     symbol(first.native_symbol)
-    if first.timeframe not in WIDTHS:
+    if first.timeframe not in BAR_WIDTHS:
         raise ContractError("TIMEFRAME_UNSUPPORTED")
-    width = WIDTHS[first.timeframe] * 1000
+    width = BAR_WIDTHS[first.timeframe] * 1000
     for i, b in enumerate(bars):
         if (b.native_symbol != first.native_symbol or b.timeframe != first.timeframe
                 or type(b.open_ms) is not int or b.open_ms <= 0 or b.open_ms % width

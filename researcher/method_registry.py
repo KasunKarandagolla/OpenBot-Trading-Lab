@@ -43,4 +43,5 @@ def capability_coverage(config):
                          "legacy_state_scope":"INHERITED_PRODUCTION_SOURCE_GATE",
                          "analytical_implementation":families[f['id']],
                          "qualified_market_wide_evaluations":0} for f in config["families"]],
+            "shadow_methods":analytical['shadow_methods'],
             "analytical_engine":analytical}
