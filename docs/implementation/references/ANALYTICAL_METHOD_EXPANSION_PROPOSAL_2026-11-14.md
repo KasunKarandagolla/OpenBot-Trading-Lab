@@ -1,6 +1,6 @@
 # Archived analytical-methodology expansion consultation (14 November 2026)
 
-**Status:** Original owner-supplied consultation proposal; not production acceptance or proof of trading edge. This is preserved as an in-depth normative candidate design reference for M32 Wyckoff and M33 CRT+TBS. See ../M32_M33_WYCKOFF_CRT_TBS_SPEC_2026-11-23.md for the Design 1+ adoption and shadow implementation rules. Historical original content follows unchanged.
+**Status:** Reconstructed full-text copy of the owner-supplied consultation proposal retrieved from parsed Library text; not independently byte-identical to the original attachment, not production acceptance or proof of trading edge. This provides the in-depth candidate design reference for M32 Wyckoff and M33 CRT+TBS. See ../M32_M33_WYCKOFF_CRT_TBS_SPEC_2026-11-23.md for the Design 1+ shadow implementation rules. The historical proposal text follows.
 
 ---
 
