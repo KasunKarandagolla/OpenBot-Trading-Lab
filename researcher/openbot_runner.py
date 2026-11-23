@@ -5,6 +5,7 @@ in that agent's current main turn. This module never submits a model request.
 No MCP server, Local Scripts, scheduler, arbitrary shell endpoint or API key.
 """
 import argparse
+import io
 import json
 import os
 from pathlib import Path
@@ -14,6 +15,7 @@ import sqlite3
 import sys
 import time
 import uuid
+import zipfile
 from contextlib import contextmanager
 from datetime import timedelta
 from .contracts import ContractError, digest, encode, now_utc, utc
@@ -24,6 +26,7 @@ from .native_handoff import FRESH_SECONDS, JOB_ID, SHA256, SUBMISSION_SECONDS
 BASE=ROOT/'work/openbot-integration'
 PRIVATE=BASE/'native-audit-local.json'
 OWNER_COMMAND='run the complete market research now'
+SMOKE_PROMPT=ROOT/'docs/implementation/OPENBOT_NATIVE_SMOKE_PROMPT.txt'
 ACCEPTANCE_PROMPT=ROOT/'docs/implementation/OPENBOT_RECOVERY_ACCEPTANCE_PROMPT.txt'
 FINAL={'COMPLETED','PARTIAL','FAILED','INTERRUPTED','FINAL_DELIVERED'}
 
@@ -116,6 +119,9 @@ def _owner_proof(identity,config,*,expected_commit=None):
     def mode(text):
         if not isinstance(text,str):return None
         if text.strip().casefold().rstrip('.!')==OWNER_COMMAND:return 'ORDINARY_RESEARCH'
+        if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
+                text.strip()==SMOKE_PROMPT.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',expected_commit).strip()):
+            return 'NATIVE_SMOKE'
         # Exact versioned owner message, pinned to the checkout being launched.
         # Substrings, negated/quoted instructions and delegated senders fail.
         if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
@@ -268,12 +274,25 @@ def run_job(key):
         def native_progress(state,**fields):
             _transition(folder,state,**fields)
         transport=None
-        if state.get('owner_run_mode')=='SETUP_AND_ACCEPTANCE':
+        smoke=state.get('owner_run_mode')=='NATIVE_SMOKE'
+        discovery=None
+        if state.get('owner_run_mode') in {'SETUP_AND_ACCEPTANCE','NATIVE_SMOKE'}:
             from .native_runtime import integration_preflight
-            setup=integration_preflight(config,as_of=now_utc())
-            _transition(folder,'NATIVE_INTEGRATION_PREFLIGHT',integration_preflight=setup)
-            source=_prior_live_packet(folder)
-            if source:
+            source=None
+            try:
+                setup=integration_preflight(config,as_of=now_utc())
+                if smoke:
+                    from .native_runtime import attest_smoke_discovery
+                    discovery=attest_smoke_discovery(state['native_identity'],config,as_of=now_utc())
+                    setup['native_tool_discovery']=discovery
+                _transition(folder,'NATIVE_INTEGRATION_PREFLIGHT',integration_preflight=setup)
+                source=_prior_live_packet(folder)
+            except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
+                if not smoke:raise
+                from .native_app import failure
+                transport={'status':'NATIVE_REVIEW_INCOMPLETE','first_error':failure(error,'NATIVE_SMOKE_PREFLIGHT'),
+                    'observed_model_attempts':0,'current_market_interpretation':False}
+            if source and transport is None:
                 from .native_workflow import probe_captured_request
                 try:
                     transport=probe_captured_request(folder/'review',source,native_identity=state['native_identity'],
@@ -283,17 +302,35 @@ def run_job(key):
                     from .native_app import failure
                     transport={'status':'NATIVE_REVIEW_INCOMPLETE','first_error':failure(error,'NATIVE_TRANSPORT_PREFLIGHT'),
                         'observed_model_attempts':0,'current_market_interpretation':False}
-            else:transport={'status':'NO_PREVIOUS_LIVE_PACKET; CURRENT_SCAN_REVIEW_REQUIRED','observed_model_attempts':0}
+            elif transport is None:
+                transport={'status':'NO_PREVIOUS_LIVE_PACKET; CURRENT_SCAN_REVIEW_REQUIRED','observed_model_attempts':0}
         transport_failed=(transport and not transport['status'].startswith('NO_PREVIOUS_LIVE_PACKET') and
             (transport['status']!='VALIDATED_ADVISORY_ONLY' or transport.get('accepted',0)<1 or
                 transport.get('native_receipt',{}).get('native_identity')!=state['native_identity']))
-        if transport_failed:
+        if smoke or transport_failed:
             report={'schema_version':'openbot.native-preflight-report.v1','mode':'AUTHENTIC_REPLAY',
-                'release_status':'PARTIAL_NATIVE_PREFLIGHT_FAILED','job_id':key,'market_scan_started':False,
+                'release_status':('ARCHIVED_NATIVE_SMOKE' if smoke else 'PARTIAL_NATIVE_PREFLIGHT_FAILED'),
+                'job_id':key,'market_scan_started':False,
                 'completed_at_utc':now_utc(),'trade_authorization':False,'shortlist':[],
                 'coverage':{'eligible_contracts':None,'all_market_structurally_covered':False},
-                'consultant':{'status':'NOT_INVOKED_CURRENT_MARKET; PREFLIGHT_FAILED'},
+                'consultant':{'status':('NOT_INVOKED_CURRENT_MARKET; ARCHIVED_SMOKE_ONLY' if smoke
+                    else 'NOT_INVOKED_CURRENT_MARKET; PREFLIGHT_FAILED')},
                 'costs':{'market_http_requests':0,'archived_native_model_attempts':transport.get('observed_model_attempts',0)}}
+            if smoke:
+                reconciliation={'status':'REVIEW_NOT_VALIDATED','current_market_interpretation':False}
+                if not transport_failed and source and transport.get('accepted',0)>0:
+                    try:
+                        from .native_workflow import reconcile_archived_smoke
+                        reconciliation=reconcile_archived_smoke(source,transport,as_of=now_utc())
+                    except (ContractError,OSError,ValueError,TypeError,KeyError,zipfile.BadZipFile) as error:
+                        from .native_app import failure
+                        reconciliation={'status':'RECONCILIATION_FAILED',
+                            'error':failure(error,'ARCHIVED_RECONCILIATION'),'current_market_interpretation':False}
+                report['smoke_result']={'status':'VERIFIED_REVIEW' if not transport_failed and source
+                    and transport.get('accepted',0)>0 else 'INCOMPLETE',
+                    'tool_discovery':discovery or {'status':'NOT_VERIFIED'},
+                    'reconciliation':reconciliation,
+                    'final_delivery':'PENDING_PROVIDER_RECEIPT'}
         else:
             _transition(folder,'SCANNING',scanner_started_at_utc=now_utc())
             report=scan_market_research(ledger_path=BASE/'research.sqlite',
@@ -465,6 +502,10 @@ def status(key,include_review=False):
         'native_task_state','native_task_observation','transport_model_attempts','review_transport',
         'submission_state','submission_attempts','attempted_at_utc','responded_at_utc','submission_error',
         'clock_diagnostic','submission_observation_status','delivery_observation_status') if k in data}
+    if data['state']=='REVIEW_FAILED':
+        result['artifact_status']='PENDING_RECONCILIATION_AND_EXPORT'
+        result['next_action']=('Continue polling until the worker reaches a terminal state. '
+            'Attach the returned artifact if present and report the native review failure.')
     if delivery_error:result['delivery_observation_error']=delivery_error
     from .native_identity import safe_diagnostic
     diagnostic=safe_diagnostic(data.get('native_diagnostic'))
@@ -530,7 +571,9 @@ def status(key,include_review=False):
         report=json.loads((folder/'report.json').read_text(encoding='utf-8'))
         native=report.get('consultant',{})
         scanned=report.get('market_scan_started',True)
-        result.update(results=research_summary(report) if scanned else 'Market scan not started: native transport preflight failed. No current-market candidate conclusion.',
+        result.update(results=research_summary(report) if scanned else (
+                'Archived native smoke only. No current-market candidate conclusion.' if report.get('smoke_result')
+                else 'Market scan not started: native transport preflight failed. No current-market candidate conclusion.'),
             coverage=coverage_summary(report) if scanned else 'NOT_SCANNED',
             watches=watch_summary(report) if scanned else 'NOT_REFRESHED; PREVIOUS_LEDGER_UNCHANGED',
             costs=report.get('costs'),native_review={'status':native.get('status'),'accepted':native.get('accepted'),
@@ -540,7 +583,10 @@ def status(key,include_review=False):
                 'invalid_reply_batches':native.get('invalid_reply_batches'),
                 'unreviewed_cards':len(native['not_reviewed']) if 'not_reviewed' in native else None,
                 'reply':native.get('reply'),'decision_delta':report.get('native_control_comparison')},
-            native_transport_preflight=report.get('native_transport_preflight'))
+            native_transport_preflight=report.get('native_transport_preflight'),
+            **({'smoke_result':report['smoke_result']} if 'smoke_result' in report else {}))
+        if 'smoke_result' in result and data['state']=='FINAL_DELIVERED' and data.get('delivery_receipt'):
+            result['smoke_result']={**result['smoke_result'],'final_delivery':'VERIFIED_PROVIDER_RECEIPT'}
     return result
 
 
@@ -557,9 +603,70 @@ def watch_delivery(key,*,wait_seconds=600):
         time.sleep(min(5,max(0,deadline-time.monotonic())))
 
 
+def replay_native(key):
+    """Reaudit a finished saved job without creating a task or changing its files."""
+    from .native_app import failure
+    from .native_runtime import collect,delivery_proof
+    from .diagnostic_export import verify_zip
+    folder=_job(key)
+    state=_read(folder/'state.json')
+    if state.get('state') not in FINAL:
+        raise ContractError('NATIVE_REVIEW_INCOMPLETE')
+    review=folder/'review'
+    paths=sorted(review.glob('*.request.json'))
+    config=load_private(PRIVATE)
+    entries=[]
+    for path in paths:
+        request=_read(path)
+        material=request.get('material_sha256')
+        if path.name!=str(material)+'.request.json':
+            raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+        moments=[e['at_utc'] for e in state.get('lifecycle',())
+            if e.get('material_sha256')==material and e.get('state') in {'REVIEW_FAILED','REVIEW_VERIFIED'}]
+        if not moments:
+            entries.append({'material_sha256':material,'status':'NO_TERMINAL_REVIEW_TIME'})
+            continue
+        try:
+            result=collect(request,config,as_of=moments[-1],directory=review,require_configured_model=False)
+            if result is None:entry={'status':'NO_COMPLETED_CHILD_RECEIPT'}
+            else:
+                _,audit=result
+                entry={'status':'VERIFIED_RECEIPT','verified_evidence_pages':audit.get('verified_evidence_pages'),
+                    'reply_validation_status':audit['reply_validation_status'],'validated_rows':audit['validated_rows']}
+        except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
+            entry={'status':'REJECTED','error':failure(error,'HISTORICAL_RECEIPT')}
+        entries.append({'material_sha256':material,**entry})
+    artifact=state.get('artifact',{})
+    artifact_result={'status':'ABSENT'}
+    if artifact.get('sha256'):
+        archive=under_work(folder/(key+'.zip'))
+        raw=archive.read_bytes()
+        if digest(raw)!=artifact['sha256']:raise ContractError('NATIVE_REPLY_PROVENANCE')
+        verify_zip(raw)
+        report_path=under_work(folder/'report.json')
+        if not report_path.is_file() or report_path.stat().st_size>100*1024*1024:
+            raise ContractError('NATIVE_REPLY_PROVENANCE')
+        report=json.loads(report_path.read_bytes())
+        with zipfile.ZipFile(io.BytesIO(raw)) as saved:
+            if json.loads(saved.read('report.json'))!=report or report.get('job_id')!=key:
+                raise ContractError('NATIVE_REPLY_PROVENANCE')
+        comparison=report.get('native_control_comparison') or {}
+        artifact_result={'status':'VERIFIED_SAVED_ARCHIVE_AND_REPORT','sha256':artifact['sha256'],
+            'saved_reconciliation':{'accepted_current_advice':comparison.get('accepted_current_advice'),
+                'hard_gates_changed':comparison.get('hard_gates_changed'),
+                'scope':'HISTORICAL_REPORT_ONLY'}}
+        try:
+            proof=delivery_proof(state,config)
+            artifact_result['delivery']='VERIFIED' if proof else 'NOT_OBSERVED'
+        except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
+            artifact_result['delivery_error']=failure(error,'HISTORICAL_DELIVERY')
+    return {'mode':'HISTORICAL_READ_ONLY','job_id':key,'reviews':entries,'artifact':artifact_result,
+        'market_requests':0,'model_requests':0,'trade_authorization':False}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['start','status','_worker','preflight','review-page'])
+    parser.add_argument('action',choices=['start','status','_worker','preflight','review-page','replay-native'])
     parser.add_argument('--request-id');parser.add_argument('--job-id');parser.add_argument('--include-review',action='store_true')
     parser.add_argument('--material');parser.add_argument('--packet-sha256');parser.add_argument('--page',type=int)
     args=parser.parse_args()
@@ -574,6 +681,7 @@ def main():
             validate_config(load_config())
             result={**integration_preflight(config,as_of=now_utc()),'live_calls':0,
                 'live_acceptance':'PARTIAL; AUTHENTIC_MODEL_EXECUTION_NOT_YET_VERIFIED'}
+        elif args.action=='replay-native':result=replay_native(args.job_id)
         elif args.action=='start':result=start(args.request_id)
         elif args.action=='status':result=status(args.job_id,args.include_review)
         else:

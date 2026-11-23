@@ -1,5 +1,6 @@
 """Independent reconciliation assertions: cited fixtures never imply live calls."""
 import copy
+import json
 import unittest
 from datetime import timedelta
 from unittest.mock import patch
@@ -9,6 +10,11 @@ from researcher.agent_review import make_request
 from researcher.settings import ROOT
 from researcher.contracts import digest
 from test_session4 import case
+from researcher import openbot_runner as runner
+from researcher.diagnostic_export import export_job
+from researcher.native_workflow import reconcile_archived_smoke
+from researcher.contracts import encode
+import test_openbot_runner as jobs
 
 
 class ReconciliationRecovery(unittest.TestCase):
@@ -30,6 +36,35 @@ class ReconciliationRecovery(unittest.TestCase):
         self.assertFalse(result[0]['native_review_coverage_complete'])
         self.assertEqual(result[0]['native_challenge']['material_sha256'],'b'*64)
         self.assertTrue(comparison['accepted_current_advice']);self.assertFalse(comparison['hard_gates_changed'])
+
+    def test_archived_smoke_reconciles_only_the_verified_saved_candidate(self):
+        j=jobs.OpenBotRunnerContract();j.setUp();self.addCleanup(j.doCleanups)
+        key=runner.start(j.key)['job_id'];folder=runner._job(key)
+        directory=folder/'review';directory.mkdir()
+        source=directory/'archived.request.json'
+        source.write_text(encode({'material_sha256':'c'*64,'cards':[{'card_id':self.c.id}]}))
+        before=source.read_bytes()
+        report={'job_id':key,'mode':'LIVE','conditional_research_candidates':self.candidates,
+            'consultant':{'batches':[{'material_sha256':'c'*64}]},'trade_authorization':False}
+        artifact=export_job(folder,report,j.f.config)
+        runner._transition(folder,'PARTIAL',artifact=artifact)
+        result=reconcile_archived_smoke(source,self.advice,as_of=self.at)
+        self.assertEqual(result['status'],'RECONCILED_ARCHIVED_ADVISORY')
+        self.assertFalse(result['current_market_interpretation'])
+        self.assertEqual(result['source_artifact_sha256'],artifact['sha256'])
+        self.assertEqual(result['control_card_ids'],[self.c.id])
+        self.assertEqual(result['replayed_candidates'][0]['reasoning_status'],'NATIVE_REVIEWED')
+        self.assertFalse(result['comparison']['hard_gates_changed'])
+        self.assertEqual(source.read_bytes(),before)
+        source.write_text(encode({'material_sha256':'d'*64,'cards':[{'card_id':self.c.id}]}))
+        from researcher.contracts import ContractError
+        with self.assertRaisesRegex(ContractError,'NATIVE_REVIEW_REQUEST_HASH'):
+            reconcile_archived_smoke(source,self.advice,as_of=self.at)
+        source.write_bytes(before)
+        path=folder/(key+'.zip')
+        path.write_bytes(b'tampered')
+        with self.assertRaisesRegex(ContractError,'NATIVE_REVIEW_REQUEST_HASH'):
+            reconcile_archived_smoke(source,self.advice,as_of=self.at)
 
     def test_unvalidated_or_expired_partial_rows_cannot_influence_reconciliation(self):
         for change in ('unvalidated','unlisted','expired'):

@@ -39,6 +39,48 @@ class WorkflowLifecycleRecovery(unittest.TestCase):
         self.assertFalse(report['native_review_coverage']['unreviewed_or_stale_finalist_card_ids'])
         self.assertTrue(verify_zip(Path(state['artifact']['attachment_path']).read_bytes()))
 
+    def test_owner_authorized_archived_smoke_uses_the_paged_verifier_without_scanning(self):
+        w=self.w
+        installed=w.f.workspace/'.agents/skills/openbot-market-research/SKILL.md';installed.parent.mkdir(parents=True)
+        installed.write_text((ROOT/'integration/openbot-market-research/SKILL.md').read_text().replace('@@RESEARCH_ROOT@@',str(ROOT)))
+        prompt=runner.SMOKE_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','7'*40)
+        with sqlite3.connect(w.f.config['openbot_db']) as db:db.execute('UPDATE projection_mailbox_messages SET text=?',(prompt,))
+        names=['openbot.start_task','openbot.attach_files_to_response']
+        arguments={'names':names}
+        schemas=[{'name':names[0],'inputSchema':{'type':'object','additionalProperties':False,
+            'properties':{'title':{'type':'string'},'brief':{'type':'string'}},'required':['title','brief']}},
+            {'name':names[1],'inputSchema':{'type':'object','additionalProperties':False,
+            'properties':{'paths':{'type':'array'}},'required':['paths']}}]
+        w.f.parent.extend([w.app.envelope(w.clock(),'response_item',{'type':'function_call','namespace':'openbot',
+            'name':'tool_describe','call_id':'DISCOVERY','arguments':json.dumps(arguments)}),
+            w.app.envelope(w.clock(),'event_msg',{'type':'item_completed','turn_id':'PARENT_TURN','thread_id':'PARENT',
+                'item':{'type':'DynamicToolCall','id':'DISCOVERY','namespace':'openbot','tool':'tool_describe',
+                    'arguments':arguments,'status':'completed','success':True,
+                    'content_items':[{'type':'inputText','text':json.dumps({'tools':schemas})}]}}),
+            w.app.envelope(w.clock(),'response_item',{'type':'function_call_output','call_id':'DISCOVERY',
+                'output':json.dumps({'tools':schemas})})])
+        w.app.write('PARENT',w.f.parent)
+        prior=w.base/'jobs'/('20000101T000000Z-'+'c'*32);(prior/'review').mkdir(parents=True)
+        packet=json.loads(encode(w.f.request))
+        for card in packet['cards']:card['mode']='LIVE'
+        packet['material_sha256']=digest(encode(_material(packet)).encode())
+        (prior/'review'/(packet['material_sha256']+'.request.json')).write_text(encode(packet))
+        (prior/'state.json').write_text(encode({'start_proof':{'status':'VERIFIED_OPENBOT_AGENT_COMMAND'},
+            'scanner_started_at_utc':w.f.at,'fixture_only':True}))
+        with patch('researcher.discovery.scan_market_research') as scanner:
+            job,state,report=w.run_workflow()
+        scanner.assert_not_called()
+        self.assertEqual(state['state'],'PARTIAL')
+        self.assertEqual(report['smoke_result']['status'],'VERIFIED_REVIEW')
+        self.assertEqual(report['smoke_result']['tool_discovery']['status'],'VERIFIED_CURRENT_PARENT_TOOL_DISCOVERY')
+        self.assertFalse(report['market_scan_started'])
+        self.assertEqual(report['native_transport_preflight']['accepted'],1)
+        self.assertEqual(len(w.app.submitted),1)
+        proof=report['native_transport_preflight']['native_receipt']
+        self.assertGreater(proof['verified_evidence_pages'],0)
+        self.assertTrue(verify_zip(Path(state['artifact']['attachment_path']).read_bytes()))
+        self.assertFalse(report['trade_authorization'])
+
     def test_rejected_batch_preserves_independent_valid_interpretations_and_deterministic_results(self):
         first=[]
         def transform(request,reply):

@@ -75,8 +75,10 @@ class SimulatedApp:
         if pages:
             for number,(cmd,page) in enumerate(zip(commands,pages,strict=True),1):
                 call='PAGE_'+str(number)
+                command_args={'cmd':cmd,'login':False,'max_output_tokens':16000}
+                if 'yield_time_ms:30000' in brief:command_args['yield_time_ms']=30000
                 rows.extend([e(at,'response_item',{'type':'function_call','name':'exec_command','call_id':call,
-                        'arguments':json.dumps({'cmd':cmd,'login':False,'max_output_tokens':16000})}),
+                        'arguments':json.dumps(command_args)}),
                     e(at,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':name,
                         'item':{'type':'CommandExecution','id':call,'status':'completed','exit_code':0,
                             'command':['powershell.exe','-NoProfile','-Command',cmd],'aggregated_output':page}}),

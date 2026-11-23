@@ -17,6 +17,7 @@ LEGACY_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'
 RESERVED_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; 90_SECONDS_FROM_RESERVATION; NEVER_AUTOMATICALLY_RESUBMIT'
 VERBATIM_PAGE_COMMANDS = 'VERBATIM_NEXT_PAGE_V1'
 TICKET_BOUND_PAGE_COMMANDS = 'VERBATIM_TICKET_BOUND_PAGE_V2'
+BOUNDED_WAIT_PAGE_COMMANDS = 'VERBATIM_TICKET_BOUND_WAIT_30S_V3'
 
 
 def runner_review(directory):
@@ -35,7 +36,7 @@ def wsl_root():
 def page_command_fingerprint(request, fingerprint):
     """New commands use the saved ticket for the full packet SHA-256."""
     policy = request.get('page_command_policy')
-    if policy == TICKET_BOUND_PAGE_COMMANDS:
+    if policy in (TICKET_BOUND_PAGE_COMMANDS, BOUNDED_WAIT_PAGE_COMMANDS):
         return None
     if policy not in (None, VERBATIM_PAGE_COMMANDS):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
@@ -66,11 +67,14 @@ def packet(request, directory):
     command = f"wsl.exe --cd '{root}' -- " + ' '.join(_page_argv(directory, material, command_fingerprint)) + ' '
     verbatim = request.get('page_command_policy') is not None
     if verbatim:
+        tool_arguments = ('cmd, login:false, max_output_tokens:16000, yield_time_ms:30000'
+                          if request.get('page_command_policy') == BOUNDED_WAIT_PAGE_COMMANDS
+                          else 'cmd, login:false, max_output_tokens:16000')
         instructions = (
             "For page 1 copy this complete literal command verbatim:\n"
             f"{command}1\n"
             "For later pages copy the previous page's next_command verbatim. Do not reconstruct the path or number. "
-            "Use exec_command with exactly cmd, login:false, max_output_tokens:16000. Do not specify shell, cwd, or other arguments. "
+            f"Use exec_command with exactly {tool_arguments}. Do not specify shell, cwd, or other arguments. "
             "If a read fails, stop and report the failure. Do not retry or change the command. "
         )
         if command_fingerprint is None:

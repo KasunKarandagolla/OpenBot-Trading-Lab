@@ -11,6 +11,48 @@ from .native_codex import review_brief
 from .settings import ROOT
 
 
+def reconcile_archived_smoke(source, result, *, as_of):
+    """Replay advisory reconciliation against the source job's frozen output."""
+    import io,json,re,zipfile
+    from .candidate_review import apply_native_research_advice
+    from .diagnostic_export import verify_zip
+    from .native_identity import under_work
+    from .native_handoff import JOB_ID
+    source=under_work(source)
+    folder=under_work(source.parent.parent)
+    state_path=folder/'state.json'
+    if not state_path.is_file():
+        return {'status':'SOURCE_ARTIFACT_UNAVAILABLE','current_market_interpretation':False}
+    state=json.loads(state_path.read_bytes())
+    if not re.fullmatch(JOB_ID,state.get('job_id','')) or state['job_id']!=folder.name:
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    artifact=state.get('artifact',{})
+    archive=under_work(folder/(state.get('job_id','')+'.zip'))
+    if not archive.is_file() or not artifact.get('sha256'):
+        return {'status':'SOURCE_ARTIFACT_UNAVAILABLE','current_market_interpretation':False}
+    raw=archive.read_bytes()
+    if digest(raw)!=artifact['sha256']:
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    verify_zip(raw)
+    with zipfile.ZipFile(io.BytesIO(raw)) as z:
+        report=json.loads(z.read('report.json'))
+    request=json.loads(source.read_bytes())
+    material=request.get('material_sha256')
+    if (report.get('job_id')!=state.get('job_id') or
+            material not in {b.get('material_sha256') for b in report.get('consultant',{}).get('batches',())}):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    selected=request['cards'][0]['card_id']
+    candidates=[c for c in report.get('conditional_research_candidates',()) if c.get('card_id')==selected]
+    if len(candidates)!=1:
+        return {'status':'SOURCE_CANDIDATE_UNAVAILABLE','current_market_interpretation':False}
+    rows,decisions,comparison=apply_native_research_advice(candidates,[],result,as_of=as_of)
+    return {'status':'RECONCILED_ARCHIVED_ADVISORY' if comparison['accepted_current_advice'] else
+            'NO_VALID_ADVICE_TO_RECONCILE', 'current_market_interpretation':False,
+        'source_job_id':state['job_id'],'source_artifact_sha256':artifact['sha256'],
+        'control_card_ids':[selected],'replayed_candidates':rows,'replayed_dispositions':decisions,
+        'comparison':comparison}
+
+
 def probe_captured_request(directory,source,*,native_identity,audit_config,clock,progress=None,wait_seconds=600):
     """One separately labeled transport check; never a current-market review."""
     import copy,json,os
@@ -34,9 +76,9 @@ def probe_captured_request(directory,source,*,native_identity,audit_config,clock
             'current_market_interpretation':False})
     request['cards']=request['cards'][:1]
     if native_identity['provider']=='codex':
-        from .native_handoff import RESERVED_SUBMISSION_POLICY, VERBATIM_PAGE_COMMANDS
+        from .native_handoff import RESERVED_SUBMISSION_POLICY, BOUNDED_WAIT_PAGE_COMMANDS
         request.update(reply_citation_policy=EXACT_CARD_CITATIONS,dispatch_reservation_policy=RESERVED_SUBMISSION_POLICY,
-            page_command_policy=VERBATIM_PAGE_COMMANDS)
+            page_command_policy=BOUNDED_WAIT_PAGE_COMMANDS)
     request['omitted']=[{'card_id':c['card_id'],'reason':'ARCHIVED_TRANSPORT_SINGLE_CARD_SAMPLE'} for c in original['cards'][1:]]
     for card in request['cards']:
         card['mode']='AUTHENTIC_REPLAY'

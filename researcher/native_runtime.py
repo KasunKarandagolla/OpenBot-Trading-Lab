@@ -35,6 +35,66 @@ def integration_preflight(config,*,as_of):
         'native_execution_verified':False,'trade_authorization':False}
 
 
+def attest_smoke_discovery(identity,config,*,as_of):
+    """Bind both native tool schemas to successful discovery in the parent turn."""
+    from datetime import timedelta
+    from .native_host import delegated,call
+    if delegated(config):
+        return call(config,'attest_smoke_discovery',{'identity':identity,'as_of':as_of})
+    from .native_identity import parent_binding
+    from .native_codex import turn_records,check_turn_model
+    binding=parent_binding(identity,config,require_configured_model=True,as_of=as_of)
+    session,turn=binding['external'],binding['turn']
+    required={'openbot.start_task':{'title','brief'},'openbot.attach_files_to_response':{'paths'}}
+    pending={};completed={};found=set();context=False
+    for row in turn_records(config,session,turn,config['agent_workspace'],
+            start=utc(binding['started_at'])-timedelta(seconds=1),end=utc(as_of),backend=identity['provider_backend']):
+        payload=row['payload']
+        context=check_turn_model(row,session,turn,identity['model'],config['agent_workspace'],context)
+        if not context:continue
+        if (row['type']=='response_item' and payload.get('type')=='function_call'
+                and payload.get('namespace')=='openbot' and payload.get('name')=='tool_describe'):
+            try:arguments=json.loads(payload.get('arguments',''))
+            except (ValueError,TypeError):continue
+            if isinstance(arguments,dict) and set(arguments)=={'names'} and isinstance(arguments['names'],list):
+                call_id=payload.get('call_id')
+                if isinstance(call_id,str) and call_id and call_id not in pending:
+                    pending[call_id]=arguments
+        elif row['type']=='event_msg' and payload.get('type')=='item_completed':
+            item=payload.get('item',{});call_id=item.get('id')
+            if (payload.get('turn_id')!=turn or payload.get('thread_id')!=session
+                    or item.get('type')!='DynamicToolCall' or item.get('namespace')!='openbot'
+                    or item.get('tool')!='tool_describe' or item.get('status')!='completed'
+                    or item.get('success') is not True or call_id not in pending
+                    or item.get('arguments')!=pending.pop(call_id)):
+                continue
+            try:
+                parts=item['content_items']
+                if len(parts)!=1 or parts[0].get('type')!='inputText':continue
+                result=json.loads(parts[0]['text'])
+                discovered=set()
+                for tool in result['tools']:
+                    name=tool.get('name');schema=tool.get('inputSchema',{})
+                    if (name in required and name in item['arguments']['names']
+                            and schema.get('type')=='object'
+                            and schema.get('additionalProperties') is False
+                            and set(schema.get('required',()))==required[name]
+                            and required[name]<=set(schema.get('properties',{}))
+                            and all(schema['properties'][key].get('type')==('array' if key=='paths' else 'string')
+                                for key in required[name])):
+                        discovered.add(name)
+                completed[call_id]=(parts[0]['text'],discovered)
+            except (ValueError,KeyError,TypeError,AttributeError):
+                continue
+        elif row['type']=='response_item' and payload.get('type')=='function_call_output':
+            call_id=payload.get('call_id')
+            if call_id in completed:
+                output,discovered=completed.pop(call_id)
+                if payload.get('output')==output:found.update(discovered)
+    if found!=set(required):raise ContractError('NATIVE_TOOL_DISCOVERY_UNVERIFIED')
+    return {'status':'VERIFIED_CURRENT_PARENT_TOOL_DISCOVERY','tools':sorted(found)}
+
+
 def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_configured_model=False):
     """Read the original receipt. Active collection also pins configuration."""
     from .native_host import delegated,call
@@ -54,7 +114,8 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
         return compatibility(request,config,target,as_of=as_of)
     if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
     from .native_codex import attest,attest_handoff,observe_submission
-    from .native_handoff import runner_review,load_dispatch,packet,page_command_fingerprint,verify_submission_window,FRESH_SECONDS
+    from .native_handoff import (runner_review,load_dispatch,packet,page_command_fingerprint,
+        verify_submission_window,FRESH_SECONDS,BOUNDED_WAIT_PAGE_COMMANDS)
     from .native_identity import under_work
     directory=under_work(directory) if directory is not None else None
     paged=runner_review(directory)
@@ -115,7 +176,8 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
                 or not utc(ticket['reserved_at_utc'])<=utc(submitted['attempted_at_utc'])<=utc(submitted['responded_at_utc'])
                 or not utc(ticket['reserved_at_utc'])<=utc(created)<=utc(submitted['responded_at_utc'])):
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-        evidence=(directory,request['material_sha256'],page_command_fingerprint(request,fingerprint),pages)
+        evidence=(directory,request['material_sha256'],page_command_fingerprint(request,fingerprint),pages,
+            request.get('page_command_policy')==BOUNDED_WAIT_PAGE_COMMANDS)
     else:attest_handoff(config,identity,request,as_of=as_of,require_configured_model=require_configured_model)
     proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
         expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence,

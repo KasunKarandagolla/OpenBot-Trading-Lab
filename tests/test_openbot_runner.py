@@ -127,6 +127,18 @@ class OpenBotRunnerContract(unittest.TestCase):
         self.assertEqual(result['state'],'INTERRUPTED');self.assertEqual(self.process.call_count,1)
         self.assertIn('NO_AUTOMATIC_LIVE_REPLAY',result['reason'])
 
+    def test_review_failure_reports_pending_artifact_until_terminal_export(self):
+        job=runner.start(self.key)['job_id']
+        folder=runner._job(job)
+        runner._transition(folder,'REVIEW_FAILED',first_error={'code':'NATIVE_READ_INCOMPLETE'})
+        status=runner.status(job)
+        self.assertEqual(status['state'],'REVIEW_FAILED')
+        self.assertEqual(status['artifact_status'],'PENDING_RECONCILIATION_AND_EXPORT')
+        self.assertIn('Continue polling',status['next_action'])
+        self.assertNotIn('artifact',status)
+        runner._transition(folder,'PARTIAL')
+        self.assertNotIn('artifact_status',runner.status(job))
+
     def test_export_has_fixed_entries_sanitizes_paths_and_never_includes_native_storage(self):
         job=runner.start(self.key)['job_id'];folder=runner._job(job)
         secret={'openbot_db':'PRIVATE_DB','access_token':'PRIVATE_TOKEN','turn_id':'PRIVATE_TURN',

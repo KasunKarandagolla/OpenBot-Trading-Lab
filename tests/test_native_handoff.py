@@ -11,7 +11,7 @@ from researcher.contracts import ContractError, digest, encode, utc
 from researcher.native_app import wait_for_reply
 from researcher.native_codex import review_brief
 from researcher.native_handoff import (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY,
-    TICKET_BOUND_PAGE_COMMANDS, VERBATIM_PAGE_COMMANDS, command_page, packet, verify_submission_window)
+    BOUNDED_WAIT_PAGE_COMMANDS, TICKET_BOUND_PAGE_COMMANDS, VERBATIM_PAGE_COMMANDS, command_page, packet, verify_submission_window)
 from researcher.native_runtime import collect
 from researcher.settings import ROOT
 import test_openbot_runner as jobs
@@ -135,13 +135,17 @@ class NativeHandoff(unittest.TestCase):
             at = utc(row['timestamp']).timestamp()
             metadata = {'turn_id': 'TURN_1', 'create_time': at}
             if payload.get('type') == 'function_call':
-                literal = json.dumps(json.loads(payload['arguments'])['cmd'])
+                arguments = json.loads(payload['arguments'])
+                literal = json.dumps(arguments['cmd'])
+                wait = ',yield_time_ms:30000' if arguments.get('yield_time_ms') == 30000 else ''
                 script = ('const r = await tools.exec_command({cmd:'+literal
-                          +',login:false,max_output_tokens:16000}); text(r.output);\n')
+                          +',login:false,max_output_tokens:16000'+wait+'}); text(r.output);\n')
                 if multiline:
                     script = ('const r = await tools.exec_command({\n'
                               f'  cmd: {literal},\n'
-                              '  login: false,\n  max_output_tokens: 16000\n});\ntext(r.output);')
+                              '  login: false,\n  max_output_tokens: 16000'
+                              + (',\n  yield_time_ms: 30000' if wait else '')
+                              + '\n});\ntext(r.output);')
                 row['payload'] = {
                     'type': 'custom_tool_call', 'id': 'ctc_'+payload['call_id'],
                     'status': 'completed', 'call_id': payload['call_id'], 'name': 'exec',
@@ -176,6 +180,53 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(attestation['verified_evidence_pages'], 10)
         self.assertEqual(attestation['submission_attempts'], 1)
         self.assertEqual(attestation['reply_validation_status'], 'VALIDATED')
+
+    def test_november_23_early_empty_output_is_incomplete_not_unauthorized(self):
+        from researcher.native_codex import _code_mode_command
+        fixture=json.loads((ROOT/'tests/fixtures/native-codex-0171-page-five.json').read_text())
+        first=fixture['page1_call']
+        self.assertEqual((first['ordinal'],first['timestamp']),(18,'2026-11-23T01:54:46.792Z'))
+        self.assertFalse(first['input'].rstrip().endswith(';'))
+        command=_code_mode_command({'name':'exec','status':'completed','input':first['input']})
+        self.assertTrue(command.endswith('--page 1'))
+        self.assertEqual(fixture['page5_output']['output'][1]['text'],'')
+        self.assertEqual(fixture['page5_execution']['exit_code'],0)
+        self.assertTrue(fixture['page5_execution']['page5_bytes_exact'])
+        self.assertLess(fixture['page5_output']['ordinal'],fixture['page5_execution']['ordinal'])
+        records=self.code_mode_rollout(multiline=True)
+        calls=[i for i,row in enumerate(records) if row['payload'].get('type')=='custom_tool_call']
+        for index in calls:
+            records[index]['payload']['input']=records[index]['payload']['input'].rstrip(';')
+        fifth=calls[4]
+        records[fifth+2]['payload']['output'][1]['text']=''
+        records[fifth+1],records[fifth+2]=records[fifth+2],records[fifth+1]
+        self.app.write('REVIEW_1',records)
+        with self.assertRaisesRegex(ContractError,'^NATIVE_READ_INCOMPLETE$'):
+            collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+
+    def test_bounded_wait_policy_accepts_complete_pages_and_rejects_missing_wait(self):
+        self.request['page_command_policy']=BOUNDED_WAIT_PAGE_COMMANDS
+        self.pin_request()
+        records=self.code_mode_rollout(multiline=True)
+        self.app.write('REVIEW_1',records)
+        _,proof=collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+        self.assertEqual(proof['verified_evidence_pages'],10)
+        self.assertEqual(proof['reply_validation_status'],'VALIDATED')
+        self.assertEqual(proof['validated_rows'],len(self.request['cards']))
+        first=next(r for r in records if r['payload'].get('type')=='custom_tool_call')
+        first['payload']['input']=first['payload']['input'].replace(',\n  yield_time_ms: 30000','')
+        self.app.write('REVIEW_1',records)
+        with self.assertRaisesRegex(ContractError,'^NATIVE_UNAUTHORIZED_TOOL$'):
+            collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+
+    def test_interrupted_child_without_final_is_a_terminal_failure(self):
+        self.app.write('REVIEW_1',self.code_mode_rollout(multiline=True))
+        with sqlite3.connect(self.f.config['openbot_db']) as db:
+            db.execute("DELETE FROM projection_thread_messages WHERE turn_id='TURN_1' AND item_type='final_answer'")
+            db.execute("UPDATE projection_turns SET status='interrupted' WHERE turn_id='TURN_1'")
+        with self.assertRaisesRegex(ContractError,'^NATIVE_TASK_FAILED$'):
+            collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+        self.assertEqual(len(self.app.submitted),1)
 
     @staticmethod
     def saved_page_seven():
@@ -310,7 +361,8 @@ class NativeHandoff(unittest.TestCase):
                 ('embedded_comment', 'UNAUTHORIZED_TOOL'), ('computed_command', 'UNAUTHORIZED_TOOL'),
                 ('changed_execution', 'UNAUTHORIZED_TOOL'), ('wrong_call_id', 'UNAUTHORIZED_TOOL'),
                 ('wrong_turn', 'UNAUTHORIZED_TOOL'), ('nonzero_exit', 'READ_INCOMPLETE'),
-                ('reordered', 'UNAUTHORIZED_TOOL'), ('duplicate_page', 'UNAUTHORIZED_TOOL'),
+                ('reordered', 'READ_INCOMPLETE'), ('missing_execution', 'READ_INCOMPLETE'),
+                ('duplicate_page', 'UNAUTHORIZED_TOOL'),
                 ('missing_page', 'READ_INCOMPLETE'), ('missing_output', 'UNAUTHORIZED_TOOL'),
                 ('truncated_output', 'READ_INCOMPLETE'), ('truncated_execution', 'READ_INCOMPLETE'),
                 ('wrong_final', 'REPLY_PROVENANCE')):
@@ -339,6 +391,8 @@ class NativeHandoff(unittest.TestCase):
                     execution['item']['exit_code'] = 1
                 elif fault == 'reordered':
                     records[first+1], records[first+2] = records[first+2], records[first+1]
+                elif fault == 'missing_execution':
+                    del records[first+1]
                 elif fault == 'duplicate_page':
                     records[first+3]['payload']['input'] = call['input']
                 elif fault == 'missing_page':

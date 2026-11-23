@@ -1,3 +1,43 @@
+# November 23 native review reliability recovery
+
+Job `20261123T014656Z-ef68145ab7cc4cda8cf5432111ef76d0` ran at
+`f95bf125451fab99109a384b0371d0b49b7e9530`. The recovered ZIP SHA-256 is
+`1e2b200be2ab93b672e246b53df27a4d0dcd6d5f72b22df1191a7884231355cc`.
+Its report and internal hashes match. Delivery was not observed. The parent
+turn completed at 02:06:08 UTC, while the worker exported at 02:09:17 UTC.
+
+- The first rejection was ordinal 18 at 01:54:46.792 UTC, a permitted page 1
+  `custom_tool_call` whose JavaScript omitted the optional final semicolon.
+  The parser incorrectly required that semicolon. Pages 1–4 each reached the
+  model as exact canonical bytes. Page 5's fixed command was started at
+  01:55:45.903 UTC and exited 0 at 01:55:56.751 UTC with the exact page in its
+  execution record. The tool response at 01:55:55.950 UTC contained an empty
+  output because the command was still running. The child stopped and returned
+  prose. No pages 6–9 or valid advisory JSON were delivered.
+- The reader accepts the observed equivalent semicolon-free wrapper and
+  classifies empty or prematurely returned output as `NATIVE_READ_INCOMPLETE`.
+  New packets require a 30-second command wait and still stop on empty output.
+  A legacy packet's bytes and ticket remain unchanged. Exact commands, bound
+  execution events, page order and byte equality remain mandatory.
+- `replay-native --job-id JOB_ID` reaudits a saved terminal job with the
+  existing production receipt verifier and checks the archived report and ZIP.
+  Replaying this job produces `NATIVE_READ_INCOMPLETE`, with zero market or
+  model requests and no imported advice.
+- The separately authorized native smoke mode uses the exact committed
+  `OPENBOT_NATIVE_SMOKE_PROMPT.txt`, the normal parent identity and one-shot
+  dispatch, attests successful discovery of the task and attachment schemas in
+  that parent turn, and uses one saved live packet labeled as archived. It runs no scanner.
+  The artifact reports the verified review and an archived-only reconciliation
+  against the hash-verified original report when its candidate is available.
+  Provider delivery remains a separately observed receipt. An incomplete
+  smoke still exports a partial diagnostic report. The main status now says
+  when an artifact remains pending after a review failure.
+
+Keep PR #24 draft and `trade_authorization=false`. This work does not prove
+live native review or make the historical market evidence current.
+
+---
+
 # November 22 native page 7 recovery
 
 Job `20261122T145844Z-859c591ced8d42b4b644ef6991d56083` ran at

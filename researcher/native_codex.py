@@ -21,7 +21,8 @@ _CODE_MODE_METADATA='internal_chat_message_metadata_passthrough'
 _CODE_MODE_FIELDS={'type','id','call_id',_CODE_MODE_METADATA}
 _PAGE_SCRIPT_PREFIX=re.compile(r'const r = await tools\.exec_command\(\{[ \t\r\n]*cmd:[ \t\r\n]*')
 _PAGE_SCRIPT_SUFFIX=re.compile(r',[ \t\r\n]*login:[ \t\r\n]*false,[ \t\r\n]*'
-    r'max_output_tokens:[ \t\r\n]*16000[ \t\r\n]*\}\);[ \t\r\n]*text\(r\.output\);[ \t\r\n]*')
+    r'max_output_tokens:[ \t\r\n]*16000(?:,[ \t\r\n]*yield_time_ms:[ \t\r\n]*30000)?'
+    r'[ \t\r\n]*\}\);[ \t\r\n]*text\(r\.output\);?[ \t\r\n]*')
 _CODE_MODE_HEADER=re.compile(r'Script completed\nWall time [0-9]{1,6}(?:\.[0-9]{1,6})? seconds\nOutput:\n')
 
 
@@ -326,7 +327,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
     context=False;began=False;ended=False;inputs=[];finals=[];responses=set();usage=[]
     calls={};completed=set();delivered=set()
     code_items=set();command_ids=set();pending_code=None
-    if evidence is not None:directory,material,command_fingerprint,pages=evidence
+    if evidence is not None:directory,material,command_fingerprint,pages,bounded_wait=evidence
     for x in rows:
         p=x['payload'];kind=x['type'];typ=p.get('type')
         variant=x['_schema_variant']
@@ -338,6 +339,8 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 call_id=_code_mode_item(x,turn,code_items,{'name','status','input'})
                 command=_code_mode_command(p)
+                if bounded_wait and not re.search(r',[ \t\r\n]*yield_time_ms:[ \t\r\n]*30000[ \t\r\n]*\}',p['input']):
+                    raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 page=command_page({'command':['powershell.exe','-Command',command]},directory,material,command_fingerprint)
                 if call_id in calls or page is None or not 1<=page<=len(pages) or page in calls.values():
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
@@ -347,10 +350,12 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                 continue
             if evidence is not None and typ=='custom_tool_call_output':
                 call_id=_code_mode_item(x,turn,code_items,{'output'})
-                if pending_code is None or pending_code[0]!=call_id or call_id not in completed:
+                if pending_code is None or pending_code[0]!=call_id:
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 page=calls[call_id]
                 if not _code_mode_output_matches(p,pages[page-1]):
+                    raise ContractError('NATIVE_READ_INCOMPLETE')
+                if call_id not in completed:
                     raise ContractError('NATIVE_READ_INCOMPLETE')
                 delivered.add(page);pending_code=None
                 continue
@@ -359,6 +364,8 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                 if (code_items or not inputs or finals or not isinstance(call_id,str) or not call_id or call_id in calls
                         or not isinstance(args,dict) or not isinstance(args.get('cmd'),str)
                         or set(args)-{'cmd','login','yield_time_ms','max_output_tokens'} or args.get('login') is not False):
+                    raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+                if bounded_wait and (args.get('yield_time_ms')!=30000 or args.get('max_output_tokens')!=16000):
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 # Validate the literal command before associating the result. The
                 # completed event must also attest what the shell actually ran.

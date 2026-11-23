@@ -13,8 +13,9 @@ from .agent_review import REJECTION_CODES
 from .contracts import ContractError,encode
 from .settings import ROOT
 
-OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','assert_parent','integration_preflight','owner_proof','collect','attest_start','review_count','delivery_proof','observe_handoff'})
-READER_ERRORS=REJECTION_CODES|{'RUNNER_OWNER_START_REQUIRED','RUNNER_START_UNATTESTED','NATIVE_WINDOWS_READER_REQUIRED'}
+OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','assert_parent','integration_preflight','owner_proof','collect','attest_start','review_count','delivery_proof','observe_handoff','attest_smoke_discovery'})
+READER_ERRORS=REJECTION_CODES|{'RUNNER_OWNER_START_REQUIRED','RUNNER_START_UNATTESTED','NATIVE_WINDOWS_READER_REQUIRED',
+    'NATIVE_TOOL_DISCOVERY_UNVERIFIED'}
 _PROCESS_TIMEOUT_SECONDS=30
 _TIMEOUT_STAGES={'observe_handoff':'WINDOWS_OBSERVE_HANDOFF','collect':'WINDOWS_COLLECT'}
 
@@ -85,6 +86,9 @@ def execute(operation,input_file):
     if operation=='integration_preflight':
         from .native_runtime import integration_preflight
         return integration_preflight(config,as_of=v['as_of'])
+    if operation=='attest_smoke_discovery':
+        from .native_runtime import attest_smoke_discovery
+        return attest_smoke_discovery(v['identity'],config,as_of=v['as_of'])
     if operation in {'owner_proof','attest_start'}:
         from .openbot_runner import _owner_proof,attest_start
         return _owner_proof(v['identity'],config,expected_commit=v.get('expected_commit')) if operation=='owner_proof' else attest_start(v['state'],config)

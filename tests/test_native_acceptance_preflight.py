@@ -5,7 +5,7 @@ from unittest.mock import patch
 from researcher import openbot_runner as runner,native_app
 from researcher.agent_review import _material
 from researcher.contracts import ContractError,encode,digest
-from researcher.native_runtime import integration_preflight
+from researcher.native_runtime import integration_preflight,attest_smoke_discovery
 from researcher.native_workflow import probe_captured_request
 from researcher.settings import ROOT
 from researcher.diagnostic_export import export_job,verify_zip
@@ -94,6 +94,105 @@ class AcceptancePreflight(unittest.TestCase):
                 with self.assertRaisesRegex(ContractError,'OWNER_START_REQUIRED'):runner.start(self.j.key)
         self.j.process.assert_not_called()
 
+    def test_archived_native_smoke_requires_the_exact_owner_message(self):
+        prompt=runner.SMOKE_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','a'*40)
+        for text in (prompt.replace('a'*40,'b'*40),'Do not '+prompt,prompt+' extra'):
+            with self.subTest(text=text[:20]):
+                self.set_owner(text)
+                with self.assertRaisesRegex(ContractError,'OWNER_START_REQUIRED'):
+                    runner.start(self.j.key)
+        self.set_owner(prompt)
+        result=runner.start(self.j.key)
+        state=runner._read(runner._job(result['job_id'])/'state.json')
+        self.assertEqual(state['owner_run_mode'],'NATIVE_SMOKE')
+
+    def test_native_smoke_discovery_binds_parent_call_response_and_schemas(self):
+        names=['openbot.start_task','openbot.attach_files_to_response']
+        arguments={'names':names}
+        tools=[{'name':names[0],'inputSchema':{'type':'object','additionalProperties':False,
+            'properties':{'title':{'type':'string'},'brief':{'type':'string'}},'required':['title','brief']}},
+            {'name':names[1],'inputSchema':{'type':'object','additionalProperties':False,
+            'properties':{'paths':{'type':'array'}},'required':['paths']}}]
+        call=self.f.record(1,'response_item',{'type':'function_call','namespace':'openbot',
+            'name':'tool_describe','call_id':'DISCOVERY','arguments':json.dumps(arguments)})
+        event=self.f.record(2,'event_msg',{'type':'item_completed','turn_id':'PARENT_TURN','thread_id':'PARENT',
+            'item':{'type':'DynamicToolCall','id':'DISCOVERY','namespace':'openbot','tool':'tool_describe',
+                'arguments':arguments,'status':'completed','success':True,
+                'content_items':[{'type':'inputText','text':json.dumps({'tools':tools})}]}})
+        delivered=self.f.record(3,'response_item',{'type':'function_call_output','call_id':'DISCOVERY',
+            'output':event['payload']['item']['content_items'][0]['text']})
+        self.f.parent.extend([call,event,delivered]);self.f.write()
+        result=attest_smoke_discovery(self.f.identity,self.f.config,as_of=self.f.time(5))
+        self.assertEqual(result['status'],'VERIFIED_CURRENT_PARENT_TOOL_DISCOVERY')
+        for fault in ('wrong_call','failed','wrong_turn','bad_schema'):
+            with self.subTest(fault=fault):
+                altered=copy.deepcopy(event)
+                item=altered['payload']['item']
+                if fault=='wrong_call':item['id']='OTHER'
+                elif fault=='failed':item['success']=False
+                elif fault=='wrong_turn':altered['payload']['turn_id']='OTHER'
+                else:
+                    bad=copy.deepcopy(tools);bad[0]['inputSchema']['additionalProperties']=True
+                    item['content_items'][0]['text']=json.dumps({'tools':bad})
+                self.f.parent[-2]=altered;self.f.write()
+                with self.assertRaises(ContractError):
+                    attest_smoke_discovery(self.f.identity,self.f.config,as_of=self.f.time(5))
+        self.f.parent[-2]=event;self.f.write()
+        self.f.parent.pop();self.f.write()
+        with self.assertRaisesRegex(ContractError,'NATIVE_TOOL_DISCOVERY_UNVERIFIED'):
+            attest_smoke_discovery(self.f.identity,self.f.config,as_of=self.f.time(5))
+
+    def test_native_smoke_missing_discovery_exports_diagnostics(self):
+        prompt=runner.SMOKE_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','a'*40)
+        self.set_owner(prompt)
+        job=runner.start(self.j.key)['job_id']
+        with patch.object(runner,'attest_start',return_value={'status':'VERIFIED_FIXTURE_ONLY'}),\
+                patch('researcher.native_runtime.integration_preflight',return_value={'status':'FIXTURE_READER_ONLY'}),\
+                patch('researcher.discovery.scan_market_research') as scanner:
+            result=runner.run_job(job)
+        scanner.assert_not_called()
+        self.assertEqual(result['state'],'PARTIAL')
+        self.assertEqual(result['smoke_result']['tool_discovery']['status'],'NOT_VERIFIED')
+        self.assertEqual(result['first_error']['code'],'NATIVE_TOOL_DISCOVERY_UNVERIFIED')
+        self.assertTrue(verify_zip(Path(result['artifact']['attachment_path']).read_bytes()))
+
+    def test_native_smoke_exports_failure_without_market_scan(self):
+        prompt=runner.SMOKE_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','a'*40)
+        self.set_owner(prompt)
+        job=runner.start(self.j.key)['job_id']
+        failure={'status':'NATIVE_REVIEW_INCOMPLETE','reason':'NATIVE_READ_INCOMPLETE',
+            'first_error':{'stage':'RECEIPT_COLLECTION','code':'NATIVE_READ_INCOMPLETE'},
+            'observed_model_attempts':0,'current_market_interpretation':False}
+        with patch.object(runner,'attest_start',return_value={'status':'VERIFIED_FIXTURE_ONLY'}),\
+                patch('researcher.native_runtime.integration_preflight',return_value={'status':'FIXTURE_READER_ONLY'}),\
+                patch('researcher.native_runtime.attest_smoke_discovery',return_value={'status':'VERIFIED_FIXTURE_ONLY'}),\
+                patch.object(runner,'_prior_live_packet',return_value=self.captured()),\
+                patch('researcher.native_workflow.probe_captured_request',return_value=failure),\
+                patch('researcher.discovery.scan_market_research') as scanner:
+            result=runner.run_job(job)
+        scanner.assert_not_called()
+        self.assertEqual(result['state'],'PARTIAL')
+        self.assertEqual(result['smoke_result']['status'],'INCOMPLETE')
+        self.assertEqual(result['native_transport_preflight']['reason'],'NATIVE_READ_INCOMPLETE')
+        self.assertEqual(result['costs']['market_http_requests'],0)
+        self.assertTrue(verify_zip(Path(result['artifact']['attachment_path']).read_bytes()))
+        self.assertFalse(result['trade_authorization'])
+
+    def test_native_smoke_with_no_archived_packet_never_starts_scan(self):
+        prompt=runner.SMOKE_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','a'*40)
+        self.set_owner(prompt)
+        job=runner.start(self.j.key)['job_id']
+        with patch.object(runner,'attest_start',return_value={'status':'VERIFIED_FIXTURE_ONLY'}),\
+                patch('researcher.native_runtime.integration_preflight',return_value={'status':'FIXTURE_READER_ONLY'}),\
+                patch('researcher.native_runtime.attest_smoke_discovery',return_value={'status':'VERIFIED_FIXTURE_ONLY'}),\
+                patch.object(runner,'_prior_live_packet',return_value=None),\
+                patch('researcher.discovery.scan_market_research') as scanner:
+            result=runner.run_job(job)
+        scanner.assert_not_called()
+        self.assertEqual(result['state'],'PARTIAL')
+        self.assertEqual(result['smoke_result']['status'],'INCOMPLETE')
+        self.assertTrue(verify_zip(Path(result['artifact']['attachment_path']).read_bytes()))
+
     def test_archived_probe_dispatches_exact_input_and_imports_a_separately_labeled_fixture_reply(self):
         source=self.captured();before=source.read_bytes();clock=lambda:self.f.time(5)
         app=SimulatedApp(self.f,clock);actual=native_app.collect;published=[]
@@ -149,6 +248,29 @@ class AcceptancePreflight(unittest.TestCase):
             self.assertEqual(runner.watch_delivery('fixture',wait_seconds=1)['state'],'FINAL_DELIVERED')
         self.assertEqual(sleep.call_count,1)
         with self.assertRaisesRegex(ContractError,'WAIT_INVALID'):runner.watch_delivery('fixture',wait_seconds=601)
+
+    def test_historical_replay_reports_failure_and_verified_artifact_without_writes(self):
+        job=runner.start(self.j.key)['job_id'];folder=runner._job(job)
+        directory=folder/'review';directory.mkdir()
+        request=self.f.request;material=request['material_sha256']
+        (directory/(material+'.request.json')).write_text(encode(request))
+        runner._transition(folder,'REVIEW_FAILED',material_sha256=material)
+        report={'job_id':job,'mode':'LIVE','trade_authorization':False,
+            'native_control_comparison':{'accepted_current_advice':False,'hard_gates_changed':False}}
+        (folder/'report.json').write_text(encode(report))
+        artifact=export_job(folder,report,self.f.config)
+        runner._transition(folder,'PARTIAL',artifact=artifact)
+        before=(folder/'state.json').read_bytes()
+        with patch('researcher.native_runtime.collect',side_effect=ContractError('NATIVE_READ_INCOMPLETE')) as collect,\
+                patch('researcher.native_runtime.delivery_proof',return_value=None):
+            result=runner.replay_native(job)
+        self.assertEqual(result['reviews'][0]['error']['code'],'NATIVE_READ_INCOMPLETE')
+        self.assertEqual(result['artifact']['status'],'VERIFIED_SAVED_ARCHIVE_AND_REPORT')
+        self.assertEqual(result['artifact']['delivery'],'NOT_OBSERVED')
+        self.assertFalse(result['artifact']['saved_reconciliation']['accepted_current_advice'])
+        self.assertEqual((folder/'state.json').read_bytes(),before)
+        self.assertEqual(collect.call_count,1)
+        self.assertEqual(result['model_requests'],0);self.assertEqual(result['market_requests'],0)
 
     def test_delivery_proof_refuses_an_attachment_whose_bytes_changed_after_export(self):
         job=runner.start(self.j.key)['job_id'];folder=runner._job(job)
