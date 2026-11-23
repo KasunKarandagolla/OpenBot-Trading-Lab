@@ -185,6 +185,13 @@ class AICore(unittest.TestCase):
         reconcile(report,research,[row],reviews,[],as_of='2026-01-20T12:00:00Z')
         self.assertEqual(report['shortlist'][0]['card_id'],'B')
         self.assertEqual(report['shortlist'][0]['primary_family'],'F4')
+        self.assertEqual(report['ai_research']['reconciliation'][0]['selected_card_id'],'B')
+        self.assertFalse(any(r['card_id']=='B' and r['disposition']=='NOT_REVIEWED_BY_VERIFIED_AI'
+            for r in report['ai_research']['reconciliation']))
+        research.status['stages'][FINAL]['supplied_ids']=['A']
+        report={'mode':'SYNTHETIC','operation_status':'PARTIAL'}
+        reconcile(report,research,[row],reviews,[],as_of='2026-01-20T12:00:00Z')
+        self.assertEqual(report['shortlist'],[])
 
 
 if __name__ == '__main__':

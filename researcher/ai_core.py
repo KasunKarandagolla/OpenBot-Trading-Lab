@@ -538,12 +538,13 @@ def reconcile(report, research, decisions, reviews, conditional, *, as_of):
         for decision in decisions:
             cid = decision['id']
             reason = decision['decision']
+            selected_target = None
             if reason == 'HANDOFF':
                 primary=final.get('primary_families',{}).get(cid)
                 target=(cid if decision['interpretation']==primary else
                     final.get('qualified_alternatives',{}).get(cid,{}).get(decision['interpretation']))
                 if target not in final.get('supplied_ids',[]):
-                    target=cid if target==cid else None
+                    target=None
                 row = strict.get(target) or qualified_conditional.get(target)
                 if row is None:
                     reason = 'CURRENT_ADMISSION_GATE'
@@ -559,9 +560,12 @@ def reconcile(report, research, decisions, reviews, conditional, *, as_of):
                     else:
                         chosen['analyst_question'] = decision['next_question']
                         conditional_selected.append(chosen)
+                    selected_target = target
                     reason = 'SELECTED'
-            reconciled.append({'card_id': cid, 'disposition': reason, 'reasoning': decision})
-    omitted = set(r['card_id'] for r in reviews) - {r['card_id'] for r in reconciled}
+            reconciled.append({'card_id': cid, 'disposition': reason, 'reasoning': decision,
+                **({'selected_card_id':selected_target} if selected_target else {})})
+    reviewed = {r['card_id'] for r in reconciled} | {r['selected_card_id'] for r in reconciled if 'selected_card_id' in r}
+    omitted = set(r['card_id'] for r in reviews) - reviewed
     reconciled.extend({'card_id': cid, 'disposition': 'NOT_REVIEWED_BY_VERIFIED_AI'} for cid in sorted(omitted))
     status['reconciliation'] = reconciled
     review_by_id={r['card_id']:r for r in reviews}
