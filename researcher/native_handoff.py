@@ -58,6 +58,8 @@ def packet(request, directory):
     material = request['material_sha256']
     full = review_brief(request)
     args = {'title': 'OPENBOT-RESEARCH-' + material, 'brief': full}
+    if request.get('input_transport'):
+        return args, digest(full.encode('utf-8')), ()
     if not runner_review(directory):
         return args, None, ()
     fingerprint = digest(full.encode('utf-8'))

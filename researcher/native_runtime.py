@@ -121,8 +121,11 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
         verify_submission_window,FRESH_SECONDS,BOUNDED_WAIT_PAGE_COMMANDS)
     from .native_identity import under_work
     directory=under_work(directory) if directory is not None else None
-    paged=runner_review(directory)
-    if paged and (utc(as_of)-utc(request['as_of_utc'])).total_seconds()>=FRESH_SECONDS:
+    reserved=runner_review(directory)
+    inline=bool(request.get('input_transport'))
+    if inline and not reserved:
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    if reserved and (utc(as_of)-utc(request['as_of_utc'])).total_seconds()>=FRESH_SECONDS:
         raise ContractError('NATIVE_REQUEST_STALE')
     args,_,_=packet(request,directory);marker=args['title'];brief=args['brief']
     with read_db(config['openbot_db']) as db:
@@ -137,7 +140,7 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
         inputs=db.execute('''SELECT turn_id,message_json FROM projection_thread_messages
           WHERE thread_id=? AND author='agent' AND created_at>=? ORDER BY ordinal''',
           (thread,request['as_of_utc'])).fetchall()
-        if not inputs and paged:return None
+        if not inputs and reserved:return None
         if (not inputs or not isinstance(inputs[0][0],str) or not inputs[0][0]
                 or json.loads(inputs[0][1]).get('text')!=brief):
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
@@ -165,11 +168,17 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
     model=identity['model']
     if require_configured_model and session_model!=model:
         raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_CHILD_MODEL')
-    if not utc(request['as_of_utc'])<=utc(created)<=utc(start)<=utc(end)<=utc(as_of):raise ContractError('AGENT_EVIDENCE_FUTURE')
+    if not utc(request['as_of_utc'])<=utc(created)<=utc(start)<=utc(end):
+        raise ContractError('NATIVE_CHILD_CLOCK_INVALID' if inline else 'AGENT_EVIDENCE_FUTURE')
+    if utc(end)>utc(as_of):
+        # An app projection can advance while the WSL/Windows bridge reads it.
+        # The next observation must prove the same timestamps against a fresh
+        # host anchor. Time limits and the immutable order still apply.
+        raise ContractError('NATIVE_PROJECTION_AFTER_SNAPSHOT' if inline else 'AGENT_EVIDENCE_FUTURE')
     raw=json.loads(message).get('text')
     if not isinstance(raw,str) or len(raw.encode())>32768:raise ContractError('AGENT_REPLY_SIZE')
     evidence=None
-    if paged:
+    if reserved:
         args,fingerprint,pages,ticket=load_dispatch(directory,request,as_of=as_of)
         submitted=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
             reserved_at=ticket['reserved_at_utc'],require_configured_model=require_configured_model)
@@ -179,8 +188,9 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
                 or not utc(ticket['reserved_at_utc'])<=utc(submitted['attempted_at_utc'])<=utc(submitted['responded_at_utc'])
                 or not utc(ticket['reserved_at_utc'])<=utc(created)<=utc(submitted['responded_at_utc'])):
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-        evidence=(directory,request['material_sha256'],page_command_fingerprint(request,fingerprint),pages,
-            request.get('page_command_policy')==BOUNDED_WAIT_PAGE_COMMANDS)
+        if pages:
+            evidence=(directory,request['material_sha256'],page_command_fingerprint(request,fingerprint),pages,
+                request.get('page_command_policy')==BOUNDED_WAIT_PAGE_COMMANDS)
     else:attest_handoff(config,identity,request,as_of=as_of,require_configured_model=require_configured_model)
     proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
         expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence,
@@ -197,9 +207,9 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
         'native_identity':identity,'skill_sha256':request['skill_sha256'],'material_sha256':request['material_sha256'],
         'reply_sha256':digest(raw.encode()),'native_invocation_verified':True,'native_app_turns':1,
         'native_started_at_utc':start,'native_completed_at_utc':end,'audited_at_utc':as_of,
-        'submission_transport':'EXISTING_AGENT_START_TASK; EXACT_PROVIDER_ATTESTED_'+('PAGED_INPUT' if paged else 'INLINE_INPUT'),
+        'submission_transport':'EXISTING_AGENT_START_TASK; EXACT_PROVIDER_ATTESTED_'+('PAGED_INPUT' if evidence is not None else 'INLINE_INPUT'),
         'authority':'ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM',**proof,**validation}
-    if paged:audit.update(submission_attempts=submitted['submission_attempts'],task_ref=ref(thread),
+    if reserved:audit.update(submission_attempts=submitted['submission_attempts'],task_ref=ref(thread),
         arguments_sha256=ticket['arguments_sha256'],packet_sha256=fingerprint,verified_evidence_pages=len(pages))
     return raw,audit
 

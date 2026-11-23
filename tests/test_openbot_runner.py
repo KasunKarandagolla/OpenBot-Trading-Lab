@@ -98,8 +98,7 @@ class OpenBotRunnerContract(unittest.TestCase):
             result=runner.run_job(job);again=runner.run_job(job)
         self.assertEqual(result['state'],'PARTIAL');self.assertIn('PARTIAL',result['live_acceptance'])
         self.assertEqual(again['state'],'PARTIAL');self.assertEqual(scanner.call_count,1)
-        self.assertEqual(scanner.call_args.kwargs['native_max_cards'],4)
-        self.assertEqual(scanner.call_args.kwargs['native_wait_seconds'],600)
+        self.assertEqual(scanner.call_args.kwargs['ai_research'].limits.max_native_tasks,2)
         artifact=result['artifact'];raw=Path(artifact['attachment_path']).read_bytes()
         self.assertEqual(digest(raw),artifact['sha256']);self.assertTrue(verify_zip(raw))
 

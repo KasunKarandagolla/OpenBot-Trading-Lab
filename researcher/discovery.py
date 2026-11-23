@@ -364,7 +364,7 @@ def scan_live(*, qualification=False, api=None, client=None, config=None, ledger
 
 def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clock=now_utc,
                          mode='LIVE',crash_hook=None,sources=None,context_prioritized=True,route_ablation=None,
-                         native_review_dir=None,native_audit_config=None,native_wait_seconds=0,native_max_cards=4,progress=None,native_progress=None,job_id=None,native_identity=None):
+                         native_review_dir=None,native_audit_config=None,native_wait_seconds=0,native_max_cards=4,progress=None,native_progress=None,job_id=None,native_identity=None,ai_research=None):
     """One on-demand read-only path: live sources → remote packs → saved research.
 
     Historical price precursors nominate questions independently. The protected
@@ -390,7 +390,11 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
     from .structures import Reference,swing_references,equal_level_references,boundary_events,selected_family_facts,gap_lifecycle
     from .transport import PublicHTTP
     if mode not in {'LIVE','SYNTHETIC','AUTHENTIC_REPLAY'}:raise ContractError('FACT_PROVENANCE')
-    if native_audit_config and (mode!='LIVE' or native_review_dir is None):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+    if native_audit_config or (mode=='LIVE' and native_review_dir is not None):
+        raise ContractError('NATIVE_AI_REQUIRES_OPENBOT_OWNER_RUNNER')
+    if mode=='LIVE' and ai_research is None and api is None and client is None and sources is None:
+        from .ai_core import AIResearch
+        ai_research=AIResearch()
     if type(native_max_cards) is not int or not 1<=native_max_cards<=12:raise ContractError('AGENT_INPUT_SIZE')
     if route_ablation is not None and (mode!='SYNTHETIC' or not set(route_ablation)<={'A','B','C'}):
         raise ContractError('OFFLINE_REPLAY_SCOPE')
@@ -406,7 +410,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
     official_limit=recovery.get('official_http_limit',20)
     # Reserve actual point/depth/context operations, then bound histories by I/O,
     # not a fixed number of coins. Retried physical calls consume the same cap.
-    point_phases=2 if native_review_dir is not None else 1
+    point_phases=2 if ai_research is not None else 1
     pending_point_reserve=2+point_phases*(2+recovery.get('targeted_depth_symbols',0))
     # Initial inventory/pulse and protected OI reads precede allocation. Reserve
     # every later depth/quote phase, including a second quote after slow depth.
@@ -437,6 +441,11 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
             'CURRENT_RECONSTRUCTION_IS_NOT_PROSPECTIVE_HISTORICAL_DISCOVERY',
             'FEES_DEPTH_SLIPPAGE_FUNDING_BOUNDS_AND_HORIZON_UNVERIFIED; NO_FAKE_READY',
             'PUBLISH_LAG_AND_SUSTAINABLE_QUOTA_UNKNOWN; SCHEDULING_DISABLED']}
+    if ai_research is not None:
+        report['ai_research']=ai_research.status
+    ai_plans=None
+    ai_decisions=None
+    ai_guided_keys=set()
     report['job_id']=job_id
     report['planning_cutoffs']=dict(cutoffs)
     report['implementation_sha256']=implementation
@@ -491,12 +500,12 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 mark_stage('inventory_and_initial_context')
                 report['operation_status']='PARTIAL';report['operating_mode']='REMOTE_WIDE_PARTIAL'
                 key=digest(encode([cutoffs,identity,spec,completion,recovery,mode,sources.certificates,
-                    sources.nominations,sources.selected_inputs,route_ablation,context_prioritized,implementation]).encode())
+                    sources.nominations,sources.selected_inputs,route_ablation,context_prioritized,implementation,ai_research is not None]).encode())
                 # Fresh official access/identity is mandatory even for unchanged
                 # bars. Reuse preserves first knowledge and original receipts.
                 previous_reusable=previous and previous.get('numeric_cache_available',True) and len(previous.get('packs',()))==2 and all(
                     p.get('evaluated',0)>0 and not p.get('truncated_attempts') for p in previous['packs'])
-                if (previous_reusable and previous.get('cache_key')==key
+                if (ai_research is None and previous_reusable and previous.get('cache_key')==key
                         and 0<=(utc(clock())-utc(previous['completed_at_utc'])).total_seconds()<spec['cache_ttl_seconds']):
                     cached=True
                     fresh={k:report[k] for k in ('inventory','source_health','created_at_utc','job_id')}
@@ -664,7 +673,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             # No observation/history has been admitted before
                             # this first partition. Never rebase an existing run.
                             report['cache_key']=digest(encode([cutoffs,identity,spec,completion,recovery,mode,sources.certificates,
-                                sources.nominations,sources.selected_inputs,route_ablation,context_prioritized,implementation]).encode())
+                                sources.nominations,sources.selected_inputs,route_ablation,context_prioritized,implementation,ai_research is not None]).encode())
                         for o in result.pop('observations'):
                             n=o['instrument']['native_symbol'];r=rows.setdefault(n,{'values':{},'evidence_ids':[],
                                 'source_hashes':[],'received_at':o['received_at_utc'],'closed_close':o['source_closed_close']})
@@ -848,12 +857,15 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     from .numerics import validate_bars
                     selected={};benchmark_ids=[]
                     investigation_started=time.monotonic();history_costs=[]
-                    def fetch_selected(names):
+                    def fetch_selected(names, requested_tf=None):
                         for n in names:
                             if n not in members:continue
                             timeframes=('1h','15m','4h') if n in {'BTCUSDT','ETHUSDT'} else ('1h','15m')
                             if recovery and timeframes==('1h','15m') and (n,'15m') in union and (n,'1h') not in union:
                                 timeframes=('15m','1h')
+                            if requested_tf is not None:
+                                timeframes=(requested_tf,)
+                            timeframes=tuple(tf for tf in timeframes if (n,tf) not in history_status)
                             for tf in timeframes:
                                 history_status[n,tf]={'selected':True,'attempted':False,'responded':False,
                                     'accepted':False,'evaluation_completed':False,'status':'NOT_EVALUATED',
@@ -918,6 +930,12 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     context=build_context(facts,as_of=evaluation_time(),eligible_symbols=inventory.eligible_symbols,
                         eligible_known=True,benchmark_ids=benchmark_ids,return_ids=return_ids)
                     report['context']=asdict(context)
+                    if ai_research is not None:
+                        guidance_started=time.monotonic()
+                        ai_plans=ai_research.discover(rows_by_tf,union,at=evaluation_time(),cutoffs=cutoffs,
+                            mode=mode,facts=facts,references=references,context=report['context'],config=config)
+                        investigation_started+=time.monotonic()-guidance_started
+                        mark_stage('ai_opportunity_discovery')
                     # Separate watch, exception and structural allocations. All
                     # remaining questions retain NOT_REVIEWED_BUDGET explicitly.
                     if recovery:
@@ -940,11 +958,25 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     else:
                         alt,allocations,allocation_study=allocate(list(union.values()),context,cutoffs,
                             limit=spec['max_targeted_alt_symbols'])
+                    control_alt=list(alt)
+                    if ai_plans is not None:
+                        from .ai_core import investigate_opportunities
+                        # Keep the independent allocation and use its existing
+                        # history ceiling. Reserve two intervals per protected name.
+                        capacity=(max(0,min(call_left,transport_left)-2*spec['max_targeted_alt_symbols'])
+                            if recovery else spec['max_targeted_alt_symbols'])
+                        ordered=investigate_opportunities(ai_research,ai_plans,capacity=capacity,
+                            fetch_selected=fetch_selected,selected=selected,members=members,
+                            facts=facts,clock=evaluation_time,mode=mode)
+                        ai_guided_keys={(i['native_symbol'],i['timeframe'])
+                            for i in ai_research.status['investigations'] if i['status']=='VERIFIED_SOURCE_OBSERVATION'}
+                        allocations=[*({'native_symbol':n,'lane':'VERIFIED_AI_OPPORTUNITY'} for n in ordered),*allocations]
+                        alt=list(dict.fromkeys([*ordered,*alt]))
                     report['allocation_study']=allocation_study
                     report['targeted_allocation']=allocations
                     report['not_reviewed_budget']=[{**n,'reason':'NOT_REVIEWED_BUDGET'} for n in union.values()
                         if n['native_symbol'] not in {*alt,'BTCUSDT','ETHUSDT'}]
-                    fetch_selected(alt)
+                    fetch_selected(control_alt)
                     mark_stage('nomination_context_and_selected_history')
                     investigated={n for n,tf in selected if n not in {'BTCUSDT','ETHUSDT'}}
                     report['investigation_funnel']={'planned_alt_symbols':alt,'actual_alt_symbols':sorted(investigated),
@@ -1000,7 +1032,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                         'exception':max(1,len(selected)), 'watch':max(1,len(prior_watches))})
                     for (n,tf),(bars,source) in selected.items():
                         if tf=='4h':continue
-                        if route_ablation is not None and n not in {'BTCUSDT','ETHUSDT'} and (n,tf) not in union:continue
+                        if (route_ablation is not None and n not in {'BTCUSDT','ETHUSDT'}
+                                and (n,tf) not in union and (n,tf) not in ai_guided_keys):continue
                         bench=selected.get(('BTCUSDT',tf))
                         family=selected_family_facts(bars,members[n].tick_size,as_of=as_of,
                             benchmark=bench[0] if bench and len(bench[0])==len(bars) else None)
@@ -1271,48 +1304,22 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                                     for m in sample['analytical_engine']['methods']]
                     reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],as_of=as_of) for c in cards]
                     mark_stage('structure_methods_questions_and_point_refresh')
-                    if native_review_dir is not None and recovery.get('native_pre_admission_enabled'):
-                        from .candidate_review import native_review_selection,conditional_research
-                        from .native_workflow import review_batches
-                        wanted,selection=native_review_selection(reviews,cards,facts,references,as_of=as_of)
-                        provisional,_=conditional_research(reviews,cards,facts,references,as_of=as_of,max_count=len(cards))
-                        native_reviews=[*reviews,*provisional]
-                        by_card={c.id:c for c in cards};pre_cards=[by_card[cid] for cid in wanted]
-                        report['native_review_phase']='PRE_ADMISSION_CURRENT_COIN_HYPOTHESES'
-                        report['native_selection']=selection
-                        native_prepared=time.monotonic()
-                        if native_audit_config:
-                            import sqlite3
-                            try:
-                                report['consultant']=review_batches(native_review_dir,pre_cards,facts,
-                                    clock=lambda:evaluation_time(native=True),context=report.get('context'),reviews=native_reviews,
-                                    audit_config=native_audit_config,wait_seconds=native_wait_seconds,
-                                    max_cards=native_max_cards,progress=native_progress,native_identity=native_identity)
-                            except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
-                                from .native_app import failure
-                                fault=failure(error,'REQUEST_PREPARATION')
-                                report['consultant']={'status':'NATIVE_REVIEW_INCOMPLETE','first_error':fault,
-                                    'accepted':0,'observed_model_attempts':0,'not_reviewed':wanted,
-                                    'native_collector':{'status':'NATIVE_REVIEW_INCOMPLETE','first_error':fault}}
-                        else:
-                            from .agent_review import exchange
-                            report['consultant']=exchange(native_review_dir,pre_cards,facts,as_of=evaluation_time(),
-                                context=report.get('context'),reviews=native_reviews,max_cards=native_max_cards,ordered_card_ids=wanted)
-                        report['llm_calls']=report['consultant'].get('observed_model_attempts',0)
-                        report['native_selection'].update(reviewed_card_ids=report['consultant'].get('reviewed_card_ids',[]),
-                            unreviewed_card_ids=report['consultant'].get('not_reviewed',wanted),
-                            batch_count=report['consultant'].get('batch_count',0))
-                        stage_times['native_request_preparation']=round(time.monotonic()-native_prepared-
-                            report['consultant'].get('elapsed_seconds',0),6)
-                        mark_stage('owner_and_native_wait_and_answer_import')
-                        # Reconcile point evidence after waiting, including expired depth.
-                        cards,depths,point_faults,as_of=refresh_selected(cards,facts,references,api,inventory,
-                            completion['economics'],clock=evaluation_time,max_depth=recovery['targeted_depth_symbols'])
-                        report['economic_observations'].extend(depths)
-                        report['source_faults'].extend(point_faults)
-                        report['point_reconciliation']={'as_of':as_of,'depth_snapshots':len(depths),
-                            'source_faults':point_faults,'closed_structure_recomputed':False}
-                        reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],as_of=as_of) for c in cards]
+                    if ai_plans is not None:
+                        from .candidate_review import conditional_research
+                        conditional,_=conditional_research(reviews,cards,facts,references,as_of=as_of,
+                            max_count=len(cards),deduplicate=False)
+                        ai_decisions=ai_research.shortlist(cards,reviews,facts,at=as_of,mode=mode,
+                            context=report['context'],config=config,conditional=conditional)
+                        mark_stage('ai_structural_interpretation')
+                        if mode=='LIVE' and cards and recovery:
+                            cards,depths,point_faults,as_of=refresh_selected(cards,facts,references,api,inventory,
+                                completion['economics'],clock=evaluation_time,max_depth=recovery['targeted_depth_symbols'])
+                            report['economic_observations'].extend(depths)
+                            report['source_faults'].extend(point_faults)
+                            report['point_reconciliation']={'as_of':as_of,'depth_snapshots':len(depths),
+                                'source_faults':point_faults,'closed_structure_recomputed':False}
+                            reviews=[review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],
+                                as_of=as_of) for c in cards]
                     revoked_tfs={p['timeframe'] for p in report['causal_packs'] if p['qualification']=='REVOKED_SELECTED_ORACLE_MISMATCH'}
                     for r in reviews:
                         if r['reference']['timeframe'] in revoked_tfs and r['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}:
@@ -1517,19 +1524,9 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                             'interpretation':'SHORT_ELAPSED_POINT_OBSERVATIONS; NOT_PROFITABILITY_OR_FULL_UNIVERSE_RECALL'})
                 report['prospective_follow_up']=follow
             from .handoff import make_export,consult_changed_cards
-            if not cached and report.get('native_review_phase'):
-                report['llm_status']=report['consultant']['status']
-            elif recovery and native_review_dir is not None:
-                # A source failure before the pre-admission phase cannot fall
-                # through to the old post-admission request publisher.
-                report['consultant']={**consult_changed_cards(cards),
-                    'status':'NATIVE_PRE_ADMISSION_UNAVAILABLE_OR_UNCHANGED; NO_POST_ADMISSION_FALLBACK',
-                    'observed_model_attempts':0,'accepted':0,
-                    'reason':'UNCHANGED_CLOSED_EVIDENCE; NO_NEW_NATIVE_INVOCATION' if cached else 'PRE_ADMISSION_NOT_REACHED'}
-                if cached and report.get('native_selection'):
-                    report['native_selection']={**report['native_selection'],'reviewed_card_ids':[],
-                        'unreviewed_card_ids':report['native_selection'].get('deterministic_control_card_ids',[]),
-                        'batch_count':0,'review_scope':'NO_NEW_NATIVE_QUALIFICATION_IN_THIS_WARM_RUN'}
+            if ai_research is not None:
+                report['consultant']={'status':ai_research.status['state'],
+                    'observed_model_attempts':ai_research.status['provider_attempts']}
             elif native_review_dir is None:
                 report['consultant']=consult_changed_cards(cards)
             else:
@@ -1540,30 +1537,6 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                 report['consultant']=exchange(native_review_dir,native_cards,facts,as_of=report['completed_at_utc'],
                     context=report.get('context'),reviews=reviews,cached=cached,
                     previous=previous.get('consultant') if previous else None,max_cards=native_max_cards)
-                if native_audit_config and report['consultant']['status'] in {'AWAITING_NATIVE_APP_RESPONSE','NATIVE_REPLY_UNAUDITED_DETERMINISTIC_FALLBACK'}:
-                    import sqlite3
-                    try:
-                        from .native_app import wait_for_reply
-                        receipt=wait_for_reply(native_review_dir,report['consultant']['material_sha256'],
-                            native_audit_config,wait_seconds=native_wait_seconds,clock=lambda:evaluation_time(native=True))
-                        report['completed_at_utc']=evaluation_time()
-                        report['consultant']=exchange(native_review_dir,(),{},as_of=report['completed_at_utc'],
-                            previous=report['consultant'],cached=True)
-                        report['consultant']['native_collector']=receipt
-                        if receipt['status']=='NATIVE_RECEIPT_COLLECTED':
-                            report['llm_calls']=receipt['observed_model_attempts']
-                    except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError):
-                        report['consultant']['native_collector']={'status':'NATIVE_RECEIPT_UNAVAILABLE_DETERMINISTIC_FALLBACK'}
-                    report['completed_at_utc']=evaluation_time()
-                    # Native waiting never freezes an earlier economic admission.
-                    current=[]
-                    for old in report['shortlist']:
-                        c=next(c for c in cards if c.id==old['card_id'])
-                        checked=review_card(c,facts,[r for r in references if r.native_symbol==c.native_symbol],
-                            as_of=report['completed_at_utc'])
-                        if checked['stage'] in {'READY_FOR_DEEP','FAST_WITH_ROOM','CONDITIONAL_FOR_DEEP'}:current.append(checked)
-                        else:report['near_misses'].append({**checked,'admission_reason':'EVIDENCE_AGED_DURING_NATIVE_REVIEW'})
-                    report['shortlist']=current
                 report['llm_status']=report['consultant']['status']
             report['time_integrity_status']='CLOCK_UNCERTAINTY; NO_READY' if report.get('clock_anomalies') else 'NORMAL'
             if report.get('clock_anomalies') and report['shortlist']:
@@ -1636,6 +1609,40 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     r['disposition'] for r in report.get('historical_case_dispositions',())))
                 report['invalidation_counts']['archived_expiry_records']=report['historical_case_disposition_counts'].get('REFERENCE_EXPIRED',0)
                 report['invalidation_counts']['archived_contradiction_records']=report['historical_case_disposition_counts'].get('PRIMARY_CAUSAL_CONTRADICTION',0)
+            if ai_research is not None:
+                from .ai_core import reconcile
+                from .candidate_review import conditional_research
+                eligible_conditional,_=conditional_research(reviews,cards,facts,references,
+                    as_of=report['completed_at_utc'],max_count=len(cards),deduplicate=False)
+                eligible_conditional=[r for r in eligible_conditional if r['reference']['timeframe'] not in {
+                    p['timeframe'] for p in report['causal_packs'] if p['qualification']=='REVOKED_SELECTED_ORACLE_MISMATCH'}]
+                control=[r['card_id'] for r in [*report['shortlist'],*report.get('conditional_research_candidates',[])]]
+                reconcile(report,ai_research,ai_decisions,reviews,eligible_conditional,as_of=report['completed_at_utc'])
+                final_rows=[*report['shortlist'],*report['conditional_research_candidates']]
+                final_ids=[r['card_id'] for r in sorted(final_rows,key=lambda r:r['rank'])]
+                report['native_control_comparison']={'scope':'AI_COMPARISON_OF_SOURCE_GATED_CANDIDATES',
+                    'deterministic_control_card_ids':control,'ai_shortlist_card_ids':final_ids,
+                    'ranking_or_membership_changed':control!=final_ids if ai_decisions is not None else None,
+                    'hard_gates_changed':False}
+                final_detail=ai_research.status['stages'].get('SHORTLIST',{})
+                report['native_review_coverage']={'supplied_final_card_ids':final_detail.get('supplied_ids',[]),
+                    'validated_card_ids':[r['id'] for r in final_detail.get('reply',{}).get('rows',[])],
+                    'omitted_count':final_detail.get('omitted_count'),
+                    'complete_for_final_candidates':ai_research.status['state']=='AI_RESEARCH_COMPLETE'}
+                ai_dispositions={r['card_id']:r for r in ai_research.status['reconciliation']}
+                for candidate in report.get('candidate_consideration',[]):
+                    row=ai_dispositions[candidate['card_id']]
+                    candidate.update(ai_disposition=row['disposition'],
+                        reviewed='reasoning' in row, native_review_status=(
+                            'AI_COMPARED' if 'reasoning' in row else 'NOT_REVIEWED'))
+                    candidate['rank']=final_ids.index(row['card_id'])+1 if row['card_id'] in final_ids else None
+                    candidate['ranking_status']='AI_SELECTED' if candidate['rank'] else 'UNRANKED_ALTERNATIVE'
+                failed=next((stage for stage in ai_research.status['stages'].values() if stage.get('reason')),None)
+                report['consultant']['status']=ai_research.status['state']
+                if failed:
+                    report['consultant']['first_error']={'stage':'AI_REASONING','code':failed['reason']}
+                report['conditional_research_export']=make_export(
+                    {**report,'shortlist':report['conditional_research_candidates']},cards,facts,references)
             if not cached or cards:report['handoff_export']=make_export(report,cards,facts,references)
             elif not report['shortlist']:
                 report['handoff_export']=make_export(report,(),{},())
@@ -1648,7 +1655,8 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
             native_trace=sum((utc(r['native_completed_at_utc'])-utc(r['native_started_at_utc'])).total_seconds()
                 for r in batch_receipts) if batch_receipts else (
                 (utc(native_end)-utc(native_start)).total_seconds() if native_start and native_end else None)
-            native_wait=stage_times.get('owner_and_native_wait_and_answer_import',0)
+            native_wait=sum(stage.get('native_collector',{}).get('elapsed_seconds',0)
+                for stage in report.get('ai_research',{}).get('stages',{}).values())
             report['costs']={'http_requests':len(receipts),'response_bytes':sum(r.get('response_bytes') or 0 for r in receipts),
                 'request_body_bytes':sum(r.get('request_body_bytes') or 0 for r in receipts),
                 'request_url_bytes':sum(r.get('request_url_bytes') or 0 for r in receipts),
@@ -1699,7 +1707,7 @@ def scan_market_research(*,api=None,client=None,config=None,ledger_path=None,clo
                     'not_reviewed_budget','context','research_coverage','route_coverage','resource_plan',
                     'source_faults','clock_anomalies','time_gaps','question_audit','consumed_obstacles','costs')},
                 **{k:report.get(k) for k in ('conditional_research_candidates','conditional_research_policy',
-                    'active_coin_watchlist','watch_counts','investigation_funnel','nominee_dispositions','invalidation_counts')},
+                    'active_coin_watchlist','watch_counts','investigation_funnel','nominee_dispositions','invalidation_counts','ai_research')},
                 'research_advice':report['consultant'],
                 'watches':[{k:v for k,v in w.items() if k!='review'} for w in report['watches']],
                 'trade_authorization':False,'new_orders_created':0}
@@ -1733,6 +1741,10 @@ def research_summary(report):
     lines.append(f"Unobserved gaps: {len(report['time_gaps'])}; HTTP calls: {report['costs']['http_requests']}; bytes: {report['costs']['response_bytes']}; wall: {report['costs']['wall_ms']/1000:.1f}s")
     if report.get('consultant',{}).get('status') not in {None,'LLM_DISABLED_NO_APPROVED_PROVIDER'}:
         lines.append(f"Native review: {report['consultant']['status']}; validated cards: {report['consultant'].get('accepted',0)}; observed model attempts this scan: {report.get('llm_calls',0)}.")
+    if report.get('ai_research'):
+        ai=report['ai_research']
+        lines.append(f"AI research {ai['state']}; stages " + ', '.join(
+            f"{name} {stage['status']}" for name,stage in ai['stages'].items()))
     fault=report.get('consultant',{}).get('first_error')
     if fault:lines.append(f"Native qualification incomplete or recovered fault: {fault['stage']} / {fault['code']}")
     for r in report.get('conditional_research_candidates',()):

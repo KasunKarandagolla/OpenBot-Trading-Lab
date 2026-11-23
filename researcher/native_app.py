@@ -303,7 +303,7 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
     return {**result,'task_created':result.get('task_created',False),'task':observed}
 
 
-def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,progress=None,verified_identity=None):
+def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,progress=None,verified_identity=None, return_verified=None):
     """Publish locally before any receipt collection, then wait monotonically.
 
     On WSL only individual scoped reads are delegated to the fixed native_host
@@ -331,26 +331,29 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
     folder=under_work(directory);published=clock();published_monotonic=time.monotonic()
     from .native_handoff import (FRESH_SECONDS, RESPONSE_SECONDS, SUBMISSION_SECONDS, RESERVED_SUBMISSION_POLICY,
         load_dispatch, read_object, runner_review)
-    paged=runner_review(folder) and request.get('native_identity',{}).get('provider')=='codex'
+    reserved=runner_review(folder) and request.get('native_identity',{}).get('provider')=='codex'
+    inline=bool(request.get('input_transport'))
+    transport='INLINE_AI_CORE_V1' if inline else 'PAGED_V2'
     config_hash=digest(under_work(config_file).read_bytes())
     result['publication_seconds']=round(time.monotonic()-began,6)
     result['request_prepared_at_utc']=published
     freshness_remaining=max(0,FRESH_SECONDS-(utc(published)-utc(request['as_of_utc'])).total_seconds())
     emit('REVIEW_READY',request_prepared_at_utc=published,
         publication_seconds=round(time.monotonic()-began,6),
-        **({'review_transport':'PAGED_V2','submission_attempts':0,'submission_state':'NOT_OBSERVED',
+        **({'review_transport':transport,'submission_attempts':0,'submission_state':'NOT_OBSERVED',
             'native_task_state':'MISSING','native_task_observation':None,'observed_model_attempts':0,
             'attempted_at_utc':None,'responded_at_utc':None,'submission_error':None,'clock_diagnostic':None,
             'submission_observation_status':'OPEN',
             'request_expires_monotonic':published_monotonic+freshness_remaining,
             'submission_expires_monotonic':published_monotonic+min(wait_seconds,SUBMISSION_SECONDS,freshness_remaining)}
-            if paged else {}))
+            if reserved else {}))
     # Publication/reader startup consumes the same request freshness envelope.
     deadline=published_monotonic+min(wait_seconds,freshness_remaining)
     reservation_deadline=min(deadline,published_monotonic+SUBMISSION_SECONDS)
     phase_deadline=reservation_deadline;ticket_observed=False
     pending_status=None;observation=None;submission=None;response_anchor=None;phase_closed=False
     prior_wall=utc(published);prior_monotonic=published_monotonic
+    last_handoff=None;last_handoff_at=0
     lease=folder/(material+'.dispatch.json')
 
     def observe_ticket(stamp):
@@ -374,7 +377,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 'wall_gap_seconds':round(wall_gap,3),'monotonic_gap_seconds':round(mono_gap,3)}
         prior_wall=wall;prior_monotonic=monotonic
         age=(wall-utc(request['as_of_utc'])).total_seconds()
-        if age<0 or age>FRESH_SECONDS or (paged and age==FRESH_SECONDS):
+        if age<0 or age>FRESH_SECONDS or (reserved and age==FRESH_SECONDS):
             raise ContractError('NATIVE_REQUEST_STALE')
         return stamp
 
@@ -398,15 +401,23 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             as_of=check_freshness()
             if digest(under_work(config_file).read_bytes())!=config_hash:
                 raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
-            if paged:
+            if reserved:
                 observe_ticket(as_of)
                 read_until=deadline if running_at or phase_closed else phase_deadline
                 if time.monotonic()>=deadline and (running_at or phase_closed):
                     found=None
                     break
-                handoff=observe_handoff(config,identity=request['native_identity'],directory=folder,
-                    material=material,as_of=as_of,timeout_seconds=max(.001,read_until-time.monotonic()),
-                    require_configured_model=True)
+                # After a bound acknowledgment, collect checks the latest app
+                # projection. Reobserve the parent on a slower cadence and
+                # independently reattest its exact call on final import.
+                if inline and running_at and last_handoff and time.monotonic()-last_handoff_at<10:
+                    handoff=last_handoff
+                else:
+                    budget=max(.001,read_until-time.monotonic())
+                    handoff=observe_handoff(config,identity=request['native_identity'],directory=folder,
+                        material=material,as_of=as_of,timeout_seconds=min(12,budget) if inline else budget,
+                        require_configured_model=True)
+                    last_handoff=handoff;last_handoff_at=time.monotonic()
                 stamp=check_freshness()
                 observe_ticket(stamp)
                 observed=handoff['task'];count=observed['count'] if handoff['task_created'] else 0
@@ -447,7 +458,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 except FileExistsError:
                     if anchor_path.stat().st_size>4096 or json.loads(anchor_path.read_text(encoding='utf-8'))!=anchor:
                         raise ContractError('NATIVE_SESSION_MISMATCH')
-                if paged and running_at is None:
+                if reserved and running_at is None:
                     result['submission_observation_status']='VERIFIED_AFTER_OBSERVER_INTERRUPTION' if phase_closed else 'VERIFIED'
                     emit('TASK_CREATED',native_task_state=observed['task_state'],native_task_observation=observed,
                         submission_observation_status=result['submission_observation_status'],**phase)
@@ -459,24 +470,25 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             if count and running_at is None:
                 running_at=clock();emit('REVIEW_RUNNING',native_started_observed_at_utc=running_at)
             found=None
-            if (count and time.monotonic()<deadline) or not paged:
-                read_options={'timeout_seconds':max(.001,deadline-time.monotonic())} if paged else {}
+            if (count and time.monotonic()<deadline) or not reserved:
+                budget=max(.001,deadline-time.monotonic())
+                read_options={'timeout_seconds':min(12,budget) if inline else budget} if reserved else {}
                 found=collect(request,config,target,as_of=check_freshness(),**read_options)
             check_freshness()
         except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
             fault=failure(error,'RECEIPT_COLLECTION')
             if first_error is None:first_error=fault
             retry=fault['code'] in {'NATIVE_REVIEW_INCOMPLETE','NATIVE_HANDOFF_UNATTESTED','AGENT_EVIDENCE_FUTURE',
-                'NATIVE_STORAGE_LOCKED','NATIVE_STORAGE_UNAVAILABLE','NATIVE_STORAGE_TIMED_OUT',
+                'NATIVE_PROJECTION_AFTER_SNAPSHOT','NATIVE_STORAGE_LOCKED','NATIVE_STORAGE_UNAVAILABLE','NATIVE_STORAGE_TIMED_OUT',
                 'NATIVE_READER_PROCESS_UNAVAILABLE'}
             # Duplicate submissions are terminal, never an invitation to retry.
-            if count>1 or (paged and fault['code']=='NATIVE_HANDOFF_UNATTESTED'):retry=False
+            if count>1 or (reserved and fault['code']=='NATIVE_HANDOFF_UNATTESTED'):retry=False
             if not retry:
                 emit('REVIEW_FAILED',first_error=first_error,
                     **({'clock_diagnostic':result['clock_diagnostic']} if 'clock_diagnostic' in result else {}))
                 return finish(fault['code'],terminal_error=fault)
             storage_retries+=1;pending_status=fault['code'];found=None
-            if paged and not running_at and time.monotonic()>=phase_deadline:
+            if reserved and not running_at and time.monotonic()>=phase_deadline:
                 if not ticket_observed and lease.is_file() and not phase_closed and time.monotonic()<deadline:
                     time.sleep(min(1,max(0,deadline-time.monotonic())))
                     continue
@@ -491,7 +503,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         if found:
             raw,audit=found
             result['observed_model_attempts']=audit['model_requests']
-            if paged:emit('MODEL_EXECUTED',observed_model_attempts=audit['model_requests'])
+            if reserved:emit('MODEL_EXECUTED',observed_model_attempts=audit['model_requests'])
             audit.setdefault('submission_transport','OWNER_OPENBOT_APPLICATION_UI')
             try:
                 for suffix,value in [('reply.json',raw),('audit.json',encode(audit)+'\n')]:
@@ -503,6 +515,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 if first_error is None:first_error=failure(error,'RECEIPT_PERSISTENCE')
                 emit('REVIEW_FAILED',first_error=first_error)
                 return finish('NATIVE_RECEIPT_PERSISTENCE_FAILED',terminal_error=failure(error,'RECEIPT_PERSISTENCE'))
+            if return_verified is not None:return_verified.update(raw=raw, receipt=audit)
             emit('REVIEW_VERIFIED' if audit['reply_validation_status']=='VALIDATED' else 'REVIEW_REJECTED',
                 observed_model_attempts=audit['model_requests'])
             return finish('NATIVE_RECEIPT_COLLECTED',observed_model_attempts=audit['model_requests'],
@@ -515,12 +528,12 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 receipt_collection_latency_seconds=max(0,(utc(clock())-utc(audit['native_completed_at_utc'])).total_seconds()))
         if time.monotonic()>=deadline:
             break
-        next_deadline=phase_deadline if paged and not running_at and not phase_closed else deadline
+        next_deadline=phase_deadline if reserved and not running_at and not phase_closed else deadline
         time.sleep(min(1,max(0,next_deadline-time.monotonic())))
 
-    if not paged and observation and observation['task_state']=='MISSING':
+    if not reserved and observation and observation['task_state']=='MISSING':
         pending_status='NATIVE_DISPATCH_RESERVED_TASK_MISSING' if lease.exists() else 'NATIVE_TASK_NOT_SUBMITTED'
-    if paged and observation and observation['task_state']=='COMPLETED' and pending_status is None:
+    if reserved and observation and observation['task_state']=='COMPLETED' and pending_status is None:
         pending_status='NATIVE_PROVIDER_RESPONSE_NOT_OBSERVED'
     emit('REVIEW_TIMED_OUT' if wait_seconds else 'REVIEW_PENDING',first_error=first_error)
     status='NATIVE_REVIEW_TIMED_OUT' if wait_seconds else (

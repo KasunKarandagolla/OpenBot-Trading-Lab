@@ -138,7 +138,38 @@ class QueryPlanner:
             if question.necessary:return {'status':status,'question':question,'query':None}
         return {'status':'STOP_NO_DECISION_CHANGING_QUERY','query':None}
 
-    def investigate(self, card, questions, queries, facts, *, as_of, adapters, max_steps=8):
+    def opportunity(self, hypothesis, origin, *, start, as_of, adapter, clock=None):
+        """Bind a validated discovery question to one closed history and method."""
+        from types import SimpleNamespace
+        from .ai_core import CLOSED_METHODS, METHOD_FAMILIES
+
+        if (hypothesis['row_id'] != origin['id'] or
+                not set(hypothesis['support']) <= origin['citations'].keys() or
+                hypothesis['method'] not in METHOD_FAMILIES or
+                hypothesis['family'][1:] not in METHOD_FAMILIES[hypothesis['method']]):
+            raise ContractError('AGENT_REPLY_CITATION')
+        symbol, tf, cutoff = (origin[k] for k in ('native_symbol', 'timeframe', 'cutoff'))
+        method = hypothesis['method']
+        card = SimpleNamespace(id=origin['id'], native_symbol=symbol, timeframe=tf, cutoff=cutoff,
+            venue='BINANCE_USDM', window_start=start, material_hash=fact_id(origin))
+        fact = 'AI_METHOD_' + method
+        question = Question(fact, 0, 'METHOD_OBSERVATIONS', ('STRENGTHEN_FORMATION', 'KEEP_RIVAL_OR_UNKNOWN'))
+        if hypothesis['question'] == 'CHECK_SOURCE_FIDELITY':
+            return {'status': 'UNKNOWN', 'reason': 'QUALIFIED_SPECIALIST_INPUT_OR_DEFINITION_REQUIRED'}
+        if hypothesis['question'] != 'VERIFY_METHOD_SEQUENCE' or method not in CLOSED_METHODS:
+            raise ContractError('RESEARCH_TOOL_NOT_ALLOWED')
+        source = 'OFFICIAL_CLOSED_HISTORY'
+        query = Query(source, 'binance_klines', symbol, card.venue, tf, start, cutoff, fact,
+            question.units, 'targeted', 1, 0, 65536, True, True, True, True)
+        answers, plans = self.investigate(card, [question], [query], {}, as_of=as_of,
+            adapters={(source, 'binance_klines'): adapter}, max_steps=1, answer_clock=clock)
+        if answers:
+            return {'status': 'VERIFIED_SOURCE_OBSERVATION', 'fact': next(iter(answers.values())),
+                    'cache_reused': plans[0]['status'] == 'CACHED'}
+        return {'status': 'UNKNOWN', 'reason': plans[0]['status'] if plans[0]['status'] != 'QUERY'
+                else 'METHOD_RESULT_OR_HISTORY_UNAVAILABLE'}
+
+    def investigate(self, card, questions, queries, facts, *, as_of, adapters, max_steps=8, answer_clock=None):
         if type(max_steps) is not int or not 0<=max_steps<=16:raise ContractError('QUERY_BUDGET')
         facts=dict(facts);resolved=set();decisions=[]
         for _ in range(max_steps):
@@ -158,7 +189,7 @@ class QueryPlanner:
             self.budgets[q.pool]-=q.quota;self.byte_budget-=q.response_bytes
             try:
                 f=adapters[(q.source_id,q.operation)](q)
-                if not _answer_valid(q,f,as_of):
+                if not _answer_valid(q,f,answer_clock() if answer_clock else as_of):
                     raise ContractError('QUERY_RESPONSE_SCOPE_OR_FRESHNESS')
             except (ContractError,OSError,KeyError,ValueError,TypeError):
                 self.audit.append({'card_id':card.id,'fact':q.fact,'status':'UNKNOWN','reason':'SOURCE_OR_VALIDATION_FAILURE'})

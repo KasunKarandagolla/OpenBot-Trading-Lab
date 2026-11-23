@@ -53,7 +53,7 @@ def main():
     scan.add_argument('--replay',choices=['retained-session5','synthetic-6b'],
         help='offline sources through the ordinary scan now pipeline; zero provider network')
     scan.add_argument('--qualifications',help='operator-reviewed Local source manifest and hashed oracle proofs under work/')
-    scan.add_argument('--native-review-dir',help='optional bounded request/reply exchange below work/; native OpenBot application invokes the existing agent')
+    scan.add_argument('--native-review-dir',help='historical replay request export below work/; live AI research uses the owner-authorized OpenBot runner')
     scan.add_argument('--native-audit-config',help='opt-in local native read-only receipt paths under work/; never invokes an agent')
     scan.add_argument('--native-wait-seconds',type=int,default=0,help='interactive receipt wait,0..600 seconds; default0')
     scan.add_argument('--native-max-cards',type=int,choices=range(1,5),default=4,help='native input budget,1..4 cards; default4')
@@ -109,12 +109,14 @@ def main():
                     mode=sources.mode,ledger_path=args.db,native_review_dir=args.native_review_dir,native_max_cards=args.native_max_cards)
                 report['offline_source_provenance']=provenance
             elif args.action in {'now','live'} and inventory is None:
+                if args.native_review_dir:
+                    raise ContractError('NATIVE_AI_REQUIRES_OPENBOT_OWNER_RUNNER')
                 import sys
                 from .query_planner import ResearchSources
                 sources=ResearchSources.from_file(args.qualifications) if args.qualifications else None
+                from .ai_core import AIResearch, Limits
                 report=scan_market_research(config=config,ledger_path=args.db,sources=sources,
-                    native_review_dir=args.native_review_dir,native_audit_config=args.native_audit_config,
-                    native_wait_seconds=args.native_wait_seconds,native_max_cards=args.native_max_cards,
+                    ai_research=AIResearch(limits=Limits(**config.get('ai_core',{}))),
                     progress=lambda stage,seconds:print(f'{stage}: {seconds:.1f}s',file=sys.stderr,flush=True))
             elif args.action == 'qualify':
                 from .qualification5 import qualify_core

@@ -230,6 +230,9 @@ def make_request(cards,facts,*,as_of,skill_sha256,context=None,reviews=(),max_ca
 
 
 def validate_reply(reply,request):
+    if request.get('input_transport'):
+        from .ai_core import validate
+        return validate(reply, request)
     expected={'schema_version','material_sha256','interpretations','trade_authorization'}
     if (not isinstance(reply,dict) or set(reply)!=expected or reply['schema_version']!=REPLY
             or reply['trade_authorization'] is not False

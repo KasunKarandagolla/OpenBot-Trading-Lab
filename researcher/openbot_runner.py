@@ -27,6 +27,7 @@ BASE=ROOT/'work/openbot-integration'
 PRIVATE=BASE/'native-audit-local.json'
 OWNER_COMMAND='run the complete market research now'
 SMOKE_PROMPT=ROOT/'docs/implementation/OPENBOT_NATIVE_SMOKE_PROMPT.txt'
+AI_SMOKE_PROMPT=ROOT/'docs/implementation/OPENBOT_AI_CORE_SMOKE_PROMPT.txt'
 ACCEPTANCE_PROMPT=ROOT/'docs/implementation/OPENBOT_RECOVERY_ACCEPTANCE_PROMPT.txt'
 FINAL={'COMPLETED','PARTIAL','FAILED','INTERRUPTED','FINAL_DELIVERED'}
 
@@ -122,6 +123,9 @@ def _owner_proof(identity,config,*,expected_commit=None):
         if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
                 text.strip()==SMOKE_PROMPT.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',expected_commit).strip()):
             return 'NATIVE_SMOKE'
+        if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
+                text.strip()==AI_SMOKE_PROMPT.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',expected_commit).strip()):
+            return 'AI_CORE_SMOKE'
         # Exact versioned owner message, pinned to the checkout being launched.
         # Substrings, negated/quoted instructions and delegated senders fail.
         if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
@@ -307,7 +311,10 @@ def run_job(key):
         transport_failed=(transport and not transport['status'].startswith('NO_PREVIOUS_LIVE_PACKET') and
             (transport['status']!='VALIDATED_ADVISORY_ONLY' or transport.get('accepted',0)<1 or
                 transport.get('native_receipt',{}).get('native_identity')!=state['native_identity']))
-        if smoke or transport_failed:
+        ai_smoke=state.get('owner_run_mode')=='AI_CORE_SMOKE'
+        if ai_smoke:
+            report=_run_ai_smoke(key,folder,state,config,progress,native_progress)
+        elif smoke or transport_failed:
             report={'schema_version':'openbot.native-preflight-report.v1','mode':'AUTHENTIC_REPLAY',
                 'release_status':('ARCHIVED_NATIVE_SMOKE' if smoke else 'PARTIAL_NATIVE_PREFLIGHT_FAILED'),
                 'job_id':key,'market_scan_started':False,
@@ -333,17 +340,18 @@ def run_job(key):
                     'final_delivery':'PENDING_PROVIDER_RECEIPT'}
         else:
             _transition(folder,'SCANNING',scanner_started_at_utc=now_utc())
+            from .ai_core import research_with_native
+            research=research_with_native(folder/'review',audit_config=PRIVATE,
+                identity=state['native_identity'],clock=now_utc,progress=lambda s,**v:native_progress(s,
+                    review_scope='CURRENT_MARKET_AI_RESEARCH',**v))
             report=scan_market_research(ledger_path=BASE/'research.sqlite',
-                native_review_dir=folder/'review',native_audit_config=PRIVATE,
-                native_wait_seconds=600,native_max_cards=4,progress=progress,
-                native_progress=lambda s,**v:native_progress(s,review_scope='CURRENT_MARKET_REVIEW',**v),
-                job_id=key,clock=now_utc,native_identity=state['native_identity'])
+                progress=progress,job_id=key,clock=now_utc,ai_research=research)
             report['market_scan_started']=True
         if transport:report['native_transport_preflight']=transport
         report['openbot_orchestration']={'job_id':key,'commit':state['commit'],'start_proof':proof,
             'native_identity':state['native_identity'],'invocation_source':'EXISTING_OPENBOT_RESEARCHER',
             'acceptance':'PARTIAL; FINAL_APP_DELIVERY_NOT_YET_OBSERVED','trade_authorization':False}
-        data=_transition(folder,'RECONCILED' if report['market_scan_started'] else 'PREFLIGHT_REJECTED',
+        data=_transition(folder,'RECONCILED' if report['market_scan_started'] or report.get('ai_research') else 'PREFLIGHT_REJECTED',
             scanner_completed_at_utc=now_utc() if report['market_scan_started'] else None)
         report['openbot_orchestration']['lifecycle']=data.get('lifecycle',[])
         report['openbot_orchestration']['final_delivery']='AWAITING_NATIVE_APP_ATTACHMENT_AND_RESPONSE_PROOF'
@@ -357,22 +365,18 @@ def run_job(key):
         artifact=export_job(folder,report,config)
         _transition(folder,'EXPORTED',artifact=artifact)
         native=report.get('consultant',{})
-        current_native=(native.get('status')=='VALIDATED_ADVISORY_ONLY' and native.get('accepted',0)>0
-            and native.get('native_receipt',{}).get('native_identity')==state['native_identity'])
-        archive_only=(native.get('status')=='NO_CHANGED_NATIVE_REVIEW_CARDS' and native.get('cards')==0
-            and transport and transport.get('status')=='VALIDATED_ADVISORY_ONLY' and transport.get('accepted',0)>0
-            and transport.get('native_receipt',{}).get('native_identity')==state['native_identity'])
-        complete=(report.get('mode')=='LIVE' and (current_native or archive_only)
-            and report.get('native_review_coverage',{}).get('complete_for_final_candidates') is True)
+        complete=(report.get('mode')=='LIVE' and report.get('ai_research',{}).get('state')=='AI_RESEARCH_COMPLETE')
+        archived_complete=(ai_smoke and report.get('ai_research',{}).get('state')=='AI_RESEARCH_COMPLETE')
         # Delivery is a subsequent native main-chat action. This worker never
         # asserts FULL acceptance before observing the real delivered answer.
-        _transition(folder,'COMPLETED' if complete else 'PARTIAL',artifact=artifact,
+        _transition(folder,'COMPLETED' if complete or archived_complete else 'PARTIAL',artifact=artifact,
             native_status=native.get('status'),native_collector=native.get('native_collector'),
             first_error=native.get('first_error') or (transport or {}).get('first_error') or
                 (transport or {}).get('native_collector',{}).get('first_error'),
             observed_model_attempts=native.get('observed_model_attempts',0),
             transport_model_attempts=(transport or {}).get('observed_model_attempts',0),
-            live_acceptance='PARTIAL; AWAITING_OPENBOT_RESULT_AND_ZIP_DELIVERY' if complete else 'PARTIAL; NATIVE_OR_SOURCE_GATE_NOT_PASSED')
+            live_acceptance=('ARCHIVED_NATIVE_SMOKE_ONLY' if ai_smoke else
+                'PARTIAL; AWAITING_OPENBOT_RESULT_AND_ZIP_DELIVERY' if complete else 'PARTIAL; NATIVE_OR_SOURCE_GATE_NOT_PASSED'))
     except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
         # No private exception/path/token is included in the user-facing state.
         code=str(error) if isinstance(error,ContractError) and re.fullmatch('[A-Z0-9_; ]{1,160}',str(error)) else 'RUNNER_DEPENDENCY_OR_STORAGE_UNAVAILABLE'
@@ -381,6 +385,44 @@ def run_job(key):
         _transition(folder,'FAILED',reason=code,live_acceptance='PARTIAL',
             **({'native_diagnostic':diagnostic} if diagnostic else {}))
     return status(key)
+
+
+def _run_ai_smoke(key,folder,state,config,progress,native_progress):
+    from .ai_core import research_with_native
+    from .discovery import scan_market_research
+    from .native_app import failure
+    from .native_runtime import attest_smoke_discovery, integration_preflight
+    from .replay import retained_session5
+
+    discovery={'status':'NOT_VERIFIED'}
+    try:
+        setup=integration_preflight(config,as_of=now_utc())
+        discovery=attest_smoke_discovery(state['native_identity'],config,as_of=now_utc())
+        _transition(folder,'NATIVE_INTEGRATION_PREFLIGHT',integration_preflight=setup)
+        api,client,sources,evidence_at,_=retained_session5()
+        research=research_with_native(folder/'review',audit_config=PRIVATE,identity=state['native_identity'],
+            clock=now_utc,progress=lambda stage,**fields:native_progress(stage,
+                review_scope='ARCHIVED_AI_CORE_SMOKE',**fields))
+        report=scan_market_research(api=api,client=client,sources=sources,mode=sources.mode,
+            clock=lambda:evidence_at,ledger_path=folder/'archived-replay.sqlite',progress=progress,
+            job_id=key,ai_research=research)
+    except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
+        report={'schema_version':'openbot.ai-core-smoke.v1','mode':'AUTHENTIC_REPLAY',
+            'job_id':key,'completed_at_utc':now_utc(),'shortlist':[],
+            'consultant':{'status':'AI_DISCOVERY_NOT_STARTED', 'first_error':failure(error,'NATIVE_SMOKE_PREFLIGHT')},
+            'coverage':{'all_market_structurally_covered':False},'costs':{},'trade_authorization':False}
+    report['market_scan_started']=False
+    report['costs']['market_http_requests']=0
+    report['costs']['archived_native_model_attempts']=report.get('ai_research',{}).get('provider_attempts',0)
+    ai=report.get('ai_research',{})
+    report['smoke_result']={'status':'VERIFIED_AI_CORE_REPLAY' if ai.get('state')=='AI_RESEARCH_COMPLETE' else 'INCOMPLETE',
+        'tool_discovery':discovery,'current_market_interpretation':False,'final_delivery':'PENDING_PROVIDER_RECEIPT',
+        'ai_state':ai.get('state','AI_DISCOVERY_NOT_STARTED'),
+        'reasoning_stages':{name:stage['status'] for name,stage in ai.get('stages',{}).items()},
+        'reconciliation':{'decisions':len(ai.get('reconciliation',[])),
+            'investigations':len(ai.get('investigations',[])),
+            'handoffs':len(report.get('shortlist',[]))+len(report.get('conditional_research_candidates',[]))}}
+    return report
 
 
 def _paged_status(folder,data,result,include_review):
@@ -425,7 +467,7 @@ def _paged_status(folder,data,result,include_review):
             'published_at_utc':published,'submission_policy':policy}
         if policy==RESERVED_SUBMISSION_POLICY:receipt['reserved_monotonic']=reserved_monotonic
         handoff={k:result[k] for k in ('job_id','state','review_transport','material_sha256',
-            'batch_index','batch_count','trade_authorization') if k in result}
+            'batch_index','batch_count','ai_stage','trade_authorization') if k in result}
         submit_before=min(submission_deadline(receipt),utc(request['as_of_utc'])+timedelta(seconds=FRESH_SECONDS))
         handoff.update(start_task_arguments=args,dispatch_receipt=receipt,submit_before_utc=submit_before.isoformat())
         # Earlier batches' lifecycle does not compete with the one-shot reply.
@@ -499,7 +541,7 @@ def status(key,include_review=False):
     result={k:data[k] for k in ('schema_version','job_id','state','created_at_utc','updated_at_utc','commit',
         'stage','stage_seconds','reason','native_status','native_collector','artifact','live_acceptance','trade_authorization',
         'delivery_receipt','lifecycle','material_sha256','batch_index','batch_count','first_error','observed_model_attempts',
-        'native_task_state','native_task_observation','transport_model_attempts','review_transport',
+        'native_task_state','native_task_observation','transport_model_attempts','review_transport','ai_stage',
         'submission_state','submission_attempts','attempted_at_utc','responded_at_utc','submission_error',
         'clock_diagnostic','submission_observation_status','delivery_observation_status') if k in data}
     if data['state']=='REVIEW_FAILED':
@@ -510,7 +552,7 @@ def status(key,include_review=False):
     from .native_identity import safe_diagnostic
     diagnostic=safe_diagnostic(data.get('native_diagnostic'))
     if diagnostic:result['native_diagnostic']=diagnostic
-    if data.get('review_transport')=='PAGED_V2':
+    if data.get('review_transport') in {'PAGED_V2','INLINE_AI_CORE_V1'}:
         # The main chat must see the current state even when earlier batches
         # have accumulated more history than the status console can return.
         if data['state'] not in FINAL:result.pop('lifecycle',None)
@@ -583,6 +625,9 @@ def status(key,include_review=False):
                 'invalid_reply_batches':native.get('invalid_reply_batches'),
                 'unreviewed_cards':len(native['not_reviewed']) if 'not_reviewed' in native else None,
                 'reply':native.get('reply'),'decision_delta':report.get('native_control_comparison')},
+            ai_research={name:value for name,value in report.get('ai_research',{}).items()
+                if name in {'state','current_market_interpretation','model_tasks','provider_attempts'}},
+
             native_transport_preflight=report.get('native_transport_preflight'),
             **({'smoke_result':report['smoke_result']} if 'smoke_result' in report else {}))
         if 'smoke_result' in result and data['state']=='FINAL_DELIVERED' and data.get('delivery_receipt'):
@@ -605,6 +650,7 @@ def watch_delivery(key,*,wait_seconds=600):
 
 def replay_native(key):
     """Reaudit a finished saved job without creating a task or changing its files."""
+    from .agent_review import _material
     from .native_app import failure
     from .native_runtime import collect,delivery_proof
     from .diagnostic_export import verify_zip
@@ -619,10 +665,10 @@ def replay_native(key):
     for path in paths:
         request=_read(path)
         material=request.get('material_sha256')
-        if path.name!=str(material)+'.request.json':
+        if path.name!=str(material)+'.request.json' or digest(encode(_material(request)).encode())!=material:
             raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
         moments=[e['at_utc'] for e in state.get('lifecycle',())
-            if e.get('material_sha256')==material and e.get('state') in {'REVIEW_FAILED','REVIEW_VERIFIED'}]
+            if e.get('material_sha256')==material and e.get('state') in {'REVIEW_FAILED','REVIEW_VERIFIED','REVIEW_REJECTED','REVIEW_TIMED_OUT'}]
         if not moments:
             entries.append({'material_sha256':material,'status':'NO_TERMINAL_REVIEW_TIME'})
             continue
@@ -635,7 +681,7 @@ def replay_native(key):
                     'reply_validation_status':audit['reply_validation_status'],'validated_rows':audit['validated_rows']}
         except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
             entry={'status':'REJECTED','error':failure(error,'HISTORICAL_RECEIPT')}
-        entries.append({'material_sha256':material,**entry})
+        entries.append({'material_sha256':material,'ai_stage':request.get('stage'),**entry})
     artifact=state.get('artifact',{})
     artifact_result={'status':'ABSENT'}
     if artifact.get('sha256'):
@@ -655,6 +701,9 @@ def replay_native(key):
             'saved_reconciliation':{'accepted_current_advice':comparison.get('accepted_current_advice'),
                 'hard_gates_changed':comparison.get('hard_gates_changed'),
                 'scope':'HISTORICAL_REPORT_ONLY'}}
+        if report.get('ai_research'):
+            artifact_result['saved_ai_reconciliation']={'state':report['ai_research']['state'],
+                'decisions':report['ai_research'].get('reconciliation',[])}
         try:
             proof=delivery_proof(state,config)
             artifact_result['delivery']='VERIFIED' if proof else 'NOT_OBSERVED'

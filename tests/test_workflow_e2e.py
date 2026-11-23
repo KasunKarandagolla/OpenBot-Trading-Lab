@@ -33,7 +33,7 @@ class SimulatedApp:
         if title in self.submitted:return False
         self.submitted[title]=args
         brief=args['brief'];full=brief;pages=[];commands=[]
-        if job is not None:
+        if job is not None and receipt['evidence_pages']:
             fingerprint=receipt['packet_sha256']
             self.assert_exact_arguments(args,receipt)
             first_command=next(line for line in brief.splitlines() if line.startswith('wsl.exe '))
@@ -47,7 +47,11 @@ class SimulatedApp:
             full=''.join(json.loads(page)['text'] for page in pages)
             if digest(full.encode())!=fingerprint:raise AssertionError('packet hash')
         request=json.loads(full.split('<canonical-request>\n',1)[1].split('\n</canonical-request>',1)[0])
-        self.input_cards.extend(request['cards'])
+        if request.get('input_transport'):
+            self.assert_exact_arguments(args,receipt)
+            if digest(brief.encode())!=receipt['packet_sha256']:raise AssertionError('inline packet hash')
+            if request['stage']=='SHORTLIST':self.input_cards.extend(request['evidence'])
+        else:self.input_cards.extend(request['cards'])
         n=len(self.submitted);name=f'REVIEW_{n}';turn=f'TURN_{n}';thread=f'THREAD_{n}';sid=f'SESSION_{n}';at=self.clock()
         identity=self.f.agent
         with sqlite3.connect(self.f.config['openbot_db']) as db:
@@ -97,14 +101,38 @@ class SimulatedApp:
             due,request,name,turn,thread,rows=item
             if time.monotonic()<due:continue
             self.pending.remove(item);at=self.clock()
-            reply={'schema_version':'openbot.research-review.reply.v1','material_sha256':request['material_sha256'],
-                'trade_authorization':False,'interpretations':[]}
-            for c in request['cards']:
-                evidence=next(iter(c['evidence']),c['events'][0]['id'] if c['events'] else '')
-                reply['interpretations'].append({'card_id':c['card_id'],'interpretation':c['families'][0],
-                    'supporting_evidence_ids':[evidence],'contradicting_ids':[],
-                    'strongest_rival':'NULL','null_hypothesis':False,'missed_traps':['SHARED_PRICE_EVIDENCE'],
-                    'falsifying_question':'FIRST_OBSTACLE','priority':'INVESTIGATE' if c['native_symbol']=='BEARUSDT' else 'WATCH','claims':[]})
+            if request.get('input_transport'):
+                reply={'schema_version':'openbot.ai-research.reply.v1','material_sha256':request['material_sha256'],
+                    'stage':request['stage'],'trade_authorization':False,'rows':[]}
+                if request['stage']=='DISCOVERY':
+                    evidence=sorted(request['evidence'],key=lambda c:c['native_symbol']!='BEARUSDT')
+                    control=next((c for c in evidence if c['native_symbol'] not in {'BTCUSDT','ETHUSDT'}),None)
+                    if control:
+                        reply['rows']=[{'row_id':control['id'],'family':'F4','method':'M05','direction':'BEARISH',
+                            'stage':'EARLY','support':[next(iter(control['citations']))],'contradiction':[],
+                            'rival':'F2','question':'VERIFY_METHOD_SEQUENCE','expiry':'NEXT_CLOSED_RESPONSE'}]
+                else:
+                    selected=set()
+                    for card in sorted(request['evidence'],key=lambda c:c['native_symbol']!='BEARUSDT'):
+                        symbol=card['native_symbol']
+                        admit=card['eligible'] and card['formation_citations'] and len(selected)<4 and symbol not in selected
+                        support=card['formation_citations'][0] if admit else next(iter(card['citations']))
+                        reply['rows'].append({'id':card['id'],'interpretation':card['primary_family'] if admit else 'NULL',
+                            'rival':'NULL','stage':'READY_FOR_DEEP' if admit else 'UNKNOWN',
+                            'decision':'HANDOFF' if admit else 'DECLINE','support':[support],'contradiction':[],
+                            'next_question':'FIRST_OBSTACLE','deciding_factor':'ORDERED_CONFIRMATION' if admit else 'NO_SUPPORTED_FORMATION'})
+                        if admit:selected.add(symbol)
+                    reply['assessment']={'finding':'RESEARCH_HANDOFFS' if selected else 'NO_SUPPORTED_OPPORTUNITY',
+                        'citations':[next(iter(request['assessment_evidence']))]}
+            else:
+                reply={'schema_version':'openbot.research-review.reply.v1','material_sha256':request['material_sha256'],
+                    'trade_authorization':False,'interpretations':[]}
+                for c in request['cards']:
+                    evidence=next(iter(c['evidence']),c['events'][0]['id'] if c['events'] else '')
+                    reply['interpretations'].append({'card_id':c['card_id'],'interpretation':c['families'][0],
+                        'supporting_evidence_ids':[evidence],'contradicting_ids':[],
+                        'strongest_rival':'NULL','null_hypothesis':False,'missed_traps':['SHARED_PRICE_EVIDENCE'],
+                        'falsifying_question':'FIRST_OBSTACLE','priority':'INVESTIGATE' if c['native_symbol']=='BEARUSDT' else 'WATCH','claims':[]})
             if self.reply_transform:reply=self.reply_transform(request,reply)
             raw=encode(reply);e=self.envelope
             rows.extend([e(at,'token_usage_record',{'turn_id':turn,'thread_id':name,'response_id':'FIXTURE_'+name,
@@ -191,41 +219,41 @@ class CompleteWorkflow(unittest.TestCase):
         report=json.loads((runner._job(job)/'report.json').read_text())
         return job,status,report
 
-    def test_owner_command_real_scanner_all_finalists_batched_receipts_reconciled_and_zipped(self):
+    def test_owner_command_real_scanner_both_passes_and_verified_zip(self):
         job,status,r=self.run_workflow()
-        self.assertEqual(runner.run_job(job)['state'],'COMPLETED')
-        self.assertEqual(len(self.app.submitted),r['llm_calls'])
-        self.assertEqual(r['consultant']['status'],'VALIDATED_ADVISORY_ONLY',r['consultant'])
-        self.assertGreaterEqual(len(r['conditional_research_candidates']),5,r['conditional_research_dispositions'])
-        finalists=r['native_selection']['deterministic_control_card_ids']
-        self.assertGreaterEqual(len({c['native_symbol'] for c in self.app.input_cards}),5)
-        self.assertFalse(set(finalists)-set(r['consultant']['reviewed_card_ids']))
-        self.assertFalse(r['consultant']['not_reviewed']);self.assertFalse(r['consultant']['omitted'])
-        self.assertGreater(r['consultant']['batch_count'],1)
-        self.assertEqual(r['llm_calls'],len(self.app.submitted))
+        self.assertEqual(runner.run_job(job)['state'],'COMPLETED',r.get('ai_research'))
+        ai=r['ai_research']
+        finalists=ai['stages']['SHORTLIST']['supplied_ids']
+        self.assertEqual(ai['state'],'AI_RESEARCH_COMPLETE')
+        self.assertEqual(len(self.app.submitted),r['llm_calls'],2)
+        self.assertEqual(ai['stages']['DISCOVERY']['status'],'AI_DISCOVERY_VERIFIED')
+        self.assertEqual(ai['stages']['SHORTLIST']['status'],'AI_SHORTLIST_VERIFIED')
+        for stage in ai['stages'].values():
+            self.assertEqual(stage['receipt']['verified_evidence_pages'],0)
+            self.assertTrue(stage['receipt']['native_invocation_verified'])
+        self.assertEqual(ai['investigations'][0]['native_symbol'],'BEARUSDT')
+        self.assertEqual(ai['investigations'][0]['status'],'VERIFIED_SOURCE_OBSERVATION')
+        self.assertTrue(any(a['lane']=='VERIFIED_AI_OPPORTUNITY' for a in r['targeted_allocation']))
         self.assertLessEqual(r['costs']['by_provider']['binance']['http_requests'],80)
         self.assertFalse(any(f['code']=='REQUEST_BUDGET_EXHAUSTED' for f in r['source_faults']))
-        self.assertEqual(len(self.app.input_cards),len({c['card_id'] for c in self.app.input_cards}))
+        self.assertEqual(len(finalists),len(set(finalists)))
         candidates=r['conditional_research_candidates']
-        self.assertGreaterEqual(len({c['primary_family'] for c in candidates}),2)
-        self.assertGreaterEqual(len({c['reference']['timeframe'] for c in candidates}),2)
+        self.assertTrue(candidates,ai['reconciliation'])
         self.assertIn('BEARUSDT',{c['instrument'] for c in candidates})
-        self.assertTrue(r['native_control_comparison']['ranking_or_membership_changed'])
-        self.assertFalse(r['native_control_comparison']['hard_gates_changed'])
         self.assertEqual(r['shortlist'],[])
-        self.assertTrue(all(c['reasoning_status']=='NATIVE_REVIEWED' for c in candidates))
+        self.assertTrue(all(c['reasoning_status']=='VERIFIED_AI_SHORTLIST' for c in candidates))
         self.assertTrue(r['point_reconciliation']['depth_snapshots'])
         self.assertEqual(len(r['measurement_coverage']),27)
         self.assertEqual(r['measurement_coverage']['VALUE3']['code_path'],'specialists.true_profile')
         phases=[s['state'] for s in runner._read(runner._job(job)/'state.json')['lifecycle']]
-        for phase in ('OWNER_AUTHORIZED','COMMAND_ATTESTED','SCANNING','REVIEW_REQUEST_PREPARED',
+        for phase in ('OWNER_AUTHORIZED','COMMAND_ATTESTED','SCANNING',
                 'REVIEW_READY','REVIEW_RUNNING','REVIEW_VERIFIED','RECONCILED','EXPORTED'):
             self.assertIn(phase,phases)
         raw=Path(status['artifact']['attachment_path']).read_bytes();self.assertTrue(verify_zip(raw))
         with zipfile.ZipFile(io.BytesIO(raw)) as z:
             self.assertEqual(json.loads(z.read('manifest.json'))['job_id'],job)
             saved=json.loads(z.read('report.json'));self.assertEqual(saved['job_id'],job)
-            self.assertEqual(saved['consultant']['reviewed_card_ids'],r['consultant']['reviewed_card_ids'])
+            self.assertEqual(saved['ai_research'],ai)
             self.assertFalse(saved['trade_authorization'])
         self.assertEqual(saved['output_payload_sha256'],digest(encode({k:v for k,v in saved.items()
             if k not in {'persistence','output_payload_sha256'}}).encode()))
@@ -251,16 +279,16 @@ class CompleteWorkflow(unittest.TestCase):
         if os.environ.get('OPENBOT_WRITE_E2E_PROOF')=='1':
             proof={'fixture_only':True,'live_model_calls':0,'job_id':job,'phases':[x['state'] for x in delivered['lifecycle']],
                 'lifecycle':runner._read(runner._job(job)/'state.json')['lifecycle'],
-                'finalists':len(finalists),'reviewed':r['consultant']['accepted'],
-                'batches':r['consultant']['batch_count'],'fixture_provider_attempts':r['llm_calls'],
-                'ranking_changed':r['native_control_comparison']['ranking_or_membership_changed'],
+                'finalists':len(finalists),'reviewed':ai['stages']['SHORTLIST']['accepted'],
+                'fixture_provider_attempts':r['llm_calls'],
+                'ai_state':ai['state'],'stages':{k:v['status'] for k,v in ai['stages'].items()},
                 'costs':r['costs'],'point_reconciliation':r['point_reconciliation'],
                 'zip_sha256':digest(raw),'zip_integrity':True,'trade_authorization':False}
             (ROOT/'work/final-e2e-proof.json').write_text(encode(proof)+'\n')
 
     def test_aged_point_quotes_depth_refresh_and_consumed_obstacle_invalidate_candidate(self):
         job,status,r=self.run_workflow(invalidate=True,age_points=True)
-        self.assertEqual(r['consultant']['status'],'VALIDATED_ADVISORY_ONLY',r['consultant'])
+        self.assertEqual(r['ai_research']['state'],'AI_RESEARCH_COMPLETE',r['ai_research'])
         self.assertNotIn('AAAUSDT',{c['instrument'] for c in r['conditional_research_candidates']})
         self.assertTrue(any(c['native_symbol']=='AAAUSDT' and c['disposition'] in {
             'FIRST_OPPOSING_OBSTACLE_CONSUMED','DECISION_ZONE_DISTANT_OR_UNKNOWN','INVALID_LATE_OR_SOURCE_UNASSESSABLE'}

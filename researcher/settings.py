@@ -15,6 +15,11 @@ def load_config():
 
 
 def validate_config(config):
+    from .ai_core import Limits
+    try:
+        Limits(**config.get('ai_core',{}))
+    except TypeError:
+        raise ContractError('AGENT_INPUT_SIZE') from None
     recovery=config.get('recovery',{})
     if recovery and (recovery.get('version')!='recovery-1'
             or type(recovery.get('operational_alt_capacity')) is not int

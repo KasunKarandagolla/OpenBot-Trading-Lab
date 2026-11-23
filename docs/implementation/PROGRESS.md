@@ -1,3 +1,27 @@
+# November 23 AI-core implementation
+
+Continued draft PR #24 from `7fd0865c062889b228b9d0a1a336173f104ee8a1`.
+The owner-approved [AI-core decision](AI_CORE_DECISION.md) makes independently
+verified discovery and comparison required. Scoped model questions precede
+alt history allocation. The final model stage determines membership and rank
+within current deterministic admission gates.
+
+The inline path keeps historical page verification. The first fixture attempts
+exposed a missing digest import and an oversized final packet. Import and
+projection were corrected. The end-to-end synthetic workflow verified both
+stage receipts, investigated M05, reconciled a clipped shortlist and observed
+a fixture ZIP delivery. The retained-input archival workflow verified two
+fixture receipts and read-only replay, with zero market calls. The 571-test
+discovery run passed, and the eight additional AI-core tests passed separately.
+Configuration validation passed. These results use simulated provider events.
+
+Native acceptance remains owner-host only. Run the exact
+[archived smoke instruction](AI_CORE_LOCAL_ACCEPTANCE.md) once after the
+published checkout and installed orchestration skill match. No live market or
+model requests were made in Cloud.
+
+---
+
 # November 23 native review reliability recovery
 
 Job `20261123T014656Z-ef68145ab7cc4cda8cf5432111ef76d0` ran at

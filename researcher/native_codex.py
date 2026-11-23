@@ -102,6 +102,20 @@ def _usage(value):
 
 def review_brief(request):
     from .agent_review import EXACT_CARD_CITATIONS
+    from .contracts import digest
+    if request.get('input_transport'):
+        from .ai_core import GUIDANCE, INLINE, MAX_BRIEF_BYTES, REQUEST
+        if request.get('schema_version') != REQUEST or request['input_transport'] != INLINE:
+            raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+        guidance = GUIDANCE.read_bytes()
+        if digest(guidance) != request['guidance_sha256']:
+            raise ContractError('AGENT_SKILL_HASH')
+        brief = (f"OPENBOT-RESEARCH-{request['material_sha256']}\n"
+            + guidance.decode('utf-8') + '\n<canonical-request>\n'
+            + encode(request, compact=True) + '\n</canonical-request>')
+        if not 0 < request['max_input_bytes'] <= MAX_BRIEF_BYTES or len(brief.encode()) > request['max_input_bytes']:
+            raise ContractError('AGENT_INPUT_SIZE')
+        return brief
     from .settings import ROOT
     skill=checked_path(ROOT/'.agents/skills/market-research-review/SKILL.md',
         error='AGENT_SKILL_HASH').read_text(encoding='utf-8')
