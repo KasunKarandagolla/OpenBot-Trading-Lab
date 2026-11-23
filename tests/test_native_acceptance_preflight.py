@@ -124,14 +124,16 @@ class AcceptancePreflight(unittest.TestCase):
         self.f.parent.extend([call,event,delivered]);self.f.write()
         result=attest_smoke_discovery(self.f.identity,self.f.config,as_of=self.f.time(5))
         self.assertEqual(result['status'],'VERIFIED_CURRENT_PARENT_TOOL_DISCOVERY')
-        for fault in ('wrong_call','failed','wrong_turn','bad_schema'):
+        for fault in ('wrong_call','failed','wrong_turn','bad_schema','bad_item','bad_id'):
             with self.subTest(fault=fault):
                 altered=copy.deepcopy(event)
                 item=altered['payload']['item']
                 if fault=='wrong_call':item['id']='OTHER'
                 elif fault=='failed':item['success']=False
                 elif fault=='wrong_turn':altered['payload']['turn_id']='OTHER'
-                else:
+                elif fault=='bad_item':altered['payload']['item']=None
+                elif fault=='bad_id':item['id']=[]
+                elif fault=='bad_schema':
                     bad=copy.deepcopy(tools);bad[0]['inputSchema']['additionalProperties']=True
                     item['content_items'][0]['text']=json.dumps({'tools':bad})
                 self.f.parent[-2]=altered;self.f.write()

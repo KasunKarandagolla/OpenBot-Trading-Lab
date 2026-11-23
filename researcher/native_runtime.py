@@ -61,7 +61,10 @@ def attest_smoke_discovery(identity,config,*,as_of):
                 if isinstance(call_id,str) and call_id and call_id not in pending:
                     pending[call_id]=arguments
         elif row['type']=='event_msg' and payload.get('type')=='item_completed':
-            item=payload.get('item',{});call_id=item.get('id')
+            item=payload.get('item')
+            if not isinstance(item,dict):continue
+            call_id=item.get('id')
+            if not isinstance(call_id,str):continue
             if (payload.get('turn_id')!=turn or payload.get('thread_id')!=session
                     or item.get('type')!='DynamicToolCall' or item.get('namespace')!='openbot'
                     or item.get('tool')!='tool_describe' or item.get('status')!='completed'
@@ -88,7 +91,7 @@ def attest_smoke_discovery(identity,config,*,as_of):
                 continue
         elif row['type']=='response_item' and payload.get('type')=='function_call_output':
             call_id=payload.get('call_id')
-            if call_id in completed:
+            if isinstance(call_id,str) and call_id in completed:
                 output,discovered=completed.pop(call_id)
                 if payload.get('output')==output:found.update(discovered)
     if found!=set(required):raise ContractError('NATIVE_TOOL_DISCOVERY_UNVERIFIED')
