@@ -105,8 +105,8 @@ def review_brief(request):
     from .contracts import digest
     if request.get('input_transport'):
         from .ai_core import GUIDANCE, INLINE, MAX_BRIEF_BYTES, REQUEST
-        from .native_handoff import CONFIRMED_PAGES
-        if request.get('schema_version') != REQUEST or request['input_transport'] not in {INLINE, CONFIRMED_PAGES}:
+        from .native_handoff import CONFIRMED_PAGES, COMPACT_PAGES
+        if request.get('schema_version') != REQUEST or request['input_transport'] not in {INLINE, CONFIRMED_PAGES, COMPACT_PAGES}:
             raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
         guidance = GUIDANCE.read_bytes()
         if digest(guidance) != request['guidance_sha256']:

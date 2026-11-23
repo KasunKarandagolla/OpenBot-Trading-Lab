@@ -6,7 +6,7 @@ from time import monotonic
 from .agent_review import AGENT, _material, parse_reply
 from .contracts import ContractError, digest, encode, utc
 from .handoff import ALLOWED_QUESTIONS
-from .native_handoff import CONFIRMED_PAGES, MAX_EVIDENCE_PAGES, CONFIRMED_SUBMISSION_POLICY
+from .native_handoff import COMPACT_PAGES, MAX_EVIDENCE_PAGES, COMPACT_SUBMISSION_POLICY
 from .research import fact_id
 from .settings import ROOT
 
@@ -203,10 +203,10 @@ class AIResearch:
         body = {'schema_version': REQUEST, 'agent_name': AGENT,
             'stage': stage, 'evidence_as_of_utc': at, 'mode': mode, 'evidence': evidence,
             'skill_sha256': digest((ROOT / '.agents/skills/market-research-review/SKILL.md').read_bytes()),
-            'guidance_sha256': digest(GUIDANCE.read_bytes()), 'input_transport': CONFIRMED_PAGES,
+            'guidance_sha256': digest(GUIDANCE.read_bytes()), 'input_transport': COMPACT_PAGES,
             'max_input_bytes': self.limits.max_input_bytes,
             'model': self.identity['model'] if self.identity else None,
-            'dispatch_reservation_policy': CONFIRMED_SUBMISSION_POLICY,
+            'dispatch_reservation_policy': COMPACT_SUBMISSION_POLICY,
             'question_limit': self.limits.max_questions, 'card_limit': self.limits.max_cards,
             'horizon_hours': 15, 'closed_history_methods': sorted(CLOSED_METHODS), 'registry': registry,
             'families': [{k:f[k] for k in ('id','name')} for f in config['families']],

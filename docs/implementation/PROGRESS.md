@@ -1,3 +1,70 @@
+# November 23 compact native-child implementation
+
+The owner selected Option A and reported a real owner-host compact **inline**
+child task: an 870-byte brief matched provider input, a 619-byte reply matched
+the provider and app final, the existing attester succeeded with no unauthorized
+operations, and the observed Codex CLI record format was 0.171.0. That is
+owner-supplied evidence for the inline boundary; its records were not available
+in this Cloud session. It does not establish paged delivery or two stages.
+Cloud started from clean feature commit `54ec29f454813adbcf3ed8dec146b9dabdc83134`
+and issued a Context Acceptance Receipt before editing.
+
+## In-place changes and security boundary
+
+* `ai_core.py` emits the versioned `COMPACT_AI_CORE_PAGES_V1` request for both
+  stages. Existing broad Discovery, selective inquiry, Shortlist, citations,
+  source/economic gates and reconciliation remain in place. `native_handoff.py`
+  reuses the bounded immutable, material-hash-bound pages and the literal first
+  and next commands; old ticketed formats remain separately readable.
+* `openbot_runner.py` issues one small native `title`/`brief` object under the
+  existing job lock. A deterministic internal dispatch record binds the exact
+  arguments, material and page hash before publication. No Base64 round trip,
+  model-operated grant command, 90-second submission countdown or 180-second
+  publication countdown is required. The request's existing freshness and
+  overall run limits still apply. A second poll does not reissue permission;
+  an uncertain or clipped output must not be submitted or automatically
+  retried. This deliberately favors duplicate prevention over recovering an
+  unobserved clipped first status response. A local synthetic fixture measured
+  a 1,298-byte frame and 843-byte brief; this is not a host clipping guarantee.
+* `native_app.py` and `native_runtime.py` retain independent owner/parent,
+  selected provider/model, exact call arguments, native acknowledgment/task ID,
+  ordered complete provider-visible pages, final response and no-forbidden-tool
+  checks. The compact acknowledgment is bound to the actual provider record;
+  it is not an echoed authorization token. Provider formats outside the
+  existing qualified Codex adapter fail closed; no model is selected or changed
+  by this implementation. Historical child receipt and replay formats remain.
+* Updated the existing orchestration skill template and added an exact
+  commit-bound synthetic paged Discovery owner instruction and
+  `COMPACT_NATIVE_ACCEPTANCE.md`. Neither installs a host skill. Registered
+  skill revision/readback and the actual host preflight remain owner-host gates.
+  The isolated acceptance run uses one real task, cited synthetic evidence and
+  no market request; it does not accept a two-stage or live workflow.
+
+No new agent, provider gateway, database, scheduler, market scan, live model
+call or trading action was created in Cloud. M32/M33 remain trial specifications;
+the original blueprint and implementation plan are unchanged. Source coverage
+and `trade_authorization=false` remain as before. The owner's reported inline
+test and offline simulated records do not make the compact paged workflow
+`NATIVE_VERIFIED`.
+
+## Verification
+
+* `python -m unittest discover -s tests -v`: **607 tests passed** in 707.055
+  seconds. This includes the compact one-stage fixture, both AI stages with
+  simulated provider records, historical ticketed verification and read-only
+  replay. It is not an actual OpenBot model invocation.
+* Focused compact and synthetic Discovery regressions: **11 tests passed**;
+  focused legacy confirmation and AI-core regressions: **24 tests passed**.
+  They cover clipped/missing/modified/reordered/duplicate page outputs, wrong
+  child model and task acknowledgment, citations, forbidden tools, concurrent
+  one-shot issuance, uncertain submission, expiry and unsupported providers.
+* `python -m researcher config validate`: **VALID**; nine families, 31 methods,
+  zero production detectors and zero full-core packs enabled. No market,
+  model or native task calls were made in Cloud. See the session handoff for
+  final commit and observed CI status.
+
+---
+
 # November 23 compact native-child investigation
 
 The owner requested investigation of Design 1+ §H4 and authorized a minimal

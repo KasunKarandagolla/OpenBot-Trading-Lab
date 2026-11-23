@@ -99,6 +99,27 @@ class WorkflowLifecycleRecovery(unittest.TestCase):
         self.assertEqual(report['poll_test']['receipt']['parent_delivery'],'EXACT_ARGUMENT_BYTES_CONFIRMED')
         self.assertTrue(verify_zip(Path(state['artifact']['attachment_path']).read_bytes()))
 
+    def test_compact_paged_discovery_test_uses_one_child_and_no_market_scan(self):
+        w=self.w
+        prompt=runner.COMPACT_TEST_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','7'*40)
+        with sqlite3.connect(w.f.config['openbot_db']) as db:
+            db.execute('UPDATE projection_mailbox_messages SET text=?',(prompt,))
+        with patch('researcher.native_runtime.integration_preflight',return_value={'status':'FIXTURE_READER_ONLY'}), \
+                patch('researcher.native_runtime.attest_smoke_discovery',return_value={'status':'VERIFIED_FIXTURE_TOOLS'}), \
+                patch('researcher.discovery.scan_market_research') as scanner:
+            job,state,report=w.run_workflow()
+        scanner.assert_not_called()
+        self.assertEqual(state['state'],'COMPLETED',report.get('poll_test'))
+        self.assertEqual(report['poll_test']['status'],'VERIFIED')
+        self.assertEqual(report['costs']['market_http_requests'],0)
+        self.assertEqual(len(w.app.submitted),1)
+        self.assertEqual(report['poll_test']['receipt']['parent_delivery'],'EXACT_TASK_ARGUMENTS_IN_PROVIDER_RECORD')
+        self.assertTrue(report['poll_test']['reply']['rows'])
+        replay=runner.replay_native(job)
+        self.assertEqual(len(replay['reviews']),1)
+        self.assertEqual(replay['reviews'][0]['status'],'VERIFIED_RECEIPT')
+        self.assertEqual(replay['reviews'][0]['ai_stage'],'DISCOVERY')
+
     def test_archived_ai_core_smoke_runs_both_stages_on_shipped_source(self):
         w=self.w
         prompt=runner.AI_SMOKE_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','7'*40)

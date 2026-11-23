@@ -48,7 +48,7 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
         raise ContractError('NATIVE_REQUEST_STALE')
     if request.get('native_identity',{}).get('provider')=='codex':
         from .native_identity import load_private,assert_parent
-        from .native_handoff import CONFIRMED_PAGES, dispatch_frame, packet
+        from .native_handoff import COMPACT_PAGES, CONFIRMED_PAGES, dispatch_frame, packet, request_dispatch_policy
         private=load_private(config_path)
         if verified_identity is not None and verified_identity!=request['native_identity']:
             raise ContractError('NATIVE_SESSION_MISMATCH')
@@ -57,6 +57,8 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
         if digest(checked_path(installed,error='AGENT_SKILL_HASH').read_bytes())!=request['skill_sha256']:
             raise ContractError('AGENT_SKILL_HASH')
         args,fingerprint,pages=packet(request,folder)
+        if request.get('input_transport')==COMPACT_PAGES:
+            request_dispatch_policy(request)
         if request.get('input_transport')==CONFIRMED_PAGES:
             dispatch_frame(folder.parent.name,material,request['stage'],args,fingerprint,pages)
         task_path=under_work(folder/(material+'.review-task.json'))
@@ -331,13 +333,14 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         emit('REVIEW_FAILED',first_error=first_error)
         return finish('NATIVE_TASK_PUBLICATION_FAILED',terminal_error=first_error)
     folder=under_work(directory);published=clock();published_monotonic=time.monotonic()
-    from .native_handoff import (CONFIRMED_PAGES,CONFIRMED_PUBLICATION_SECONDS,CONFIRMED_SUBMISSION_POLICY,FRESH_SECONDS,RESPONSE_SECONDS,SUBMISSION_SECONDS,
+    from .native_handoff import (COMPACT_PAGES,COMPACT_SUBMISSION_POLICY,CONFIRMED_PAGES,CONFIRMED_PUBLICATION_SECONDS,CONFIRMED_SUBMISSION_POLICY,FRESH_SECONDS,RESPONSE_SECONDS,SUBMISSION_SECONDS,
         RESERVED_SUBMISSION_POLICY,load_dispatch,read_object,runner_review)
     reserved=runner_review(folder) and request.get('native_identity',{}).get('provider')=='codex'
     inline=bool(request.get('input_transport'))
     confirmed=request.get('input_transport')==CONFIRMED_PAGES
+    compact=request.get('input_transport')==COMPACT_PAGES
     transport=request.get('input_transport') if inline else 'PAGED_V2'
-    publication_limit=CONFIRMED_PUBLICATION_SECONDS if request.get('dispatch_reservation_policy')==CONFIRMED_SUBMISSION_POLICY else SUBMISSION_SECONDS
+    publication_limit=FRESH_SECONDS if compact else CONFIRMED_PUBLICATION_SECONDS if request.get('dispatch_reservation_policy')==CONFIRMED_SUBMISSION_POLICY else SUBMISSION_SECONDS
     config_hash=digest(under_work(config_file).read_bytes())
     result['publication_seconds']=round(time.monotonic()-began,6)
     result['request_prepared_at_utc']=published
@@ -409,7 +412,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
             if reserved:
                 observe_ticket(as_of)
-                if confirmed and not ticket_observed:
+                if (confirmed or compact) and not ticket_observed:
                     # Publication and parent confirmation are Linux-local. A
                     # Windows receipt read cannot observe an authorized task
                     # until the one-time ticket exists.
@@ -419,6 +422,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                             code=read_object(preview_error).get('reason')
                             if code in {'NATIVE_PARENT_OUTPUT_TRUNCATED','NATIVE_PARENT_ARGUMENT_MISMATCH'}:
                                 return dispatch_failure(code)
+                        if compact:
+                            return dispatch_failure('NATIVE_TASK_NOT_SUBMITTED')
                         return dispatch_failure('NATIVE_PARENT_DELIVERY_UNCONFIRMED'
                             if (folder/(material+'.preview.json')).is_file() else 'NATIVE_TASK_NOT_SUBMITTED')
                     time.sleep(min(1,max(0,reservation_deadline-time.monotonic())))
@@ -451,7 +456,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 result['native_task_observation']=observed
                 if phase['submission_state']=='REJECTED':return dispatch_failure(phase['submission_error'])
                 at=submission.get('responded_at_utc') or submission.get('attempted_at_utc')
-                if at and at!=response_anchor and not phase_closed:
+                if at and at!=response_anchor and not phase_closed and not compact:
                     response_anchor=at
                     phase_deadline=min(deadline,time.monotonic()+max(0,RESPONSE_SECONDS-(utc(stamp)-utc(at)).total_seconds()))
                 if not count and not running_at and time.monotonic()>=phase_deadline:

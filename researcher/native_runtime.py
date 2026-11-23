@@ -118,7 +118,7 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
     if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
     from .native_codex import attest,attest_handoff,observe_submission
     from .native_handoff import (runner_review,load_dispatch,packet,page_command_fingerprint,
-        verify_submission_window,FRESH_SECONDS,BOUNDED_WAIT_PAGE_COMMANDS,CONFIRMED_PAGES)
+        verify_submission_window,FRESH_SECONDS,BOUNDED_WAIT_PAGE_COMMANDS,CONFIRMED_PAGES,COMPACT_PAGES)
     from .native_identity import under_work
     directory=under_work(directory) if directory is not None else None
     reserved=runner_review(directory)
@@ -190,7 +190,7 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         if pages:
             evidence=(directory,request['material_sha256'],page_command_fingerprint(request,fingerprint),pages,
-                request.get('page_command_policy')==BOUNDED_WAIT_PAGE_COMMANDS or request.get('input_transport')==CONFIRMED_PAGES)
+                request.get('page_command_policy')==BOUNDED_WAIT_PAGE_COMMANDS or request.get('input_transport') in {CONFIRMED_PAGES,COMPACT_PAGES})
     else:attest_handoff(config,identity,request,as_of=as_of,require_configured_model=require_configured_model)
     proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
         expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence,
@@ -214,6 +214,8 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
     if request.get('input_transport')==CONFIRMED_PAGES:
         audit.update(parent_delivery=ticket['parent_delivery'], argument_integrity=ticket['argument_integrity'],
             preview_sha256=ticket['preview_sha256'])
+    elif request.get('input_transport')==COMPACT_PAGES:
+        audit.update(parent_delivery='EXACT_TASK_ARGUMENTS_IN_PROVIDER_RECORD')
     return raw,audit
 
 

@@ -19,10 +19,12 @@ RESPONSE_SECONDS = 30
 LEGACY_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'
 RESERVED_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; 90_SECONDS_FROM_RESERVATION; NEVER_AUTOMATICALLY_RESUBMIT'
 CONFIRMED_SUBMISSION_POLICY = 'CONFIRMED_PREVIEW; 180_SECONDS_PUBLICATION; 90_SECONDS_RESERVATION; NO_RESUBMISSION'
+COMPACT_SUBMISSION_POLICY = 'COMPACT_ONCE; REQUEST_FRESHNESS_BOUND; NO_RESUBMISSION'
 VERBATIM_PAGE_COMMANDS = 'VERBATIM_NEXT_PAGE_V1'
 TICKET_BOUND_PAGE_COMMANDS = 'VERBATIM_TICKET_BOUND_PAGE_V2'
 BOUNDED_WAIT_PAGE_COMMANDS = 'VERBATIM_TICKET_BOUND_WAIT_30S_V3'
 CONFIRMED_PAGES = 'CONFIRMED_AI_CORE_PAGES_V2'
+COMPACT_PAGES = 'COMPACT_AI_CORE_PAGES_V1'
 DISPATCH_FRAME = 'OPENBOT_NATIVE_DISPATCH_V2'
 PARENT_OUTPUT_BYTES = 4096
 EVIDENCE_PAGE_BYTES = 12288
@@ -45,7 +47,7 @@ def wsl_root():
 def page_command_fingerprint(request, fingerprint):
     """New commands use the saved ticket for the full packet SHA-256."""
     policy = request.get('page_command_policy')
-    if request.get('input_transport') == CONFIRMED_PAGES or policy in (TICKET_BOUND_PAGE_COMMANDS, BOUNDED_WAIT_PAGE_COMMANDS):
+    if request.get('input_transport') in (CONFIRMED_PAGES, COMPACT_PAGES) or policy in (TICKET_BOUND_PAGE_COMMANDS, BOUNDED_WAIT_PAGE_COMMANDS):
         return None
     if policy not in (None, VERBATIM_PAGE_COMMANDS):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
@@ -67,7 +69,7 @@ def packet(request, directory):
     material = request['material_sha256']
     full = review_brief(request)
     args = {'title': 'OPENBOT-RESEARCH-' + material, 'brief': full}
-    if request.get('input_transport') == CONFIRMED_PAGES:
+    if request.get('input_transport') in (CONFIRMED_PAGES, COMPACT_PAGES):
         return confirmed_packet(args, full, directory, material)
     if request.get('input_transport'):
         return args, digest(full.encode('utf-8')), ()
@@ -222,7 +224,9 @@ def read_object(path):
 
 def request_dispatch_policy(request):
     policy=request.get('dispatch_reservation_policy',LEGACY_SUBMISSION_POLICY)
-    if policy not in (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY, CONFIRMED_SUBMISSION_POLICY):
+    if policy not in (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY, CONFIRMED_SUBMISSION_POLICY, COMPACT_SUBMISSION_POLICY):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    if (request.get('input_transport') == COMPACT_PAGES) != (policy == COMPACT_SUBMISSION_POLICY):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     return policy
 
@@ -249,7 +253,7 @@ def load_dispatch(directory, request, *, as_of):
                 and (type(ticket.get('reserved_monotonic')) not in {int, float}
                      or not 0 <= ticket['reserved_monotonic'] < float('inf')))
             or not utc(request['as_of_utc']) <= published <= reserved <= utc(as_of)
-            or reserved >= published + timedelta(seconds=CONFIRMED_PUBLICATION_SECONDS if ticket['submission_policy']==CONFIRMED_SUBMISSION_POLICY else SUBMISSION_SECONDS)):
+            or reserved >= published + timedelta(seconds=(FRESH_SECONDS if ticket['submission_policy']==COMPACT_SUBMISSION_POLICY else CONFIRMED_PUBLICATION_SECONDS if ticket['submission_policy']==CONFIRMED_SUBMISSION_POLICY else SUBMISSION_SECONDS))):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     if request.get('input_transport') == CONFIRMED_PAGES:
         frame = dispatch_frame(directory.parent.name, material, request['stage'], args, fingerprint, pages)
@@ -264,6 +268,8 @@ def load_dispatch(directory, request, *, as_of):
 
 
 def submission_deadline(ticket):
+    if ticket.get('submission_policy') == COMPACT_SUBMISSION_POLICY:
+        return utc(ticket['published_at_utc']) + timedelta(seconds=FRESH_SECONDS)
     anchor = 'reserved_at_utc' if ticket.get('submission_policy') in (RESERVED_SUBMISSION_POLICY, CONFIRMED_SUBMISSION_POLICY) else 'published_at_utc'
     return utc(ticket[anchor]) + timedelta(seconds=SUBMISSION_SECONDS)
 
@@ -277,7 +283,8 @@ def verify_submission_window(submission, ticket):
         raise ContractError('NATIVE_SUBMISSION_OUTSIDE_WINDOW')
     if submission.get('responded_at_utc'):
         response=utc(submission['responded_at_utc'])
-        if not attempted <= response <= attempted + timedelta(seconds=RESPONSE_SECONDS):
+        limit = submission_deadline(ticket) if ticket.get('submission_policy') == COMPACT_SUBMISSION_POLICY else attempted + timedelta(seconds=RESPONSE_SECONDS)
+        if not attempted <= response <= limit:
             raise ContractError('NATIVE_RESPONSE_OUTSIDE_WINDOW')
 
 

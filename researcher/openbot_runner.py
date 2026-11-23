@@ -21,7 +21,7 @@ from datetime import timedelta
 from .contracts import ContractError, digest, encode, now_utc, utc
 from .settings import ROOT
 from .native_identity import active_identity, assert_current, assert_parent, load_private, read_db, ref, under_work
-from .native_handoff import CONFIRMED_PAGES, CONFIRMED_PUBLICATION_SECONDS, CONFIRMED_SUBMISSION_POLICY, FRESH_SECONDS, JOB_ID, SHA256, SUBMISSION_SECONDS
+from .native_handoff import COMPACT_PAGES, COMPACT_SUBMISSION_POLICY, CONFIRMED_PAGES, CONFIRMED_PUBLICATION_SECONDS, CONFIRMED_SUBMISSION_POLICY, FRESH_SECONDS, JOB_ID, SHA256, SUBMISSION_SECONDS
 
 BASE=ROOT/'work/openbot-integration'
 PRIVATE=BASE/'native-audit-local.json'
@@ -29,6 +29,7 @@ OWNER_COMMAND='run the complete market research now'
 SMOKE_PROMPT=ROOT/'docs/implementation/OPENBOT_NATIVE_SMOKE_PROMPT.txt'
 AI_SMOKE_PROMPT=ROOT/'docs/implementation/OPENBOT_AI_CORE_SMOKE_PROMPT.txt'
 POLL_TEST_PROMPT=ROOT/'docs/implementation/OPENBOT_POLL_TEST_PROMPT.txt'
+COMPACT_TEST_PROMPT=ROOT/'docs/implementation/OPENBOT_COMPACT_TEST_PROMPT.txt'
 ACCEPTANCE_PROMPT=ROOT/'docs/implementation/OPENBOT_RECOVERY_ACCEPTANCE_PROMPT.txt'
 FINAL={'COMPLETED','PARTIAL','FAILED','INTERRUPTED','FINAL_DELIVERED'}
 
@@ -130,6 +131,9 @@ def _owner_proof(identity,config,*,expected_commit=None):
         if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
                 text.strip()==POLL_TEST_PROMPT.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',expected_commit).strip()):
             return 'POLL_TEST'
+        if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
+                text.strip()==COMPACT_TEST_PROMPT.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',expected_commit).strip()):
+            return 'COMPACT_POLL_TEST'
         # Exact versioned owner message, pinned to the checkout being launched.
         # Substrings, negated/quoted instructions and delegated senders fail.
         if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
@@ -161,7 +165,7 @@ def start(request_id):
             existing=_read(lock)
             if existing.get('turn_ref')==identity['turn_ref']:
                 from .native_handoff import wsl_root
-                result=status(existing['job_id'])
+                result=status(existing['job_id'],_allow_compact_dispatch=False)
                 root=wsl_root().replace("'", "''")
                 if 'begin_frame' not in result:
                     result['status_command']=f"wsl.exe --cd '{root}' -- python3 -m researcher.openbot_runner status --job-id {existing['job_id']}"
@@ -186,7 +190,7 @@ def start(request_id):
             _write(folder/'process.json',_process_record(child.pid))
     except OSError:
         _transition(folder,'FAILED',reason='RUNNER_PROCESS_START_FAILED');raise ContractError('RUNNER_PROCESS_START_FAILED') from None
-    result=status(key)
+    result=status(key,_allow_compact_dispatch=False)
     from .native_handoff import wsl_root
     root=wsl_root().replace("'", "''")
     result['status_command']=f"wsl.exe --cd '{root}' -- python3 -m researcher.openbot_runner status --job-id {key}"
@@ -326,8 +330,8 @@ def run_job(key):
             (transport['status']!='VALIDATED_ADVISORY_ONLY' or transport.get('accepted',0)<1 or
                 transport.get('native_receipt',{}).get('native_identity')!=state['native_identity']))
         ai_smoke=state.get('owner_run_mode')=='AI_CORE_SMOKE'
-        if state.get('owner_run_mode')=='POLL_TEST':
-            report=_run_poll_test(key,folder,state,config,native_progress)
+        if state.get('owner_run_mode') in {'POLL_TEST','COMPACT_POLL_TEST'}:
+            report=_run_poll_test(key,folder,state,config,native_progress,compact=state['owner_run_mode']=='COMPACT_POLL_TEST')
         elif ai_smoke:
             report=_run_ai_smoke(key,folder,state,config,progress,native_progress)
         elif smoke or transport_failed:
@@ -383,7 +387,7 @@ def run_job(key):
         native=report.get('consultant',{})
         complete=(report.get('mode')=='LIVE' and report.get('ai_research',{}).get('state')=='AI_RESEARCH_COMPLETE')
         archived_complete=(ai_smoke and report.get('ai_research',{}).get('state')=='AI_RESEARCH_COMPLETE')
-        poll_complete=(state.get('owner_run_mode')=='POLL_TEST' and report.get('poll_test',{}).get('status')=='VERIFIED')
+        poll_complete=(state.get('owner_run_mode') in {'POLL_TEST','COMPACT_POLL_TEST'} and report.get('poll_test',{}).get('status')=='VERIFIED')
         # Delivery is a subsequent native main-chat action. This worker never
         # asserts FULL acceptance before observing the real delivered answer.
         _transition(folder,'COMPLETED' if complete or archived_complete or poll_complete else 'PARTIAL',artifact=artifact,
@@ -404,7 +408,7 @@ def run_job(key):
     return status(key)
 
 
-def _run_poll_test(key,folder,state,config,native_progress):
+def _run_poll_test(key,folder,state,config,native_progress,*,compact=False):
     """One owner-authorized harmless native receipt test, with no market input."""
     from .agent_review import _material, parse_reply, validate_reply
     from .ai_core import DISCOVERY, research_with_native
@@ -419,10 +423,15 @@ def _run_poll_test(key,folder,state,config,native_progress):
         _transition(folder,'NATIVE_INTEGRATION_PREFLIGHT',integration_preflight=setup)
         research=research_with_native(folder/'review',audit_config=PRIVATE,identity=state['native_identity'],
             clock=now_utc,progress=lambda stage,**fields:native_progress(stage,review_scope='NATIVE_POLL_TEST',**fields))
-        request=research._request(DISCOVERY,[],at=now_utc(),mode='SYNTHETIC',
-            extra={'context':{},'integration_test':'Return a valid discovery reply with an empty rows array.',
+        evidence=[{'id':'SYNTHETIC-ROW-1','native_symbol':'SYNTHETICUSDT','methods':['M05'],
+            'citations':{'SYN-E1':'Synthetic only: a previously known range edge was briefly crossed and the closed bar returned inside. Breakout, rejection and noise remain rivals.'}}]
+        request=research._request(DISCOVERY,evidence if compact else [],at=now_utc(),mode='SYNTHETIC',
+            extra={'context':{},'integration_test':('Compare the synthetic observation, cite SYN-E1, name a rival and select an allowed discriminating question.' if compact else 'Return a valid discovery reply with an empty rows array.'),
                    'omitted_count':0},config=load_config())
-        request['registry']=[]
+        if not compact:
+            request['input_transport']=CONFIRMED_PAGES
+            request['dispatch_reservation_policy']=CONFIRMED_SUBMISSION_POLICY
+        request['registry']=[m for m in request['registry'] if m['id']=='M05'] if compact else []
         request['material_sha256']=digest(encode(_material(request)).encode())
         received=research.gateway(request,600)
         collector=received['collector']
@@ -431,10 +440,10 @@ def _run_poll_test(key,folder,state,config,native_progress):
         receipt=received.get('receipt')
         if receipt and collector.get('status')=='NATIVE_RECEIPT_COLLECTED':
             reply=validate_reply(parse_reply(received['raw']),request)['reply']
-            if (reply['rows']==[] and receipt.get('native_invocation_verified') is True
+            if ((bool(reply['rows']) if compact else reply['rows']==[]) and receipt.get('native_invocation_verified') is True
                     and receipt.get('native_identity')==state['native_identity']
                     and receipt.get('reply_sha256')==digest(received['raw'].encode())
-                    and receipt.get('parent_delivery')=='EXACT_ARGUMENT_BYTES_CONFIRMED'):
+                    and receipt.get('parent_delivery')==('EXACT_TASK_ARGUMENTS_IN_PROVIDER_RECORD' if compact else 'EXACT_ARGUMENT_BYTES_CONFIRMED')):
                 result.update(status='VERIFIED',receipt=receipt,reply=reply)
     except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
         result['first_error']=failure(error,'NATIVE_SMOKE_PREFLIGHT')
@@ -538,6 +547,55 @@ def _confirmed_status(folder, state, result, include_review):
         _write(preview, _preview_metadata(frame, stamp))
     result.clear()
     result.update(frame)
+
+
+def _compact_status(folder, state, result):
+    """Issue one small task object under the job lock; never reissue on uncertainty."""
+    from .agent_review import _material
+    from .native_handoff import PARENT_OUTPUT_BYTES, load_dispatch, packet, request_dispatch_policy
+    if state['state'] != 'REVIEW_READY':
+        return
+    material = state.get('material_sha256')
+    if not isinstance(material, str) or not re.fullmatch(SHA256, material):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    directory = folder/'review'
+    request = _read(directory/(material+'.request.json'))
+    if (request.get('material_sha256') != material or request.get('native_identity') != state['native_identity']
+            or digest(encode(_material(request)).encode()) != material
+            or request.get('input_transport') != COMPACT_PAGES
+            or request_dispatch_policy(request) != COMPACT_SUBMISSION_POLICY):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    stamp = now_utc()
+    if (not 0 <= (utc(stamp)-utc(request['as_of_utc'])).total_seconds() < FRESH_SECONDS
+            or time.monotonic() >= state.get('request_expires_monotonic', float('inf'))):
+        raise ContractError('NATIVE_REQUEST_STALE')
+    lease = directory/(material+'.dispatch.json')
+    if lease.exists():
+        _, _, _, ticket = load_dispatch(directory, request, as_of=stamp)
+        result.update(state='REVIEW_DISPATCH_RESERVED', submission_permitted=False, dispatch_receipt=ticket)
+        return
+    assert_parent(state['native_identity'], load_private(PRIVATE), require_configured_model=True)
+    args, fingerprint, pages = packet(request, directory)
+    if under_work(directory/(material+'.review-task.json')).read_bytes() != encode(args).encode():
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    stamp = now_utc()
+    if (not 0 <= (utc(stamp)-utc(request['as_of_utc'])).total_seconds() < FRESH_SECONDS
+            or time.monotonic() >= state.get('request_expires_monotonic', float('inf'))):
+        raise ContractError('NATIVE_REQUEST_STALE')
+    published = state['request_prepared_at_utc']
+    if not utc(request['as_of_utc']) <= utc(published) <= utc(stamp):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    ticket = {'material_sha256':material, 'arguments_sha256':digest(encode(args).encode()),
+        'packet_sha256':fingerprint, 'evidence_pages':len(pages), 'reserved_at_utc':stamp,
+        'published_at_utc':published, 'submission_policy':COMPACT_SUBMISSION_POLICY}
+    frame = {'begin_frame':'OPENBOT_COMPACT_DISPATCH_V1', 'state':'REVIEW_READY',
+        'review_transport':COMPACT_PAGES, 'material_sha256':material, 'ai_stage':request['stage'],
+        'submission_permitted':True, 'start_task_arguments':args, 'end_frame':'END_OPENBOT_COMPACT_DISPATCH_V1',
+        'trade_authorization':False}
+    if len(encode(frame, compact=True).encode()) + 1 > PARENT_OUTPUT_BYTES:
+        raise ContractError('NATIVE_PARENT_OUTPUT_TOO_LARGE')
+    _write(lease, ticket)
+    result.clear(); result.update(frame)
 
 
 def reserve_review(key, material, proof=None, end=None):
@@ -669,7 +727,7 @@ def review_page(key,material,fingerprint,page):
         state=_read(folder/'state.json')
         if (state['state'] not in {'REVIEW_READY','TASK_SUBMISSION_ATTEMPTED','TASK_CREATED','REVIEW_RUNNING',
                 'REVIEW_SUBMISSION_UNVERIFIED'} or state.get('material_sha256')!=material
-                or state.get('review_transport') not in {'PAGED_V2',CONFIRMED_PAGES}):
+                or state.get('review_transport') not in {'PAGED_V2',CONFIRMED_PAGES,COMPACT_PAGES}):
             raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
         request=_read(directory/(material+'.request.json'))
         if (request.get('material_sha256')!=material or request.get('native_identity')!=state['native_identity']
@@ -686,7 +744,7 @@ def review_page(key,material,fingerprint,page):
         return pages[page-1]
 
 
-def status(key,include_review=False):
+def status(key,include_review=False,*,_allow_compact_dispatch=True):
     folder=_job(key)
     confirmed_result={}
     with _file_guard(folder/'state.lock'):
@@ -708,6 +766,8 @@ def status(key,include_review=False):
             # A second snapshot could pair a stale REVIEW_READY status with no
             # preview after the worker has advanced to a different phase.
             _confirmed_status(folder,data,confirmed_result,include_review)
+        elif data.get('review_transport')==COMPACT_PAGES and _allow_compact_dispatch:
+            _compact_status(folder,data,confirmed_result)
     if 'begin_frame' in confirmed_result:return confirmed_result
     delivery_error=None
     if data['state'] in {'COMPLETED','PARTIAL'} and data.get('artifact'):
@@ -732,7 +792,7 @@ def status(key,include_review=False):
     from .native_identity import safe_diagnostic
     diagnostic=safe_diagnostic(data.get('native_diagnostic'))
     if diagnostic:result['native_diagnostic']=diagnostic
-    if data.get('review_transport') == CONFIRMED_PAGES:
+    if data.get('review_transport') in {CONFIRMED_PAGES,COMPACT_PAGES}:
         if data['state'] not in FINAL:
             result.pop('lifecycle',None)
         result.update(confirmed_result)

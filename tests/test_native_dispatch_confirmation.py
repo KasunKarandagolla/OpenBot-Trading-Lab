@@ -66,6 +66,9 @@ class ConfirmedDispatch(unittest.TestCase):
         if transport == INLINE:
             from researcher.native_handoff import RESERVED_SUBMISSION_POLICY
             request['dispatch_reservation_policy'] = RESERVED_SUBMISSION_POLICY
+        else:
+            from researcher.native_handoff import CONFIRMED_SUBMISSION_POLICY
+            request['dispatch_reservation_policy'] = CONFIRMED_SUBMISSION_POLICY
         needed = INCIDENT_BRIEF_BYTES-len(review_brief(request).encode())
         request['fixture_evidence'] = ('Retained closed-bar evidence with symbols, boundaries and contradictions. ' *
                                        needed)[:needed]

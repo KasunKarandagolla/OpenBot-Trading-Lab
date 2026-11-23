@@ -2,7 +2,7 @@
 name: openbot-market-research
 description: Run the on-demand Market Researcher with the existing OpenBot agent and verify the research artifact.
 metadata:
-  version: "4.0.0"
+  version: "5.0.0"
 ---
 
 Installed isolated checkout: `@@RESEARCH_ROOT@@` in WSL.
@@ -28,20 +28,16 @@ only. Keep the existing provider, model, agent, permissions and trading controls
 
 3. The start response includes `status_command`. Copy it verbatim for
    every poll, with no change to the checkout path. Wait 5–10 seconds between
-   polls and share progress at least once per minute. For confirmed AI-core
-   tasks the ordinary status returns the complete `OPENBOT_NATIVE_DISPATCH_V2`
-   preview at `REVIEW_READY`. Require its `begin_frame`, complete
-   `start_task_arguments`, `reserve_command_prefix`, and `z_end_frame`.
-   For a complete frame, run its literal `reserve_command_prefix` followed
-   by one space and the exact `z_end_frame`. Wait for
-   `submission_permitted: true`, verify its argument hash matches the preview,
-   and submit the exact preview arguments once through native
-   `openbot.tool_call` to `openbot.start_task`. Preserve the brief newline.
-   If the frame is clipped, keep polling the exact status command for a full
-   preview within its deadline. A duplicate grant gives no permission to
-   submit. Never retry an uncertain or granted submission. The child follows
-   the fixed bounded evidence commands in its task. Historical paged jobs
-   retain their original `status --include-review` dispatch instructions.
+   polls and share progress at least once per minute. For new AI-core tasks,
+   ordinary status issues one `OPENBOT_COMPACT_DISPATCH_V1` object at
+   `REVIEW_READY`. Require `submission_permitted: true`, complete
+   `start_task_arguments`, and `end_frame: END_OPENBOT_COMPACT_DISPATCH_V1`.
+   Submit those exact arguments once through native `openbot.tool_call` to
+   `openbot.start_task`. Preserve the brief newline and do not reconstruct a
+   command or path. If the object is clipped or submission is uncertain, stop
+   and report it; never submit or request the task again. Subsequent status
+   polls do not authorize another task. The child uses the bounded evidence
+   commands in its brief. Historical jobs retain their original instructions.
 4. A task appearing in OpenBot is not model proof. The runner checks the
    acknowledged task ID, configured provider/model, exact app and provider
    input, final output, citations, and tool use. Discovery can direct approved

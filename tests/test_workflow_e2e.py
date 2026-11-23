@@ -13,7 +13,7 @@ from unittest.mock import patch
 from researcher import openbot_runner as runner
 from researcher.contracts import digest,encode,utc
 from researcher.diagnostic_export import verify_zip
-from researcher.native_handoff import CONFIRMED_PAGES, PARENT_OUTPUT_BYTES
+from researcher.native_handoff import COMPACT_PAGES, CONFIRMED_PAGES, PARENT_OUTPUT_BYTES
 from researcher.settings import ROOT
 import test_native_runtime as native
 from workflow_fixtures import ScenarioAPI,ScenarioScreen,FakeClient,AT
@@ -79,7 +79,7 @@ class SimulatedApp:
                 'item':{'type':'UserMessage','content':[{'type':'text','text':'OpenBot task envelope\n'+brief}]}})]
         if pages:
             for number,(cmd,page) in enumerate(zip(commands,pages,strict=True),1):
-                if request.get('input_transport')==CONFIRMED_PAGES:
+                if request.get('input_transport') in {CONFIRMED_PAGES,COMPACT_PAGES}:
                     self.provider_attempts+=1
                     rows.append(e(at,'token_usage_record',{'turn_id':turn,'thread_id':name,
                         'response_id':f'FIXTURE_{name}_PAGE_{number}','usage':{'input_tokens':100,'output_tokens':100}}))
@@ -202,7 +202,13 @@ class CompleteWorkflow(unittest.TestCase):
             while time.monotonic()<deadline:
                 status=runner.status(job);seen.append(status['state'])
                 if status['state']=='REVIEW_READY':
-                    if status.get('review_transport')==CONFIRMED_PAGES:
+                    if status.get('review_transport')==COMPACT_PAGES:
+                        wire=(encode(status,compact=True)+'\n').encode()
+                        self.assertLessEqual(len(wire),PARENT_OUTPUT_BYTES)
+                        status=json.loads(wire[:8192])
+                        self.assertTrue(status['submission_permitted'])
+                        self.assertEqual(status['end_frame'],'END_OPENBOT_COMPACT_DISPATCH_V1')
+                    elif status.get('review_transport')==CONFIRMED_PAGES:
                         wire=(encode(status,compact=True)+'\n').encode()
                         self.assertLessEqual(len(wire),PARENT_OUTPUT_BYTES)
                         status=json.loads(wire[:8192])
@@ -252,7 +258,7 @@ class CompleteWorkflow(unittest.TestCase):
         for stage in ai['stages'].values():
             self.assertIn(stage['receipt']['verified_evidence_pages'],range(1,6))
             self.assertEqual(stage['receipt']['model_requests'],stage['receipt']['verified_evidence_pages']+1)
-            self.assertEqual(stage['receipt']['parent_delivery'],'EXACT_ARGUMENT_BYTES_CONFIRMED')
+            self.assertEqual(stage['receipt']['parent_delivery'],'EXACT_TASK_ARGUMENTS_IN_PROVIDER_RECORD')
             self.assertTrue(stage['receipt']['native_invocation_verified'])
         self.assertEqual(ai['investigations'][0]['native_symbol'],'BEARUSDT')
         self.assertEqual(ai['investigations'][0]['status'],'VERIFIED_SOURCE_OBSERVATION')
