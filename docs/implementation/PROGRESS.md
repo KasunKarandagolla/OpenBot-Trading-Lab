@@ -1,3 +1,95 @@
+# November 23 compact native-child investigation
+
+The owner requested investigation of Design 1+ §H4 and authorized a minimal
+in-place implementation only where the indispensable interfaces are verified.
+Cloud fetched `feature/external-first-market-researcher` at
+`b3fa9e5ea4c2551cd55798336203d1a15543fdaa`, verified a clean checkout and
+issued a Context Acceptance Receipt. No application code was changed.
+
+## Decision and evidence
+
+**Recommend Option A, the compact native-child path, conditionally.** It reuses
+the existing Researcher and needs no new submission service. Option B, a typed
+host interface, is not justified unless the child path fails a measurable gate.
+
+* `AIResearch.discover` precedes selective investigation in
+  `scan_market_research`; `AIResearch.shortlist` follows it and reconciliation
+  enforces citations and research gates. The current gateway uses two distinct
+  native tasks, at most 12 observed provider responses and a 600-second overall
+  budget. Offline fixtures exercise this order, not real native completion.
+* The historical owner-host readback in `NATIVE_DYNAMIC_MODEL_IDENTITY.md`
+  verified one actual child task, its exact parent submission, matching
+  provider/model, ten complete provider-visible pages and final reply. It
+  demonstrates the earlier ticketed protocol, not two AI-core stages or a
+  compact no-ticket protocol. Its elapsed time and response count do not prove
+  that two stages fit current budgets.
+* The pinned OpenBot upstream `agent-tasks.ts` accepts only trimmed `title` and
+  `brief`, reports the created task ID, and deduplicates retries by agent, turn
+  and **call ID**. A fresh tool call has a different call ID: content equality
+  alone does not prevent a second task. The pinned provider descriptor supports
+  concurrent turns for Codex and OpenCode, but this is source-version evidence,
+  not proof of the current installed host or another provider's behavior.
+* `native_handoff.load_dispatch`, `openbot_runner.review_page`,
+  `native_app.observe_handoff` and `native_runtime.collect` require the saved
+  ticket and bind its timing to the exact parent call, task and page access.
+  `native_codex.observe_submission` only extracts the acknowledged task ID on
+  the reserved path. Removing the ticket is therefore a protocol and verifier
+  change, not a safe deletion of an encoded string. The current AI gateway and
+  runner reject non-Codex providers; OpenCode's older compatibility reader is
+  not proof of a paged AI-core adapter. Owner-selected provider/model identity
+  must remain per-run and unsupported formats must fail closed.
+
+The shortest candidate is a new **versioned** compact title/brief containing
+one immutable manifest reference, fixed bounded page commands and no Base64
+round trip. Retain owner-turn and exact provider/model binding; independently
+observe the exact call and task ID, every page output and model-visible byte,
+and the generated reply; reject missing pages, altered briefs, duplicates and
+unexpected tools. Preserve the old ticketed protocol for historical replay.
+An atomic local stage state can protect publication and acceptance, but cannot
+make separate native tool calls idempotent: an uncertain submission must not be
+retried until independently resolved. Continue to enforce an explicit owner/run
+expiry and live source freshness rather than an arbitrary short publication
+race. This remains a proposed design, not installed capability.
+
+**STOP:** the installed host has not demonstrated the new no-reservation
+submission/receipt boundary, and the current scoped verifier requires a ticket.
+Thus no new protocol, attester or model/provider support was implemented. The
+old clipping, wrong-path, deadline and argument-mismatch failures could be
+avoided by the candidate design, but the benefit and exact receipt shape remain
+unverified. The first Incident III differing byte remains unknown.
+
+## Smallest owner-host test
+
+In the existing Researcher's owner-authorized main chat, start exactly one
+synthetic task through the existing `openbot.start_task`, with a short literal
+title and brief and no reservation or encoded confirmation. Have the child
+read one fixed, bounded synthetic evidence page through its existing command
+tool, then return a short JSON hypothesis with a citation and a rival; make no
+market request or trade. Preserve the task and, using only a separately
+authorized scoped read-only host audit, establish whether the records contain
+the owner/parent turn and configured provider/model, exact task-call arguments
+and acknowledgment/task ID, exact child page output as seen by the model,
+and the child's final bytes and tool list. Report only sanitized hashes,
+lengths, timestamps and pass/fail fields. The checked-in verifier requires a
+ticket, so it must not be claimed to validate this unreserved test; if the
+available authorized reader cannot expose the required records, report that
+precise missing capability. No automatic retry or second task is authorized.
+
+## Verification
+
+* `PYTHONPATH=tests python -m unittest test_dynamic_model_identity
+  test_native_codex_compat test_native_dispatch_confirmation test_ai_core -v`:
+  **47 tests passed** in 14.261 seconds; these exercise the existing protocol
+  with fixtures, not a new native acceptance.
+* `python -m researcher config validate`: **VALID**, nine families, 31 methods,
+  zero production detectors and full-core packs. No market/model calls or
+  OpenBot tasks were made in Cloud. M32/M33 remain trial specifications.
+* The earlier full offline suite on the same application code passed 596 tests
+  in 686.872 seconds. Both PR #24 checks for the investigated HEAD passed;
+  PR #24 remained draft.
+
+---
+
 # November 23 Design 1+ Cloud capability gate — STOP
 
 The owner requested the in-place Design 1+ refactor and M32/M33 shadow work,
