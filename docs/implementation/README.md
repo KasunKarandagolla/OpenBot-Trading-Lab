@@ -9,6 +9,8 @@
 5. [One Codex Cloud implementation session](CODEX_CLOUD_SINGLE_SESSION_DESIGN1_PLUS.md) — ordered implementation and strict stop/acceptance gates.
 6. [Latest progress and failure record](PROGRESS.md), relevant current source, regression tests and skills.
 
+**Clarification:** Design 1+ is an **in-place refactor**, not a replacement Market Researcher. Each session must produce a Reuse/Change Matrix before edits. The Researcher's model/provider are **runtime-configured through OpenBot** and may change between runs; never hardcode a provider or model. Independent provider/model evidence requires a qualified recorder adapter for each supported backend; current Codex-only implementation limitations are not architecture mandates. Unsupported selected backends must fail transparently rather than silently fall back or be claimed verified. See Design 1+ §D4–D5 and the one-session brief.
+
 Produce a **Context Acceptance Receipt** before changing code. Do not mistake document publication for installed OpenBot support, completed AI-core native verification, or source-qualified new methods. Original blueprint SHA must remain unchanged. The preceding historical reference lists below are preserved for provenance.
 
 ---
