@@ -1,3 +1,18 @@
+# Mandatory context protocol — Design 1+ (23 November 2026)
+
+**Before ANY Codex Cloud/Local code edit or code review** on the Market Researcher, read in full:
+1. `docs/implementation/OpenBot_Final_External_First_Market_Discovery_Blueprint.md` (original immutable market/data blueprint);
+2. `docs/implementation/AI_CORE_DECISION.md` (approved mandatory AI discovery and final shortlist);
+3. `docs/implementation/OPENBOT_DESIGN1_PLUS_AMENDED_BLUEPRINT_2026-11-23.md` (owner-selected amended orchestration blueprint);
+4. `docs/implementation/M32_M33_WYCKOFF_CRT_TBS_SPEC_2026-11-23.md` and its full referenced consultation when methodology or AI evidence changes;
+5. `docs/implementation/CODEX_CLOUD_SINGLE_SESSION_DESIGN1_PLUS.md` (current one-session engineering priorities), `docs/implementation/PROGRESS.md` (current relevant entries), and relevant source/tests/installed skill contracts.
+
+**Mandatory Context Acceptance Receipt before editing:** report exact HEAD/worktree, documents fully read, precedence and conflicts, actual module map, verified vs unknown native capabilities, non-negotiable market/security invariants, scoped plan and blocked owner-host gates. Do not substitute a historical prompt or a short summary for full context. If a core requirement cannot be traced to real source, do not implement speculative code. Do not treat Codex Cloud fixtures as real OpenBot model execution. Preserve historical child-task replay, current agent identity, read-only permission and original blueprint bytes; avoid new messaging controllers, provider changes, market API requests or trading without separate authorization. One branch writer; never force push or merge automatically.
+
+The Design 1+ architecture is owner-selected **direction**, not a claim that parent-stage submit transport or two-stage native completion is qualified. M32/M33 are SHADOW research trials until method-specific source and temporal qualification.
+
+---
+
 # External-first researcher
 
 Read `docs/implementation/PROGRESS.md` and the three authoritative Session 1
