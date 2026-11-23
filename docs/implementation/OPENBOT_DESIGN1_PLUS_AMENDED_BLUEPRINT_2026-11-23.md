@@ -43,7 +43,7 @@ Do not promote one label into another.
 
 ### A3. Not within this amendment
 
-No discretionary live trading; no trading keys, approvals, orders, leverage, automated execution, stop/TP placement or position management; no paid market/LLM subscriptions or direct model billing API; no new mandatory scheduler; no compulsory all-universe local 5M candle warehouse; no source-access bypass after 403/451; no rewriting unrelated Freqtrade paper-lab modules; no deployment, model/provider change, or permissions expansion without explicit owner grant. Preserve the existing Researcher identity, workspace and approved Codex provider/model for the first native proof.
+No discretionary live trading; no trading keys, approvals, orders, leverage, automated execution, stop/TP placement or position management; no paid market/LLM subscriptions or direct model billing API; no new mandatory scheduler; no compulsory all-universe local 5M candle warehouse; no source-access bypass after 403/451; no rewriting unrelated Freqtrade paper-lab modules; no deployment, model/provider change, or permissions expansion without explicit owner grant. Preserve the existing Researcher identity and workspace. The first native proof uses the Researcher's actually configured, supported provider/model without changing it; no provider or model is hardcoded.
 
 ---
 
@@ -145,6 +145,34 @@ Do not add distributed queues, event buses, services, new provider gateways, or 
 
 ---
 
+### D4. Provider- and model-flexible Researcher — owner clarification (mandatory)
+
+**Architecture requirement: The Researcher's runtime provider and model are configurable choices, NEVER hardcoded implementation constants.** Design 1+ uses the **existing OpenBot Researcher agent and its current configured provider/model** at the beginning of each run. A concrete earlier run happened to use \`codex / openai / gpt-6-luna\`; that is an observed historical configuration, **not a permanent restriction, desired default, or model selection rule**.
+
+1. **Dynamic per-run selection:** The owner may choose a different model or provider in OpenBot's supported agent settings *between runs*, without editing the researcher architecture, method definitions, scripts, prompts, or source-code constants. The controller reads the installed provider, provider account/backend (where applicable), selected exact model identifier, agent/session context and available attestation format at run start. Do **not** pass a hardcoded provider/model into the runner or force the agent back to Codex.
+2. **Immutable identity inside a run:** Freeze the actual \`provider\`, \`model\`, backend/account as exposed, session/turn identity and supported adapter revision in the run manifest. Verify every stage's real recorded identity against that snapshot. A mid-run provider/model change, automatic fallback, unsupported recorder revision or wrong session must not silently produce a verified research result. A later run may use a different provider/model.
+3. **Provider-neutral research core:** External-first source adapters, contract/time/source evidence, method registry, causal structures, two-stage decision schemas, citations, query planner, shortlist gates, watch states, output and security do not know or branch on a particular LLM vendor/model name.
+4. **Minimal pluggable native attestation:** Isolate provider-specific turn, tool-call and response formats behind a tiny \`ProviderAttester\`/registry interface owned by the current \`native_*\` modules. At minimum define an explicit interface for \`probe_capability(config, installed_host)\`, \`identify_real_turn(expected_run)\`, \`verify_observed_evidence_reads(material)\`, and \`verify_reply_bytes_and_model(stage)\`. Prefer thin verified adapters; no new generic LLM gateway, direct paid API or separate orchestration service. Keep already implemented Codex receipt logic as one reusable adapter; evaluate OpenCode support separately from its actual installed records and official capabilities, not the presence of its name in a registry.
+5. **Capability before use:** A model/provider can be *selected* in the UI without yet having a certified evidence/receipt adapter. In that case, report \`PROVIDER_ATTESTATION_UNSUPPORTED\` or a specific \`NATIVE_INTERFACE_UNQUALIFIED\` result before declaring an AI stage complete. The user should receive a clear compatibility status and smallest necessary adapter gap—not a forced switch back to Codex, invented model receipt, silent unverified execution, or claim that all providers already work.
+6. **No hardcoded model text in skill/prompt:** Agent instructions describe the Researcher's analytical role, schemas and runtime discovery; they do not demand \`gpt-6-luna\` or any other fixed identifier. Provider-specific prompt/tool quirks belong only in tested adapter configuration. Model capabilities (tool IO, context, output format, token budgets) may change per selected model, so negotiate measured limits and fail clearly if unsupported.
+7. **New supported provider onboarding:** Add only a small implementation-specific parser/attester with independent positive/negative native tests, preserving the existing agent and all data/evidence logic. Do **not** duplicate the research engine for each provider. New adapters may ship later if real host records are not accessible during the one Cloud session; never mask unsupported status.
+8. **Provider portability acceptance:** At minimum verify (a) same selected provider/model recorded on DISCOVERY and SHORTLIST, (b) model's real input/source-page reads and generated response, (c) validity of evidence/citations and no unauthorized tools, (d) correct historical readback after user switches model between runs, and (e) incompatible/unknown provider fails closed. When available, check genuine Codex and genuine OpenCode turns independently with matching model identity, not simulated equivalent fixtures.
+
+**Separation of concerns:** Provider/model flexibility is an **operating and adapter requirement**, not a reason to rebuild the Market Researcher, replace its identity, relax source truth or build a multi-provider abstract platform before proving one real native stage. Existing Codex-specific source is a known baseline limitation to progressively remove from orchestration assumptions, not a design choice to hardcode the Researcher's future provider.
+
+### D5. Refactor in place — explicit prohibition on from-scratch redevelopment
+
+**Mandatory instruction to developers:** Inspect and reuse existing \`researcher/\` modules, source adapters, evidence ledger, query planner, \`ai_core.py\`, state/receipt readers, skills, method config and tests. Map each design contract to an existing implementation BEFORE writing new code. Favor minimal in-place changes, versioned adapters and deletion of unnecessary *new-path* relay ceremonies while preserving historical replay.
+
+- Create a **Reuse/Change Matrix**: existing file/function, what already works, evidence of tests, exact requested delta, smallest implementation step, regression and rollback. Mark unchanged modules explicitly. State why any new module is indispensable.
+- **Never** create a second market scanner, a second AI reasoning engine, a parallel persistent research database, a new agent, or a general new provider-control service just because the architecture is amended.
+- Keep F1–F9/M01–M31 semantics, approved two-stage \`AIResearch\`, default read-only scope, historical snapshots and native failure artifacts. Integrate M32/M33 as additive SHADOW methods in existing code.
+- Keep a single versioned new-path transport rather than competing simultaneous parent/child/Local Scripts implementations. Preserve old records for read-only audit.
+- One Cloud session should prioritize a verifiable working delta over quantity of rewritten code. Do not restart from initial scaffolding or reinterpret documentation publication as an instruction to rebuild the repository.
+- Report \`REUSED_UNCHANGED\`, \`REFINED_IN_PLACE\`, \`ADDED_MINIMAL\`, \`DEFERRED_UNVERIFIED\` per subsystem with real tests and evidence. If an underlying capability is missing, stop at a sharply bounded gap, not wholesale reengineering.
+
+---
+
 ## E. Candidate minimal pull-and-submit interface (requires native qualification)
 
 ### E1. Preferred minimal command shape
@@ -198,7 +226,7 @@ A complete turn may or may not support both active stages. Verify lifecycle and 
 - Record original owner-turn reference and effective grant; avoid claiming OpenBot supplies an authentication API unless independently demonstrated.
 - No implicit automatic approval requests; no self-change of provider/model, agent skills, credentials or Local Scripts permissions.
 - Model input may contain malicious vendor text; delimit untrusted source content as data; strict allowlist of queries and cited evidence.
-- Freeze model identity per run. Between runs the configured model may change **only** when its adapter and receipt format are supported and separately verified. Current implementation is Codex/OpenAI specific.
+- Freeze model/provider identity per run; between runs the owner may select another OpenBot-supported provider/model without changing architecture or methodology code. Verify receipt/tool evidence through the matching qualified attestation adapter. The current inspected code has Codex/OpenAI-specific limitations, which must not be enshrined as architecture defaults. An unsupported selected provider reports an explicit compatibility gap without silent fallback.
 - Do not write private OpenBot database, provider rollout or session files. Read-only scoped inspection only when owner-authorized and version-verified.
 - Validate payload size, filename/path confinement, role permissions, allowlisted commands, replay resistance and no trading authority.
 - No claim of cryptographic owner authentication based on a local SHA-256 without a trusted identity source.
