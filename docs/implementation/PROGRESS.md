@@ -33,6 +33,13 @@ turn completed at 02:06:08 UTC, while the worker exported at 02:09:17 UTC.
   smoke still exports a partial diagnostic report. The main status now says
   when an artifact remains pending after a review failure.
 
+Focused offline runs passed the historical wrapper and early-output tests,
+bounded-wait page validation, invalid citation and unauthorized-command
+checks, interrupted-child handling, archived reconciliation, saved-report
+replay, tool discovery and its negative cases, and the paged smoke fixture.
+The complete offline suite and the feature-branch CI runs are tracked in the
+session handoff.
+
 Keep PR #24 draft and `trade_authorization=false`. This work does not prove
 live native review or make the historical market evidence current.
 
