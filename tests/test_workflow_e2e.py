@@ -200,7 +200,7 @@ class CompleteWorkflow(unittest.TestCase):
             # and freshness limits. Fake scanning alone can take 90s on WSL.
             seen=[];deadline=time.monotonic()+180;wait_observed=False
             while time.monotonic()<deadline:
-                status=runner.status(job,include_review=True);seen.append(status['state'])
+                status=runner.status(job);seen.append(status['state'])
                 if status['state']=='REVIEW_READY':
                     if status.get('review_transport')==CONFIRMED_PAGES:
                         wire=(encode(status,compact=True)+'\n').encode()

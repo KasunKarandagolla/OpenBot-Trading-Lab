@@ -41,7 +41,9 @@ class ConfirmedDispatch(unittest.TestCase):
             mock = patch(target,value)
             mock.start()
             self.addCleanup(mock.stop)
-        self.job = runner.start(self.j.key)['job_id']
+        started=runner.start(self.j.key)
+        self.job = started['job_id']
+        self.j_status_command=started['status_command']
         self.folder = runner._job(self.job)
         self.directory = self.folder/'review'
         self.directory.mkdir()
@@ -61,6 +63,9 @@ class ConfirmedDispatch(unittest.TestCase):
         request = research._request(DISCOVERY, [], at=self.clock(), mode='AUTHENTIC_REPLAY',
             extra={'fixture_evidence':'','omitted_count':0},config=load_config())
         request['input_transport'] = transport
+        if transport == INLINE:
+            from researcher.native_handoff import RESERVED_SUBMISSION_POLICY
+            request['dispatch_reservation_policy'] = RESERVED_SUBMISSION_POLICY
         needed = INCIDENT_BRIEF_BYTES-len(review_brief(request).encode())
         request['fixture_evidence'] = ('Retained closed-bar evidence with symbols, boundaries and contradictions. ' *
                                        needed)[:needed]
@@ -78,11 +83,11 @@ class ConfirmedDispatch(unittest.TestCase):
         runner._transition(self.folder,'REVIEW_READY',review_transport=transport,material_sha256=self.material,
             request_prepared_at_utc=self.clock(),submission_expires_monotonic=90,request_expires_monotonic=600)
 
-    def preview(self):
+    def preview(self, include_review=False):
         # Use the actual CLI wire representation before imposing a separate
         # fixture channel limit. Runner success alone establishes no delivery.
         output = StringIO()
-        with patch('sys.argv',['openbot_runner','status','--job-id',self.job,'--include-review']), redirect_stdout(output):
+        with patch('sys.argv',['openbot_runner','status','--job-id',self.job]+(['--include-review'] if include_review else [])), redirect_stdout(output):
             self.assertEqual(runner.main(),0)
         return output.getvalue().encode()
 
@@ -108,7 +113,7 @@ class ConfirmedDispatch(unittest.TestCase):
 
     def test_39263_byte_historical_inline_status_clips_after_creating_ticket(self):
         self.publish(INLINE)
-        old = self.preview()
+        old = self.preview(include_review=True)
         self.assertGreater(len(old),INCIDENT_BRIEF_BYTES)
         self.assertLess(len(old),65536)
         with self.assertRaises(json.JSONDecodeError):
@@ -142,6 +147,27 @@ class ConfirmedDispatch(unittest.TestCase):
         status = runner.status(self.job,include_review=True)
         self.assertFalse(status['submission_permitted'])
         self.assertNotIn('start_task_arguments',status)
+
+    def test_3673_byte_preview_crosses_the_real_parent_boundary_completely(self):
+        self.publish()
+        # The original saved preview bytes were unavailable. A synthetic path
+        # produces an independently checked frame of the reported exact size.
+        from researcher.native_handoff import dispatch_frame
+        args,_,_=packet(self.request,self.directory)
+        matched=None
+        for length in range(1,1200):
+            with patch('researcher.native_handoff.wsl_root',return_value='/workspace/'+'x'*length):
+                candidate,sha,pages=packet(self.request,self.directory)
+                try:
+                    frame=dispatch_frame(self.job,self.material,'DISCOVERY',candidate,sha,pages)
+                except ContractError:
+                    continue
+                wire=(encode(frame,compact=True)+'\n').encode()
+                if len(wire)==3673:
+                    matched=wire
+                    break
+        self.assertIsNotNone(matched)
+        self.assertEqual(json.loads(matched[:4096])['z_end_frame'],json.loads(matched)['z_end_frame'])
 
     def test_parent_truncation_or_bad_argument_bytes_leave_preview_recoverable(self):
         self.publish()
@@ -178,6 +204,43 @@ class ConfirmedDispatch(unittest.TestCase):
             frame = json.loads(self.preview())
         self.assertEqual(frame['state'],'REVIEW_READY')
         self.assertEqual(frame['start_task_arguments'],packet(self.request,self.directory)[0])
+
+    def test_delayed_ordinary_poll_uses_bounded_new_window(self):
+        self.publish()
+        self.seconds += 120
+        self.monotonic += 120
+        # This fixture publishes the new transport directly rather than through
+        # the worker. Supply the worker's monotonic publication deadline.
+        runner._transition(self.folder,'REVIEW_READY',submission_expires_monotonic=180)
+        frame=json.loads(self.preview())
+        self.assertEqual(frame['state'],'REVIEW_READY')
+        self.assertTrue(self.accept(frame))
+        self.assertEqual(runner.status(self.job)['state'],'REVIEW_DISPATCH_RESERVED')
+
+    def test_runner_status_command_keeps_exact_approved_checkout_path(self):
+        from researcher.native_handoff import wsl_root
+        with patch('subprocess.Popen') as process:
+            process.return_value.pid=__import__('os').getpid()
+            # Existing job is idempotent for the owner turn.
+            self.assertEqual(runner.start(self.j.key)['job_id'],self.job)
+        expected=f"wsl.exe --cd '{wsl_root().replace(chr(39),chr(39)*2)}' -- python3 -m researcher.openbot_runner status --job-id {self.job}"
+        self.assertEqual(self.j_status_command,expected)
+
+    def test_invalid_checkout_path_cannot_attest_launch(self):
+        from researcher.settings import ROOT
+        expected=['python3','-m','researcher.openbot_runner','start','--request-id',self.j.key]
+        bad="wsl.exe --cd '/workspace/files-pasted-by-the-user-codex-codex' -- "+' '.join(expected)
+        item={'command':['powershell.exe','-Command',bad]}
+        self.assertFalse(runner.recorded_launch_matches(item,self.j.key,str(ROOT),'posix'))
+
+    def test_late_poll_is_rejected(self):
+        self.publish()
+        runner._transition(self.folder,'REVIEW_READY',submission_expires_monotonic=180)
+        self.seconds+=181
+        self.monotonic+=181
+        with self.assertRaisesRegex(ContractError,'NATIVE_DISPATCH_WINDOW_CLOSED'):
+            runner.status(self.job)
+        self.assertFalse(self.lease.exists())
 
     def test_concurrent_confirmations_grant_only_once(self):
         from concurrent.futures import ThreadPoolExecutor

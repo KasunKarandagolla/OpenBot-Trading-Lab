@@ -14,9 +14,11 @@ SHA256 = r'[0-9a-f]{64}'
 PAGE_CHARS = 10_000
 FRESH_SECONDS = 600
 SUBMISSION_SECONDS = 90
+CONFIRMED_PUBLICATION_SECONDS = 180
 RESPONSE_SECONDS = 30
 LEGACY_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; NEVER_AUTOMATICALLY_RESUBMIT'
 RESERVED_SUBMISSION_POLICY = 'EXACTLY_ONE_TICKET; 90_SECONDS_FROM_RESERVATION; NEVER_AUTOMATICALLY_RESUBMIT'
+CONFIRMED_SUBMISSION_POLICY = 'CONFIRMED_PREVIEW; 180_SECONDS_PUBLICATION; 90_SECONDS_RESERVATION; NO_RESUBMISSION'
 VERBATIM_PAGE_COMMANDS = 'VERBATIM_NEXT_PAGE_V1'
 TICKET_BOUND_PAGE_COMMANDS = 'VERBATIM_TICKET_BOUND_PAGE_V2'
 BOUNDED_WAIT_PAGE_COMMANDS = 'VERBATIM_TICKET_BOUND_WAIT_30S_V3'
@@ -220,7 +222,7 @@ def read_object(path):
 
 def request_dispatch_policy(request):
     policy=request.get('dispatch_reservation_policy',LEGACY_SUBMISSION_POLICY)
-    if policy not in (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY):
+    if policy not in (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY, CONFIRMED_SUBMISSION_POLICY):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     return policy
 
@@ -243,11 +245,11 @@ def load_dispatch(directory, request, *, as_of):
             or ticket.get('packet_sha256') != fingerprint
             or ticket.get('evidence_pages') != len(pages)
             or ticket.get('submission_policy') != request_dispatch_policy(request)
-            or (ticket['submission_policy'] == RESERVED_SUBMISSION_POLICY
+            or (ticket['submission_policy'] in (RESERVED_SUBMISSION_POLICY, CONFIRMED_SUBMISSION_POLICY)
                 and (type(ticket.get('reserved_monotonic')) not in {int, float}
                      or not 0 <= ticket['reserved_monotonic'] < float('inf')))
             or not utc(request['as_of_utc']) <= published <= reserved <= utc(as_of)
-            or reserved >= published + timedelta(seconds=SUBMISSION_SECONDS)):
+            or reserved >= published + timedelta(seconds=CONFIRMED_PUBLICATION_SECONDS if ticket['submission_policy']==CONFIRMED_SUBMISSION_POLICY else SUBMISSION_SECONDS)):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
     if request.get('input_transport') == CONFIRMED_PAGES:
         frame = dispatch_frame(directory.parent.name, material, request['stage'], args, fingerprint, pages)
@@ -262,7 +264,7 @@ def load_dispatch(directory, request, *, as_of):
 
 
 def submission_deadline(ticket):
-    anchor = 'reserved_at_utc' if ticket.get('submission_policy') == RESERVED_SUBMISSION_POLICY else 'published_at_utc'
+    anchor = 'reserved_at_utc' if ticket.get('submission_policy') in (RESERVED_SUBMISSION_POLICY, CONFIRMED_SUBMISSION_POLICY) else 'published_at_utc'
     return utc(ticket[anchor]) + timedelta(seconds=SUBMISSION_SECONDS)
 
 

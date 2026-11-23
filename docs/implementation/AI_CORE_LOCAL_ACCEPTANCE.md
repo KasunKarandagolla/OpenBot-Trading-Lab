@@ -18,7 +18,7 @@ Update the existing `openbot-market-research` skill with the checkout's
 `@@RESEARCH_ROOT@@` with the absolute WSL checkout path. Use the protected
 skill installation procedure in [Native handoff v2](NATIVE_HANDOFF_V2.md), with
 the orchestration source hash set to
-`1386fa4ec69eb4dffc27ae5713832dea699515f4fdf66cb4456f0057bbbf7530`.
+`5124efb580bdce53814c509a2d1354e6ca9a670a131309c38ce6181b27f431b4`.
 Keep the existing `market-research-review` skill. Its hash in that procedure
 still applies. The pinned checkout supplies the staged methodology guide and evidence
 through bounded, hash-checked child reads.

@@ -331,12 +331,13 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         emit('REVIEW_FAILED',first_error=first_error)
         return finish('NATIVE_TASK_PUBLICATION_FAILED',terminal_error=first_error)
     folder=under_work(directory);published=clock();published_monotonic=time.monotonic()
-    from .native_handoff import (CONFIRMED_PAGES,FRESH_SECONDS,RESPONSE_SECONDS,SUBMISSION_SECONDS,
+    from .native_handoff import (CONFIRMED_PAGES,CONFIRMED_PUBLICATION_SECONDS,CONFIRMED_SUBMISSION_POLICY,FRESH_SECONDS,RESPONSE_SECONDS,SUBMISSION_SECONDS,
         RESERVED_SUBMISSION_POLICY,load_dispatch,read_object,runner_review)
     reserved=runner_review(folder) and request.get('native_identity',{}).get('provider')=='codex'
     inline=bool(request.get('input_transport'))
     confirmed=request.get('input_transport')==CONFIRMED_PAGES
     transport=request.get('input_transport') if inline else 'PAGED_V2'
+    publication_limit=CONFIRMED_PUBLICATION_SECONDS if request.get('dispatch_reservation_policy')==CONFIRMED_SUBMISSION_POLICY else SUBMISSION_SECONDS
     config_hash=digest(under_work(config_file).read_bytes())
     result['publication_seconds']=round(time.monotonic()-began,6)
     result['request_prepared_at_utc']=published
@@ -349,11 +350,11 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             'submission_observation_status':'OPEN',
             **({'dispatch_state':'PACKET_PREPARED'} if confirmed else {}),
             'request_expires_monotonic':published_monotonic+freshness_remaining,
-            'submission_expires_monotonic':published_monotonic+min(wait_seconds,SUBMISSION_SECONDS,freshness_remaining)}
+            'submission_expires_monotonic':published_monotonic+min(wait_seconds,publication_limit,freshness_remaining)}
             if reserved else {}))
     # Publication/reader startup consumes the same request freshness envelope.
     deadline=published_monotonic+min(wait_seconds,freshness_remaining)
-    reservation_deadline=min(deadline,published_monotonic+SUBMISSION_SECONDS)
+    reservation_deadline=min(deadline,published_monotonic+publication_limit)
     phase_deadline=reservation_deadline;ticket_observed=False
     pending_status=None;observation=None;submission=None;response_anchor=None;phase_closed=False
     prior_wall=utc(published);prior_monotonic=published_monotonic
@@ -365,7 +366,7 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         if ticket_observed or not lease.is_file():return
         if utc(read_object(lease).get('reserved_at_utc'))>utc(stamp):return
         _,_,_,ticket=load_dispatch(folder,request,as_of=stamp)
-        if ticket['submission_policy']==RESERVED_SUBMISSION_POLICY:
+        if ticket['submission_policy'] in (RESERVED_SUBMISSION_POLICY,CONFIRMED_SUBMISSION_POLICY):
             at=ticket['reserved_monotonic']
             if not published_monotonic<=at<reservation_deadline:
                 raise ContractError('NATIVE_HANDOFF_UNATTESTED')

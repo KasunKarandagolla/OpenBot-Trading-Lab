@@ -75,3 +75,22 @@ provider responses. Historical inline and paged receipts keep their original
 packet and ticket rules.
 
 [Local installation and archived acceptance](AI_CORE_LOCAL_ACCEPTANCE.md)
+
+## Parent polling amendment
+
+The subsequent owner-host forensic timeline identified an invalid reconstructed
+checkout path and a later status poll after the 90-second publication window.
+The observed 60.985-second gap is unexplained. For newly issued confirmed
+materials, the first ordinary READY poll returns the existing bounded frame.
+The start response supplies an exact checkout-bound status command. The
+grant command continues to come directly from that frame.
+
+The new versioned policy allows up to 180 seconds from publication to grant,
+using the worker's monotonic deadline and the request's UTC timestamp. The
+request still expires after 600 seconds and the grant allows at most 90
+seconds for submission. The worker deadline can be shorter. No late grant,
+unbounded job or repeated submission is authorized. Historical policy records
+retain their original timing.
+
+The separate [one-task native polling test](NATIVE_POLL_TEST.md) precedes any
+further full archived acceptance.

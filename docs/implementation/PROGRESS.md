@@ -1,3 +1,28 @@
+# November 23 parent polling correction
+
+Owner-supplied forensic timeline reports job
+`20261123T102245Z-5c1c1d4fc00c4c219bd8c63ff600f491` missed its publication
+window after a wrong checkout path and a 60.985-second gap. The gap remains
+unexplained. The supplied timeline records no native submissions and no
+market requests. The 3,673-byte preview was reconstructed separately, and
+the old late status stdout was complete. Those host records are not present
+in Cloud.
+
+Confirmed AI-core ordinary status now delivers the complete bounded preview
+from the locked READY snapshot. Start returns the exact canonical status
+command, and the preview retains its canonical grant command. New confirmed
+materials allow 180 seconds from publication, bounded by monotonic time and
+the existing 600-second request freshness limit. The subsequent one-time
+submission deadline remains 90 seconds from grant. Historical materials keep
+their original windows and packet protocol.
+
+A separate owner-authorized polling integration test uses a single synthetic
+empty-discovery native task, the existing verified receipt path, and zero
+market sources. Its exact owner message and installation instructions are in
+[Native polling test](NATIVE_POLL_TEST.md). Cloud runs fixtures only.
+
+---
+
 # November 23 AI-core dispatch truncation recovery
 
 The owner brief reports that Local job

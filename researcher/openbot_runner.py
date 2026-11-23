@@ -21,13 +21,14 @@ from datetime import timedelta
 from .contracts import ContractError, digest, encode, now_utc, utc
 from .settings import ROOT
 from .native_identity import active_identity, assert_current, assert_parent, load_private, read_db, ref, under_work
-from .native_handoff import CONFIRMED_PAGES, FRESH_SECONDS, JOB_ID, SHA256, SUBMISSION_SECONDS
+from .native_handoff import CONFIRMED_PAGES, CONFIRMED_PUBLICATION_SECONDS, CONFIRMED_SUBMISSION_POLICY, FRESH_SECONDS, JOB_ID, SHA256, SUBMISSION_SECONDS
 
 BASE=ROOT/'work/openbot-integration'
 PRIVATE=BASE/'native-audit-local.json'
 OWNER_COMMAND='run the complete market research now'
 SMOKE_PROMPT=ROOT/'docs/implementation/OPENBOT_NATIVE_SMOKE_PROMPT.txt'
 AI_SMOKE_PROMPT=ROOT/'docs/implementation/OPENBOT_AI_CORE_SMOKE_PROMPT.txt'
+POLL_TEST_PROMPT=ROOT/'docs/implementation/OPENBOT_POLL_TEST_PROMPT.txt'
 ACCEPTANCE_PROMPT=ROOT/'docs/implementation/OPENBOT_RECOVERY_ACCEPTANCE_PROMPT.txt'
 FINAL={'COMPLETED','PARTIAL','FAILED','INTERRUPTED','FINAL_DELIVERED'}
 
@@ -126,6 +127,9 @@ def _owner_proof(identity,config,*,expected_commit=None):
         if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
                 text.strip()==AI_SMOKE_PROMPT.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',expected_commit).strip()):
             return 'AI_CORE_SMOKE'
+        if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
+                text.strip()==POLL_TEST_PROMPT.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',expected_commit).strip()):
+            return 'POLL_TEST'
         # Exact versioned owner message, pinned to the checkout being launched.
         # Substrings, negated/quoted instructions and delegated senders fail.
         if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
@@ -155,7 +159,13 @@ def start(request_id):
     with _file_guard(BASE/'start.lock',nonblocking=True):
         if lock.exists():
             existing=_read(lock)
-            if existing.get('turn_ref')==identity['turn_ref']:return status(existing['job_id'])
+            if existing.get('turn_ref')==identity['turn_ref']:
+                from .native_handoff import wsl_root
+                result=status(existing['job_id'])
+                root=wsl_root().replace("'", "''")
+                if 'begin_frame' not in result:
+                    result['status_command']=f"wsl.exe --cd '{root}' -- python3 -m researcher.openbot_runner status --job-id {existing['job_id']}"
+                return result
             if status(existing['job_id'])['state'] not in FINAL:raise ContractError('RUNNER_ALREADY_ACTIVE')
         key=utc(now_utc()).strftime('%Y%m%dT%H%M%SZ')+'-'+request_id
         initial={'schema_version':'openbot.research-job.v1','job_id':key,
@@ -176,7 +186,11 @@ def start(request_id):
             _write(folder/'process.json',_process_record(child.pid))
     except OSError:
         _transition(folder,'FAILED',reason='RUNNER_PROCESS_START_FAILED');raise ContractError('RUNNER_PROCESS_START_FAILED') from None
-    return status(key)
+    result=status(key)
+    from .native_handoff import wsl_root
+    root=wsl_root().replace("'", "''")
+    result['status_command']=f"wsl.exe --cd '{root}' -- python3 -m researcher.openbot_runner status --job-id {key}"
+    return result
 
 
 def recorded_launch_matches(item,request_id,root,host_os):
@@ -312,7 +326,9 @@ def run_job(key):
             (transport['status']!='VALIDATED_ADVISORY_ONLY' or transport.get('accepted',0)<1 or
                 transport.get('native_receipt',{}).get('native_identity')!=state['native_identity']))
         ai_smoke=state.get('owner_run_mode')=='AI_CORE_SMOKE'
-        if ai_smoke:
+        if state.get('owner_run_mode')=='POLL_TEST':
+            report=_run_poll_test(key,folder,state,config,native_progress)
+        elif ai_smoke:
             report=_run_ai_smoke(key,folder,state,config,progress,native_progress)
         elif smoke or transport_failed:
             report={'schema_version':'openbot.native-preflight-report.v1','mode':'AUTHENTIC_REPLAY',
@@ -367,15 +383,16 @@ def run_job(key):
         native=report.get('consultant',{})
         complete=(report.get('mode')=='LIVE' and report.get('ai_research',{}).get('state')=='AI_RESEARCH_COMPLETE')
         archived_complete=(ai_smoke and report.get('ai_research',{}).get('state')=='AI_RESEARCH_COMPLETE')
+        poll_complete=(state.get('owner_run_mode')=='POLL_TEST' and report.get('poll_test',{}).get('status')=='VERIFIED')
         # Delivery is a subsequent native main-chat action. This worker never
         # asserts FULL acceptance before observing the real delivered answer.
-        _transition(folder,'COMPLETED' if complete or archived_complete else 'PARTIAL',artifact=artifact,
+        _transition(folder,'COMPLETED' if complete or archived_complete or poll_complete else 'PARTIAL',artifact=artifact,
             native_status=native.get('status'),native_collector=native.get('native_collector'),
             first_error=native.get('first_error') or (transport or {}).get('first_error') or
                 (transport or {}).get('native_collector',{}).get('first_error'),
             observed_model_attempts=native.get('observed_model_attempts',0),
             transport_model_attempts=(transport or {}).get('observed_model_attempts',0),
-            live_acceptance=('ARCHIVED_NATIVE_SMOKE_ONLY' if ai_smoke else
+            live_acceptance=('NATIVE_POLL_TEST_ONLY' if poll_complete else 'ARCHIVED_NATIVE_SMOKE_ONLY' if ai_smoke else
                 'PARTIAL; AWAITING_OPENBOT_RESULT_AND_ZIP_DELIVERY' if complete else 'PARTIAL; NATIVE_OR_SOURCE_GATE_NOT_PASSED'))
     except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
         # No private exception/path/token is included in the user-facing state.
@@ -385,6 +402,48 @@ def run_job(key):
         _transition(folder,'FAILED',reason=code,live_acceptance='PARTIAL',
             **({'native_diagnostic':diagnostic} if diagnostic else {}))
     return status(key)
+
+
+def _run_poll_test(key,folder,state,config,native_progress):
+    """One owner-authorized harmless native receipt test, with no market input."""
+    from .agent_review import _material, parse_reply, validate_reply
+    from .ai_core import DISCOVERY, research_with_native
+    from .native_app import failure
+    from .native_runtime import attest_smoke_discovery, integration_preflight
+    from .settings import load_config
+    stamp=now_utc()
+    result={'status':'INCOMPLETE'}
+    try:
+        setup=integration_preflight(config,as_of=stamp)
+        discovery=attest_smoke_discovery(state['native_identity'],config,as_of=now_utc())
+        _transition(folder,'NATIVE_INTEGRATION_PREFLIGHT',integration_preflight=setup)
+        research=research_with_native(folder/'review',audit_config=PRIVATE,identity=state['native_identity'],
+            clock=now_utc,progress=lambda stage,**fields:native_progress(stage,review_scope='NATIVE_POLL_TEST',**fields))
+        request=research._request(DISCOVERY,[],at=now_utc(),mode='SYNTHETIC',
+            extra={'context':{},'integration_test':'Return a valid discovery reply with an empty rows array.',
+                   'omitted_count':0},config=load_config())
+        request['registry']=[]
+        request['material_sha256']=digest(encode(_material(request)).encode())
+        received=research.gateway(request,600)
+        collector=received['collector']
+        result={'status':'INCOMPLETE','collector':collector,'tool_discovery':discovery,
+                'material_sha256':request['material_sha256']}
+        receipt=received.get('receipt')
+        if receipt and collector.get('status')=='NATIVE_RECEIPT_COLLECTED':
+            reply=validate_reply(parse_reply(received['raw']),request)['reply']
+            if (reply['rows']==[] and receipt.get('native_invocation_verified') is True
+                    and receipt.get('native_identity')==state['native_identity']
+                    and receipt.get('reply_sha256')==digest(received['raw'].encode())
+                    and receipt.get('parent_delivery')=='EXACT_ARGUMENT_BYTES_CONFIRMED'):
+                result.update(status='VERIFIED',receipt=receipt,reply=reply)
+    except (ContractError,OSError,ValueError,TypeError,KeyError,sqlite3.Error) as error:
+        result['first_error']=failure(error,'NATIVE_SMOKE_PREFLIGHT')
+    return {'schema_version':'openbot.native-poll-test.v1','mode':'SYNTHETIC','job_id':key,
+        'completed_at_utc':now_utc(),'market_scan_started':False,'shortlist':[],
+        'coverage':{'all_market_structurally_covered':False},
+        'consultant':{'status':result['status'],'observed_model_attempts':result.get('collector',{}).get('observed_model_attempts',0),
+                      'first_error':result.get('first_error') or result.get('collector',{}).get('terminal_error')},
+        'costs':{'market_http_requests':0},'poll_test':result,'trade_authorization':False}
 
 
 def _run_ai_smoke(key,folder,state,config,progress,native_progress):
@@ -440,9 +499,10 @@ def _confirmed_review(folder, state, material, stamp, *, check_reservation_windo
             or digest(encode(_material(request)).encode()) != material):
         raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
     published = state['request_prepared_at_utc']
+    publication_limit=CONFIRMED_PUBLICATION_SECONDS if request.get('dispatch_reservation_policy')==CONFIRMED_SUBMISSION_POLICY else SUBMISSION_SECONDS
     if (not 0 <= (utc(stamp)-utc(request['as_of_utc'])).total_seconds() < FRESH_SECONDS
             or check_reservation_window and (
-                not 0 <= (utc(stamp)-utc(published)).total_seconds() < SUBMISSION_SECONDS
+                not 0 <= (utc(stamp)-utc(published)).total_seconds() < publication_limit
                 or time.monotonic() >= state['submission_expires_monotonic'])):
         raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
     args, fingerprint, pages = packet(request, directory)
@@ -467,15 +527,6 @@ def _confirmed_status(folder, state, result, include_review):
     directory = folder/'review'
     lease = directory/(material+'.dispatch.json')
     preview = directory/(material+'.preview.json')
-    if not include_review and not lease.is_file():
-        preview_error = directory/(material+'.preview-error.json')
-        if preview_error.is_file():
-            result['dispatch_state'] = _read(preview_error)['reason']
-        elif preview.is_file():
-            result['dispatch_state'] = 'PACKET_DELIVERABLE'
-        else:
-            result['dispatch_state'] = 'PACKET_PREPARED'
-        return
     stamp = now_utc()
     request, frame = _confirmed_review(folder, state, material, stamp, check_reservation_window=not lease.is_file())
     if lease.is_file():
@@ -747,6 +798,7 @@ def status(key,include_review=False):
         native=report.get('consultant',{})
         scanned=report.get('market_scan_started',True)
         result.update(results=research_summary(report) if scanned else (
+                'Native polling integration test only; zero market requests.' if report.get('poll_test') else
                 'Archived native smoke only. No current-market candidate conclusion.' if report.get('smoke_result')
                 else 'Market scan not started: native transport preflight failed. No current-market candidate conclusion.'),
             coverage=coverage_summary(report) if scanned else 'NOT_SCANNED',
@@ -762,7 +814,8 @@ def status(key,include_review=False):
                 if name in {'state','current_market_interpretation','model_tasks','provider_attempts'}},
 
             native_transport_preflight=report.get('native_transport_preflight'),
-            **({'smoke_result':report['smoke_result']} if 'smoke_result' in report else {}))
+            **({'smoke_result':report['smoke_result']} if 'smoke_result' in report else {}),
+            **({'poll_test':report['poll_test']} if 'poll_test' in report else {}))
         if 'smoke_result' in result and data['state']=='FINAL_DELIVERED' and data.get('delivery_receipt'):
             result['smoke_result']={**result['smoke_result'],'final_delivery':'VERIFIED_PROVIDER_RECEIPT'}
     return result
