@@ -1,3 +1,39 @@
+# November 24 native tool-discovery attribution fix — implemented and offline verified
+
+Retained-evidence diagnosis of the failed archived smoke job
+`20261124T031654Z-5bc2e449d49d495e822bfff23c113d91`. The job reached
+`OWNER_AUTHORIZED`, `COMMAND_ATTESTED` and `PREFLIGHT_REJECTED` with zero model
+attempts and zero market requests. Its diagnostic ZIP SHA-256 is
+`916045b5b0d54aa5d178c0f99ec5f9619916f84b38ca9df1baecfdb615820764`.
+
+The rejected parent turn `7b489ba28469` (started 2026-11-24T03:09:21Z) contains
+no `tool_describe` call. Discovery had succeeded at 03:06:55Z in the preceding
+setup turn `d3c9e268a53e`, which the same verifier accepts when replayed
+read-only against the retained records. The verifier was therefore correct:
+discovery must occur in the same parent turn as the start command. No check was
+weakened or bypassed, and no unbounded earlier-turn scan was added.
+
+`attest_smoke_discovery` now raises `NATIVE_TOOL_DISCOVERY_UNVERIFIED` with a
+sanitized diagnostic naming the first missing pipeline step: `NO_CALL`,
+`INVALID_CALL`, `NO_COMPLETION`, `COMPLETION_MISMATCH`, `CONTENT_MISMATCH`,
+`SCHEMA_MISMATCH`, `NO_OUTPUT` or `OUTPUT_MISMATCH` at stage `TOOL_DISCOVERY`.
+The orchestration skill now states that discovery must be repeated in the same
+main-chat turn as the start command, including after a host continuation, owner
+steer or retry. Acceptance behavior for valid same-turn records is unchanged.
+
+Focused native preflight suite: 19 passed. Full
+`python3 -m unittest discover -s tests -v`: 626 passed in 1500.081 seconds.
+`python3 -m researcher config validate`: VALID, nine families, 31 methods, zero
+production detectors/full-core packs. `trade_authorization=false`; no market
+requests, model calls, provider changes or native-task submissions were made.
+Status: `CODE_IMPLEMENTED`, `OFFLINE_VERIFIED` and
+`HISTORICAL_EVIDENCE_VERIFIED`. Native re-acceptance remains
+`UNVERIFIED_OR_BLOCKED` until a separate owner authorization repeats discovery
+and the start command in one main-chat turn. Remote CI is reported in the
+session handoff after observation.
+
+---
+
 # November 24 provider identity continuation — partial, native gate open
 
 Starting clean remote HEAD `04e214f5e26a33f4a92601c159ad501407bc0d50` was

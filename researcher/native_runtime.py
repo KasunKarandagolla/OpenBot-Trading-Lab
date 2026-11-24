@@ -36,7 +36,11 @@ def integration_preflight(config,*,as_of):
 
 
 def attest_smoke_discovery(identity,config,*,as_of):
-    """Bind both native tool schemas to successful discovery in the parent turn."""
+    """Bind both native tool schemas to successful discovery in the parent turn.
+
+    Every failure names the first pipeline step that did not complete. Records
+    from an earlier turn, including a setup turn, never satisfy this turn.
+    """
     from datetime import timedelta
     from .native_host import delegated,call
     if delegated(config):
@@ -46,7 +50,8 @@ def attest_smoke_discovery(identity,config,*,as_of):
     binding=parent_binding(identity,config,require_configured_model=True,as_of=as_of)
     session,turn=binding['external'],binding['turn']
     required={'openbot.start_task':{'title','brief'},'openbot.attach_files_to_response':{'paths'}}
-    pending={};completed={};found=set();context=False
+    pending={};completed={};delivered=set();attempted=set();parsed_tools=set()
+    call_rows=calls=completion_rows=matched=parsed=0;context=False
     for row in turn_records(config,session,turn,config['agent_workspace'],
             start=utc(binding['started_at'])-timedelta(seconds=1),end=utc(as_of),backend=identity['provider_backend']):
         payload=row['payload']
@@ -54,23 +59,26 @@ def attest_smoke_discovery(identity,config,*,as_of):
         if not context:continue
         if (row['type']=='response_item' and payload.get('type')=='function_call'
                 and payload.get('namespace')=='openbot' and payload.get('name')=='tool_describe'):
+            call_rows+=1
             try:arguments=json.loads(payload.get('arguments',''))
             except (ValueError,TypeError):continue
             if isinstance(arguments,dict) and set(arguments)=={'names'} and isinstance(arguments['names'],list):
                 call_id=payload.get('call_id')
                 if isinstance(call_id,str) and call_id and call_id not in pending:
-                    pending[call_id]=arguments
+                    pending[call_id]=arguments;calls+=1
         elif row['type']=='event_msg' and payload.get('type')=='item_completed':
             item=payload.get('item')
             if not isinstance(item,dict):continue
+            if (item.get('type')!='DynamicToolCall' or item.get('namespace')!='openbot'
+                    or item.get('tool')!='tool_describe'):continue
+            completion_rows+=1
             call_id=item.get('id')
             if not isinstance(call_id,str):continue
             if (payload.get('turn_id')!=turn or payload.get('thread_id')!=session
-                    or item.get('type')!='DynamicToolCall' or item.get('namespace')!='openbot'
-                    or item.get('tool')!='tool_describe' or item.get('status')!='completed'
-                    or item.get('success') is not True or call_id not in pending
-                    or item.get('arguments')!=pending.pop(call_id)):
+                    or item.get('status')!='completed' or item.get('success') is not True
+                    or call_id not in pending or item.get('arguments')!=pending.pop(call_id)):
                 continue
+            matched+=1
             try:
                 parts=item['content_items']
                 if len(parts)!=1 or parts[0].get('type')!='inputText':continue
@@ -87,15 +95,26 @@ def attest_smoke_discovery(identity,config,*,as_of):
                                 for key in required[name])):
                         discovered.add(name)
                 completed[call_id]=(parts[0]['text'],discovered)
+                parsed_tools.update(discovered);parsed+=1
             except (ValueError,KeyError,TypeError,AttributeError):
                 continue
         elif row['type']=='response_item' and payload.get('type')=='function_call_output':
             call_id=payload.get('call_id')
             if isinstance(call_id,str) and call_id in completed:
                 output,discovered=completed.pop(call_id)
-                if payload.get('output')==output:found.update(discovered)
-    if found!=set(required):raise ContractError('NATIVE_TOOL_DISCOVERY_UNVERIFIED')
-    return {'status':'VERIFIED_CURRENT_PARENT_TOOL_DISCOVERY','tools':sorted(found)}
+                attempted.update(discovered)
+                if payload.get('output')==output:delivered.update(discovered)
+    if delivered!=set(required):
+        if not call_rows:check='NO_CALL'
+        elif not calls:check='INVALID_CALL'
+        elif not completion_rows:check='NO_COMPLETION'
+        elif not matched:check='COMPLETION_MISMATCH'
+        elif not parsed:check='CONTENT_MISMATCH'
+        elif not set(required)<=parsed_tools:check='SCHEMA_MISMATCH'
+        elif not set(required)<=attempted:check='NO_OUTPUT'
+        else:check='OUTPUT_MISMATCH'
+        raise NativeEvidenceError('NATIVE_TOOL_DISCOVERY_UNVERIFIED','TOOL_DISCOVERY',check)
+    return {'status':'VERIFIED_CURRENT_PARENT_TOOL_DISCOVERY','tools':sorted(delivered)}
 
 
 def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_configured_model=False):

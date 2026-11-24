@@ -13,11 +13,14 @@ once the owner has approved the two bounded native tasks through the existing
 agent. An exact commit-bound archived smoke prompt authorizes archived replay
 only. Keep the existing provider, model, agent, permissions and trading controls.
 
-1. In the main chat use native `openbot.tool_describe` with
+1. In the current main-chat turn use native `openbot.tool_describe` with
    `{"names":["openbot.start_task","openbot.attach_files_to_response"]}`.
    Check that the tools accept `title` and `brief`, and `paths`, respectively.
-   These tools are available in the main chat. An isolated Codex exec catalog
-   does not expose them. Report missing tool discovery before running.
+   Discovery must occur in the same turn that runs the step 2 start command.
+   Repeat it after any host continuation, owner steer or retry; discovery in an
+   earlier setup turn does not authorize this run. These tools are available
+   in the main chat. An isolated Codex exec catalog does not expose them.
+   Report missing tool discovery before running.
 2. Generate one lowercase hexadecimal request ID of length 32. Use the native
    command tool with the default shell and this exact literal PowerShell
    command. Substitute the literal ID. The provider verifies this invocation.

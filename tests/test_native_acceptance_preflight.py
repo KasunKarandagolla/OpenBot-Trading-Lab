@@ -144,6 +144,66 @@ class AcceptancePreflight(unittest.TestCase):
         with self.assertRaisesRegex(ContractError,'NATIVE_TOOL_DISCOVERY_UNVERIFIED'):
             attest_smoke_discovery(self.f.identity,self.f.config,as_of=self.f.time(5))
 
+    def discovery_tools(self):
+        names=['openbot.start_task','openbot.attach_files_to_response']
+        return names,[{'name':names[0],'inputSchema':{'type':'object','additionalProperties':False,
+                'properties':{'title':{'type':'string'},'brief':{'type':'string'}},'required':['title','brief']}},
+            {'name':names[1],'inputSchema':{'type':'object','additionalProperties':False,
+                'properties':{'paths':{'type':'array'}},'required':['paths']}}]
+
+    def discovery_rows(self,*,arguments=None,item=None,content=None,output=None):
+        names,tools=self.discovery_tools()
+        arguments={'names':names} if arguments is None else arguments
+        text=json.dumps({'tools':tools}) if content is None else content
+        completed={'type':'DynamicToolCall','id':'DISCOVERY','namespace':'openbot','tool':'tool_describe',
+            'arguments':arguments,'status':'completed','success':True,
+            'content_items':[{'type':'inputText','text':text}]}
+        completed.update(item or {})
+        call=self.f.record(2,'response_item',{'type':'function_call','namespace':'openbot',
+            'name':'tool_describe','call_id':'DISCOVERY','arguments':json.dumps(arguments)})
+        event=self.f.record(3,'event_msg',{'type':'item_completed','turn_id':'PARENT_TURN',
+            'thread_id':'PARENT','item':completed})
+        delivered=self.f.record(4,'response_item',{'type':'function_call_output',
+            'call_id':'DISCOVERY','output':text if output is None else output})
+        return call,event,delivered
+
+    def test_native_smoke_discovery_failure_names_the_missing_step(self):
+        base=copy.deepcopy(self.f.parent)
+        bad_call=self.f.record(2,'response_item',{'type':'function_call','namespace':'openbot',
+            'name':'tool_describe','call_id':'DISCOVERY','arguments':'{'})
+        cases={'NO_CALL':(),
+            'INVALID_CALL':(bad_call,),
+            'NO_COMPLETION':self.discovery_rows()[:1],
+            'COMPLETION_MISMATCH':self.discovery_rows(item={'success':False}),
+            'CONTENT_MISMATCH':self.discovery_rows(content='not json'),
+            'SCHEMA_MISMATCH':self.discovery_rows(content=json.dumps({'tools':[
+                self.discovery_tools()[1][0]]})),
+            'NO_OUTPUT':self.discovery_rows()[:2],
+            'OUTPUT_MISMATCH':self.discovery_rows(output='different')}
+        for check,rows in cases.items():
+            with self.subTest(check=check):
+                self.f.parent=copy.deepcopy(base)+list(rows);self.f.write()
+                with self.assertRaises(ContractError) as caught:
+                    attest_smoke_discovery(self.f.identity,self.f.config,as_of=self.f.time(6))
+                self.assertEqual(str(caught.exception),'NATIVE_TOOL_DISCOVERY_UNVERIFIED')
+                self.assertEqual(caught.exception.diagnostic,
+                    {'stage':'TOOL_DISCOVERY','check':check,'schema_variant':'UNRECOGNIZED'})
+
+    def test_native_smoke_discovery_in_an_earlier_turn_does_not_authorize_the_current_turn(self):
+        call,event,delivered=self.discovery_rows()
+        self.f.parent[1]=self.f.record(-10,'event_msg',{'type':'task_started','turn_id':'SETUP_TURN'})
+        self.f.parent[2:2]=[self.f.record(-9,'response_item',call['payload']),
+            self.f.record(-8,'event_msg',{**event['payload'],'turn_id':'SETUP_TURN'}),
+            self.f.record(-7,'response_item',delivered['payload']),
+            self.f.record(-6,'turn_context',{'turn_id':'PARENT_TURN','model':'gpt-6-luna'})]
+        self.f.write()
+        with self.assertRaises(ContractError) as caught:
+            attest_smoke_discovery(self.f.identity,self.f.config,as_of=self.f.time(6))
+        self.assertEqual(caught.exception.diagnostic['check'],'NO_CALL')
+        self.f.parent.extend(self.discovery_rows());self.f.write()
+        result=attest_smoke_discovery(self.f.identity,self.f.config,as_of=self.f.time(6))
+        self.assertEqual(result['status'],'VERIFIED_CURRENT_PARENT_TOOL_DISCOVERY')
+
     def test_native_smoke_missing_discovery_exports_diagnostics(self):
         prompt=runner.SMOKE_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','a'*40)
         self.set_owner(prompt)
