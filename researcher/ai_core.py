@@ -477,13 +477,13 @@ def research_with_native(directory, *, audit_config, identity, clock, progress=N
     import sqlite3
     from .agent_review import request_file_text
     from .native_app import failure, wait_for_reply
-    from .native_identity import local_path, under_work
+    from .native_identity import compact_adapter_supported, local_path, under_work
 
     def gateway(request, remaining):
         result = {}
         material = request['material_sha256']
         try:
-            if not identity or identity['provider'] != 'codex':
+            if not compact_adapter_supported(identity):
                 raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
             folder = under_work(local_path(directory))
             folder.mkdir(parents=True, exist_ok=True)

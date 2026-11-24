@@ -13,7 +13,7 @@ from .agent_review import REJECTION_CODES
 from .contracts import ContractError,encode
 from .settings import ROOT
 
-OPERATIONS=frozenset({'configured_identity','active_identity','assert_current','assert_parent','integration_preflight','owner_proof','collect','attest_start','review_count','delivery_proof','observe_handoff','attest_smoke_discovery'})
+OPERATIONS=frozenset({'configured_identity','configured_capability','active_identity','assert_current','assert_parent','integration_preflight','owner_proof','collect','attest_start','review_count','delivery_proof','observe_handoff','attest_smoke_discovery'})
 READER_ERRORS=REJECTION_CODES|{'RUNNER_OWNER_START_REQUIRED','RUNNER_START_UNATTESTED','NATIVE_WINDOWS_READER_REQUIRED',
     'NATIVE_TOOL_DISCOVERY_UNVERIFIED'}
 _PROCESS_TIMEOUT_SECONDS=30
@@ -72,6 +72,7 @@ def execute(operation,input_file):
     config=load_private(payload['config_file']);v=payload['values']
     from . import native_identity as identity
     if operation=='configured_identity':return identity.configured_identity(config)
+    if operation=='configured_capability':return identity.configured_capability(config)
     if operation=='active_identity':return identity.active_identity(config)
     if operation=='assert_current':return identity.assert_current(v['identity'],config)
     if operation=='assert_parent':return identity.assert_parent(v['identity'],config,

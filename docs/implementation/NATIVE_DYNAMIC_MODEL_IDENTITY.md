@@ -1,5 +1,38 @@
 # Dynamic native model identity and receipt compatibility
 
+## Provider changes and capability inspection (24 November 2026)
+
+`python -m researcher.openbot_runner provider-status` reads the selected
+Researcher provider and exact model from the existing agent projection. It
+does not start a run or contact a model. `MODEL_SELECTED` describes that
+configuration; `provider_available: UNKNOWN_NOT_PROBED` does not assert an
+available provider. `NATIVE_ADAPTER_SUPPORTED` means the compact reader is
+implemented, not that this host or a particular run is verified. OpenCode's
+older session-message reader is not a compact adapter; it reports
+`PROVIDER_ATTESTATION_UNSUPPORTED` and the missing compact task, page and turn
+attestation. Unknown providers report a missing native adapter. No receipt is
+verified by this command (`native_receipt: NOT_CHECKED`). Actual collected
+receipts retain their existing `native_invocation_verified` evidence fields.
+
+Compact adapter selection is centralized in `native_identity`; the shared AI
+gateway, runner and preflight check it without selecting a model. The only
+implemented compact verifier remains Codex. A new provider still needs actual
+provider-specific identity, task, page, response and tool-operation readers and
+the corresponding dispatch integration; adding a registry entry alone is not
+qualification or a complete adapter. Unsupported providers fail before the
+AI stage, without a fallback.
+
+Historical Codex readback now checks the original agent and workspace, then
+verifies the captured provider, adapter, backend, session, turn and model from
+the retained records. It does not compare the captured provider or model with
+today's agent selection. Active work continues to compare both. Readback still
+requires access to the original Codex provider database and rollout files: if
+the private `provider_db` path was changed for a later provider, the correct
+original read-only provider store must be supplied for replay. No alternate
+store is guessed, and historical OpenCode's older reader retains its existing
+constraints. These changes do not establish compact OpenCode replay or an
+OpenCode-to-Codex two-run acceptance.
+
 The recovery for job `20261121T155516Z-817636a12ff84a4797555d0d2887de42`
 uses the exact parent and child Codex turn contexts for historical model
 verification. OpenBot's event log records later model selections on the same

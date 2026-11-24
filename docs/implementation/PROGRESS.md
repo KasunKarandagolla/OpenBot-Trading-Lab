@@ -1,3 +1,42 @@
+# November 24 provider identity continuation — partial, native gate open
+
+Starting clean remote HEAD `04e214f5e26a33f4a92601c159ad501407bc0d50` was
+fetched from the feature branch. The same Researcher, compact child workflow,
+source and analytical engines, historical ticketed pages and research-only
+permissions are retained. No market requests, native model calls or provider
+settings changes were made in this environment.
+
+`native_identity` now distinguishes the current selection from compact reader
+support through a read-only `provider-status` command. OpenCode's legacy file
+reader remains unsupported for compact pages; unknown providers are reported
+as unsupported, not switched. The shared gateway, runner and preflight use the
+same compact-adapter registry. The existing Codex verifier and historical
+receipt formats are unchanged. A reader in the registry is not proof of current
+provider availability or verified execution.
+
+Historical Codex replay previously compared the original provider/adapter with
+the current configured selection. It now verifies the original provider and
+adapter against the captured identity and original app/provider records,
+while preserving agent/workspace checks and all active-run provider/model
+checks. Fixture regressions cover a later OpenCode or unknown selection,
+forged adapter and mid-run provider change. Replay requires the retained
+original Codex database and rollout files, including an appropriate private
+read-only path. A new model under the same supported provider remains covered
+by existing tests. Neither direction of a two-provider native run is claimed.
+
+Focused provider, compact, native preflight, Codex receipt and AI-core suite:
+60 passed. Full `python -m unittest discover -s tests -v`: 624 passed in
+518.738 seconds. The fixed native-reader capability operation also passed a
+separate fixture check. `python -m researcher config validate`: VALID, nine
+families, 31 original registry methods, zero production detectors/full-core
+packs; M32/M33 remain separately registered SHADOW trials. Exact remote CI
+outcome is reported in the session handoff after observation.
+OpenCode compact attestation and genuine two-stage acceptance remain blocked
+on the actual sanitized host records described in
+`OPENCODE_DEEPSEEK_BOUNDARY.md`. `trade_authorization=false` is unchanged.
+
+---
+
 # November 23 final code-first continuation — partial, native gate open
 
 Started from clean `5c9499abadf5a434ec719dba18c2640da95976a6` on the existing

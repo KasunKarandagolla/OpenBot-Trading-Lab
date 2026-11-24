@@ -152,7 +152,8 @@ def start(request_id):
         raise ContractError('RUNNER_REQUEST_INVALID')
     if Path.cwd().resolve()!=ROOT:raise ContractError('RUNNER_WRONG_WORKING_DIRECTORY')
     config=load_private(PRIVATE);identity=active_identity(config)
-    if identity['provider']!='codex':raise ContractError('RUNNER_AUTONOMOUS_HANDOFF_UNSUPPORTED_FOR_PROVIDER')
+    from .native_identity import compact_adapter_supported
+    if not compact_adapter_supported(identity):raise ContractError('RUNNER_AUTONOMOUS_HANDOFF_UNSUPPORTED_FOR_PROVIDER')
     sha=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     if subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True):
         raise ContractError('RUNNER_DIRTY_CHECKOUT')
@@ -964,7 +965,7 @@ def replay_native(key):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['start','status','_worker','preflight','review-page','replay-native','reserve-review'])
+    parser.add_argument('action',choices=['start','status','_worker','preflight','provider-status','review-page','replay-native','reserve-review'])
     parser.add_argument('--request-id');parser.add_argument('--job-id');parser.add_argument('--include-review',action='store_true')
     parser.add_argument('--material');parser.add_argument('--packet-sha256');parser.add_argument('--page',type=int)
     parser.add_argument('--confirm');parser.add_argument('--end-frame')
@@ -973,7 +974,10 @@ def main():
         if args.action=='review-page':
             sys.stdout.buffer.write(review_page(args.job_id,args.material,args.packet_sha256,args.page).encode('utf-8'))
             return 0
-        if args.action=='preflight':
+        if args.action=='provider-status':
+            from .native_identity import configured_capability
+            result=configured_capability(load_private(PRIVATE))
+        elif args.action=='preflight':
             from .native_runtime import integration_preflight
             config=load_private(PRIVATE)
             from .settings import validate_config,load_config

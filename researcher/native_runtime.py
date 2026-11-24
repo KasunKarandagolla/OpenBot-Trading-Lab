@@ -8,12 +8,12 @@ def integration_preflight(config,*,as_of):
     """Read the actual current adapter and installed skills before market I/O."""
     from .native_host import delegated,call
     if delegated(config):return call(config,'integration_preflight',{'as_of':as_of})
-    from .native_identity import active_identity,parent_binding
+    from .native_identity import active_identity,compact_adapter_supported,parent_binding
     from .native_codex import attest_turn_model,SCHEMA
     from .native_handoff import wsl_root
     from .settings import ROOT
     identity=active_identity(config);binding=parent_binding(identity,config,require_configured_model=True)
-    if identity['provider']!='codex':raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
+    if not compact_adapter_supported(identity):raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
     attest_turn_model(config,binding['external'],binding['turn'],identity['model'],config['agent_workspace'],
         start=utc(binding['started_at']),end=utc(as_of),backend=identity['provider_backend'],
         missing='NATIVE_NOT_INVOKED')

@@ -57,6 +57,70 @@ class DynamicModelIdentity(unittest.TestCase):
         self.assertEqual(len(f.app.submitted), 1)
         self.assertTrue(raw)
 
+    def test_historical_codex_receipt_survives_provider_change(self):
+        f = self.job
+        self.complete_first()
+        for provider, model in (('opencode', 'fixture-backend/fixture-model'),
+                                ('unregistered-provider', 'fixture-other-model')):
+            with self.subTest(provider=provider):
+                f.f.agent.update(provider=provider, model=model)
+                with sqlite3.connect(f.f.config['openbot_db']) as db:
+                    db.execute('UPDATE projection_agents SET model=?,agent_json=?',
+                               (model, encode(f.f.agent)))
+                observed = observe_handoff(f.f.config, identity=f.f.identity, directory=f.directory,
+                                           material=f.material, as_of=f.clock())
+                self.assertTrue(observed['task_created'])
+                _, audit = collect(f.request, f.f.config, as_of=f.clock(), directory=f.directory)
+                self.assertEqual(audit['native_identity'], f.f.identity)
+                self.assertEqual(audit['verified_evidence_pages'], 10)
+                with self.assertRaises(ContractError):
+                    collect(f.request, f.f.config, as_of=f.clock(), directory=f.directory,
+                            require_configured_model=True)
+
+    def test_historical_provider_change_does_not_accept_a_forged_adapter(self):
+        f = self.job
+        self.complete_first()
+        f.f.agent.update(provider='opencode', model='fixture-backend/fixture-model')
+        with sqlite3.connect(f.f.config['openbot_db']) as db:
+            db.execute('UPDATE projection_agents SET model=?,agent_json=?',
+                       (f.f.agent['model'], encode(f.f.agent)))
+        from researcher.native_identity import assert_parent
+        with self.assertRaises(ContractError):
+            assert_parent({**f.f.identity, 'adapter': 'forged'}, f.f.config, as_of=f.clock())
+
+    def test_selection_status_distinguishes_reader_from_live_receipt(self):
+        from researcher.native_identity import configured_capability
+        f = self.job.f
+        status = configured_capability(f.config)
+        self.assertEqual(status['model'], f.identity['model'])
+        self.assertEqual(status['model_selection'], 'MODEL_SELECTED')
+        self.assertEqual(status['native_adapter'], 'NATIVE_ADAPTER_SUPPORTED')
+        self.assertEqual(status['provider_available'], 'UNKNOWN_NOT_PROBED')
+        self.assertEqual(status['native_receipt'], 'NOT_CHECKED')
+        for provider, model, missing in (
+                ('opencode', 'fixture-backend/fixture-model', 'COMPACT_TASK_PAGE_AND_TURN_ATTESTATION'),
+                ('unregistered-provider', 'fixture-model', 'NATIVE_PROVIDER_ADAPTER')):
+            with self.subTest(provider=provider):
+                f.agent.update(provider=provider, model=model)
+                with sqlite3.connect(f.config['openbot_db']) as db:
+                    db.execute('UPDATE projection_agents SET model=?,agent_json=?', (model, encode(f.agent)))
+                status = configured_capability(f.config)
+                self.assertEqual((status['provider'], status['model']), (provider, model))
+                self.assertEqual(status['native_adapter'], 'PROVIDER_ATTESTATION_UNSUPPORTED')
+                self.assertEqual(status['missing_capability'], missing)
+                self.assertEqual(status['native_receipt'], 'NOT_CHECKED')
+                self.assertFalse(status['trade_authorization'])
+
+    def test_midflight_provider_change_rejects_active_parent(self):
+        from researcher.native_identity import assert_parent
+        f = self.job.f
+        f.agent.update(provider='opencode', model='fixture-backend/fixture-model')
+        with sqlite3.connect(f.config['openbot_db']) as db:
+            db.execute('UPDATE projection_agents SET model=?,agent_json=?',
+                       (f.agent['model'], encode(f.agent)))
+        with self.assertRaisesRegex(ContractError, 'NATIVE_MODEL_SWITCHED'):
+            assert_parent(f.identity, f.config, require_configured_model=True, as_of=self.job.clock())
+
     def test_reused_session_captures_new_model_and_preserves_original_turn_receipt(self):
         f = self.job
         self.complete_first()

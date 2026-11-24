@@ -25,6 +25,16 @@ ERRORS = frozenset({'NATIVE_AUDIT_CONFIG_MISSING','NATIVE_AUDIT_CONFIG_INVALID',
     'NATIVE_PARENT_OUTPUT_TRUNCATED','NATIVE_PARENT_ARGUMENT_MISMATCH',
     'NATIVE_PARENT_OUTPUT_TOO_LARGE','NATIVE_PARENT_DELIVERY_UNCONFIRMED'})
 ADAPTERS = {'opencode': 'OPENCODE_V2_SESSION_MESSAGE', 'codex': 'CODEX_ROLLOUT_0169'}
+# The legacy OpenCode reader attests a different protocol, not compact pages.
+# A registered reader is not proof of the current host or model's availability.
+COMPACT_ADAPTERS = {'codex': 'CODEX_ROLLOUT_0169'}
+
+
+def compact_adapter_supported(identity):
+    if not isinstance(identity,dict):return False
+    provider=identity.get('provider')
+    return (isinstance(provider,str) and provider in COMPACT_ADAPTERS
+            and identity.get('adapter')==COMPACT_ADAPTERS[provider])
 
 # Diagnostics are labels, never provider values or exception text.
 DIAGNOSTIC_LABELS={
@@ -192,20 +202,48 @@ def read_db(path):
         if db is not None:db.close()
 
 
-def configured_identity(config):
-    from .native_host import delegated,call
-    if delegated(config):return call(config,'configured_identity')
+def _configured_agent(config):
+    """Read the existing agent and workspace without interpreting its model."""
     from .agent_review import AGENT
     with read_db(config['openbot_db']) as db:
         rows=db.execute("SELECT agent_id,model,agent_json FROM projection_agents WHERE json_extract(agent_json,'$.name')=?",(AGENT,)).fetchall()
     if len(rows)!=1:raise ContractError('NATIVE_AGENT_MISMATCH')
-    aid,model,raw=rows[0];agent=json.loads(raw);provider=agent.get('provider')
+    aid,model,raw=rows[0];agent=json.loads(raw)
+    if path_key(agent.get('workspacePath',''))!=path_key(config['agent_workspace']):
+        raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
+    return aid,model,agent
+
+
+def configured_identity(config):
+    from .native_host import delegated,call
+    if delegated(config):return call(config,'configured_identity')
+    from .agent_review import AGENT
+    aid,model,agent=_configured_agent(config);provider=agent.get('provider')
     if provider not in ADAPTERS:raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
-    if (not isinstance(model,str) or not model or agent.get('model')!=model or
-            path_key(agent.get('workspacePath',''))!=path_key(config['agent_workspace'])):
+    if not isinstance(model,str) or not model or agent.get('model')!=model:
         raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
     return {'agent_id':aid,'agent_name':AGENT,'provider':provider,'model':model,
         'adapter':ADAPTERS[provider]}
+
+
+def configured_capability(config):
+    """Report selection and reader coverage; this does not probe or attest a turn."""
+    from .native_host import delegated,call
+    if delegated(config):return call(config,'configured_capability')
+    _,model,agent=_configured_agent(config)
+    provider=agent.get('provider')
+    if (not isinstance(provider,str) or not provider or not isinstance(model,str)
+            or not model or agent.get('model')!=model):
+        raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
+    adapter=ADAPTERS.get(provider)
+    compact=compact_adapter_supported({'provider':provider,'adapter':adapter})
+    return {'provider':provider,'model':model,'adapter':adapter,
+        'provider_available':'UNKNOWN_NOT_PROBED','model_selection':'MODEL_SELECTED',
+        'native_adapter':'NATIVE_ADAPTER_SUPPORTED' if compact else 'PROVIDER_ATTESTATION_UNSUPPORTED',
+        'native_receipt':'NOT_CHECKED',
+        'missing_capability':None if compact else ('COMPACT_TASK_PAGE_AND_TURN_ATTESTATION'
+            if adapter else 'NATIVE_PROVIDER_ADAPTER'),
+        'market_requests':0,'model_requests':0,'trade_authorization':False}
 
 
 def active_identity(config):
@@ -238,8 +276,8 @@ def active_identity(config):
 def _assert_configured_owner(identity,current,*,require_configured_model):
     if any(current[field]!=identity.get(field) for field in ('agent_id','agent_name')):
         raise ContractError('NATIVE_AGENT_MISMATCH')
-    fields=[('provider','CONFIGURED_PROVIDER'),('adapter','CONFIGURED_ADAPTER')]
-    if require_configured_model:fields.append(('model','CONFIGURED_MODEL'))
+    fields=[('provider','CONFIGURED_PROVIDER'),('adapter','CONFIGURED_ADAPTER'),
+            ('model','CONFIGURED_MODEL')] if require_configured_model else []
     for field,check in fields:
         if current[field]!=identity.get(field):
             raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY',check)
@@ -255,8 +293,18 @@ def parent_binding(identity,config,*,require_configured_model=True,as_of=None):
     columns on its app session and Codex thread follow later executions.
     Active callers also pin the configuration and both projections.
     """
-    current=configured_identity(config)
+    if require_configured_model:
+        current=configured_identity(config)
+    else:
+        # The selection may have changed, or even be unsupported today. The
+        # original provider is verified below against its own retained records.
+        from .agent_review import AGENT
+        aid,_,_=_configured_agent(config)
+        current={'agent_id':aid,'agent_name':AGENT}
     _assert_configured_owner(identity,current,require_configured_model=require_configured_model)
+    provider=identity.get('provider')
+    if provider not in ADAPTERS or identity.get('adapter')!=ADAPTERS[provider]:
+        raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
     with read_db(config['openbot_db']) as db:
         rows=db.execute('''SELECT h.thread_id,t.turn_id,p.id,p.external_session_id,
           p.model,p.provider,t.started_at,t.completed_at,t.status
