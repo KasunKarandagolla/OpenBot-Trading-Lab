@@ -1,3 +1,34 @@
+# November 24 Phase C OpenCode boundary diagnostic — prepared, not run
+
+Approved commit `2349ba78f96a4367ca9c2392481cd3bdbab87f27` is clean and in
+sync on `feature/external-first-market-researcher`. Both CI runs for that commit
+concluded `success`: push run 45397257999 and pull-request run 45397270079.
+
+The installed orchestration skill was republished as local revision 9 and
+installed on the existing Researcher. Both workspace mirrors are 3,766 bytes
+with SHA-256 `324979430bb1c9d6c9af98ed7c78ced049563900861aa9d6b39ab474fda795be`;
+the registered revision and same-turn rule were read back. The protected
+`market-research-review` skill remains
+`96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb`.
+
+Host inventory: OpenBot `0.76.1`; OpenCode provider records in `opencode.db`
+with session record versions `2.2.5`, `2.2.6` and `2.3.0`, legacy
+`session_message` JSON parts and a newer normalized `session_part` table. The
+native command tool is `shell` (PowerShell dialect); observed native tools are
+`execute`, `shell`, `write`, `edit`, `grep`, `subagent`, `read`, `webfetch`,
+`websearch`, `glob`, `question` and `skill`. The existing compatibility reader
+consumes `session_message` only.
+
+A fixed 233-byte synthetic page (SHA-256
+`e529506e6b3cff6881a02616138a50b68eba9e7ec17ed801f2f8f82ed271d798`) and the
+exact one-run owner diagnostic are recorded in
+`PHASE_C_OPENCODE_BOUNDARY_DIAGNOSTIC.md`. No provider switch, native task,
+market request or trade was made. Status: `CODE_IMPLEMENTED` and
+`OFFLINE_VERIFIED` for the installation sync; the OpenCode adapter remains
+`UNVERIFIED_OR_BLOCKED` pending the owner diagnostic and real host records.
+
+---
+
 # November 24 native tool-discovery attribution fix — implemented and offline verified
 
 Retained-evidence diagnosis of the failed archived smoke job
