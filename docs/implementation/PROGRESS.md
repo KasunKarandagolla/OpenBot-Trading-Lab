@@ -1,3 +1,42 @@
+# November 25 Phase C OpenCode boundary diagnostic — run complete, adapter not implemented
+
+The owner ran the single authorized synthetic diagnostic on 2026-11-24 on the
+existing Researcher, configured as `opencode/deepseek-v4.1-flash-free` at
+reasoning effort `high`. The fixed page is `233` bytes, SHA-256
+`e529506e6b3cff6881a02616138a50b68eba9e7ec17ed801f2f8f82ed271d798`.
+Read-only `mode=ro` inspection of `openbot.db` and `opencode.db` confirms one
+parent turn, one submitted task, one child turn and one final answer. No market
+request, trade, production-runner call or second task was made.
+
+Both sessions are OpenCode record version `2.4.1`. The parent turn contains four
+completed native tool calls: one `shell` read of the exact page (exit `0`,
+`235` output bytes, SHA-256
+`ea011a591e8bd4d7c1cd64dc8fa25b36c9c74ac8e33d131230b19c8ef414461c`); one
+`execute` attempt that the bridge rejected because `tool_call` cannot run
+`tool_describe`; one direct `tools.openbot.tool_describe` that returned both
+schemas (`2,341` bytes, SHA-256
+`aa370892476f450c33c99e0ed9dc3e8b14831f5481bc07df0bb9000229f7312a`); and one
+`openbot.start_task` call with the exact title and brief (`487` bytes, SHA-256
+`3f6f33c8f9d2f2087a1e59e71171e9eb820b99d9698b1d81791c7487fba270e6`). The child
+session contains exactly one `shell` call with the same command, exit `0` and
+the same `235`-byte output hash; its `220`-byte final answer
+(SHA-256 `45d26b165b7bd746e4feebe2a360741c47ba8b617acf0c5e6af328fd1bcafbb5`)
+reports the page ID, nonce, marker and `9 × 7 = 63`.
+
+The record-format gap is now exact: every assistant `session_message` row in
+these turns has `content: []`; all tool calls are in the normalized
+`session_part` table (`type=tool`, `name`, `call_id`, `state.input`,
+`state.content`, `state.metadata.exit`). The existing `native_app` reader
+consumes `session_message` only, so it would see no tool calls and cannot attest
+this boundary. The OpenCode compact adapter remains unimplemented and OpenCode
+is still excluded from `COMPACT_ADAPTERS`. Status: `HOST_EVIDENCE_OBSERVED`;
+`NATIVE_ACCEPTANCE_NOT_CLAIMED`. The next gate is a narrowly scoped
+`OPENCODE_V2_SESSION_PART` reader/attester with adversarial offline tests, then
+a separately authorized acceptance run. Docs-only CI for `37f626e` concluded
+`success`; this entry records no code change.
+
+---
+
 # November 24 Phase C OpenCode boundary diagnostic — prepared, not run
 
 Approved commit `2349ba78f96a4367ca9c2392481cd3bdbab87f27` is clean and in

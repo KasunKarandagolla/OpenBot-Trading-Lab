@@ -1,12 +1,13 @@
-# OpenCode compact native boundary: blocked pending host evidence
+# OpenCode compact native boundary: host evidence observed, adapter not implemented
 
-Status: **NOT IMPLEMENTED / NOT NATIVE VERIFIED**. The selected existing
-OpenCode/DeepSeek configuration is not changed. Current runner `start` rejects
-non-Codex autonomous handoff and `integration_preflight` rejects a non-Codex
-provider. Compact paged receipts explicitly reject the legacy OpenCode reader.
-The existing `COMPACT_NATIVE_ACCEPTANCE.md` therefore cannot be used to claim
-an OpenCode pass at this commit. Do not bypass these gates or switch providers
-to manufacture a pass.
+Status: **HOST EVIDENCE OBSERVED / ADAPTER NOT IMPLEMENTED / NOT NATIVE
+VERIFIED**. The selected existing OpenCode/DeepSeek configuration is not changed.
+Current runner `start` rejects non-Codex autonomous handoff and
+`integration_preflight` rejects a non-Codex provider. Compact paged receipts
+explicitly reject the legacy OpenCode reader. The existing
+`COMPACT_NATIVE_ACCEPTANCE.md` therefore cannot be used to claim an OpenCode pass
+at this commit. Do not bypass these gates or switch providers to manufacture a
+pass.
 
 Historical `SESSION_06C_NATIVE_REVIEW.md` records a real older OpenCode model
 review with skill and evidence reads. It does not prove the current installed
@@ -16,7 +17,37 @@ at `a0b754f8baa8fb49fb200ffb3759b17429a962a9` shows ACP raw input/output
 handling, but is not proof of installed version, persisted record shape, output
 completeness or turn attribution. No local fixture is an actual provider receipt.
 
-## Smallest owner-host action
+## Phase C result (24 November 2026)
+
+The owner performed the one-run diagnostic on the existing Researcher with
+`opencode/deepseek-v4.1-flash-free` at effort `high`. Read-only records show one
+parent turn, one acknowledged task, one child turn and one final answer. The
+parent ran the exact read-only page command (exit `0`, `235`-byte output,
+SHA-256 `ea011a591e8bd4d7c1cd64dc8fa25b36c9c74ac8e33d131230b19c8ef414461c`),
+discovered both requested schemas inside the turn, and submitted the exact title
+and brief once. The child ran exactly the same one `shell` command and returned
+the page ID, nonce, marker and `9 × 7 = 63`. No market-data or trading tool
+appears in either session.
+
+The format gap is exact: both sessions are OpenCode record version `2.4.1` and
+store tool calls only in `session_part` (`type=tool`, `name`, `call_id`,
+`state.input`, `state.content`, `state.metadata.exit`). Every assistant
+`session_message` row in these turns has `content: []`, so the existing
+`OPENCODE_V2_SESSION_MESSAGE` reader sees no tool calls and cannot attest them.
+The task call is nested inside the native `execute` Code Mode tool, not a
+top-level provider `openbot.start_task` call. This is boundary evidence, not
+native acceptance of the runner, paged transport or any market capability.
+
+The next gate is a narrowly scoped `OPENCODE_V2_SESSION_PART` reader and
+attester with adversarial offline tests. Do not add OpenCode to
+`COMPACT_ADAPTERS` until that reader is reviewed and published. The full
+chronology, hashes and failure cases are in
+`PHASE_C_OPENCODE_BOUNDARY_DIAGNOSTIC.md`.
+
+## Owner-host action (performed)
+
+The action below was performed once on 2026-11-24. It is retained as the record
+of what was authorized; it is not an invitation to repeat it.
 
 In the already authorized existing Researcher main chat, perform **one tiny,
 no-market, no-trade diagnostic model turn** with the currently configured
