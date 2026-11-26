@@ -20,6 +20,9 @@ from .native_identity import NativeEvidenceError, checked_path, read_db, ref
 
 SCHEMA = 'OPENCODE_V2_SESSION_PART'
 SESSION_VERSION = '2.4.1'
+# The session_message adapter predates normalized session_part records. These
+# exact versions were observed for retained historical OpenCode replay.
+LEGACY_SESSION_VERSIONS = frozenset({'2.2.5', '2.2.6', '2.3.0'})
 # Diagnostic labels are fixed; they never contain provider values or text.
 _VARIANT = 'OPENCODE_241'
 _MESSAGE_TYPES = frozenset({'user', 'assistant', 'idle', 'model-switched'})
@@ -111,7 +114,7 @@ def _model_matches(record, name, provider, effort):
     return effort is None or record.get('variant') == effort
 
 
-def session_record(config, session):
+def session_record(config, session, *, allowed_versions=None):
     """Validate the exact normalized session identity and return its model."""
     with read_db(config['provider_db']) as db:
         row = db.execute('SELECT id,parent_id,version,model FROM session_v2 WHERE id=?',
@@ -119,7 +122,7 @@ def session_record(config, session):
     if not row or row[0] != session:
         raise ContractError('NATIVE_SESSION_MISMATCH')
     _, parent, version, raw_model = row
-    if version != SESSION_VERSION:
+    if version not in (allowed_versions or {SESSION_VERSION}):
         _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', 'SESSION', 'VERSION')
     model = _obj(raw_model, stage='SESSION', check='IDENTITY')
     provider = model.get('providerID')
@@ -142,7 +145,7 @@ def assert_session_identity(config, session, *, model, provider, effort=None):
     return info
 
 
-def _message_rows(config, session, start, end):
+def _message_rows(config, session, start, end, *, allow_incomplete=False):
     with read_db(config['provider_db']) as db:
         rows = db.execute('''SELECT id,type,seq,time_created,time_updated,data
             FROM session_message WHERE session_id=? ORDER BY time_created,seq''',
@@ -182,15 +185,20 @@ def _message_rows(config, session, start, end):
                                  'time', 'tokens', 'cost'}
                     or message.get('content') != []
                     or not isinstance(message.get('agent'), str)
-                    or message.get('finish') not in {'tool-calls', 'stop'}
-                    or not isinstance(message.get('rawFinish'), str)
+                    or message.get('finish') not in {'tool-calls', 'stop', None}
+                    or not isinstance(message.get('rawFinish'), (str, type(None)))
                     or not isinstance(message.get('model'), dict)
                     or not isinstance(message.get('tokens'), dict)
                     or type(message.get('cost')) not in {int, float}):
                 _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', 'EVIDENCE', 'COMPLETION_MISMATCH')
             completed = message['time'].get('completed')
-            if type(completed) is not int or completed < created:
+            incomplete = completed is None
+            if (incomplete and not allow_incomplete
+                    or completed is not None and (type(completed) is not int or completed < created)):
                 _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', 'EVIDENCE', 'COMPLETION_MISMATCH')
+            if incomplete and message.get('finish') == 'stop':
+                _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', 'EVIDENCE', 'COMPLETION_MISMATCH')
+            message['_incomplete'] = incomplete
         elif kind == 'model-switched':
             if (set(message) - {'time', 'model', 'previous'} or not isinstance(message['model'], dict)
                     or 'previous' in message and not isinstance(message['previous'], dict)):
@@ -202,7 +210,7 @@ def _message_rows(config, session, start, end):
     return selected
 
 
-def _part_rows(config, session, messages):
+def _part_rows(config, session, messages, *, allow_incomplete=False):
     wanted = {message['id']: message for message in messages}
     with read_db(config['provider_db']) as db:
         rows = db.execute('''SELECT message_id,ordinal,type,call_id,time_created,time_updated,data
@@ -210,6 +218,7 @@ def _part_rows(config, session, messages):
             (session,)).fetchall()
     seen = set()
     by_message = {}
+    ordinals_by_message = {}
     for mid, ordinal, kind, call_id, created, updated, data in rows:
         if (not isinstance(mid, str) or type(ordinal) is not int or ordinal < 0
                 or (mid, ordinal) in seen):
@@ -218,11 +227,30 @@ def _part_rows(config, session, messages):
         if mid not in wanted:
             continue
         message = wanted[mid]
+        ordinals_by_message.setdefault(mid, []).append(ordinal)
         if not message['created'] <= created <= updated <= message['updated']:
             _fail('NATIVE_REVIEW_INCOMPLETE', 'ENVELOPE', 'TIMESTAMP')
+        raw_part = _obj(data, stage='EVIDENCE', check='JSON')
         if kind not in _PART_TYPES:
             _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', 'ENVELOPE', 'JSON')
-        part = _obj(data, stage='EVIDENCE', check='JSON')
+        part_time = raw_part.get('time')
+        raw_completed = part_time.get('completed') if isinstance(part_time, dict) else None
+        active_partial = allow_incomplete and message['data'].get('_incomplete')
+        if kind == 'tool':
+            if raw_completed is None:
+                if active_partial:
+                    continue
+                _fail('NATIVE_REVIEW_INCOMPLETE', 'ENVELOPE', 'TIMESTAMP')
+            if type(raw_completed) is not int or raw_completed < created:
+                _fail('NATIVE_REVIEW_INCOMPLETE', 'ENVELOPE', 'TIMESTAMP')
+        elif active_partial and (not isinstance(part_time, dict) or raw_completed is None):
+            # Text/reasoning parts in a live assistant record can still be
+            # growing. Ignore that partial suffix; completed tool parts in the
+            # same assistant message remain available for command attestation.
+            continue
+        elif raw_completed is not None and (type(raw_completed) is not int or raw_completed < created):
+            _fail('NATIVE_REVIEW_INCOMPLETE', 'ENVELOPE', 'TIMESTAMP')
+        part = raw_part
         if part.get('type') != kind:
             _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', 'ENVELOPE', 'JSON')
         if kind == 'reasoning':
@@ -275,9 +303,10 @@ def _part_rows(config, session, messages):
     result = []
     for message in messages:
         parts = by_message.get(message['id'], [])
-        if [part['ordinal'] for part in parts] != list(range(len(parts))):
+        ordinals = sorted(ordinals_by_message.get(message['id'], []))
+        if ordinals != list(range(len(ordinals))):
             _fail('NATIVE_REVIEW_INCOMPLETE', 'ENVELOPE', 'ORDER')
-        if message['type'] == 'assistant' and not parts:
+        if message['type'] == 'assistant' and not parts and not message['data'].get('_incomplete'):
             _fail('NATIVE_REVIEW_INCOMPLETE', 'EVIDENCE', 'COMPLETENESS')
         if message['type'] != 'assistant' and parts:
             _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', 'EVIDENCE', 'COMPLETENESS')
@@ -286,12 +315,13 @@ def _part_rows(config, session, messages):
     return result
 
 
-def turn_parts(config, session, start, end):
+def turn_parts(config, session, start, end, *, allow_incomplete=False):
     """Return one exact turn's messages and ordered parts without reasoning."""
-    messages = _message_rows(config, session, _at(start), _at(end))
+    messages = _message_rows(config, session, _at(start), _at(end),
+                             allow_incomplete=allow_incomplete)
     if not messages:
         raise ContractError('NATIVE_NOT_INVOKED')
-    return messages, _part_rows(config, session, messages)
+    return messages, _part_rows(config, session, messages, allow_incomplete=allow_incomplete)
 
 
 def assert_model(messages, *, model, provider, effort=None, allow_empty=False):
@@ -498,7 +528,8 @@ def attest_smoke_discovery(identity, config, *, as_of):
     binding = parent_binding(identity, config, require_configured_model=True, as_of=as_of)
     start = _at(binding['started_at'])
     end = min(_at(binding['completed_at']), _at(as_of)) if binding['completed_at'] else _at(as_of)
-    messages, parts = turn_parts(config, binding['external'], start, end)
+    messages, parts = turn_parts(config, binding['external'], start, end,
+                                 allow_incomplete=binding.get('status') != 'completed')
     assert_model(messages, model=identity['model'], provider=identity['provider'],
                  effort=identity.get('effort'), allow_empty=True)
     calls = completed = 0
@@ -591,7 +622,8 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
                              as_of=as_of)
     start = _at(binding['started_at'])
     end = min(_at(binding['completed_at']), _at(as_of)) if binding['completed_at'] else _at(as_of)
-    messages, parts = turn_parts(config, binding['external'], start, end)
+    messages, parts = turn_parts(config, binding['external'], start, end,
+                                 allow_incomplete=binding.get('status') != 'completed')
     if not any(message['type'] == 'assistant' for message in messages):
         return {'submission_state': 'NOT_OBSERVED', 'submission_attempts': 0}
     assert_model(messages, model=identity['model'], provider=identity['provider'],
@@ -757,7 +789,7 @@ def attest(config, session, turn, *, model, workspace, start, end, expected_inpu
 
 
 def attest_turn_model(config, session, turn, model, workspace, *, start, end, backend,
-                      missing='NATIVE_REVIEW_INCOMPLETE'):
+                      missing='NATIVE_REVIEW_INCOMPLETE', allow_incomplete=False):
     info = session_record(config, session)
     if info['model'] != model:
         _fail('NATIVE_MODEL_SWITCHED', 'IDENTITY', 'APP_PARENT_MODEL')
@@ -766,7 +798,8 @@ def attest_turn_model(config, session, turn, model, workspace, *, start, end, ba
     if provider != info['provider']:
         _fail('NATIVE_MODEL_SWITCHED', 'IDENTITY', 'APP_PARENT_PROVIDER')
     try:
-        messages, _ = turn_parts(config, session, start, end)
+        messages, _ = turn_parts(config, session, start, end,
+                                 allow_incomplete=allow_incomplete)
     except ContractError as error:
         if str(error) == 'NATIVE_NOT_INVOKED':
             raise ContractError(missing) from None
@@ -926,7 +959,8 @@ def attest_start_command(identity, config, state):
     binding = parent_binding(identity, config, require_configured_model=True, as_of=now_utc())
     start = _at(binding['started_at'])
     end = _at(binding['completed_at']) if binding['completed_at'] else _at(now_utc())
-    messages, parts = turn_parts(config, binding['external'], start, end)
+    messages, parts = turn_parts(config, binding['external'], start, end,
+                                 allow_incomplete=binding.get('status') != 'completed')
     assert_model(messages, model=identity['model'], provider=identity['provider'],
                  effort=identity.get('effort'), allow_empty=True)
     root = wsl_root()

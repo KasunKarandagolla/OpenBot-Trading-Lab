@@ -31,6 +31,9 @@ AI_SMOKE_PROMPT=ROOT/'docs/implementation/OPENBOT_AI_CORE_SMOKE_PROMPT.txt'
 POLL_TEST_PROMPT=ROOT/'docs/implementation/OPENBOT_POLL_TEST_PROMPT.txt'
 COMPACT_TEST_PROMPT=ROOT/'docs/implementation/OPENBOT_COMPACT_TEST_PROMPT.txt'
 ACCEPTANCE_PROMPT=ROOT/'docs/implementation/OPENBOT_RECOVERY_ACCEPTANCE_PROMPT.txt'
+OPENCODE_COMPACT_ACCEPTANCE_PROMPT=ROOT/'docs/implementation/OPENCODE_TEST1_COMPACT_PROMPT.txt'
+OPENCODE_ARCHIVED_ACCEPTANCE_PROMPT=ROOT/'docs/implementation/OPENCODE_TEST2_ARCHIVED_PROMPT.txt'
+OPENCODE_LIVE_ACCEPTANCE_PROMPT=ROOT/'docs/implementation/OPENCODE_TEST3_LIVE_PROMPT.txt'
 FINAL={'COMPLETED','PARTIAL','FAILED','INTERRUPTED','FINAL_DELIVERED'}
 
 
@@ -139,6 +142,19 @@ def _owner_proof(identity,config,*,expected_commit=None):
         if (isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit) and
                 text.strip()==ACCEPTANCE_PROMPT.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',expected_commit).strip()):
             return 'SETUP_AND_ACCEPTANCE'
+        # These three files are the canonical, exact-message owner prompts
+        # published for OpenCode. Their modes deliberately reuse the existing
+        # synthetic, archived-only and full read-only runner paths.
+        if isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit):
+            prompts=(
+                (OPENCODE_COMPACT_ACCEPTANCE_PROMPT,'COMPACT_POLL_TEST'),
+                (OPENCODE_ARCHIVED_ACCEPTANCE_PROMPT,'AI_CORE_SMOKE'),
+                (OPENCODE_LIVE_ACCEPTANCE_PROMPT,'SETUP_AND_ACCEPTANCE'),
+            )
+            for prompt_path,run_mode in prompts:
+                if text.strip()==prompt_path.read_text(encoding='utf-8').replace(
+                        '@@APPROVED_COMMIT@@',expected_commit).strip():
+                    return run_mode
         return None
     rows=[(*r,mode(r[1])) for r in rows if ref(r[0])==identity['turn_ref']]
     rows=[r for r in rows if r[3] is not None]

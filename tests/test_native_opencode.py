@@ -18,9 +18,9 @@ from researcher.native_codex import review_brief
 from researcher.native_handoff import (
     COMPACT_PAGES, COMPACT_SUBMISSION_POLICY, packet, wsl_root,
 )
-from researcher.native_identity import active_identity, ref
+from researcher.native_identity import active_identity, parent_binding, ref
 from researcher.native_opencode import (
-    SCHEMA, _page_command, assert_session_identity, attest, attest_smoke_discovery,
+    LEGACY_SESSION_VERSIONS, SCHEMA, _page_command, _page_output, assert_session_identity, attest, attest_smoke_discovery,
     attest_start_command, attest_turn_model, collect, delivery_proof,
     observe_submission, parse_execute, session_record,
 )
@@ -418,6 +418,32 @@ class RecordContract(OpenCodeFixture):
             db.execute("UPDATE session_v2 SET version='9.9.9'")
         self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', session_record,
                          self.config, PARENT_EXTERNAL)
+
+    def test_legacy_parent_binding_preserves_only_observed_session_versions(self):
+        identity={**self.identity,'adapter':'OPENCODE_V2_SESSION_MESSAGE'}
+        for version in sorted(LEGACY_SESSION_VERSIONS):
+            with self.subTest(version=version):
+                with sqlite3.connect(self.config['provider_db']) as db:
+                    db.execute('UPDATE session_v2 SET version=? WHERE id=?',
+                               (version,PARENT_EXTERNAL))
+                bound=parent_binding(identity,self.config,require_configured_model=False,
+                                     as_of=self.time(5))
+                self.assertEqual(bound['external'],PARENT_EXTERNAL)
+                self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED',session_record,
+                                 self.config,PARENT_EXTERNAL)
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute("UPDATE session_v2 SET version='9.9.9' WHERE id=?",(PARENT_EXTERNAL,))
+        self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED',parent_binding,identity,
+                         self.config,require_configured_model=False,as_of=self.time(5))
+
+    def test_shell_output_normalization_accepts_only_one_platform_line_ending(self):
+        page='FRAME-END'
+        self.assertTrue(_page_output(page,page))
+        self.assertTrue(_page_output(page+'\n',page))
+        self.assertTrue(_page_output(page+'\r\n',page))
+        for output in (page+'\n\n',page+'\r\n\r\n',page+'\r',page+'\nextra'):
+            with self.subTest(output=repr(output)):
+                self.assertFalse(_page_output(output,page))
 
     def test_duplicate_message_order_fails_closed(self):
         self._user(PARENT_EXTERNAL, self.time(2), 'second user')
@@ -819,6 +845,51 @@ class StartAndPreflightContract(OpenCodeFixture):
         self._discovery()
         self.assert_code('AGENT_SKILL_HASH', integration_preflight, self.config,
                          as_of=self.time(5))
+
+    def test_active_parent_incomplete_assistant_records_do_not_block_preflight_or_command_poll(self):
+        expected=(ROOT/'integration/openbot-market-research/SKILL.md').read_text(
+            encoding='utf-8').replace('@@RESEARCH_ROOT@@',wsl_root()).encode()
+        installed=self.workspace/'.agents/skills/openbot-market-research/SKILL.md'
+        installed.parent.mkdir(parents=True);installed.write_bytes(expected)
+        self._discovery()
+        root=wsl_root().replace("'","''")
+        command=(f"wsl.exe --cd '{root}' -- python3 -m researcher.openbot_runner "
+                 f"start --request-id {'a'*32}")
+        mid=self._assistant(PARENT_EXTERNAL,self.time(2))
+        self._shell(PARENT_EXTERNAL,mid,self.time(2),command,'{\"state\":\"STARTING\"}\r\n')
+        with sqlite3.connect(self.config['provider_db']) as db:
+            row=db.execute('SELECT data FROM session_message WHERE id=?',(mid,)).fetchone()
+            data=json.loads(row[0]);data['time']['completed']=None;data['finish']=None;data['rawFinish']=None
+            db.execute('UPDATE session_message SET data=? WHERE id=?',(encode(data),mid))
+        preflight=integration_preflight(self.config,as_of=self.time(5))
+        self.assertEqual(preflight['provider_schema'],SCHEMA)
+        proof=attest_start_command(self.identity,self.config,{'request_id':'a'*32})
+        self.assertEqual(proof['status'],'VERIFIED_OPENBOT_AGENT_COMMAND')
+
+    def test_active_incomplete_assistant_record_is_ignored_until_its_part_completes(self):
+        mid=self._assistant(PARENT_EXTERNAL,self.time(1))
+        with sqlite3.connect(self.config['provider_db']) as db:
+            row=db.execute('SELECT data FROM session_message WHERE id=?',(mid,)).fetchone()
+            data=json.loads(row[0]);data['time']['completed']=None;data['finish']=None;data['rawFinish']=None
+            db.execute('UPDATE session_message SET data=? WHERE id=?',(encode(data),mid))
+        self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED',attest_turn_model,self.config,
+            PARENT_EXTERNAL,PARENT_TURN,MODEL,self.workspace,start=self.time(-10),end=self.time(5),
+            backend='opencode',allow_incomplete=False)
+        self.assertEqual(attest_turn_model(self.config,PARENT_EXTERNAL,PARENT_TURN,MODEL,
+            self.workspace,start=self.time(-10),end=self.time(5),backend='opencode',
+            allow_incomplete=True)['model'],MODEL)
+
+    def test_submission_poll_observes_a_completed_call_inside_an_active_parent_turn(self):
+        args={'title':'OPENBOT-RESEARCH-FIXTURE','brief':'exact fixture brief\n'}
+        mid=self._submission(self.time(2),args)
+        with sqlite3.connect(self.config['provider_db']) as db:
+            row=db.execute('SELECT data FROM session_message WHERE id=?',(mid,)).fetchone()
+            data=json.loads(row[0]);data['time']['completed']=None;data['finish']=None;data['rawFinish']=None
+            db.execute('UPDATE session_message SET data=? WHERE id=?',(encode(data),mid))
+        result=observe_submission(self.config,self.identity,self.time(1),args,
+                                  as_of=self.time(5),reserved_at=self.time(1))
+        self.assertEqual(result['submission_state'],'ACKNOWLEDGED')
+        self.assertEqual(result['submission_attempts'],1)
 
 
 class DeliveryContract(OpenCodeFixture):

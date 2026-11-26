@@ -1,13 +1,12 @@
-# OpenCode compact native boundary: host evidence observed, adapter not implemented
+# OpenCode compact native boundary: adapter implemented, acceptance pending
 
-Status: **HOST EVIDENCE OBSERVED / ADAPTER NOT IMPLEMENTED / NOT NATIVE
-VERIFIED**. The selected existing OpenCode/DeepSeek configuration is not changed.
-Current runner `start` rejects non-Codex autonomous handoff and
-`integration_preflight` rejects a non-Codex provider. Compact paged receipts
-explicitly reject the legacy OpenCode reader. The existing
-`COMPACT_NATIVE_ACCEPTANCE.md` therefore cannot be used to claim an OpenCode pass
-at this commit. Do not bypass these gates or switch providers to manufacture a
-pass.
+Status: **ADAPTER IMPLEMENTED / OFFLINE VERIFIED / NATIVE ACCEPTANCE NOT
+CLAIMED**. The selected existing OpenCode/DeepSeek configuration is not changed.
+The compact adapter is pinned to normalized session/part record version 2.4.1;
+the legacy message reader retains its observed historical versions. The exact
+owner prompts, their runner modes and their supported Code Mode invocation are
+defined in `OPENCODE_NATIVE_ACCEPTANCE.md` and its three canonical prompt files.
+Do not run acceptance until the owner separately authorizes each stage.
 
 Historical `SESSION_06C_NATIVE_REVIEW.md` records a real older OpenCode model
 review with skill and evidence reads. It does not prove the current installed

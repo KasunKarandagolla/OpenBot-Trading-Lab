@@ -1,3 +1,37 @@
+# November 26 OpenCode authorization and active-turn correction
+
+Status: **IMPLEMENTED / FOCUSED REGRESSION VERIFIED / CONFIG VALID**.
+No native acceptance, market request, order, provider switch or installation
+change was made.
+
+- `_owner_proof()` now accepts the three exact OpenCode acceptance prompts,
+  commit-bound and delivered by the current owner. Their canonical text is in
+  `OPENCODE_TEST1_COMPACT_PROMPT.txt`, `OPENCODE_TEST2_ARCHIVED_PROMPT.txt`, and
+  `OPENCODE_TEST3_LIVE_PROMPT.txt`; the acceptance guide refers to those files
+  instead of duplicating prompt bodies.
+- Run modes map to the existing compact synthetic poll test, archived AI-core
+  smoke path, and full read-only research path. No verifier or identity check
+  was weakened.
+- The orchestration skill now documents the exact JSON-literal OpenCode Code
+  Mode wrappers consumed by `parse_execute()` and is version 5.1.0.
+- Active OpenCode parent turns may contain incomplete assistant rows or partial
+  text parts. Preflight and command/submission polling now ignore only those
+  unfinished suffixes while still requiring completed tool records for proof.
+  Complete child/historical turns retain the strict completion requirement.
+- The compact reader remains pinned to session version 2.4.1. Legacy parent
+  binding explicitly permits only previously observed 2.2.5, 2.2.6 and 2.3.0
+  versions, preserving message-reader historical replay.
+- Shell page output permits the exact page bytes with at most one LF or CRLF
+  terminator; extra whitespace, repeated terminators and changed bytes remain
+  rejected.
+
+Focused OpenCode and acceptance/preflight suites passed: 63 tests.
+`python3 -m researcher config validate` returned `VALID` (9 families, 31
+methods). Commit, push and CI are pending. Native acceptance remains unrun and
+must be separately authorized.
+
+---
+
 # November 26 OpenCode session-part adapter - implemented, offline verified, native acceptance pending
 
 Status: **CODE_IMPLEMENTED / OFFLINE_VERIFIED / HISTORICAL_EVIDENCE_VERIFIED /

@@ -94,6 +94,30 @@ class AcceptancePreflight(unittest.TestCase):
                 with self.assertRaisesRegex(ContractError,'OWNER_START_REQUIRED'):runner.start(self.j.key)
         self.j.process.assert_not_called()
 
+    def test_three_documented_opencode_prompts_authorize_only_their_exact_run_modes(self):
+        cases=(
+            (runner.OPENCODE_COMPACT_ACCEPTANCE_PROMPT,'COMPACT_POLL_TEST'),
+            (runner.OPENCODE_ARCHIVED_ACCEPTANCE_PROMPT,'AI_CORE_SMOKE'),
+            (runner.OPENCODE_LIVE_ACCEPTANCE_PROMPT,'SETUP_AND_ACCEPTANCE'),
+        )
+        commit='a'*40
+        for path,expected in cases:
+            with self.subTest(prompt=path.name):
+                canonical=path.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',commit)
+                self.set_owner(canonical)
+                proof=runner._owner_proof(self.f.identity,self.f.config,expected_commit=commit)
+                self.assertEqual(proof['owner_run_mode'],expected)
+                self.assertEqual(proof['owner_message_sha256'],digest(canonical.encode()))
+                for text,sender in ((canonical.replace(commit,'b'*40),'user'),
+                                    (canonical+'\nextra','user'),
+                                    ('Quoted prompt:\n'+canonical,'user'),
+                                    (canonical,'agent')):
+                    with self.subTest(variant=sender+text[:8]):
+                        self.set_owner(text,sender)
+                        with self.assertRaisesRegex(ContractError,'OWNER_START_REQUIRED'):
+                            runner._owner_proof(self.f.identity,self.f.config,expected_commit=commit)
+        self.j.process.assert_not_called()
+
     def test_archived_native_smoke_requires_the_exact_owner_message(self):
         prompt=runner.SMOKE_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','a'*40)
         for text in (prompt.replace('a'*40,'b'*40),'Do not '+prompt,prompt+' extra'):

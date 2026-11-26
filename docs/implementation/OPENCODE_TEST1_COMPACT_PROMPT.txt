@@ -1,0 +1,7 @@
+I authorize one OpenCode compact native paged Discovery test using the existing Trading Lab Market Researcher at commit @@APPROVED_COMMIT@@. Keep the currently configured OpenCode provider, model and reasoning effort. Use one synthetic research task. Make zero market-data requests and keep trade_authorization=false.
+
+In this main chat, discover openbot.start_task and openbot.attach_files_to_response with openbot.tool_describe. Run the installed setup-only preflight and stop on any identity, skill, schema or provider failure. Start one job with the fixed runner command in the installed orchestration skill and one literal 32-character lowercase hexadecimal request ID. Reuse the exact status_command returned by the runner for every poll.
+
+When ordinary status returns a complete OPENBOT_COMPACT_DISPATCH_V1 object with submission_permitted true, the exact start_task_arguments and end_frame END_OPENBOT_COMPACT_DISPATCH_V1, submit those exact arguments once through native openbot.tool_call to openbot.start_task. Preserve the brief newline. Do not reconstruct a command or path. If the frame is clipped or the submission is uncertain, stop and report it; never submit or request the task again.
+
+Continue polling to completion and attach the returned ZIP with openbot.attach_files_to_response. Report the job ID, ZIP SHA-256, provider/task receipt, evidence page verification and zero market requests. This test contains no current-market analysis.

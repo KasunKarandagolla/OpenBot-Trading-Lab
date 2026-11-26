@@ -332,8 +332,13 @@ def parent_binding(identity,config,*,require_configured_model=True,as_of=None):
     if provider=='opencode':
         # App projection model columns can follow a later execution. The exact
         # retained provider session is the historical identity source.
-        from .native_opencode import session_record
-        retained=session_record(config,external)
+        from .native_opencode import LEGACY_SESSION_VERSIONS, SESSION_VERSION, session_record
+        # Historical message-level receipts retain their original, observed
+        # schema generations. Compact session_part attestation stays pinned to
+        # the exact 2.4.1 generation it was implemented and tested against.
+        versions=({SESSION_VERSION} if identity.get('adapter')==ADAPTERS['opencode']
+                  else LEGACY_SESSION_VERSIONS)
+        retained=session_record(config,external,allowed_versions=versions)
         if retained['model']!=identity['model']:
             raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_MODEL')
         if identity.get('effort') is not None and retained['effort']!=identity['effort']:

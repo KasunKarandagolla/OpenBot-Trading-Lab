@@ -16,9 +16,12 @@ def integration_preflight(config,*,as_of):
     identity=active_identity(config);binding=parent_binding(identity,config,require_configured_model=True)
     if not compact_adapter_supported(identity):raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
     attester = opencode_attest_turn_model if identity['provider']=='opencode' else codex_attest_turn_model
-    attester(config,binding['external'],binding['turn'],identity['model'],config['agent_workspace'],
-        start=utc(binding['started_at']),end=utc(as_of),backend=identity['provider_backend'],
-        missing='NATIVE_NOT_INVOKED')
+    options={'start':utc(binding['started_at']),'end':utc(as_of),
+        'backend':identity['provider_backend'],'missing':'NATIVE_NOT_INVOKED'}
+    if identity['provider']=='opencode':
+        options['allow_incomplete']=binding.get('status')!='completed'
+    attester(config,binding['external'],binding['turn'],identity['model'],
+        config['agent_workspace'],**options)
     root=wsl_root()
     hashes={}
     for name,source in [('market-research-review',ROOT/'.agents/skills/market-research-review/SKILL.md'),

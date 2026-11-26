@@ -2,7 +2,7 @@
 name: openbot-market-research
 description: Run the on-demand Market Researcher with the existing OpenBot agent and verify the research artifact.
 metadata:
-  version: "5.0.0"
+  version: "5.1.0"
 ---
 
 Installed isolated checkout: `@@RESEARCH_ROOT@@` in WSL.
@@ -21,6 +21,25 @@ only. Keep the existing provider, model, agent, permissions and trading controls
    earlier setup turn does not authorize this run. These tools are available
    in the main chat. An isolated Codex exec catalog does not expose them.
    Report missing tool discovery before running.
+   In OpenCode, the two native OpenBot calls must be made through the recorded
+   Code Mode `execute` tool using the exact wrapper grammar below; do not use
+   `tool_call` to wrap `tool_describe`.
+
+   ```javascript
+   const r = await tools.openbot.tool_describe({"names":["openbot.start_task","openbot.attach_files_to_response"]}); return r;
+   ```
+
+   To submit the exact runner-provided task arguments, use the same literal
+   wrapper with `tool_call`:
+
+   ```javascript
+   const r = await tools.openbot.tool_call({"name":"openbot.start_task","arguments":{"title":"EXACT_TITLE_FROM_STATUS","brief":"EXACT_BRIEF_FROM_STATUS\n"}}); return r;
+   ```
+
+   These must remain one call each: `const r = await tools.openbot.tool_describe(<JSON object>); return r;` or
+   `const r = await tools.openbot.tool_call(<JSON object>); return r;`. Only
+   JSON literals are supported in the argument object. The read-only attester
+   parses this exact Code Mode form and never evaluates the recorded code.
 2. Generate one lowercase hexadecimal request ID of length 32. Use the native
    command tool with the default shell and this exact literal PowerShell
    command. Substitute the literal ID. The provider verifies this invocation.
