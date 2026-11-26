@@ -101,11 +101,12 @@ class AcceptancePreflight(unittest.TestCase):
             (runner.OPENCODE_LIVE_ACCEPTANCE_PROMPT,'SETUP_AND_ACCEPTANCE'),
         )
         commit='a'*40
+        identity={**self.f.identity,'provider':'opencode','adapter':'OPENCODE_V2_SESSION_PART'}
         for path,expected in cases:
             with self.subTest(prompt=path.name):
                 canonical=path.read_text(encoding='utf-8').replace('@@APPROVED_COMMIT@@',commit)
                 self.set_owner(canonical)
-                proof=runner._owner_proof(self.f.identity,self.f.config,expected_commit=commit)
+                proof=runner._owner_proof(identity,self.f.config,expected_commit=commit)
                 self.assertEqual(proof['owner_run_mode'],expected)
                 self.assertEqual(proof['owner_message_sha256'],digest(canonical.encode()))
                 for text,sender in ((canonical.replace(commit,'b'*40),'user'),
@@ -115,8 +116,16 @@ class AcceptancePreflight(unittest.TestCase):
                     with self.subTest(variant=sender+text[:8]):
                         self.set_owner(text,sender)
                         with self.assertRaisesRegex(ContractError,'OWNER_START_REQUIRED'):
-                            runner._owner_proof(self.f.identity,self.f.config,expected_commit=commit)
+                            runner._owner_proof(identity,self.f.config,expected_commit=commit)
         self.j.process.assert_not_called()
+
+    def test_opencode_acceptance_prompt_is_not_authority_under_another_provider(self):
+        commit='a'*40
+        prompt=runner.OPENCODE_COMPACT_ACCEPTANCE_PROMPT.read_text(encoding='utf-8').replace(
+            '@@APPROVED_COMMIT@@',commit)
+        self.set_owner(prompt)
+        with self.assertRaisesRegex(ContractError,'OWNER_START_REQUIRED'):
+            runner._owner_proof(self.f.identity,self.f.config,expected_commit=commit)
 
     def test_archived_native_smoke_requires_the_exact_owner_message(self):
         prompt=runner.SMOKE_PROMPT.read_text().replace('@@APPROVED_COMMIT@@','a'*40)

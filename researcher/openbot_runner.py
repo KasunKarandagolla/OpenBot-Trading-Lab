@@ -145,7 +145,8 @@ def _owner_proof(identity,config,*,expected_commit=None):
         # These three files are the canonical, exact-message owner prompts
         # published for OpenCode. Their modes deliberately reuse the existing
         # synthetic, archived-only and full read-only runner paths.
-        if isinstance(expected_commit,str) and re.fullmatch('[0-9a-f]{40}',expected_commit):
+        if (identity.get('provider')=='opencode' and isinstance(expected_commit,str)
+                and re.fullmatch('[0-9a-f]{40}',expected_commit)):
             prompts=(
                 (OPENCODE_COMPACT_ACCEPTANCE_PROMPT,'COMPACT_POLL_TEST'),
                 (OPENCODE_ARCHIVED_ACCEPTANCE_PROMPT,'AI_CORE_SMOKE'),

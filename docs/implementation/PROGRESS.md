@@ -5,7 +5,8 @@ No native acceptance, market request, order, provider switch or installation
 change was made.
 
 - `_owner_proof()` now accepts the three exact OpenCode acceptance prompts,
-  commit-bound and delivered by the current owner. Their canonical text is in
+  only when OpenCode is the configured provider, commit-bound and delivered by
+  the current owner. Their canonical text is in
   `OPENCODE_TEST1_COMPACT_PROMPT.txt`, `OPENCODE_TEST2_ARCHIVED_PROMPT.txt`, and
   `OPENCODE_TEST3_LIVE_PROMPT.txt`; the acceptance guide refers to those files
   instead of duplicating prompt bodies.
@@ -25,7 +26,7 @@ change was made.
   terminator; extra whitespace, repeated terminators and changed bytes remain
   rejected.
 
-Focused OpenCode and acceptance/preflight suites passed: 63 tests.
+Focused OpenCode and acceptance/preflight suites passed: 64 tests.
 `python3 -m researcher config validate` returned `VALID` (9 families, 31
 methods). Commit, push and CI are pending. Native acceptance remains unrun and
 must be separately authorized.
