@@ -97,19 +97,26 @@ class DynamicModelIdentity(unittest.TestCase):
         self.assertEqual(status['native_adapter'], 'NATIVE_ADAPTER_SUPPORTED')
         self.assertEqual(status['provider_available'], 'UNKNOWN_NOT_PROBED')
         self.assertEqual(status['native_receipt'], 'NOT_CHECKED')
-        for provider, model, missing in (
-                ('opencode', 'fixture-backend/fixture-model', 'COMPACT_TASK_PAGE_AND_TURN_ATTESTATION'),
-                ('unregistered-provider', 'fixture-model', 'NATIVE_PROVIDER_ADAPTER')):
-            with self.subTest(provider=provider):
-                f.agent.update(provider=provider, model=model)
-                with sqlite3.connect(f.config['openbot_db']) as db:
-                    db.execute('UPDATE projection_agents SET model=?,agent_json=?', (model, encode(f.agent)))
-                status = configured_capability(f.config)
-                self.assertEqual((status['provider'], status['model']), (provider, model))
-                self.assertEqual(status['native_adapter'], 'PROVIDER_ATTESTATION_UNSUPPORTED')
-                self.assertEqual(status['missing_capability'], missing)
-                self.assertEqual(status['native_receipt'], 'NOT_CHECKED')
-                self.assertFalse(status['trade_authorization'])
+        # OpenCode now has a reader adapter, but selection alone still proves no
+        # live receipt. An unregistered provider remains unsupported.
+        f.agent.update(provider='opencode', model='fixture-backend/fixture-model')
+        with sqlite3.connect(f.config['openbot_db']) as db:
+            db.execute('UPDATE projection_agents SET model=?,agent_json=?',
+                       (f.agent['model'], encode(f.agent)))
+        status = configured_capability(f.config)
+        self.assertEqual(status['native_adapter'], 'NATIVE_ADAPTER_SUPPORTED')
+        self.assertIsNone(status['missing_capability'])
+        self.assertEqual(status['native_receipt'], 'NOT_CHECKED')
+        self.assertFalse(status['trade_authorization'])
+        f.agent.update(provider='unregistered-provider', model='fixture-model')
+        with sqlite3.connect(f.config['openbot_db']) as db:
+            db.execute('UPDATE projection_agents SET model=?,agent_json=?',
+                       (f.agent['model'], encode(f.agent)))
+        status = configured_capability(f.config)
+        self.assertEqual(status['native_adapter'], 'PROVIDER_ATTESTATION_UNSUPPORTED')
+        self.assertEqual(status['missing_capability'], 'NATIVE_PROVIDER_ADAPTER')
+        self.assertEqual(status['native_receipt'], 'NOT_CHECKED')
+        self.assertFalse(status['trade_authorization'])
 
     def test_midflight_provider_change_rejects_active_parent(self):
         from researcher.native_identity import assert_parent

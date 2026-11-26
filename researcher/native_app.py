@@ -46,7 +46,8 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
         raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
     if as_of is not None and not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=600:
         raise ContractError('NATIVE_REQUEST_STALE')
-    if request.get('native_identity',{}).get('provider')=='codex':
+    from .native_identity import compact_adapter_supported
+    if compact_adapter_supported(request.get('native_identity')):
         from .native_identity import load_private,assert_parent
         from .native_handoff import COMPACT_PAGES, CONFIRMED_PAGES, dispatch_frame, packet, request_dispatch_policy
         private=load_private(config_path)
@@ -106,7 +107,9 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
 
 def collect(request,config,target,*,as_of,timeout_seconds=30):
     """One bounded read of the exact task; never inspect preceding chat history."""
-    if request.get('native_identity',{}).get('provider')=='codex':
+    from .native_identity import compact_adapter_supported
+    if request.get('native_identity',{}).get('provider')=='codex' or compact_adapter_supported(
+            request.get('native_identity')):
         from .native_runtime import collect as dynamic_collect
         return dynamic_collect(request,config,as_of=as_of,directory=target,timeout_seconds=timeout_seconds,
             require_configured_model=True)
@@ -255,7 +258,8 @@ def task_observation(config,*,agent_id,title,details=False):
 def observe_handoff(config, *, identity, directory, material, as_of, timeout_seconds=30,
                     require_configured_model=False):
     """Bind the one-time ticket, provider call/response and app task projection."""
-    from .native_codex import observe_submission
+    from .native_codex import observe_submission as codex_submission
+    from .native_opencode import observe_submission as opencode_submission
     from .native_handoff import load_dispatch, packet, read_object, runner_review, verify_submission_window
     from .native_host import delegated, call
     from .native_identity import assert_parent
@@ -268,6 +272,7 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
         'material':material,'as_of':as_of,'require_configured_model':require_configured_model},
         timeout_seconds=timeout_seconds)
     assert_parent(identity,config,require_configured_model=require_configured_model,as_of=as_of)
+    submission = opencode_submission if identity.get('provider')=='opencode' else codex_submission
     request=read_object(directory/(material+'.request.json'))
     if (request.get('material_sha256')!=material or request.get('native_identity')!=identity
             or digest(encode(_material(request)).encode())!=material):
@@ -279,13 +284,13 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
     if lease.exists():
         if utc(read_object(lease).get('reserved_at_utc'))>utc(as_of):return missing
         args,_,_,ticket=load_dispatch(directory,request,as_of=as_of)
-        result=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
+        result=submission(config,identity,request['as_of_utc'],args,as_of=as_of,
             reserved_at=ticket['reserved_at_utc'],require_configured_model=require_configured_model)
         verify_submission_window(result,ticket)
         result['reserved_at_utc']=ticket['reserved_at_utc']
     else:
         args,_,_=packet(request,directory)
-        result=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
+        result=submission(config,identity,request['as_of_utc'],args,as_of=as_of,
             require_configured_model=require_configured_model)
         if result['submission_attempts']:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         # The native reader and main chat run concurrently. If a ticket was
@@ -335,7 +340,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
     folder=under_work(directory);published=clock();published_monotonic=time.monotonic()
     from .native_handoff import (COMPACT_PAGES,COMPACT_SUBMISSION_POLICY,CONFIRMED_PAGES,CONFIRMED_PUBLICATION_SECONDS,CONFIRMED_SUBMISSION_POLICY,FRESH_SECONDS,RESPONSE_SECONDS,SUBMISSION_SECONDS,
         RESERVED_SUBMISSION_POLICY,load_dispatch,read_object,runner_review)
-    reserved=runner_review(folder) and request.get('native_identity',{}).get('provider')=='codex'
+    from .native_identity import compact_adapter_supported
+    reserved=runner_review(folder) and compact_adapter_supported(request.get('native_identity'))
     inline=bool(request.get('input_transport'))
     confirmed=request.get('input_transport')==CONFIRMED_PAGES
     compact=request.get('input_transport')==COMPACT_PAGES

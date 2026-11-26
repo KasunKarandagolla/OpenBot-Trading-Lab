@@ -70,7 +70,8 @@ def packet(request, directory):
     full = review_brief(request)
     args = {'title': 'OPENBOT-RESEARCH-' + material, 'brief': full}
     if request.get('input_transport') in (CONFIRMED_PAGES, COMPACT_PAGES):
-        return confirmed_packet(args, full, directory, material)
+        provider = (request.get('native_identity') or {}).get('provider') or 'codex'
+        return confirmed_packet(args, full, directory, material, provider=provider)
     if request.get('input_transport'):
         return args, digest(full.encode('utf-8')), ()
     if not runner_review(directory):
@@ -118,7 +119,7 @@ def packet(request, directory):
     return args, fingerprint, pages
 
 
-def confirmed_packet(args, full, directory, material):
+def confirmed_packet(args, full, directory, material, *, provider='codex'):
     """Keep the whole canonical input with a few byte-bounded, exact reads."""
     if not runner_review(directory):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
@@ -154,10 +155,15 @@ def confirmed_packet(args, full, directory, material):
 
     total = len(chunks)
     pages = tuple(frame(part, number, total, number < total) for number, part in enumerate(chunks, 1))
+    tool_sentence = ("Read all %d evidence pages in order using only the shell tool. " % total
+                     if provider == 'opencode' else
+                     "Read all %d evidence pages in order using only exec_command. " % total)
+    use_sentence = ("Copy the first command below and then each next_command verbatim; run exactly one command per page. "
+                    if provider == 'opencode' else
+                    "Use exactly cmd, login:false, max_output_tokens=16000, yield_time_ms=30000. "
+                    "Copy the first command below and then each next_command verbatim. ")
     args['brief'] = (
-        f"{args['title']}\nRead all {total} evidence pages in order using only exec_command. "
-        "Use exactly cmd, login:false, max_output_tokens:16000, yield_time_ms:30000. "
-        "Copy the first command below and then each next_command verbatim. "
+        f"{args['title']}\n" + tool_sentence + use_sentence +
         f"Check the complete JSON frame, matching page/end_page and packet SHA-256 {fingerprint}. "
         "Join text fields in order. Follow the canonical skill and return its reply JSON only. "
         "If a read is incomplete, stop. No other tools, retries, writes or delegation. First command:\n"

@@ -222,6 +222,9 @@ def attest_start(state,config):
     identity=state['native_identity'];assert_current(identity,config)
     if _owner_proof(identity,config,expected_commit=state['commit'])['owner_message_sha256']!=state['owner_message_sha256']:
         raise ContractError('RUNNER_OWNER_START_REQUIRED')
+    if identity.get('provider')=='opencode':
+        from .native_opencode import attest_start_command
+        return attest_start_command(identity,config,state)
     with read_db(config['openbot_db']) as db:
         rows=db.execute('''SELECT p.external_session_id,t.turn_id,t.started_at FROM projection_turns t
           JOIN projection_provider_sessions p ON p.id=t.provider_session_id

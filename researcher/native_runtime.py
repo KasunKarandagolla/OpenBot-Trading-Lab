@@ -1,7 +1,7 @@
 """Provider dispatch for trusted, model-flexible native receipts. Never invokes."""
 import json
 from .contracts import ContractError, digest, utc
-from .native_identity import NativeEvidenceError, assert_parent, checked_path, local_path, read_db, ref
+from .native_identity import NativeEvidenceError, assert_parent, checked_path, compact_adapter_supported, local_path, read_db, ref
 
 
 def integration_preflight(config,*,as_of):
@@ -9,12 +9,14 @@ def integration_preflight(config,*,as_of):
     from .native_host import delegated,call
     if delegated(config):return call(config,'integration_preflight',{'as_of':as_of})
     from .native_identity import active_identity,compact_adapter_supported,parent_binding
-    from .native_codex import attest_turn_model,SCHEMA
+    from .native_codex import attest_turn_model as codex_attest_turn_model
+    from .native_opencode import attest_turn_model as opencode_attest_turn_model, SCHEMA as OPENCODE_SCHEMA
     from .native_handoff import wsl_root
     from .settings import ROOT
     identity=active_identity(config);binding=parent_binding(identity,config,require_configured_model=True)
     if not compact_adapter_supported(identity):raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
-    attest_turn_model(config,binding['external'],binding['turn'],identity['model'],config['agent_workspace'],
+    attester = opencode_attest_turn_model if identity['provider']=='opencode' else codex_attest_turn_model
+    attester(config,binding['external'],binding['turn'],identity['model'],config['agent_workspace'],
         start=utc(binding['started_at']),end=utc(as_of),backend=identity['provider_backend'],
         missing='NATIVE_NOT_INVOKED')
     root=wsl_root()
@@ -31,7 +33,8 @@ def integration_preflight(config,*,as_of):
             raise ContractError('AGENT_SKILL_HASH')
         hashes[name]=digest(expected)
     return {'status':'NATIVE_READER_AND_INSTALLED_SKILLS_VERIFIED','identity':identity,
-        'provider_schema':SCHEMA,'skill_sha256':hashes,'market_requests':0,'model_requests':0,
+        'provider_schema':OPENCODE_SCHEMA if identity['provider']=='opencode' else 'CODEX_ROLLOUT_0169',
+        'skill_sha256':hashes,'market_requests':0,'model_requests':0,
         'native_execution_verified':False,'trade_authorization':False}
 
 
@@ -46,6 +49,9 @@ def attest_smoke_discovery(identity,config,*,as_of):
     if delegated(config):
         return call(config,'attest_smoke_discovery',{'identity':identity,'as_of':as_of})
     from .native_identity import parent_binding
+    if identity.get('provider')=='opencode':
+        from .native_opencode import attest_smoke_discovery as opencode_discovery
+        return opencode_discovery(identity,config,as_of=as_of)
     from .native_codex import turn_records,check_turn_model
     binding=parent_binding(identity,config,require_configured_model=True,as_of=as_of)
     session,turn=binding['external'],binding['turn']
@@ -131,6 +137,10 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
     if not 0<=(utc(as_of)-utc(request['as_of_utc'])).total_seconds()<=600:
         raise ContractError('NATIVE_REQUEST_STALE')
     if identity['provider']=='opencode':
+        if compact_adapter_supported(identity):
+            from .native_opencode import collect as opencode_collect
+            return opencode_collect(request,config,as_of=as_of,directory=directory,
+                timeout_seconds=timeout_seconds,require_configured_model=require_configured_model)
         # The historical OpenCode collector proves only its original native
         # skill/file-read contract. It cannot attest a parent task call or a
         # compact page transport. Never reinterpret a new AI-core request as
@@ -273,6 +283,9 @@ def delivery_proof(state,config):
     from .contracts import now_utc
     from datetime import timedelta
     identity=state['native_identity'];binding=parent_binding(identity,config,require_configured_model=False,as_of=now_utc())
+    if identity.get('provider')=='opencode':
+        from .native_opencode import delivery_proof as opencode_delivery
+        return opencode_delivery(state,config)
     artifact=state.get('artifact',{})
     if not artifact:return None
     target=local_path(artifact['attachment_path'])

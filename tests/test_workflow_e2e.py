@@ -85,7 +85,7 @@ class SimulatedApp:
                         'response_id':f'FIXTURE_{name}_PAGE_{number}','usage':{'input_tokens':100,'output_tokens':100}}))
                 call='PAGE_'+str(number)
                 command_args={'cmd':cmd,'login':False,'max_output_tokens':16000}
-                if 'yield_time_ms:30000' in brief:command_args['yield_time_ms']=30000
+                if 'yield_time_ms' in brief:command_args['yield_time_ms']=30000
                 rows.extend([e(at,'response_item',{'type':'function_call','name':'exec_command','call_id':call,
                         'arguments':json.dumps(command_args)}),
                     e(at,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':name,

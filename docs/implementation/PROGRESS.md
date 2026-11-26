@@ -1,3 +1,75 @@
+# November 26 OpenCode session-part adapter - implemented, offline verified, native acceptance pending
+
+Status: **CODE_IMPLEMENTED / OFFLINE_VERIFIED / HISTORICAL_EVIDENCE_VERIFIED /
+READY_FOR_NATIVE_ACCEPTANCE / NATIVE_ACCEPTANCE_NOT_CLAIMED**. No native task,
+market request, order, scheduling change or provider switch was made.
+
+## What changed
+
+- Added `researcher/native_opencode.py` implementing
+  `OPENCODE_V2_SESSION_PART` for the observed OpenCode `2.4.1` records. Session
+  identity is `(session_id, message_id, ordinal)`; assistant
+  `session_message.content` is never a content source. Text, reasoning and tool
+  parts come from `session_part`. Reasoning is structurally checked but never
+  returned or published.
+- Exact session version, provider/model, variant/effort, turn window, part
+  ordering, completion, final text and output completeness are attested.
+  Unknown or ambiguous schemas, duplicate calls, reordered or modified parts and
+  duplicate submissions fail closed.
+- The nested Code Mode `execute` form is parsed narrowly for literal
+  `tools.openbot.tool_describe` and `tools.openbot.tool_call`. Recorded code is
+  never executed, substring matching is not used, and only the exact
+  `openbot.start_task` submission is accepted once.
+- Compact evidence pages are verified byte-for-byte: CRLF handling, byte
+  length, SHA-256, page order, and missing, duplicate or truncated pages.
+  Unauthorized child tools are rejected.
+- Registered OpenCode as compact-capable and wired provider dispatch through
+  preflight, parent identity, owner authorization, start-command attestation,
+  discovery, compact dispatch, submission, child identity and evidence, both AI
+  stages, artifacts, delivery proof and historical replay. The legacy
+  `OPENCODE_V2_SESSION_MESSAGE` reader remains for its historical scope. Codex
+  compact bytes and historical replay are unchanged.
+- Provider and model remain dynamic: no provider model ID is hardcoded, identity
+  is frozen per run, mid-run changes are rejected, and between-run changes
+  remain possible. The OpenCode compact brief names `shell`; the Codex brief is
+  byte-identical. `collect` returns `trade_authorization=false`.
+
+## Verification
+
+- `tests/test_native_opencode.py`: 38 adversarial offline tests pass, including
+  record integrity, session identity, effort changes, discovery duplicates and
+  failed nested wrappers, submission timing and acknowledgments, child pages and
+  final text, inline and compact collect, ticket mismatches, start command,
+  preflight and delivery proof.
+- Focused compatibility suites pass: compact native 11, native handoff 25,
+  native runtime 13, native app 6, dynamic model identity 10, dispatch
+  confirmation 16.
+- Full WSL suite: `Ran 664 tests in 1121.173s ... OK`.
+- `python3 -m researcher config validate`: `VALID`, 9 families, 31 methods.
+- The Phase C parent/child record shapes and hashes were re-read from the
+  retained diagnostic evidence. No archived OpenCode compact job exists, so no
+  historical two-stage compact replay is claimed.
+
+## Not verified
+
+- Native acceptance remains pending separate owner authorization.
+  `READY_FOR_NATIVE_ACCEPTANCE` is not a receipt. The live OpenCode parent/child
+  boundary, the actual `review-page` stdout terminator and Windows/OpenCode
+  shell normalization remain `UNVERIFIED_OR_BLOCKED`.
+- The private audit config holds one `provider_db`; an OpenCode run needs it
+  pointed at the retained OpenCode database, with WSL delegating WAL reads
+  through `native_python`. The exact procedure is in
+  `OPENCODE_NATIVE_ACCEPTANCE.md`; private config is not published.
+
+## Next
+
+Three separately authorized tests are prepared in
+`OPENCODE_NATIVE_ACCEPTANCE.md`: synthetic compact paged Discovery, archived
+two-stage research, and full live read-only research. Keep PR #24 draft and
+open. Do not force push or merge it.
+
+---
+
 # November 25 Phase C OpenCode boundary diagnostic — run complete, adapter not implemented
 
 The owner ran the single authorized synthetic diagnostic on 2026-11-24 on the

@@ -24,10 +24,11 @@ ERRORS = frozenset({'NATIVE_AUDIT_CONFIG_MISSING','NATIVE_AUDIT_CONFIG_INVALID',
     'NATIVE_PROJECTION_AFTER_SNAPSHOT','NATIVE_CHILD_CLOCK_INVALID',
     'NATIVE_PARENT_OUTPUT_TRUNCATED','NATIVE_PARENT_ARGUMENT_MISMATCH',
     'NATIVE_PARENT_OUTPUT_TOO_LARGE','NATIVE_PARENT_DELIVERY_UNCONFIRMED'})
-ADAPTERS = {'opencode': 'OPENCODE_V2_SESSION_MESSAGE', 'codex': 'CODEX_ROLLOUT_0169'}
-# The legacy OpenCode reader attests a different protocol, not compact pages.
-# A registered reader is not proof of the current host or model's availability.
-COMPACT_ADAPTERS = {'codex': 'CODEX_ROLLOUT_0169'}
+ADAPTERS = {'opencode': 'OPENCODE_V2_SESSION_PART', 'codex': 'CODEX_ROLLOUT_0169'}
+# One provider can retain more than one qualified record generation. The
+# legacy OpenCode reader attests its original protocol, not compact pages.
+LEGACY_ADAPTERS = {'opencode': 'OPENCODE_V2_SESSION_MESSAGE'}
+COMPACT_ADAPTERS = {'opencode': 'OPENCODE_V2_SESSION_PART', 'codex': 'CODEX_ROLLOUT_0169'}
 
 
 def compact_adapter_supported(identity):
@@ -44,8 +45,8 @@ DIAGNOSTIC_LABELS={
         'CODEX_PARENT_THREAD_MODEL','ROLLOUT_TURN_CONTEXT_MODEL','APP_CHILD_MODEL','APP_CHILD_PROVIDER',
         'CODEX_CHILD_THREAD_MODEL','ROLLOUT_SETTINGS_MODEL',
         'NO_CALL','INVALID_CALL','NO_COMPLETION','COMPLETION_MISMATCH','CONTENT_MISMATCH','SCHEMA_MISMATCH',
-        'NO_OUTPUT','OUTPUT_MISMATCH'}),
-    'schema_variant':frozenset({'CODEX_0169','CODEX_0169_ORDINAL','UNRECOGNIZED'})}
+        'NO_OUTPUT','OUTPUT_MISMATCH','DUPLICATE_CALL','CONFIGURED_EFFORT'}),
+    'schema_variant':frozenset({'CODEX_0169','CODEX_0169_ORDINAL','OPENCODE_241','UNRECOGNIZED'})}
 
 STORAGE_LABELS={
     'stage':{'SQLITE_OPEN','SQLITE_QUERY_ONLY','SQLITE_QUERY','READER','WINDOWS_OBSERVE_HANDOFF','WINDOWS_COLLECT'},
@@ -224,8 +225,13 @@ def configured_identity(config):
     if provider not in ADAPTERS:raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
     if not isinstance(model,str) or not model or agent.get('model')!=model:
         raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
-    return {'agent_id':aid,'agent_name':AGENT,'provider':provider,'model':model,
+    effort=agent.get('reasoningEffort')
+    if effort is not None and (not isinstance(effort,str) or not effort):
+        raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
+    identity={'agent_id':aid,'agent_name':AGENT,'provider':provider,'model':model,
         'adapter':ADAPTERS[provider]}
+    if effort is not None:identity['effort']=effort
+    return identity
 
 
 def configured_capability(config):
@@ -279,9 +285,9 @@ def _assert_configured_owner(identity,current,*,require_configured_model):
     if any(current[field]!=identity.get(field) for field in ('agent_id','agent_name')):
         raise ContractError('NATIVE_AGENT_MISMATCH')
     fields=[('provider','CONFIGURED_PROVIDER'),('adapter','CONFIGURED_ADAPTER'),
-            ('model','CONFIGURED_MODEL')] if require_configured_model else []
+            ('model','CONFIGURED_MODEL'),('effort','CONFIGURED_EFFORT')] if require_configured_model else []
     for field,check in fields:
-        if current[field]!=identity.get(field):
+        if current.get(field)!=identity.get(field):
             raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY',check)
     model=identity.get('model')
     if not isinstance(model,str) or not model:raise ContractError('NATIVE_IDENTITY_UNAVAILABLE')
@@ -305,7 +311,8 @@ def parent_binding(identity,config,*,require_configured_model=True,as_of=None):
         current={'agent_id':aid,'agent_name':AGENT}
     _assert_configured_owner(identity,current,require_configured_model=require_configured_model)
     provider=identity.get('provider')
-    if provider not in ADAPTERS or identity.get('adapter')!=ADAPTERS[provider]:
+    if (provider not in ADAPTERS
+            or identity.get('adapter') not in {ADAPTERS[provider], LEGACY_ADAPTERS.get(provider)}):
         raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
     with read_db(config['openbot_db']) as db:
         rows=db.execute('''SELECT h.thread_id,t.turn_id,p.id,p.external_session_id,
@@ -320,8 +327,17 @@ def parent_binding(identity,config,*,require_configured_model=True,as_of=None):
     if identity.get('parent_started_at_utc',start)!=start:raise ContractError('NATIVE_SESSION_MISMATCH')
     if provider!=identity['provider']:
         raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_PROVIDER')
-    if (require_configured_model or provider!='codex') and model!=identity['model']:
+    if require_configured_model and model!=identity['model']:
         raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_MODEL')
+    if provider=='opencode':
+        # App projection model columns can follow a later execution. The exact
+        # retained provider session is the historical identity source.
+        from .native_opencode import session_record
+        retained=session_record(config,external)
+        if retained['model']!=identity['model']:
+            raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_MODEL')
+        if identity.get('effort') is not None and retained['effort']!=identity['effort']:
+            raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','ROLLOUT_SETTINGS_MODEL')
     from .contracts import utc
     started_at=utc(start)
     completed_at=utc(end) if end is not None else None
