@@ -64,8 +64,10 @@ wsl.exe --cd '<checkout>' -- python3 -m researcher.openbot_runner provider-statu
 wsl.exe --cd '<checkout>' -- python3 -m researcher.openbot_runner preflight
 ```
 
-Require `NATIVE_ADAPTER_SUPPORTED`, provider schema `OPENCODE_V2_SESSION_PART`,
-the installed skill hashes, and zero model and market requests. Stop on any
+`provider-status` must report `native_adapter: NATIVE_ADAPTER_SUPPORTED` and
+`adapter: OPENCODE_V2_SESSION_PART` with `native_receipt: NOT_CHECKED`.
+`preflight` must report `provider_schema: OPENCODE_V2_SESSION_PART`, the
+installed skill hashes, and zero model and market requests. Stop on any
 identity, provider, schema or skill failure.
 
 ## 5. Test 1 - synthetic compact paged Discovery
