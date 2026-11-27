@@ -7,11 +7,16 @@ main chat, and each stops on the first identity, schema, evidence or skill
 failure. Do not switch provider or model to make a test pass. Keep
 `trade_authorization=false`.
 
-The adapter accepts OpenCode session record version `2.4.1` only. The exact
-provider, model and effort are frozen from the configured agent at job start
-and compared with the retained provider session. A different version, model,
-effort, turn window, part order or page hash fails closed. Reasoning text is
-validated structurally and never returned or published.
+The compact adapter checks OpenCode's normalized `session_v2`,
+`session_message`, and `session_part` evidence structurally. A session-version
+change alone does not reject a run; the actual version is retained as
+`provider_session_version` diagnostic metadata. Required identity, message and
+part fields, turn attribution, ordering, completion, tool results, exact page
+bytes and final text must still pass. Missing or incompatible evidence fails
+closed. The historical message-level reader keeps its observed version
+boundary. The configured provider, model and effort remain frozen at job start
+and compared with the retained provider session. Reasoning text is validated
+structurally and never returned or published.
 
 ## 1. Prepare the existing checkout
 

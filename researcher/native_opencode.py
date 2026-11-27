@@ -1,4 +1,4 @@
-"""Read-only OpenCode 2.4.1 normalized session/part adapter.
+"""Read-only structurally verified OpenCode normalized session/part adapter.
 
 Only the retained provider tables needed for one exact parent or child turn are
 read. Assistant ``session_message.content`` is not a content source: the
@@ -19,12 +19,15 @@ from .contracts import ContractError, digest, encode, utc
 from .native_identity import NativeEvidenceError, checked_path, read_db, ref
 
 SCHEMA = 'OPENCODE_V2_SESSION_PART'
+# The first qualified session-part records observed on this host used 2.4.1.
+# This is diagnostic provenance only: compatibility is determined from the
+# required records and semantics below, never from a version allowlist.
 SESSION_VERSION = '2.4.1'
 # The session_message adapter predates normalized session_part records. These
 # exact versions were observed for retained historical OpenCode replay.
 LEGACY_SESSION_VERSIONS = frozenset({'2.2.5', '2.2.6', '2.3.0'})
 # Diagnostic labels are fixed; they never contain provider values or text.
-_VARIANT = 'OPENCODE_241'
+_VARIANT = 'OPENCODE_SESSION_PART'
 _MESSAGE_TYPES = frozenset({'user', 'assistant', 'idle', 'model-switched'})
 _PART_TYPES = frozenset({'reasoning', 'text', 'tool'})
 _STRICT_TOOLS = frozenset({'shell', 'execute'})
@@ -115,14 +118,22 @@ def _model_matches(record, name, provider, effort):
 
 
 def session_record(config, session, *, allowed_versions=None):
-    """Validate the exact normalized session identity and return its model."""
+    """Validate the normalized session identity and retain its version.
+
+    The compact session-part adapter accepts a new version only when the
+    required table/field shape and turn evidence still pass the structural
+    readers. ``allowed_versions`` remains available for historical callers
+    whose message-level semantics were qualified only for specific versions.
+    """
     with read_db(config['provider_db']) as db:
         row = db.execute('SELECT id,parent_id,version,model FROM session_v2 WHERE id=?',
                          (session,)).fetchone()
     if not row or row[0] != session:
         raise ContractError('NATIVE_SESSION_MISMATCH')
     _, parent, version, raw_model = row
-    if version not in (allowed_versions or {SESSION_VERSION}):
+    if (not isinstance(version, str) or not version.strip() or len(version) > 64
+            or re.fullmatch(r'[0-9A-Za-z][0-9A-Za-z.+_-]*', version) is None
+            or allowed_versions is not None and version not in allowed_versions):
         _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', 'SESSION', 'VERSION')
     model = _obj(raw_model, stage='SESSION', check='IDENTITY')
     provider = model.get('providerID')
@@ -132,7 +143,8 @@ def session_record(config, session, *, allowed_versions=None):
             or set(model) - {'id', 'providerID', 'variant'}
             or variant is not None and (not isinstance(variant, str) or not variant)):
         _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', 'SESSION', 'IDENTITY')
-    return {'id': session, 'parent_id': parent, 'model': f'{provider}/{name}',
+    return {'id': session, 'parent_id': parent, 'version': version,
+        'model': f'{provider}/{name}',
         'provider': provider, 'name': name, 'effort': variant}
 
 
@@ -603,7 +615,8 @@ def attest_smoke_discovery(identity, config, *, as_of):
         check = ('NO_CALL' if not calls else 'NO_COMPLETION' if not completed
                  else 'COMPLETION_MISMATCH')
         _fail('NATIVE_TOOL_DISCOVERY_UNVERIFIED', 'TOOL_DISCOVERY', check)
-    return {'status': 'VERIFIED_CURRENT_PARENT_TOOL_DISCOVERY', 'tools': found}
+    return {'status': 'VERIFIED_CURRENT_PARENT_TOOL_DISCOVERY', 'tools': found,
+        'provider_session_version': binding.get('provider_session_version')}
 
 
 def _submission_text(result):
@@ -778,6 +791,7 @@ def attest(config, session, turn, *, model, workspace, start, end, expected_inpu
     usage = [{'finish': message['data']['finish'], 'tokens': message['data']['tokens'],
               'reported_cost_usd': message['data']['cost']} for message in assistants]
     return {'provider_schema': SCHEMA, 'schema_variant': _VARIANT,
+        'provider_session_version': info['version'],
         'model_requests': len(assistants), 'provider_usage': usage,
         'tool_operations': ['READ_SKILL', 'READ_REQUEST'] if evidence is not None else [],
         'unauthorized_tool_operations': 0, 'skill_and_request_read_completely': True,

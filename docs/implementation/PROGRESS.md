@@ -1,3 +1,46 @@
+# November 27 OpenCode session-part structural compatibility correction
+
+Status: **CODE IMPLEMENTED / FOCUSED REGRESSIONS PASSING / NATIVE ACCEPTANCE NOT CLAIMED**.
+No Researcher task, market request, order, or provider/model change was made.
+
+- Root cause: the compact `parent_binding()` path passed the fixed `2.4.1`
+  version into `session_record()`, which rejected the retained fresh OpenCode
+  `2.4.2` session before reading its turn. A newly-created session on this host
+  was also `2.4.2`, so starting fresh was not a no-code remedy.
+- The session-part adapter now uses required record identity and turn evidence
+  to establish compatibility. The actual provider version is returned as
+  `provider_session_version` diagnostic metadata; a version change alone does
+  not reject structurally compatible records.
+- The legacy `OPENCODE_V2_SESSION_MESSAGE` path retains its observed
+  `2.2.5`/`2.2.6`/`2.3.0` boundary. Codex dispatch and output are unchanged.
+- Read-only inspection of the two retained Researcher turns confirmed version
+  `2.4.2` and matching app/provider/model/effort identity. The completed turn
+  passes structural parsing (10 messages, 14 parts); the interrupted turn is
+  rejected at `EVIDENCE/COMPLETION_MISMATCH`, not at `SESSION/VERSION`.
+- Additive database columns and the observed inert `time.ran` field are
+  tolerated. Required model identity, part order/completion, truncation state,
+  exact commands/pages/final output, and explicit assistant errors remain
+  validated. The retained interrupted turn's `finish=error` is not accepted.
+- Focused suites: OpenCode adapter 47 tests and acceptance/preflight 21 tests
+  passed. Config validation returned `VALID`; provider status reports
+  `NATIVE_ADAPTER_SUPPORTED` / `OPENCODE_V2_SESSION_PART`, with zero model or
+  market requests and `trade_authorization=false`. The full offline suite passed
+  675 tests in 1175.930 seconds; commit/push and CI are pending.
+- Existing Researcher readback remains OpenCode `opencode/deepseek-v4.1-flash-free`
+  at high effort with its permissions unchanged. Orchestration skill v5.1.0 is
+  registered at revision 10; both workspace mirrors match SHA-256
+  `5b927e5bbbe64322749c74e8cc5983160e226ead97f558181dd90bf6d4e806d4`. The
+  protected review skill is unchanged at
+  `96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb`.
+  The private audit config points to the OpenCode database and Windows Python
+  reader. Current-turn preflight was not run outside the Researcher's active
+  owner turn.
+
+The current Researcher-turn native preflight and all three native acceptance
+tests remain owner-host gates; none was initiated here.
+
+---
+
 # November 26 OpenCode authorization and active-turn correction
 
 Status: **IMPLEMENTED / FOCUSED REGRESSION VERIFIED / CONFIG VALID**.

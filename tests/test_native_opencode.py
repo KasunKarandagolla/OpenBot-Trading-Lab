@@ -1,4 +1,4 @@
-"""OpenCode 2.4.1 session/part adapter regressions. Fixtures only; no model.
+"""OpenCode normalized session/part adapter regressions. Fixtures only; no model.
 
 Every provider row here is synthetic. The tests replay the retained parent and
 child shapes without copying any real session identifier, text or account data.
@@ -402,10 +402,90 @@ class ParserContract(unittest.TestCase):
 
 
 class RecordContract(OpenCodeFixture):
+    def test_identical_normalized_records_are_checked_structurally_across_versions(self):
+        self._discovery()
+        for version in ('2.4.1', '2.4.2', '9.9.9'):
+            with self.subTest(version=version):
+                with sqlite3.connect(self.config['provider_db']) as db:
+                    db.execute('UPDATE session_v2 SET version=? WHERE id=?',
+                               (version, PARENT_EXTERNAL))
+                info = session_record(self.config, PARENT_EXTERNAL)
+                self.assertEqual(info['version'], version)
+                proof = attest_smoke_discovery(self.identity, self.config,
+                                               as_of=self.time(5))
+                self.assertEqual(proof['provider_session_version'], version)
+
+    def test_additive_database_columns_and_inert_time_metadata_are_tolerated(self):
+        at = self.time(1)
+        mid = self._assistant(PARENT_EXTERNAL, at, finish='stop')
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute("UPDATE session_v2 SET version='2.4.2' WHERE id=?",
+                       (PARENT_EXTERNAL,))
+            db.execute('ALTER TABLE session_v2 ADD COLUMN additive_diagnostic TEXT')
+            db.execute('ALTER TABLE session_part ADD COLUMN ran INTEGER')
+            row = db.execute('SELECT data FROM session_message WHERE id=?',
+                             (mid,)).fetchone()
+            message = json.loads(row[0])
+            message['time']['ran'] = self.ms(at) + 2
+            db.execute('UPDATE session_message SET data=? WHERE id=?',
+                       (encode(message), mid))
+        self._part(PARENT_EXTERNAL, mid, 0, 'text', None, at,
+                   {'type': 'text', 'text': 'complete',
+                    'time': {'created': self.ms(at), 'completed': self.ms(at) + 1,
+                             'ran': self.ms(at) + 2}})
+        info = attest_turn_model(self.config, PARENT_EXTERNAL, PARENT_TURN, MODEL,
+            self.workspace, start=self.time(-10), end=self.time(5), backend='opencode')
+        self.assertEqual(info['version'], '2.4.2')
+
+    def test_missing_identity_fields_and_explicit_error_records_remain_rejected(self):
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute('UPDATE session_v2 SET version=?,model=? WHERE id=?',
+                       ('2.4.2', encode({'id': 'deepseek-v4.1-flash-free'}),
+                        PARENT_EXTERNAL))
+        with self.assertRaisesRegex(ContractError, 'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED') as missing:
+            session_record(self.config, PARENT_EXTERNAL)
+        self.assertEqual(missing.exception.diagnostic['check'], 'IDENTITY')
+
+        at = self.time(1)
+        mid = self._assistant(PARENT_EXTERNAL, at, finish='error')
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute('UPDATE session_v2 SET model=? WHERE id=?',
+                       (encode(_model()), PARENT_EXTERNAL))
+            row = db.execute('SELECT data FROM session_message WHERE id=?',
+                             (mid,)).fetchone()
+            message = json.loads(row[0])
+            message['error'] = {'message': 'provider failed', 'type': 'ProviderError'}
+            db.execute('UPDATE session_message SET data=? WHERE id=?',
+                       (encode(message), mid))
+        with self.assertRaisesRegex(ContractError, 'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED') as failed:
+            attest_turn_model(self.config, PARENT_EXTERNAL, PARENT_TURN, MODEL,
+                self.workspace, start=self.time(-10), end=self.time(5), backend='opencode')
+        self.assertEqual(failed.exception.diagnostic['stage'], 'EVIDENCE')
+        self.assertEqual(failed.exception.diagnostic['check'], 'COMPLETION_MISMATCH')
+
+    def test_new_version_with_incompatible_truncated_tool_evidence_still_fails(self):
+        self._discovery()
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute("UPDATE session_v2 SET version='2.4.2' WHERE id=?",
+                       (PARENT_EXTERNAL,))
+            row = db.execute('SELECT data FROM session_part WHERE session_id=?',
+                             (PARENT_EXTERNAL,)).fetchone()
+            part = json.loads(row[0])
+            part['state']['metadata']['truncated'] = True
+            db.execute('UPDATE session_part SET data=? WHERE session_id=?',
+                       (encode(part), PARENT_EXTERNAL))
+        with self.assertRaisesRegex(ContractError, 'NATIVE_UNAUTHORIZED_TOOL') as failed:
+            attest_smoke_discovery(self.identity, self.config, as_of=self.time(5))
+        self.assertEqual(failed.exception.diagnostic['check'], 'TOOLS')
+
     def test_session_identity_is_exact_and_effort_bound(self):
         info = session_record(self.config, PARENT_EXTERNAL)
         self.assertEqual(info['model'], MODEL)
         self.assertEqual(info['effort'], VARIANT)
+        self.assertEqual(info['version'], '2.4.1')
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute("UPDATE session_v2 SET version='2.4.2' WHERE id=?",
+                       (PARENT_EXTERNAL,))
         self.assertEqual(assert_session_identity(
             self.config, PARENT_EXTERNAL, model=MODEL, provider='opencode',
             effort=VARIANT)['effort'], VARIANT)
@@ -416,8 +496,7 @@ class RecordContract(OpenCodeFixture):
                          effort='medium')
         with sqlite3.connect(self.config['provider_db']) as db:
             db.execute("UPDATE session_v2 SET version='9.9.9'")
-        self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED', session_record,
-                         self.config, PARENT_EXTERNAL)
+        self.assertEqual(session_record(self.config, PARENT_EXTERNAL)['version'], '9.9.9')
 
     def test_legacy_parent_binding_preserves_only_observed_session_versions(self):
         identity={**self.identity,'adapter':'OPENCODE_V2_SESSION_MESSAGE'}
@@ -429,12 +508,13 @@ class RecordContract(OpenCodeFixture):
                 bound=parent_binding(identity,self.config,require_configured_model=False,
                                      as_of=self.time(5))
                 self.assertEqual(bound['external'],PARENT_EXTERNAL)
-                self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED',session_record,
-                                 self.config,PARENT_EXTERNAL)
+                self.assertEqual(bound['provider_session_version'],version)
+                self.assertEqual(session_record(self.config,PARENT_EXTERNAL)['version'],version)
         with sqlite3.connect(self.config['provider_db']) as db:
             db.execute("UPDATE session_v2 SET version='9.9.9' WHERE id=?",(PARENT_EXTERNAL,))
         self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED',parent_binding,identity,
                          self.config,require_configured_model=False,as_of=self.time(5))
+        self.assertEqual(session_record(self.config,PARENT_EXTERNAL)['version'],'9.9.9')
 
     def test_shell_output_normalization_accepts_only_one_platform_line_ending(self):
         page='FRAME-END'
@@ -852,6 +932,9 @@ class StartAndPreflightContract(OpenCodeFixture):
         installed=self.workspace/'.agents/skills/openbot-market-research/SKILL.md'
         installed.parent.mkdir(parents=True);installed.write_bytes(expected)
         self._discovery()
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute("UPDATE session_v2 SET version='2.4.2' WHERE id=?",
+                       (PARENT_EXTERNAL,))
         root=wsl_root().replace("'","''")
         command=(f"wsl.exe --cd '{root}' -- python3 -m researcher.openbot_runner "
                  f"start --request-id {'a'*32}")
@@ -863,6 +946,7 @@ class StartAndPreflightContract(OpenCodeFixture):
             db.execute('UPDATE session_message SET data=? WHERE id=?',(encode(data),mid))
         preflight=integration_preflight(self.config,as_of=self.time(5))
         self.assertEqual(preflight['provider_schema'],SCHEMA)
+        self.assertEqual(preflight['provider_session_version'],'2.4.2')
         proof=attest_start_command(self.identity,self.config,{'request_id':'a'*32})
         self.assertEqual(proof['status'],'VERIFIED_OPENBOT_AGENT_COMMAND')
 

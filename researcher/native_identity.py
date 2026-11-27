@@ -46,7 +46,8 @@ DIAGNOSTIC_LABELS={
         'CODEX_CHILD_THREAD_MODEL','ROLLOUT_SETTINGS_MODEL',
         'NO_CALL','INVALID_CALL','NO_COMPLETION','COMPLETION_MISMATCH','CONTENT_MISMATCH','SCHEMA_MISMATCH',
         'NO_OUTPUT','OUTPUT_MISMATCH','DUPLICATE_CALL','CONFIGURED_EFFORT'}),
-    'schema_variant':frozenset({'CODEX_0169','CODEX_0169_ORDINAL','OPENCODE_241','UNRECOGNIZED'})}
+    'schema_variant':frozenset({'CODEX_0169','CODEX_0169_ORDINAL','OPENCODE_241',
+        'OPENCODE_SESSION_PART','UNRECOGNIZED'})}
 
 STORAGE_LABELS={
     'stage':{'SQLITE_OPEN','SQLITE_QUERY_ONLY','SQLITE_QUERY','READER','WINDOWS_OBSERVE_HANDOFF','WINDOWS_COLLECT'},
@@ -329,16 +330,18 @@ def parent_binding(identity,config,*,require_configured_model=True,as_of=None):
         raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_PROVIDER')
     if require_configured_model and model!=identity['model']:
         raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_MODEL')
+    retained_version=None
     if provider=='opencode':
         # App projection model columns can follow a later execution. The exact
         # retained provider session is the historical identity source.
-        from .native_opencode import LEGACY_SESSION_VERSIONS, SESSION_VERSION, session_record
-        # Historical message-level receipts retain their original, observed
-        # schema generations. Compact session_part attestation stays pinned to
-        # the exact 2.4.1 generation it was implemented and tested against.
-        versions=({SESSION_VERSION} if identity.get('adapter')==ADAPTERS['opencode']
-                  else LEGACY_SESSION_VERSIONS)
+        from .native_opencode import LEGACY_SESSION_VERSIONS, session_record
+        # Compact records are accepted by required structure and turn evidence;
+        # their actual version remains diagnostic metadata. Historical
+        # message-level receipts keep their qualified version boundary.
+        versions=(LEGACY_SESSION_VERSIONS
+                  if identity.get('adapter')==LEGACY_ADAPTERS['opencode'] else None)
         retained=session_record(config,external,allowed_versions=versions)
+        retained_version=retained['version']
         if retained['model']!=identity['model']:
             raise NativeEvidenceError('NATIVE_MODEL_SWITCHED','IDENTITY','APP_PARENT_MODEL')
         if identity.get('effort') is not None and retained['effort']!=identity['effort']:
@@ -360,8 +363,11 @@ def parent_binding(identity,config,*,require_configured_model=True,as_of=None):
             if bound_end is None or bound_end<started_at:raise ContractError('NATIVE_REVIEW_INCOMPLETE')
             attest_turn_model(config,external,turn,identity['model'],config['agent_workspace'],
                 start=started_at,end=bound_end,backend=row[0])
-    return {'thread':thread,'turn':turn,'session_id':sid,'external':external,
+    binding={'thread':thread,'turn':turn,'session_id':sid,'external':external,
         'started_at':start,'completed_at':end,'status':status}
+    if retained_version is not None:
+        binding['provider_session_version']=retained_version
+    return binding
 
 
 def assert_parent(identity,config,*,require_configured_model=False,as_of=None):

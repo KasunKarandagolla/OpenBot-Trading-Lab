@@ -35,10 +35,13 @@ def integration_preflight(config,*,as_of):
         if not found or any(p.read_bytes()!=expected for p in found):
             raise ContractError('AGENT_SKILL_HASH')
         hashes[name]=digest(expected)
-    return {'status':'NATIVE_READER_AND_INSTALLED_SKILLS_VERIFIED','identity':identity,
+    result={'status':'NATIVE_READER_AND_INSTALLED_SKILLS_VERIFIED','identity':identity,
         'provider_schema':OPENCODE_SCHEMA if identity['provider']=='opencode' else 'CODEX_ROLLOUT_0169',
         'skill_sha256':hashes,'market_requests':0,'model_requests':0,
         'native_execution_verified':False,'trade_authorization':False}
+    if identity['provider']=='opencode':
+        result['provider_session_version']=binding.get('provider_session_version')
+    return result
 
 
 def attest_smoke_discovery(identity,config,*,as_of):
