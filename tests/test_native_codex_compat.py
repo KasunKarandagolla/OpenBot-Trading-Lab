@@ -64,17 +64,20 @@ class ObservedCodexCompatibility(unittest.TestCase):
         for value in (audit,self.proof()):
             self.assertNotIn('PRIVATE_',encode(value));self.assertNotIn(str(self.f.workspace),encode(value))
 
-    def test_0171_ordinal_uses_the_same_parent_and_child_attestation_checks(self):
-        for rollout in (self.f.parent,self.f.child):
-            rollout[0]['payload'].update(cli_version='0.171.0',history_mode='paginated')
-        self.write()
-        self.assertEqual(self.proof()['status'],'VERIFIED_OPENBOT_AGENT_COMMAND')
-        raw,audit=self.f.get()
-        self.assertEqual(raw,self.f.raw)
-        self.assertTrue(audit['native_invocation_verified'])
-        self.assertEqual(audit['schema_variant'],'CODEX_0169_ORDINAL')
-        self.f.child[2]['payload']['model']='fixture-wrong-model'
-        self.write()
+    def test_compatible_cli_version_changes_keep_strict_execution_attestation(self):
+        # The retained 0.172.0 ordinal envelopes were inspected read-only; the
+        # committed fixture remains sanitized and carries no private record text.
+        for version in ('0.170.0','0.169.1','0.172.0'):
+            for rollout in (self.f.parent,self.f.child):
+                rollout[0]['payload'].update(cli_version=version,history_mode='paginated')
+            self.write()
+            self.assertEqual(self.proof()['status'],'VERIFIED_OPENBOT_AGENT_COMMAND')
+            raw,audit=self.f.get()
+            self.assertEqual(raw,self.f.raw)
+            self.assertTrue(audit['native_invocation_verified'])
+            self.assertEqual(audit['schema_variant'],'CODEX_0169_ORDINAL')
+            self.assertEqual(audit['provider_session_version'],version)
+        self.f.child[2]['payload']['model']='fixture-wrong-model';self.write()
         with self.assertRaisesRegex(ContractError,'NATIVE_MODEL_SWITCHED'):self.f.get()
 
     def test_json_key_order_and_whitespace_are_irrelevant(self):
@@ -114,9 +117,10 @@ class ObservedCodexCompatibility(unittest.TestCase):
         self.f.child[2],self.f.child[3]=self.f.child[3],self.f.child[2];self.write()
         with self.assertRaisesRegex(ContractError,'INCOMPLETE'):self.f.get()
 
-    def test_unsupported_version_backend_and_inconsistent_session_meta(self):
+    def test_malformed_version_backend_and_inconsistent_session_meta(self):
         original=copy.deepcopy(self.f.child[0]['payload'])
-        for key,value,code in [('cli_version','0.170.0','SCHEMA_UNSUPPORTED'),('cli_version','0.169.1','SCHEMA_UNSUPPORTED'),
+        for key,value,code in [('cli_version','unknown-future','SCHEMA_UNSUPPORTED'),
+                ('cli_version','PRIVATE_SECRET_SENTINEL','SCHEMA_UNSUPPORTED'),
                 ('originator','other','SESSION_MISMATCH'),('id','forged','SESSION_MISMATCH'),
                 ('cwd','elsewhere','SESSION_MISMATCH'),('model_provider','unverified','SESSION_MISMATCH')]:
             self.f.child[0]['payload']={**original,key:value};self.write()

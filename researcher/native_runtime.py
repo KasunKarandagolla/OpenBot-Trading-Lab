@@ -20,7 +20,7 @@ def integration_preflight(config,*,as_of):
         'backend':identity['provider_backend'],'missing':'NATIVE_NOT_INVOKED'}
     if identity['provider']=='opencode':
         options['allow_incomplete']=binding.get('status')!='completed'
-    attester(config,binding['external'],binding['turn'],identity['model'],
+    provider_version=attester(config,binding['external'],binding['turn'],identity['model'],
         config['agent_workspace'],**options)
     root=wsl_root()
     hashes={}
@@ -41,6 +41,8 @@ def integration_preflight(config,*,as_of):
         'native_execution_verified':False,'trade_authorization':False}
     if identity['provider']=='opencode':
         result['provider_session_version']=binding.get('provider_session_version')
+    else:
+        result['provider_session_version']=provider_version
     return result
 
 

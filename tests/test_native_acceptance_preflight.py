@@ -56,19 +56,21 @@ class AcceptancePreflight(unittest.TestCase):
             integration_preflight(self.f.config,as_of=self.f.time(6))
         self.assertEqual(unsupported.exception.diagnostic['stage'],'ENVELOPE')
 
-    def test_0171_requires_the_observed_ordinal_envelope_and_rejects_unknown_releases(self):
-        self.f.parent[0]['payload']['cli_version']='0.171.0'
-        self.f.write()
-        with self.assertRaisesRegex(ContractError,'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED') as unknown:
-            integration_preflight(self.f.config,as_of=self.f.time(5))
-        self.assertEqual(unknown.exception.diagnostic['check'],'VERSION')
-        for version in ('0.171.1','0.172.0','0.171.0-dev',{}):
+    def test_compatible_cli_version_changes_preserve_envelope_and_execution_checks(self):
+        for version in ('0.171.0','0.171.1','0.172.0','0.171.0-dev'):
             with self.subTest(version=version):
                 self.f.parent[0]['payload']['cli_version']=version
                 SimulatedApp(self.f,self.f.time).write('PARENT',self.f.parent)
-                with self.assertRaisesRegex(ContractError,'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED') as unknown:
+                result=integration_preflight(self.f.config,as_of=self.f.time(5))
+                self.assertEqual(result['provider_session_version'],version)
+                self.assertEqual((result['model_requests'],result['market_requests']),(0,0))
+        for version in ('unsupported',{},None):
+            with self.subTest(invalid_version=version):
+                self.f.parent[0]['payload']['cli_version']=version
+                SimulatedApp(self.f,self.f.time).write('PARENT',self.f.parent)
+                with self.assertRaisesRegex(ContractError,'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED') as invalid:
                     integration_preflight(self.f.config,as_of=self.f.time(5))
-                self.assertEqual(unknown.exception.diagnostic['check'],'VERSION')
+                self.assertEqual(invalid.exception.diagnostic['check'],'VERSION')
 
     def test_unknown_provider_version_and_modified_installed_skill_block_preflight(self):
         self.f.parent[0]['payload']['cli_version']='unsupported';self.f.write()

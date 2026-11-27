@@ -40,27 +40,33 @@ server or Local Scripts is added.
 
 ## Identity and provider proof
 
-An owner-managed ignored path-only JSON retains the documented fields
-`openbot_db`, `provider_db`, `agent_workspace`, optional `native_python`. For Codex,
-`provider_db` points to the existing Codex state SQLite; its exact-session row
-locates the rollout. There are no credentials in this file. The local setup was
-reconstructed from legitimately accessible matching agent/provider metadata.
-It is not committed or included in diagnostics.
+An owner-managed ignored path-only JSON retains `openbot_db`,
+`agent_workspace`, optional `native_python`, and either the legacy single
+`provider_db` or `provider_databases` with exactly `codex` and `opencode` paths.
+The two-entry mapping selects storage from the trusted existing agent/provider
+identity. Before a query, a read-only schema check rejects a mismatched or
+ambiguous database with `SESSION / STORAGE_PROVIDER`; no fallback is guessed.
+The mapping keeps both providers' historical stores available without changing
+paths when the Researcher switches providers. There are no credentials in this
+file; it is ignored, is not committed, and is excluded from diagnostics.
 
 The live request binds agent ID, configured provider/model, actual provider
 backend and hashes of the current main thread/session/turn. Agent-generated
 identity text is never accepted as proof. Identity changes reject advice while
 retaining the market snapshot and deterministic results.
 
-The Codex adapter uses the actually inspected0.169 storage format: app turns and
+The Codex adapter uses the inspected ordinal rollout format: app turns and
 provider sessions; state `threads` metadata; `session_meta`, `turn_context`,
 completed items, complete input, exact final answer, task completion and unique
 provider usage response IDs. It independently verifies OpenBot origin, current
 backend/model, exact session/turn, full inline skill/request, zero review tools,
 reply provenance, citations, bounds, cutoff and freshness. Prior payloads are
 skipped using timestamp/type envelopes; raw reasoning is not returned/exported.
-Unknown versions/schemas fail closed. This is provider-persisted local audit,
-not cryptographic host isolation or proof of hidden cognition.
+The CLI version is validated as version metadata and retained in the receipt;
+structural envelope and execution checks determine compatibility across
+releases. Unsupported record shapes still fail closed. This is
+provider-persisted local audit, not cryptographic host isolation or proof of
+hidden cognition.
 
 The previous OpenCode session_message/read-tool collector remains a compatibility
 adapter and regression fixture. ProviderID/modelID are compared to the actual

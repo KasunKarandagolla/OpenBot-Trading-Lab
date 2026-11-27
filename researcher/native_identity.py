@@ -49,9 +49,10 @@ DIAGNOSTIC_LABELS={
         'ASSISTANT_KEYS','ASSISTANT_AGENT','ASSISTANT_MODEL','ASSISTANT_CONTENT',
         'ASSISTANT_FINISH','ASSISTANT_RAW_FINISH','ASSISTANT_TOKENS','ASSISTANT_COST',
         'ASSISTANT_COMPLETION','INCOMPLETE_NOT_ALLOWED','INCOMPLETE_NOT_FINAL',
-        'INCOMPLETE_MULTIPLE'}),
+        'INCOMPLETE_MULTIPLE','STORAGE_PROVIDER'}),
     'schema_variant':frozenset({'CODEX_0169','CODEX_0169_ORDINAL','OPENCODE_241',
-        'OPENCODE_SESSION_PART','UNRECOGNIZED'})}
+        'OPENCODE_SESSION_PART','CODEX_THREAD_DB','OPENCODE_SESSION_PART_DB',
+        'OPENCODE_SESSION_MESSAGE_DB','AMBIGUOUS_PROVIDER_DB','UNRECOGNIZED'})}
 
 STORAGE_LABELS={
     'stage':{'SQLITE_OPEN','SQLITE_QUERY_ONLY','SQLITE_QUERY','READER','WINDOWS_OBSERVE_HANDOFF','WINDOWS_COLLECT'},
@@ -181,11 +182,23 @@ def load_private(value):
     if p.stat().st_size>4096:raise ContractError('NATIVE_AUDIT_CONFIG_INVALID')
     try:
         config=json.loads(p.read_text(encoding='utf-8'))
-        if (not isinstance(config,dict) or set(config)-{'openbot_db','provider_db','agent_workspace','native_python'}
-                or not {'openbot_db','provider_db','agent_workspace'}<=set(config)
-                or not all(isinstance(v,str) and v and len(v)<2048 for v in config.values())):
+        allowed={'openbot_db','provider_db','provider_databases','agent_workspace','native_python'}
+        if (not isinstance(config,dict) or set(config)-allowed
+                or not {'openbot_db','agent_workspace'}<=set(config)
+                or ('provider_db' in config)==('provider_databases' in config)
+                or not all(isinstance(v,str) and v and len(v)<2048
+                    for k,v in config.items() if k!='provider_databases')):
             raise ValueError()
-        for k,v in config.items():
+        if 'provider_databases' in config:
+            databases=config['provider_databases']
+            if (not isinstance(databases,dict) or set(databases)!={'codex','opencode'} or
+                    not all(isinstance(v,str) and v and len(v)<2048 for v in databases.values())):
+                raise ValueError()
+        else:
+            databases={'legacy':config['provider_db']}
+        paths={k:v for k,v in config.items() if k!='provider_databases'}
+        paths.update({f'provider_database_{k}':v for k,v in databases.items()})
+        for k,v in paths.items():
             p=checked_path(v)
             if k!='agent_workspace' and not p.is_file():raise ValueError()
             if k=='agent_workspace' and not p.is_dir():raise ValueError()
@@ -208,6 +221,51 @@ def read_db(path):
         raise NativeEvidenceError(code,diagnostic=diagnostic) from None
     finally:
         if db is not None:db.close()
+
+
+def _table_columns(db,table):
+    return {row[1] for row in db.execute(f'PRAGMA table_info({table})')}
+
+
+def _provider_signature(db):
+    tables={row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    codex=('threads' in tables and {'id','rollout_path','cwd','model_provider','model'}<=_table_columns(db,'threads'))
+    message=('session_message' in tables and {'session_id','type','time_created','seq','data'}<=_table_columns(db,'session_message'))
+    compact=(message and {'id','parent_id','version','model'}<=_table_columns(db,'session_v2')
+        and {'session_id','message_id','ordinal','type','call_id','time_created','time_updated','data'}
+            <=_table_columns(db,'session_part')) if {'session_v2','session_part'}<=tables else False
+    if codex and bool({'session_v2','session_message','session_part'}&tables):return 'AMBIGUOUS_PROVIDER_DB'
+    if codex:return 'CODEX_THREAD_DB'
+    if compact:return 'OPENCODE_SESSION_PART_DB'
+    if message and not ({'session_v2','session_part'}&tables):return 'OPENCODE_SESSION_MESSAGE_DB'
+    return 'UNRECOGNIZED'
+
+
+@contextmanager
+def provider_db(config,provider):
+    """Open the selected provider's read-only store and validate its shape."""
+    if provider not in {'codex','opencode'}:
+        raise ContractError('NATIVE_PROVIDER_UNSUPPORTED')
+    path=provider_database_path(config,provider)
+    with read_db(path) as db:
+        found=_provider_signature(db)
+        compatible=(found=='CODEX_THREAD_DB' if provider=='codex' else
+            found in {'OPENCODE_SESSION_PART_DB','OPENCODE_SESSION_MESSAGE_DB'})
+        if not compatible:
+            variant=found if found in DIAGNOSTIC_LABELS['schema_variant'] else 'UNRECOGNIZED'
+            raise NativeEvidenceError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','SESSION','STORAGE_PROVIDER',variant)
+        yield db
+
+
+def provider_database_path(config,provider):
+    mapping=config.get('provider_databases')
+    if mapping is not None:
+        if 'provider_db' in config or not isinstance(mapping,dict) or provider not in mapping:
+            raise NativeEvidenceError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','SESSION','STORAGE_PROVIDER')
+        return mapping[provider]
+    path=config.get('provider_db')
+    if not path:raise NativeEvidenceError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','SESSION','STORAGE_PROVIDER')
+    return path
 
 
 def _configured_agent(config):
@@ -273,7 +331,7 @@ def active_identity(config):
     thread,turn,sid,external,model,provider,started=rows[0]
     if model!=identity['model'] or provider!=identity['provider']:raise ContractError('NATIVE_MODEL_SWITCHED')
     if provider=='codex':
-        with read_db(config['provider_db']) as db:
+        with provider_db(config,'codex') as db:
             row=db.execute('SELECT model_provider,model,cwd FROM threads WHERE id=?',(external,)).fetchone()
         if not row or path_key(row[2])!=path_key(config['agent_workspace']):raise ContractError('NATIVE_SESSION_MISMATCH')
         if row[1]!=model:raise ContractError('NATIVE_MODEL_SWITCHED')
@@ -355,7 +413,7 @@ def parent_binding(identity,config,*,require_configured_model=True,as_of=None):
     completed_at=utc(end) if end is not None else None
     if completed_at is not None and completed_at<started_at:raise ContractError('NATIVE_SESSION_MISMATCH')
     if provider=='codex':
-        with read_db(config['provider_db']) as db:
+        with provider_db(config,provider) as db:
             row=db.execute('SELECT model_provider,model,cwd FROM threads WHERE id=?',(external,)).fetchone()
         if not row or path_key(row[2])!=path_key(config['agent_workspace']):raise ContractError('NATIVE_SESSION_MISMATCH')
         if require_configured_model and row[1]!=identity['model']:
@@ -365,7 +423,7 @@ def parent_binding(identity,config,*,require_configured_model=True,as_of=None):
             from .native_codex import attest_turn_model
             bound_end=completed_at if completed_at is not None else (utc(as_of) if as_of is not None else None)
             if bound_end is None or bound_end<started_at:raise ContractError('NATIVE_REVIEW_INCOMPLETE')
-            attest_turn_model(config,external,turn,identity['model'],config['agent_workspace'],
+            retained_version=attest_turn_model(config,external,turn,identity['model'],config['agent_workspace'],
                 start=started_at,end=bound_end,backend=row[0])
     binding={'thread':thread,'turn':turn,'session_id':sid,'external':external,
         'started_at':start,'completed_at':end,'status':status}

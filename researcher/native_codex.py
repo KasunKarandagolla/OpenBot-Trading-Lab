@@ -8,15 +8,11 @@ import json
 import re
 from datetime import timedelta
 from .contracts import ContractError, encode, utc
-from .native_identity import checked_path, local_path, path_key, read_db, ref, NativeEvidenceError
+from .native_identity import (checked_path, local_path, path_key, provider_db,
+    provider_database_path, ref, NativeEvidenceError)
 
 SCHEMA='CODEX_ROLLOUT_0169'
-# Explicit release/format pairs. The observed 0.171.0 runtime uses the same
-# ordinal envelope for a bounded turn before context compaction.
-_CLI_ENVELOPES={
-    '0.169.0': ('CODEX_0169','CODEX_0169_ORDINAL'),
-    '0.171.0': ('CODEX_0169_ORDINAL',),
-}
+_CLI_VERSION=re.compile(r'[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?')
 _CODE_MODE_METADATA='internal_chat_message_metadata_passthrough'
 _CODE_MODE_FIELDS={'type','id','call_id',_CODE_MODE_METADATA}
 _PAGE_SCRIPT_PREFIX=re.compile(r'const r = await tools\.exec_command\(\{[ \t\r\n]*cmd:[ \t\r\n]*')
@@ -162,8 +158,8 @@ def _text(content):
 
 
 def session_path(config,session,workspace):
-    state=local_path(config['provider_db'])
-    with read_db(state) as db:
+    state=local_path(provider_database_path(config,'codex'))
+    with provider_db(config,'codex') as db:
         row=db.execute('SELECT rollout_path,cwd FROM threads WHERE id=?',(session,)).fetchone()
     if not row or path_key(row[1])!=path_key(workspace):raise ContractError('NATIVE_SESSION_MISMATCH')
     try:p=local_path(row[0])
@@ -181,8 +177,8 @@ def session_path(config,session,workspace):
 def records(config,session,workspace,*,start,end,backend=None):
     """Read metadata and bounded time-scoped records. Do not return reasoning."""
     p=session_path(config,session,workspace);meta=None;items=[];total=0
-    previous=None;ordinal=None;variant='UNRECOGNIZED'
-    with read_db(config['provider_db']) as db:
+    previous=None;ordinal=None;variant='UNRECOGNIZED';provider_session_version=None
+    with provider_db(config,'codex') as db:
         row=db.execute('SELECT model_provider FROM threads WHERE id=?',(session,)).fetchone()
     if not row or not isinstance(row[0],str) or not row[0] or backend is not None and row[0]!=backend:
         _fail('NATIVE_SESSION_MISMATCH','SESSION','BACKEND')
@@ -231,14 +227,16 @@ def records(config,session,workspace,*,start,end,backend=None):
                 if meta is not None:_fail('NATIVE_SESSION_MISMATCH','SESSION','IDENTITY',variant)
                 meta=payload
                 version=payload.get('cli_version')
-                if not isinstance(version,str) or variant not in _CLI_ENVELOPES.get(version,()):
+                if not isinstance(version,str) or _CLI_VERSION.fullmatch(version) is None:
                     _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','SESSION','VERSION',variant)
+                provider_session_version=version
                 if (payload.get('id')!=session or payload.get('originator')!='openbot' or
                         payload.get('model_provider')!=backend or path_key(payload.get('cwd',''))!=path_key(workspace)):
                     _fail('NATIVE_SESSION_MISMATCH','SESSION','IDENTITY',variant)
                 continue
             if len(items)>=4096:raise ContractError('NATIVE_REVIEW_FILE_SIZE')
             x['_schema_variant']=variant
+            x['_provider_session_version']=provider_session_version
             items.append(x)
     if meta is None:_fail('NATIVE_REVIEW_INCOMPLETE','SESSION','COMPLETENESS',variant)
     return items
@@ -281,10 +279,14 @@ def check_turn_model(record,session,turn,model,workspace,context):
 
 
 def attest_turn_model(config,session,turn,model,workspace,*,start,end,backend,missing='NATIVE_REVIEW_INCOMPLETE'):
-    context=False
+    context=False;versions=set()
     for record in turn_records(config,session,turn,workspace,start=start-timedelta(seconds=1),end=end,backend=backend):
         context=check_turn_model(record,session,turn,model,workspace,context)
+        version=record.get('_provider_session_version')
+        if version is not None:versions.add(version)
     if not context:_fail(missing,'EVIDENCE','CONTEXT')
+    if len(versions)!=1:_fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','SESSION','VERSION')
+    return next(iter(versions))
 
 
 def _code_mode_item(record,turn,item_ids,fields):
@@ -336,7 +338,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
     from .native_handoff import command_page
     rows=list(turn_records(config,session,turn,workspace,start=utc(start)-timedelta(seconds=1),end=utc(end)+timedelta(seconds=1),backend=backend))
     if require_thread_model:
-        with read_db(config['provider_db']) as db:
+        with provider_db(config,'codex') as db:
             actual=db.execute('SELECT model FROM threads WHERE id=?',(session,)).fetchone()
         if not actual or actual[0]!=model:_fail('NATIVE_MODEL_SWITCHED','IDENTITY','CODEX_CHILD_THREAD_MODEL')
     context=False;began=False;ended=False;inputs=[];finals=[];responses=set();usage=[]
@@ -477,7 +479,10 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
     if evidence is not None and delivered!=set(range(1,len(pages)+1)):
         raise ContractError('NATIVE_READ_INCOMPLETE')
     if not 1<=len(responses)<=16:raise ContractError('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED')
-    return {'provider_schema':SCHEMA,'schema_variant':variant,'model_requests':len(responses),'provider_usage':usage,
+    versions={row.get('_provider_session_version') for row in rows if row.get('_provider_session_version') is not None}
+    if len(versions)!=1:_fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','SESSION','VERSION',variant)
+    return {'provider_schema':SCHEMA,'schema_variant':variant,'provider_session_version':next(iter(versions)),
+        'model_requests':len(responses),'provider_usage':usage,
         'tool_operations':['READ_SKILL','READ_REQUEST'] if evidence is not None else [],'unauthorized_tool_operations':0,
         'skill_and_request_read_completely':True,
         'read_methods':['EXACT_HASH_BOUND_PAGES_IN_PROVIDER_TOOL_OUTPUT'] if evidence is not None else

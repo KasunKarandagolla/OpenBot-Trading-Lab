@@ -9,7 +9,7 @@ from .contracts import ContractError, digest, encode
 from .native_identity import local_path,under_work
 from .settings import ROOT
 
-PRIVATE_KEYS=frozenset({'openbot_db','provider_db','agent_workspace','native_python','headers','request_headers',
+PRIVATE_KEYS=frozenset({'openbot_db','provider_db','provider_databases','agent_workspace','native_python','headers','request_headers',
     'authorization','cookie','cookies','password','secret','api_key','access_token','refresh_token','account_id','creator_account_id','creator_user_id',
     'session_id','external_session_id','thread_id','turn_id','resume_cursor','raw_reasoning','encrypted_content'})
 

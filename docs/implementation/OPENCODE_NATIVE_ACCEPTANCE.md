@@ -52,15 +52,21 @@ skill unchanged. A repository change does not install or register a host skill.
 ## 3. Point the private audit config at the active provider
 
 The private file is `work/openbot-integration/native-audit-local.json`; it is
-ignored and must never be committed or pasted into chat. It holds one
-`provider_db`:
+ignored and must never be committed or pasted into chat. To keep both providers
+available without path edits, it uses `provider_databases` with these existing
+read-only stores:
 
 - OpenCode: `%USERPROFILE%\.local\share\opencode\opencode.db`
-- Codex: `%USERPROFILE%\.codex\state_5.sqlite`
+- Codex: `%APPDATA%\OpenBot\provider-accounts\<account>\state_5.sqlite`
+
+The runner selects from the Researcher's verified provider identity, then
+checks the database signature. An incorrect or ambiguous match fails at
+`SESSION / STORAGE_PROVIDER`. Existing single-provider `provider_db` files
+remain supported.
 
 Keep `native_python` pointing at the installed Windows `python.exe` so WSL
 delegates WAL reads instead of opening the database across `/mnt/c`. Do not copy
-the database or open it read-write. Restore the Codex path before a Codex run.
+the database or open it read-write.
 
 ## 4. Preflight - no model and no market request
 

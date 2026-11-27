@@ -16,7 +16,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 from .contracts import ContractError, digest, encode, utc
-from .native_identity import NativeEvidenceError, checked_path, read_db, ref
+from .native_identity import NativeEvidenceError, checked_path, provider_db, read_db, ref
 
 SCHEMA = 'OPENCODE_V2_SESSION_PART'
 # The first qualified session-part records observed on this host used 2.4.1.
@@ -125,7 +125,7 @@ def session_record(config, session, *, allowed_versions=None):
     readers. ``allowed_versions`` remains available for historical callers
     whose message-level semantics were qualified only for specific versions.
     """
-    with read_db(config['provider_db']) as db:
+    with provider_db(config,'opencode') as db:
         row = db.execute('SELECT id,parent_id,version,model FROM session_v2 WHERE id=?',
                          (session,)).fetchone()
     if not row or row[0] != session:
@@ -374,7 +374,7 @@ def _part_rows(db, session, messages):
 
 def turn_parts(config, session, start, end, *, allow_incomplete=False):
     """Read messages and parts from one provider-DB snapshot, without reasoning."""
-    with read_db(config['provider_db']) as db:
+    with provider_db(config,'opencode') as db:
         # sqlite3 does not implicitly begin a transaction for SELECTs. Start
         # one before either table read so a poll cannot combine message rows
         # from one provider write with parts from a later write.

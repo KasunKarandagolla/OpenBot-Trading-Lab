@@ -10,7 +10,7 @@ from unittest.mock import patch
 from researcher.settings import ROOT
 from researcher.contracts import ContractError,digest,encode,utc
 from researcher.agent_review import make_request,exchange,REPLY,AGENT
-from researcher.native_identity import active_identity,load_private,configured_identity
+from researcher.native_identity import active_identity,load_private,configured_identity,NativeEvidenceError,provider_db
 from researcher.native_codex import review_brief
 from researcher.native_runtime import collect
 from test_session4 import case
@@ -119,6 +119,59 @@ class CodexRuntimeFixtures(unittest.TestCase):
         with self.assertRaisesRegex(ContractError,'NATIVE_MODEL_SWITCHED'):
             collect(self.request,self.config,as_of=self.time(5),require_configured_model=True)
         self.assertEqual(before,encode(self.request))
+
+    def test_provider_databases_switch_with_the_existing_provider_identity(self):
+        from researcher.native_identity import parent_binding
+        opencode_path=self.root/'opencode.sqlite'
+        with sqlite3.connect(opencode_path) as db:
+            db.executescript('''CREATE TABLE session_v2(id,parent_id,version,model);
+              CREATE TABLE session_message(id,session_id,type,seq,time_created,time_updated,data);
+              CREATE TABLE session_part(session_id,message_id,ordinal,type,call_id,time_created,time_updated,data);''')
+            model=encode({'providerID':'opencode','id':'deepseek-v4.1-flash-free','variant':'high'})
+            db.execute('INSERT INTO session_v2 VALUES(?,?,?,?)',('PARENT',None,'2.4.2',model))
+        mapped={k:v for k,v in self.config.items() if k!='provider_db'}
+        mapped['provider_databases']={'codex':self.config['provider_db'],'opencode':str(opencode_path)}
+        mapped_file=self.root/'mapped-private.json';mapped_file.write_text(encode(mapped))
+        self.assertEqual(load_private(mapped_file)['provider_databases'],mapped['provider_databases'])
+        for invalid in (
+                {**mapped,'provider_databases':{'codex':self.config['provider_db']}},
+                {**mapped,'provider_db':self.config['provider_db']}):
+            invalid_file=self.root/'invalid-private.json';invalid_file.write_text(encode(invalid))
+            with self.assertRaisesRegex(ContractError,'NATIVE_AUDIT_CONFIG_INVALID'):
+                load_private(invalid_file)
+        self.assertEqual(parent_binding(self.identity,mapped)['external'],'PARENT')
+        with provider_db(mapped,'codex') as db:
+            self.assertEqual(db.execute('SELECT model_provider FROM threads WHERE id=?',('PARENT',)).fetchone()[0],'openai')
+        self.agent.update(provider='opencode',model='opencode/deepseek-v4.1-flash-free',reasoningEffort='high')
+        with sqlite3.connect(self.config['openbot_db']) as db:
+            db.execute('UPDATE projection_agents SET model=?,agent_json=?',
+                (self.agent['model'],encode(self.agent)))
+            db.execute("UPDATE projection_provider_sessions SET provider='opencode',model=? WHERE id='PARENT_SESSION'",
+                (self.agent['model'],))
+        switched=active_identity(mapped)
+        self.assertEqual(switched['provider'],'opencode')
+        binding=parent_binding(switched,mapped)
+        self.assertEqual(binding['provider_session_version'],'2.4.2')
+        wrong={**mapped,'provider_databases':{'codex':str(opencode_path),'opencode':str(opencode_path)}}
+        with self.assertRaises(NativeEvidenceError) as failure:
+            with provider_db(wrong,'codex'):pass
+        self.assertEqual(failure.exception.diagnostic,
+            {'stage':'SESSION','check':'STORAGE_PROVIDER','schema_variant':'OPENCODE_SESSION_PART_DB'})
+        ambiguous_path=self.root/'ambiguous.sqlite'
+        with sqlite3.connect(ambiguous_path) as db:
+            db.executescript('''CREATE TABLE threads(id,rollout_path,cwd,model_provider,model);
+              CREATE TABLE session_v2(id,parent_id,version,model);
+              CREATE TABLE session_message(id,session_id,type,seq,time_created,time_updated,data);
+              CREATE TABLE session_part(session_id,message_id,ordinal,type,call_id,time_created,time_updated,data);''')
+        ambiguous={**mapped,'provider_databases':{'codex':str(ambiguous_path),'opencode':str(opencode_path)}}
+        with self.assertRaises(NativeEvidenceError) as failure:
+            with provider_db(ambiguous,'codex'):pass
+        self.assertEqual(failure.exception.diagnostic['schema_variant'],'AMBIGUOUS_PROVIDER_DB')
+        missing={**mapped,'provider_databases':{'codex':str(self.root/'absent.sqlite')}}
+        with self.assertRaises(NativeEvidenceError) as failure:
+            with provider_db(missing,'opencode'):pass
+        self.assertEqual(failure.exception.diagnostic['check'],'STORAGE_PROVIDER')
+
 
     def test_child_wrong_model_agent_session_are_rejected(self):
         with sqlite3.connect(self.config['openbot_db']) as db:

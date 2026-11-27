@@ -22,9 +22,11 @@ only in that agent's existing discovery mirrors. Its current hash is
 `96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb`.
 
 The Local setup keeps a JSON configuration below ignored `work/`:
-`openbot_db`, `provider_db`, `agent_workspace`, each an absolute local path to the
-existing installation. Do not put credentials, personal paths or this local
-configuration in Git. This session's prepared file is
+`openbot_db`, `agent_workspace`, and either legacy `provider_db` or a
+`provider_databases` map with both `codex` and `opencode` absolute paths to the
+existing stores. Do not put credentials, personal paths or this local
+configuration in Git. The two-provider map follows the verified provider
+identity and checks each SQLite signature. This session's prepared file is
 `work/session6c/native-audit-local.json`. It contains paths only, no keys/tokens.
 On WSL, optional `native_python` names the already installed Windows `python.exe`.
 Only the fixed receipt-reader module runs there. This avoids native Windows WAL

@@ -25,13 +25,19 @@ AI stage, without a fallback.
 Historical Codex readback now checks the original agent and workspace, then
 verifies the captured provider, adapter, backend, session, turn and model from
 the retained records. It does not compare the captured provider or model with
-today's agent selection. Active work continues to compare both. Readback still
-requires access to the original Codex provider database and rollout files: if
-the private `provider_db` path was changed for a later provider, the correct
-original read-only provider store must be supplied for replay. No alternate
-store is guessed, and historical OpenCode's older reader retains its existing
-constraints. These changes do not establish compact OpenCode replay or an
-OpenCode-to-Codex two-run acceptance.
+today's agent selection. Active work continues to compare both. Private config
+may use `provider_databases` with explicit `codex` and `opencode` read-only
+stores; selection follows the captured/current provider identity and each
+database is checked against its structural provider signature before queries.
+Missing, mismatched or ambiguous stores fail closed. The legacy single
+`provider_db` setting remains supported for existing one-provider workflows.
+Historical OpenCode message replay keeps its original constraints. These
+changes do not establish an OpenCode-to-Codex two-run acceptance.
+
+Codex CLI version is retained as diagnostic metadata. Compatibility depends on
+the rollout envelope, required identity/context fields, contiguous ordinals,
+and exact execution evidence; there is no exact CLI-version allowlist. Unknown
+record shapes and incomplete or contradictory evidence still fail closed.
 
 The recovery for job `20261121T155516Z-817636a12ff84a4797555d0d2887de42`
 uses the exact parent and child Codex turn contexts for historical model

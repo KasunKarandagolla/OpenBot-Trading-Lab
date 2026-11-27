@@ -140,7 +140,8 @@ class OpenBotRunnerContract(unittest.TestCase):
 
     def test_export_has_fixed_entries_sanitizes_paths_and_never_includes_native_storage(self):
         job=runner.start(self.key)['job_id'];folder=runner._job(job)
-        secret={'openbot_db':'PRIVATE_DB','access_token':'PRIVATE_TOKEN','turn_id':'PRIVATE_TURN',
+        secret={'openbot_db':'PRIVATE_DB','provider_databases':{'codex':'PRIVATE_CODEX_DB','opencode':'PRIVATE_OPENCODE_DB'},
+            'access_token':'PRIVATE_TOKEN','turn_id':'PRIVATE_TURN',
             'path':'C:\\Users\\Owner\\private.db','notes':'/home/owner/secret.txt',
             'native_identity':self.f.identity}
         report={'mode':'SYNTHETIC','shortlist':[],'consultant':secret,'trade_authorization':False}
@@ -148,6 +149,7 @@ class OpenBotRunnerContract(unittest.TestCase):
         with zipfile.ZipFile(io.BytesIO(raw)) as z:
             self.assertEqual(len(z.namelist()),7)
             text=''.join(z.read(n).decode() for n in z.namelist())
+            self.assertNotIn('PRIVATE_CODEX_DB',text);self.assertNotIn('PRIVATE_OPENCODE_DB',text)
             for forbidden in ('PRIVATE_DB','PRIVATE_TOKEN','PRIVATE_TURN','C:\\\\Users','/home/owner/'):
                 self.assertNotIn(forbidden,text)
             self.assertEqual(json.loads(z.read('report.json'))['mode'],'SYNTHETIC')

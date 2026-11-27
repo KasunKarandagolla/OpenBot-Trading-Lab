@@ -37,8 +37,17 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
     config=json.loads(config_path.read_text())
     if not isinstance(config,dict):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     config.pop('native_python',None)
-    if set(config)!={'openbot_db','provider_db','agent_workspace'}:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    if os.name=='nt':config={k:_windows(v) for k,v in config.items()}
+    common={'openbot_db','agent_workspace'}
+    legacy=set(config)==common|{'provider_db'}
+    mapped=set(config)==common|{'provider_databases'}
+    if not (legacy or mapped):raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+    if mapped and (not isinstance(config['provider_databases'],dict)
+            or set(config['provider_databases'])!={'codex','opencode'}
+            or not all(isinstance(path,str) and path for path in config['provider_databases'].values())):
+        raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
+    if os.name=='nt':
+        config={k:({provider:_windows(path) for provider,path in v.items()}
+                   if k=='provider_databases' else _windows(v)) for k,v in config.items()}
     request_path=under_work(folder/(material+'.request.json'))
     request=json.loads(request_path.read_text(encoding='utf-8'))
     from .agent_review import _material
@@ -48,7 +57,7 @@ def prepare(directory,material,config_file,*,verified_identity=None,as_of=None):
         raise ContractError('NATIVE_REQUEST_STALE')
     from .native_identity import compact_adapter_supported
     if compact_adapter_supported(request.get('native_identity')):
-        from .native_identity import load_private,assert_parent
+        from .native_identity import assert_parent,load_private
         from .native_handoff import COMPACT_PAGES, CONFIRMED_PAGES, dispatch_frame, packet, request_dispatch_policy
         private=load_private(config_path)
         if verified_identity is not None and verified_identity!=request['native_identity']:
@@ -139,7 +148,8 @@ def collect(request,config,target,*,as_of,timeout_seconds=30):
     if not utc(request['as_of_utc'])<=utc(start)<=utc(end)<=utc(as_of):
         raise ContractError('AGENT_EVIDENCE_FUTURE')
     if (utc(end)-utc(request['as_of_utc'])).total_seconds()>600:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
-    with _read_db(config['provider_db']) as provider:
+    from .native_identity import provider_db
+    with provider_db(config,'opencode') as provider:
         rows=provider.execute('''SELECT data FROM session_message WHERE session_id=? AND type='assistant'
           AND time_created BETWEEN ? AND ? ORDER BY seq''',
           (session,int(utc(start).timestamp()*1000)-1000,int(utc(end).timestamp()*1000)+1000)).fetchall()

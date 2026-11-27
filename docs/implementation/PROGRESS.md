@@ -1,3 +1,46 @@
+# November 27 Codex release and provider-storage compatibility correction
+
+Status: **IMPLEMENTED / 147 TARGETED TESTS PASS / CONFIG VALID / READY FOR CI**.
+No native acceptance or Researcher task was initiated; no market data was
+requested and no provider, model, effort, or permission was changed.
+`trade_authorization=false` remains in force.
+
+- Removed the Codex CLI release-to-envelope allowlist. A bounded version string
+  is retained as `provider_session_version`; acceptance depends on the parsed
+  record envelope, session identity, required context, contiguous ordinal order,
+  and the existing strict execution/evidence/final-response checks. Unknown
+  record types, malformed versions, broken order and incomplete evidence still
+  fail closed.
+- Qualified the structural reader against two retained Codex 0.172.0 sessions
+  belonging to the existing Researcher workspace. Both passed envelope parsing
+  and turn selection. This is provider-record compatibility evidence, not a
+  completed native task receipt or execution acceptance.
+- Added private `provider_databases` selection with exactly one Codex and one
+  OpenCode path. Current provider identity selects the store; a read-only schema
+  signature check occurs on the same SQLite connection before any provider
+  query. Wrong, missing or ambiguous stores fail with `SESSION /
+  STORAGE_PROVIDER`. Legacy single-`provider_db` configurations remain valid.
+  Both provider readers, active/parent identity checks, and historical
+  OpenCode message collection now use that selection.
+- Updated the ignored local private config with the already verified Codex
+  account database and OpenCode database. Both signatures load successfully.
+  `provider-status` confirms the existing `codex / gpt-6-luna` selection,
+  supported adapter, and zero model/market requests. The orchestration skill
+  source and registration were not changed.
+- Added regressions for compatible version changes (including 0.172.0),
+  malformed versions, active provider switching, legacy config, wrong/missing/
+  ambiguous stores, and private-path redaction. The focused Codex, OpenCode,
+  identity, Windows-reader, preflight and runner suites passed: 147 tests.
+  `python -m researcher config validate` returned `VALID` (9 families,
+  31 methods).
+
+The active Researcher-turn preflight and genuine AI-driven Market Researcher
+test remain unrun; they require the separately authorized Researcher turn.
+Provider-record parsing does not attest a new model execution. No trade or
+analytical-engine change was made.
+
+---
+
 # November 27 OpenCode 2.4.2 active assistant compatibility correction
 
 Status: **CODE IMPLEMENTED / TARGETED REGRESSIONS PASS / CONFIG VALID**.
