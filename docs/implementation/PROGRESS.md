@@ -1,3 +1,43 @@
+# November 27 OpenCode 2.4.2 active assistant compatibility correction
+
+Status: **CODE IMPLEMENTED / TARGETED REGRESSIONS PASS / CONFIG VALID**.
+No native acceptance, Researcher task, market request, order, or provider/model
+change was made. `trade_authorization=false` remains in force.
+
+- The reported failure is `EVIDENCE/COMPLETION_MISMATCH` in the OpenCode
+  session-part reader. The exact transient JSON was not retained, so attributing
+  it to a specific field is unverified. The reader previously required the full
+  completed assistant key set before distinguishing an active record.
+- Active-turn preflight and polling now accept a bounded subset of the observed
+  assistant envelope only when its completion timestamp is absent/null, its
+  creation timestamp matches the database row, and it is the sole final
+  assistant record. Present identity/usage fields remain type-checked; an
+  incomplete terminal `stop` remains invalid. A completed record still requires
+  the full schema and existing identity, content, finish, token, cost, part and
+  evidence checks.
+- Parts attached to an incomplete assistant record are ignored in full. They
+  cannot prove discovery, submission, shell execution, or a final response.
+  Preflight/model identity, discovery, start-command attestation and submission
+  polling were checked; child/historical reads keep the strict default, and the
+  separate Codex reader is unchanged.
+- `session_message` and `session_part` are read in one explicit SQLite
+  transaction, preventing a poll from joining rows from different provider-DB
+  snapshots. OpenBot projection and provider storage remain separate databases;
+  no cross-database atomic snapshot is claimed.
+- Synthetic partial-prefix and completed-transition regressions plus adjacent
+  OpenCode, preflight, runtime, Codex bridge, runner, native-app, Windows-path,
+  and handoff suites passed: 161 tests. `python3 -m researcher config validate`
+  returned `VALID` (9 families, 31 methods).
+- The partial fixtures are deliberately bounded simulations because the failed
+  turn's exact transient envelope was not retained. Native acceptance and the
+  Researcher's current-turn preflight were not run; the latter must execute in
+  the authorized active Researcher turn. No skill source or registration was
+  changed. OpenBot registry readback reports local skill revision 11, so the
+  approved v5.1.0 registration is not verified and remains a pre-acceptance
+  blocker.
+
+---
+
 # November 27 OpenCode session-part structural compatibility correction
 
 Status: **CODE IMPLEMENTED / FOCUSED REGRESSIONS PASSING / NATIVE ACCEPTANCE NOT CLAIMED**.

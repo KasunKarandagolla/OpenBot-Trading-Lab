@@ -10,6 +10,7 @@ import zipfile
 from datetime import timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from researcher import ai_core
 from researcher.agent_review import AGENT, REPLY, _material
@@ -22,7 +23,7 @@ from researcher.native_identity import active_identity, parent_binding, ref
 from researcher.native_opencode import (
     LEGACY_SESSION_VERSIONS, SCHEMA, _page_command, _page_output, assert_session_identity, attest, attest_smoke_discovery,
     attest_start_command, attest_turn_model, collect, delivery_proof,
-    observe_submission, parse_execute, session_record,
+    observe_submission, parse_execute, session_record, turn_parts,
 )
 from researcher.native_runtime import integration_preflight
 from researcher.settings import ROOT
@@ -247,6 +248,26 @@ class OpenCodeFixture(unittest.TestCase):
         self._message(session, mid, 'assistant', seq, at, data)
         return mid
 
+    def _assistant_data(self, mid):
+        with sqlite3.connect(self.config['provider_db']) as db:
+            row = db.execute('SELECT data FROM session_message WHERE id=?', (mid,)).fetchone()
+        return json.loads(row[0])
+
+    def _set_assistant_data(self, mid, data):
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute('UPDATE session_message SET data=? WHERE id=?', (encode(data), mid))
+
+    def _partial_assistant(self, mid, *, include_model=True):
+        """Synthetic bounded 2.4.2-like prefix; exact transient host bytes are unknown."""
+        complete = self._assistant_data(mid)
+        partial = {'time': {'created': complete['time']['created']}}
+        if include_model:
+            partial.update(agent='build', model=_model(), content=[], finish='tool-calls')
+        self._set_assistant_data(mid, partial)
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute("UPDATE session_v2 SET version='2.4.2' WHERE id=?", (PARENT_EXTERNAL,))
+        return complete
+
     def _user(self, session, at, text):
         seq = self._next_seq(session)
         mid = f'msg_{session}_{seq}'
@@ -461,7 +482,7 @@ class RecordContract(OpenCodeFixture):
             attest_turn_model(self.config, PARENT_EXTERNAL, PARENT_TURN, MODEL,
                 self.workspace, start=self.time(-10), end=self.time(5), backend='opencode')
         self.assertEqual(failed.exception.diagnostic['stage'], 'EVIDENCE')
-        self.assertEqual(failed.exception.diagnostic['check'], 'COMPLETION_MISMATCH')
+        self.assertEqual(failed.exception.diagnostic['check'], 'ASSISTANT_KEYS')
 
     def test_new_version_with_incompatible_truncated_tool_evidence_still_fails(self):
         self._discovery()
@@ -926,7 +947,7 @@ class StartAndPreflightContract(OpenCodeFixture):
         self.assert_code('AGENT_SKILL_HASH', integration_preflight, self.config,
                          as_of=self.time(5))
 
-    def test_active_parent_incomplete_assistant_records_do_not_block_preflight_or_command_poll(self):
+    def test_active_incomplete_envelope_allows_preflight_but_not_command_proof(self):
         expected=(ROOT/'integration/openbot-market-research/SKILL.md').read_text(
             encoding='utf-8').replace('@@RESEARCH_ROOT@@',wsl_root()).encode()
         installed=self.workspace/'.agents/skills/openbot-market-research/SKILL.md'
@@ -940,40 +961,120 @@ class StartAndPreflightContract(OpenCodeFixture):
                  f"start --request-id {'a'*32}")
         mid=self._assistant(PARENT_EXTERNAL,self.time(2))
         self._shell(PARENT_EXTERNAL,mid,self.time(2),command,'{\"state\":\"STARTING\"}\r\n')
-        with sqlite3.connect(self.config['provider_db']) as db:
-            row=db.execute('SELECT data FROM session_message WHERE id=?',(mid,)).fetchone()
-            data=json.loads(row[0]);data['time']['completed']=None;data['finish']=None;data['rawFinish']=None
-            db.execute('UPDATE session_message SET data=? WHERE id=?',(encode(data),mid))
+        complete=self._partial_assistant(mid,include_model=False)
         preflight=integration_preflight(self.config,as_of=self.time(5))
         self.assertEqual(preflight['provider_schema'],SCHEMA)
         self.assertEqual(preflight['provider_session_version'],'2.4.2')
+        self.assertFalse(preflight['native_execution_verified'])
+        self.assert_code('RUNNER_START_UNATTESTED',attest_start_command,
+                         self.identity,self.config,{'request_id':'a'*32})
+        self._set_assistant_data(mid,complete)
         proof=attest_start_command(self.identity,self.config,{'request_id':'a'*32})
         self.assertEqual(proof['status'],'VERIFIED_OPENBOT_AGENT_COMMAND')
 
-    def test_active_incomplete_assistant_record_is_ignored_until_its_part_completes(self):
+    def test_partial_assistant_prefix_is_active_only_and_has_precise_diagnostic(self):
         mid=self._assistant(PARENT_EXTERNAL,self.time(1))
-        with sqlite3.connect(self.config['provider_db']) as db:
-            row=db.execute('SELECT data FROM session_message WHERE id=?',(mid,)).fetchone()
-            data=json.loads(row[0]);data['time']['completed']=None;data['finish']=None;data['rawFinish']=None
-            db.execute('UPDATE session_message SET data=? WHERE id=?',(encode(data),mid))
-        self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED',attest_turn_model,self.config,
+        self._partial_assistant(mid,include_model=False)
+        rejected=self.assert_code('NATIVE_REVIEW_INCOMPLETE',attest_turn_model,self.config,
             PARENT_EXTERNAL,PARENT_TURN,MODEL,self.workspace,start=self.time(-10),end=self.time(5),
             backend='opencode',allow_incomplete=False)
+        self.assertEqual(rejected.diagnostic,{
+            'stage':'EVIDENCE','check':'INCOMPLETE_NOT_ALLOWED',
+            'schema_variant':'OPENCODE_SESSION_PART'})
         self.assertEqual(attest_turn_model(self.config,PARENT_EXTERNAL,PARENT_TURN,MODEL,
             self.workspace,start=self.time(-10),end=self.time(5),backend='opencode',
             allow_incomplete=True)['model'],MODEL)
 
-    def test_submission_poll_observes_a_completed_call_inside_an_active_parent_turn(self):
+    def test_partial_assistant_with_null_usage_fields_is_active_only(self):
+        mid=self._assistant(PARENT_EXTERNAL,self.time(1))
+        self._partial_assistant(mid)
+        partial=self._assistant_data(mid)
+        partial['time']['completed']=None
+        partial.update(finish=None,rawFinish=None,tokens={},cost=None)
+        self._set_assistant_data(mid,partial)
+        self.assertEqual(attest_turn_model(self.config,PARENT_EXTERNAL,PARENT_TURN,MODEL,
+            self.workspace,start=self.time(-10),end=self.time(5),backend='opencode',
+            allow_incomplete=True)['model'],MODEL)
+        stopped=dict(partial)
+        stopped['finish']='stop'
+        self._set_assistant_data(mid,stopped)
+        error=self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED',turn_parts,self.config,
+            PARENT_EXTERNAL,self.time(-10),self.time(5),allow_incomplete=True)
+        self.assertEqual(error.diagnostic['check'],'ASSISTANT_FINISH')
+
+    def test_submission_poll_waits_for_incomplete_envelope_then_accepts_completed_transition(self):
         args={'title':'OPENBOT-RESEARCH-FIXTURE','brief':'exact fixture brief\n'}
         mid=self._submission(self.time(2),args)
-        with sqlite3.connect(self.config['provider_db']) as db:
-            row=db.execute('SELECT data FROM session_message WHERE id=?',(mid,)).fetchone()
-            data=json.loads(row[0]);data['time']['completed']=None;data['finish']=None;data['rawFinish']=None
-            db.execute('UPDATE session_message SET data=? WHERE id=?',(encode(data),mid))
+        complete=self._partial_assistant(mid)
+        pending=observe_submission(self.config,self.identity,self.time(1),args,
+                                   as_of=self.time(5),reserved_at=self.time(1))
+        self.assertEqual(pending['submission_state'],'NOT_OBSERVED')
+        self.assertEqual(pending['submission_attempts'],0)
+        self._set_assistant_data(mid,complete)
         result=observe_submission(self.config,self.identity,self.time(1),args,
                                   as_of=self.time(5),reserved_at=self.time(1))
         self.assertEqual(result['submission_state'],'ACKNOWLEDGED')
         self.assertEqual(result['submission_attempts'],1)
+
+    def test_unfinished_discovery_part_is_not_execution_evidence(self):
+        mid=self._assistant(PARENT_EXTERNAL,self.time(1))
+        self._execute(PARENT_EXTERNAL,mid,self.time(1),_describe_script(),
+                      tool='openbot.tool_describe',
+                      call_input={'names':['openbot.start_task','openbot.attach_files_to_response']},
+                      result=_discovery_json())
+        self._partial_assistant(mid)
+        with self.assertRaises(ContractError) as caught:
+            attest_smoke_discovery(self.identity,self.config,as_of=self.time(5))
+        self.assertEqual(str(caught.exception),'NATIVE_TOOL_DISCOVERY_UNVERIFIED')
+        self.assertEqual(caught.exception.diagnostic,{
+            'stage':'TOOL_DISCOVERY','check':'NO_CALL',
+            'schema_variant':'OPENCODE_SESSION_PART'})
+
+    def test_only_one_final_assistant_record_may_be_incomplete(self):
+        first=self._assistant(PARENT_EXTERNAL,self.time(1))
+        self._partial_assistant(first)
+        self._user(PARENT_EXTERNAL,self.time(2),'later user event')
+        nonfinal=self.assert_code('NATIVE_REVIEW_INCOMPLETE',turn_parts,self.config,
+            PARENT_EXTERNAL,self.time(-10),self.time(5),allow_incomplete=True)
+        self.assertEqual(nonfinal.diagnostic['check'],'INCOMPLETE_NOT_FINAL')
+
+        self._user(PARENT_EXTERNAL,self.time(3),'next sequence')
+        second=self._assistant(PARENT_EXTERNAL,self.time(4))
+        self._partial_assistant(second)
+        multiple=self.assert_code('NATIVE_REVIEW_INCOMPLETE',turn_parts,self.config,
+            PARENT_EXTERNAL,self.time(-10),self.time(5),allow_incomplete=True)
+        self.assertEqual(multiple.diagnostic['check'],'INCOMPLETE_MULTIPLE')
+
+    def test_malformed_completed_assistant_record_remains_strict(self):
+        mid=self._assistant(PARENT_EXTERNAL,self.time(1))
+        data=self._assistant_data(mid)
+        del data['tokens']
+        self._set_assistant_data(mid,data)
+        error=self.assert_code('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED',turn_parts,self.config,
+            PARENT_EXTERNAL,self.time(-10),self.time(5),allow_incomplete=True)
+        self.assertEqual(error.diagnostic,{
+            'stage':'EVIDENCE','check':'ASSISTANT_KEYS',
+            'schema_variant':'OPENCODE_SESSION_PART'})
+
+    def test_message_and_part_reads_share_one_sqlite_snapshot(self):
+        mid=self._assistant(PARENT_EXTERNAL,self.time(1))
+        with sqlite3.connect(self.config['provider_db']) as db:
+            db.execute('PRAGMA journal_mode=WAL')
+        from researcher import native_opencode
+        read_messages=native_opencode._message_rows
+
+        def add_part_after_message_snapshot(db,*args,**kwargs):
+            messages=read_messages(db,*args,**kwargs)
+            self._text(PARENT_EXTERNAL,mid,self.time(1),'late committed part')
+            return messages
+
+        with patch.object(native_opencode,'_message_rows',
+                          side_effect=add_part_after_message_snapshot):
+            error=self.assert_code('NATIVE_REVIEW_INCOMPLETE',turn_parts,self.config,
+                PARENT_EXTERNAL,self.time(-10),self.time(5))
+        self.assertEqual(error.diagnostic,{
+            'stage':'EVIDENCE','check':'COMPLETENESS',
+            'schema_variant':'OPENCODE_SESSION_PART'})
 
 
 class DeliveryContract(OpenCodeFixture):

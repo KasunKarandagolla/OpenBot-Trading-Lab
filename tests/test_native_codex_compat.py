@@ -259,7 +259,10 @@ class ObservedCodexCompatibility(unittest.TestCase):
         from researcher.native_identity import load_private
         exe=self.f.root/'python.exe';exe.touch();config=load_private(self.r.private);config['native_python']=str(exe)
         good={'stage':'SESSION','check':'VERSION','schema_variant':'CODEX_0169_ORDINAL'}
-        for diagnostic,expected in [(good,good),({**good,'secret':'PRIVATE_SECRET'},{}),({**good,'check':'PRIVATE_SECRET'}, {})]:
+        opencode={'stage':'EVIDENCE','check':'ASSISTANT_KEYS',
+                  'schema_variant':'OPENCODE_SESSION_PART'}
+        for diagnostic,expected in [(good,good),(opencode,opencode),
+                ({**good,'secret':'PRIVATE_SECRET'},{}),({**good,'check':'PRIVATE_SECRET'}, {})]:
             response=encode({'reason':'NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','diagnostic':diagnostic})
             with patch('subprocess.run',return_value=SimpleNamespace(returncode=2,stdout=response)):
                 with self.assertRaises(ContractError) as found:native_host.call(config,'configured_identity')
