@@ -278,6 +278,32 @@ def check_turn_model(record,session,turn,model,workspace,context):
     return context
 
 
+def _check_post_completion_settings(record,session,turn,model,workspace,backend,context):
+    """Accept only verified session settings after this turn's completion.
+
+    Codex may persist a session-level settings snapshot after task_complete and
+    before the next task starts. It is not evidence for this turn, but it also
+    must not invalidate an otherwise complete receipt. Every other trailing
+    record remains post-completion activity and is rejected by the caller.
+    """
+    payload=record['payload'];variant=record['_schema_variant']
+    if (record['type']!='event_msg' or payload.get('type')!='thread_settings_applied'
+            or 'turn_id' in payload):
+        _fail('NATIVE_REVIEW_INCOMPLETE','EVIDENCE','ORDER',variant)
+    if payload.get('thread_id')!=session:
+        raise ContractError('NATIVE_SESSION_MISMATCH')
+    settings=payload.get('thread_settings')
+    if not isinstance(settings,dict):
+        _fail('NATIVE_PROVIDER_SCHEMA_UNSUPPORTED','EVIDENCE','CONTEXT',variant)
+    if backend is not None and 'model_provider_id' in settings and settings['model_provider_id']!=backend:
+        _fail('NATIVE_SESSION_MISMATCH','SESSION','BACKEND',variant)
+    if 'cwd' in settings:
+        try:matches_workspace=path_key(settings['cwd'])==path_key(workspace)
+        except (TypeError,ValueError):matches_workspace=False
+        if not matches_workspace:raise ContractError('NATIVE_SESSION_MISMATCH')
+    return check_turn_model(record,session,turn,model,workspace,context)
+
+
 def attest_turn_model(config,session,turn,model,workspace,*,start,end,backend,missing='NATIVE_REVIEW_INCOMPLETE'):
     context=False;versions=set()
     for record in turn_records(config,session,turn,workspace,start=start-timedelta(seconds=1),end=end,backend=backend):
@@ -348,7 +374,9 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
     for x in rows:
         p=x['payload'];kind=x['type'];typ=p.get('type')
         variant=x['_schema_variant']
-        if ended:_fail('NATIVE_REVIEW_INCOMPLETE','EVIDENCE','ORDER',variant)
+        if ended:
+            context=_check_post_completion_settings(x,session,turn,model,workspace,backend,context)
+            continue
         context=check_turn_model(x,session,turn,model,workspace,context)
         if kind=='response_item':
             if evidence is not None and typ=='custom_tool_call':

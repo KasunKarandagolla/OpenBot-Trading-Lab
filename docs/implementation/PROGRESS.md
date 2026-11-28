@@ -2633,3 +2633,36 @@ CI was not claimed passed before its run was observed. Keep PR #24 draft; no mer
    dependency-ready. If a specific Cloud-only operation is demonstrably blocked
    while a compliant Local operation exists, hand off **only that operation**
    from the exact verified remote SHA. No parallel implementation track.
+
+## 2026-11-28 â€” Codex completed-turn metadata compatibility
+
+Starting commit: `a5fc19a0f927fefdc1d9a912a620b706ec1411e2`.
+
+- `native_codex.attest` now permits only a post-`task_complete`
+  `thread_settings_applied` record that is session-scoped and matches the
+  verified thread, model and workspace; any supplied provider field must match
+  the independently verified backend. Duplicate completion,
+  turn-scoped activity, response changes, unknown trailing records and tool
+  operations remain rejected.
+- The retained Codex 0.172.0 job
+  `20261128T061620Z-8d3f72c1a6b94e2f8c0d51a7b3e64920` replays as
+  `VERIFIED_RECEIPT`: exact input verified, 1/1 hash-bound evidence pages
+  delivered, two provider response records observed, and the Discovery reply
+  passes schema/citation validation with 1 accepted row. This is recovered
+  historical verification, not a change to the original runtime outcome.
+- The original runtime remained `PARTIAL` after a 600.023-second collection
+  timeout. The retained turn completed at `06:16:57.533Z`; the OpenBot projection
+  completed at `06:17:20.203Z`; the same-session settings record followed at
+  `06:17:20.253Z` and was included in the bounded reader window. The saved
+  terminal and last-pending error is `NATIVE_REVIEW_INCOMPLETE`, consistent with
+  the old reader rejecting that metadata on every post-completion poll. The
+  first error, `NATIVE_PROJECTION_AFTER_SNAPSHOT`, was a separate transient
+  race. Per-poll timestamps were not retained, so the exact poll-by-poll order
+  is unknown.
+- Original diagnostic ZIP remains hash-verified at
+  `94fd5547af9633bce1518a5a33a4109ef5c92aae92544bad30a0adfdabb61e7c`.
+  Historical replay/readback made zero new model or market requests; no child
+  task was resubmitted; `trade_authorization=false`.
+- Verification: 124 focused Codex/OpenCode/runner/preflight tests passed;
+  `python -m researcher config validate` returned `VALID`. No native acceptance
+  or analytical-engine change is claimed.

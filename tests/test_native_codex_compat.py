@@ -197,6 +197,57 @@ class ObservedCodexCompatibility(unittest.TestCase):
                 with self.assertRaises(ContractError):self.f.get()
             self.f.parent[2]['payload']['thread_id']='PARENT'
 
+    def test_verified_session_settings_after_completion_do_not_invalidate_receipt(self):
+        self.f.child.append(self.f.record(4.5,'event_msg',{'type':'thread_settings_applied','thread_id':'CHILD',
+            'thread_settings':{'model':'gpt-6-luna','model_provider_id':'openai',
+                'reasoning_effort':'high','cwd':str(self.f.workspace)}}))
+        self.write()
+        raw,audit=self.f.get()
+        self.assertEqual(raw,self.f.raw)
+        self.assertEqual(audit['reply_validation_status'],'VALIDATED')
+        self.assertEqual(audit['model_requests'],1)
+
+    def test_post_completion_settings_can_omit_redundant_provider_field(self):
+        # The provider backend is independently bound to the persisted session;
+        # a compatible metadata envelope need not repeat that field.
+        self.f.child.append(self.f.record(4.5,'event_msg',{'type':'thread_settings_applied','thread_id':'CHILD',
+            'thread_settings':{'model':'gpt-6-luna','reasoning_effort':'high','cwd':str(self.f.workspace)}}))
+        self.write()
+        self.assertEqual(self.f.get()[1]['reply_validation_status'],'VALIDATED')
+
+    def test_post_completion_turn_activity_remains_rejected(self):
+        cases={
+            'duplicate_completion':self.f.record(4.5,'event_msg',{'type':'task_complete','turn_id':'CHILD_TURN',
+                'last_agent_message':self.f.raw}),
+            'same_turn_event':self.f.item(4.5,{'type':'AgentMessage','phase':'commentary',
+                'content':[{'type':'Text','text':'post-completion activity'}]}),
+            'modified_response':self.f.record(4.5,'response_item',{'type':'message','role':'assistant',
+                'phase':'final_answer','status':'completed','content':[{'type':'output_text','text':'forged'}]}),
+            'unauthorized_tool':self.f.record(4.5,'response_item',{'type':'function_call','name':'exec_command',
+                'call_id':'POST-COMPLETE','arguments':'{}'}),
+        }
+        for name,row in cases.items():
+            with self.subTest(name=name):
+                self.f.child.append(copy.deepcopy(row));self.write()
+                with self.assertRaises(ContractError):self.f.get()
+                self.f.child.pop()
+
+    def test_post_completion_settings_must_match_session_provider_model_and_workspace(self):
+        base={'type':'thread_settings_applied','thread_id':'CHILD','thread_settings':{
+            'model':'gpt-6-luna','model_provider_id':'openai','reasoning_effort':'high','cwd':str(self.f.workspace)}}
+        mutations={
+            'wrong_session':{**base,'thread_id':'OTHER'},
+            'turn_scoped':{**base,'turn_id':'CHILD_TURN'},
+            'wrong_model':{**base,'thread_settings':{**base['thread_settings'],'model':'other-model'}},
+            'wrong_provider':{**base,'thread_settings':{**base['thread_settings'],'model_provider_id':'other-provider'}},
+            'wrong_workspace':{**base,'thread_settings':{**base['thread_settings'],'cwd':str(self.f.root)}},
+        }
+        for name,payload in mutations.items():
+            with self.subTest(name=name):
+                self.f.child.append(self.f.record(4.5,'event_msg',payload));self.write()
+                with self.assertRaises(ContractError):self.f.get()
+                self.f.child.pop()
+
     def test_provider_db_model_and_review_context_workspace_are_verified(self):
         with sqlite3.connect(self.f.config['provider_db']) as db:db.execute("UPDATE threads SET model='switched' WHERE id='CHILD'")
         with self.assertRaisesRegex(ContractError,'MODEL_SWITCHED'):
