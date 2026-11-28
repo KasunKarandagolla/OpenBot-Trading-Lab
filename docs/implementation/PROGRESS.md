@@ -2694,3 +2694,34 @@ Starting commit: `a5fc19a0f927fefdc1d9a912a620b706ec1411e2`.
   provider request count to recover. All three saved ZIP hashes remain
   unchanged. Replays made zero market or model requests and did not resubmit a
   task. No owner-host native acceptance is claimed.
+
+## 2026-11-28 - Discovery-linked Shortlisting continuation receipt correction
+
+- For job `20261128T145255Z-6baf902e8c1d4f789a3b2c5d6e7f8091`, the retained
+  Shortlisting `start_task` call and acknowledgment use the same Codex
+  `response_item` / `event_msg` format as Discovery and match the exact saved
+  arguments and child task ID. The observer missed them because it scoped
+  `turn_records()` to the original identity turn; OpenBot had started a later
+  parent turn from the completed Discovery child exchange.
+- Reserved Shortlisting observation can now select that continuation only
+  when the saved Shortlisting request names the exact Discovery material, the
+  Discovery ticket and parent acknowledgment verify, the acknowledged child
+  is complete under the same provider/model, and one same-session continuation
+  contains its matching host exchange with no user-authored messages. The
+  original parent-turn path, exact request/task binding, ticket windows,
+  duplicate rejection and stage identity checks remain in force. No arbitrary
+  later turn is authorized.
+- Regression checks cover the verified continuation, an unlinked later turn,
+  and exact Discovery material selection. Verification: 17 native runtime
+  tests passed after the final code change; a sequential Linux run of the
+  runtime, app, compact native, handoff, dispatch-confirmation and Codex
+  compatibility suites passed 104 tests before the final additional provenance
+  checks.
+- Read-only replay: Discovery is `VERIFIED_RECEIPT` with two validated rows.
+  Shortlisting passes submission recognition but remains `REJECTED` at child
+  attestation with `NATIVE_UNAUTHORIZED_TOOL`; no receipt was manufactured.
+  The saved diagnostic archive remains hash-verified at
+  `3ac9bb3af2ddf86814b6eae6b96d6f7ed3415ffed1b6022f016c125d4c284973`, all
+  eleven state/report/archive/request/ticket hashes are unchanged, and the
+  original job remains `PARTIAL`. Replay made zero new model or market
+  requests; `trade_authorization=false`.

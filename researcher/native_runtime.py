@@ -224,7 +224,8 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
     if reserved:
         args,fingerprint,pages,ticket=load_dispatch(directory,request,as_of=as_of)
         submitted=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
-            reserved_at=ticket['reserved_at_utc'],require_configured_model=require_configured_model)
+            reserved_at=ticket['reserved_at_utc'],require_configured_model=require_configured_model,
+            continuation_request=request,directory=directory)
         verify_submission_window(submitted,ticket)
         if submitted['submission_state']!='ACKNOWLEDGED':
             # A provider record or app projection can publish after this read.

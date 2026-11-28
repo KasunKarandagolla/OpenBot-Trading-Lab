@@ -7,7 +7,7 @@ returned. Unknown schemas and every review tool operation fail closed.
 import json
 import re
 from datetime import timedelta
-from .contracts import ContractError, encode, utc
+from .contracts import ContractError, digest, encode, utc
 from .native_identity import (checked_path, local_path, path_key, provider_db,
     provider_database_path, ref, NativeEvidenceError)
 
@@ -565,14 +565,132 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
         'input_proof':'PROVIDER_ATTESTED_COMPLETE_INPUT_BYTES; NOT_A_CLAIM_ABOUT_HIDDEN_COGNITION'}
 
 
+def _shortlist_continuation(config, identity, binding, request_at, arguments, *, as_of,
+                            reserved_at, request, directory, require_configured_model):
+    """Resolve only a host continuation caused by this job's completed Discovery child."""
+    if (identity.get('provider')!='codex' or request is None or directory is None
+            or reserved_at is None or request.get('stage')!='SHORTLIST'
+            or not binding.get('completed_at') or utc(request_at)<=utc(binding['completed_at'])):
+        return None
+    from .agent_review import _material
+    from .native_handoff import load_dispatch, read_object, runner_review, verify_submission_window
+    from .native_identity import read_db, ref, under_work
+
+    directory=under_work(directory)
+    if not runner_review(directory):return None
+    material=request.get('material_sha256')
+    if (not isinstance(material,str) or digest(encode(_material(request)).encode())!=material
+            or request.get('native_identity')!=identity):
+        raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    saved=read_object(directory/(material+'.request.json'))
+    if encode(saved)!=encode(request):raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    shortlist_args,_,_,shortlist_ticket=load_dispatch(directory,request,as_of=as_of)
+    if shortlist_args!=arguments or utc(shortlist_ticket['reserved_at_utc'])!=utc(reserved_at):
+        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+
+    wanted_discovery_material=request.get('discovery_material_sha256')
+    if (not isinstance(wanted_discovery_material,str)
+            or re.fullmatch('[0-9a-f]{64}',wanted_discovery_material) is None):
+        return None
+    discoveries=[]
+    for path in sorted(directory.glob('*.request.json')):
+        saved_request=read_object(path)
+        if saved_request.get('stage')!='DISCOVERY':continue
+        candidate_material=saved_request.get('material_sha256')
+        if (path.name!=str(candidate_material)+'.request.json'
+                or not isinstance(candidate_material,str)
+                or digest(encode(_material(saved_request)).encode())!=candidate_material
+                or saved_request.get('native_identity')!=identity):
+            raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+        if candidate_material==wanted_discovery_material:
+            discoveries.append(saved_request)
+    if len(discoveries)!=1:return None
+    discovery=discoveries[0]
+    discovery_args,_,_,discovery_ticket=load_dispatch(directory,discovery,as_of=as_of)
+    discovery_result=observe_submission(config,identity,discovery['as_of_utc'],discovery_args,
+        as_of=as_of,reserved_at=discovery_ticket['reserved_at_utc'],
+        require_configured_model=require_configured_model)
+    verify_submission_window(discovery_result,discovery_ticket)
+    if (discovery_result.get('submission_state')!='ACKNOWLEDGED'
+            or utc(discovery_result['responded_at_utc'])>=utc(request_at)):
+        return None
+
+    expected_title=discovery_args['title']
+    with read_db(config['openbot_db']) as db:
+        children=db.execute('''SELECT thread_id,agent_id,created_at FROM projection_agent_threads
+          WHERE agent_id=? AND origin='agent' AND title=?''',
+          (identity['agent_id'],expected_title)).fetchall()
+        if len(children)!=1:return None
+        child_thread,child_agent,child_created=children[0]
+        if (ref(child_thread)!=discovery_result.get('acknowledged_task_ref')
+                or utc(child_created)<utc(discovery['as_of_utc'])
+                or utc(child_created)>utc(discovery_result['responded_at_utc'])):
+            return None
+        child_turns=db.execute('''SELECT t.status,t.started_at,t.completed_at,p.provider,p.model,
+            p.thread_id,p.external_session_id
+          FROM projection_turns t LEFT JOIN projection_provider_sessions p
+            ON p.id=t.provider_session_id
+          WHERE t.thread_id=? ORDER BY t.started_at''',(child_thread,)).fetchall()
+        if (not child_turns or any(status!='completed' or not started or not completed
+                or provider!=identity['provider'] or model!=identity['model'] or thread!=child_thread
+                or not external
+                or utc(child_created)>utc(started) or utc(completed)>utc(as_of)
+                for status,started,completed,provider,model,thread,external in child_turns)
+                or len({external for *_,external in child_turns})!=1):
+            return None
+        child_completed=max(utc(completed) for _,_,completed,_,_,_,_ in child_turns)
+        parent_turns=db.execute('''SELECT t.turn_id,t.started_at,t.completed_at,t.status,
+            p.external_session_id,p.model,p.provider,p.thread_id
+          FROM projection_turns t JOIN projection_provider_sessions p
+            ON p.id=t.provider_session_id
+          WHERE t.thread_id=? AND t.provider_session_id=?''',
+          (binding['thread'],binding['session_id'])).fetchall()
+        candidates=[]
+        for turn,started,completed,status,external,model,provider,thread in parent_turns:
+            if (turn==binding['turn'] or thread!=binding['thread']
+                    or external!=binding['external'] or model!=identity['model']
+                    or provider!='codex' or status not in {'running','completed'}
+                    or utc(started)<=utc(binding['completed_at'])
+                    or utc(started)>utc(request_at)
+                    or status=='completed' and not completed
+                    or completed is not None and utc(completed)>utc(as_of)):
+                continue
+            exchanges=db.execute('''SELECT created_at,message_json FROM projection_thread_messages
+              WHERE thread_id=? AND turn_id=? AND author='agent' AND item_type='agent-exchange'
+                AND status='completed' ORDER BY ordinal''',(binding['thread'],turn)).fetchall()
+            if len(exchanges)!=1:continue
+            created,message=exchanges[0]
+            if (db.execute('''SELECT 1 FROM projection_thread_messages
+                  WHERE thread_id=? AND turn_id=? AND author='user' LIMIT 1''',
+                  (binding['thread'],turn)).fetchone() is not None
+                    or utc(created)<child_completed or utc(created)>utc(started)
+                    or utc(created)>utc(request_at)):
+                continue
+            try:envelope=json.loads(message,object_pairs_hook=_pairs)
+            except (ValueError,TypeError):continue
+            exchange=envelope.get('exchange') if isinstance(envelope,dict) else None
+            if (not isinstance(exchange,dict) or exchange.get('senderTaskId')!=child_thread
+                    or exchange.get('senderAgentId')!=child_agent):
+                continue
+            candidates.append({'turn':turn,'started_at':started,'completed_at':completed})
+    return candidates[0] if len(candidates)==1 else None
+
+
 def observe_submission(config, identity, request_at, arguments, *, as_of, reserved_at=None,
-                       require_configured_model=True):
+                       require_configured_model=True, continuation_request=None, directory=None):
     """Observe the scoped native call and response without performing either."""
     from .native_identity import parent_binding
     from .native_handoff import start_task_argument_binding, start_task_belongs_to_request
     binding=parent_binding(identity,config,require_configured_model=require_configured_model,as_of=as_of)
     session,turn,start=binding['external'],binding['turn'],binding['started_at']
     end=min(utc(as_of),utc(binding['completed_at'])) if binding['completed_at'] else utc(as_of)
+    if reserved_at is not None and continuation_request is not None:
+        continuation=_shortlist_continuation(config,identity,binding,request_at,arguments,
+            as_of=as_of,reserved_at=reserved_at,request=continuation_request,directory=directory,
+            require_configured_model=require_configured_model)
+        if continuation is not None:
+            turn,start=continuation['turn'],continuation['started_at']
+            end=min(utc(as_of),utc(continuation['completed_at'])) if continuation['completed_at'] else utc(as_of)
     context=False;started={};completed=[]
     for x in turn_records(config,session,turn,config['agent_workspace'],start=utc(start)-timedelta(seconds=1),end=end,backend=identity.get('provider_backend')):
         p=x['payload']

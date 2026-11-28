@@ -296,8 +296,11 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
         if utc(read_object(lease).get('reserved_at_utc'))>utc(as_of):
             return {**missing,'handoff_observation':'SUBMISSION_NOT_OBSERVED'}
         args,_,_,ticket=load_dispatch(directory,request,as_of=as_of)
-        result=submission(config,identity,request['as_of_utc'],args,as_of=as_of,
-            reserved_at=ticket['reserved_at_utc'],require_configured_model=require_configured_model)
+        options={'reserved_at':ticket['reserved_at_utc'],
+            'require_configured_model':require_configured_model}
+        if identity.get('provider')=='codex':
+            options.update(continuation_request=request,directory=directory)
+        result=submission(config,identity,request['as_of_utc'],args,as_of=as_of,**options)
         verify_submission_window(result,ticket)
         result['reserved_at_utc']=ticket['reserved_at_utc']
     else:

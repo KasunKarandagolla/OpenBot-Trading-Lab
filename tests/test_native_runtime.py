@@ -1,7 +1,9 @@
 """Controlled storage fixtures, zero live scans/model invocations."""
 import copy
+import gc
 import json
 from pathlib import Path
+import shutil
 import sqlite3
 from tempfile import TemporaryDirectory
 from datetime import timedelta
@@ -43,11 +45,13 @@ class CodexRuntimeFixtures(unittest.TestCase):
             db.execute('INSERT INTO projection_turns VALUES(?,?,?,?,?,?)',('PARENT_TURN','MAIN','PARENT_SESSION','running',self.time(-10),None))
             db.execute('INSERT INTO projection_deliveries VALUES(?,?,?)',('PARENT_TURN','AGENT','OWNER'))
             db.execute('INSERT INTO projection_mailbox_messages VALUES(?,?,?)',('OWNER','Run the complete market research now.','user'))
+        db.close()
         sessions=self.root/'sessions';sessions.mkdir()
         with sqlite3.connect(self.config['provider_db']) as db:
             db.execute('CREATE TABLE threads(id,rollout_path,cwd,model_provider,model)')
             for name in ('PARENT','CHILD'):db.execute('INSERT INTO threads VALUES(?,?,?,?,?)',
                 (name,str(sessions/(name+'.jsonl')),str(self.workspace),'openai','gpt-6-luna'))
+        db.close()
         self.identity=active_identity(self.config)
         self.request=make_request([self.card],self.facts,as_of=self.at,skill_sha256=digest(skill.read_bytes()),native_identity=self.identity)
         self.key=self.request['material_sha256'];self.brief=review_brief(self.request)
@@ -62,6 +66,7 @@ class CodexRuntimeFixtures(unittest.TestCase):
             db.execute('INSERT INTO projection_turns VALUES(?,?,?,?,?,?)',('CHILD_TURN','CHILD_THREAD','CHILD_SESSION','completed',self.time(2),self.time(4)))
             db.execute('INSERT INTO projection_thread_messages VALUES(?,?,?,?,?,?,?,?)',('CHILD_THREAD','CHILD_TURN','agent',None,'completed',self.time(1),0,encode({'text':self.brief})))
             db.execute('INSERT INTO projection_thread_messages VALUES(?,?,?,?,?,?,?,?)',('CHILD_THREAD','CHILD_TURN','assistant','final_answer','completed',self.time(4),1,encode({'text':self.raw})))
+        db.close()
         self.parent=[self.record(-10,'session_meta',{'id':'PARENT','originator':'openbot','model_provider':'openai','cli_version':'0.169.0','cwd':str(self.workspace)}),
             self.record(-10,'turn_context',{'turn_id':'PARENT_TURN','model':'gpt-6-luna'}),
             self.record(1,'event_msg',{'type':'item_completed','turn_id':'PARENT_TURN','thread_id':'PARENT','item':{
@@ -75,6 +80,7 @@ class CodexRuntimeFixtures(unittest.TestCase):
             self.item(4,{'type':'AgentMessage','phase':'final_answer','content':[{'type':'Text','text':self.raw}]}),
             self.record(4,'event_msg',{'type':'task_complete','turn_id':'CHILD_TURN','last_agent_message':self.raw})]
         self.write()
+        self.addCleanup(gc.collect)
 
     def record(self,n,kind,payload):return {'timestamp':self.time(n),'type':kind,'payload':payload}
     def item(self,n,item):return self.record(n,'event_msg',{'type':'item_completed','turn_id':'CHILD_TURN','thread_id':'CHILD','item':item})
@@ -82,6 +88,104 @@ class CodexRuntimeFixtures(unittest.TestCase):
         for name,rows in [('PARENT',self.parent),('CHILD',self.child)]:
             (self.root/'sessions'/(name+'.jsonl')).write_text(''.join(json.dumps(r)+'\n' for r in rows),encoding='utf-8')
     def get(self):return collect(self.request,self.config,as_of=self.time(5))
+
+    def _continuation_fixture(self, *, linked=True):
+        from researcher.agent_review import _material
+        from researcher.native_handoff import packet,request_dispatch_policy
+        from researcher.native_identity import ref
+        from researcher.contracts import digest
+
+        job_root=ROOT/'work'/'jobs'/('20261128T145255Z-'+digest(str(self.root).encode())[:32])
+        folder=job_root/'review';folder.mkdir(parents=True,exist_ok=True)
+        self.addCleanup(shutil.rmtree,job_root,True)
+        def request(stage,at,discovery=None):
+            value=copy.deepcopy(self.request);value['stage']=stage;value['as_of_utc']=self.time(at)
+            if discovery is not None:value['discovery_material_sha256']=discovery
+            value['material_sha256']=digest(encode(_material(value)).encode())
+            (folder/(value['material_sha256']+'.request.json')).write_text(encode(value),encoding='utf-8')
+            return value
+        discovery=request('DISCOVERY',-3)
+        shortlist=request('SHORTLIST',1,discovery['material_sha256'])
+
+        def dispatch(value,published,reserved):
+            args,fingerprint,pages=packet(value,folder)
+            material=value['material_sha256']
+            (folder/(material+'.review-task.json')).write_bytes(encode(args).encode())
+            ticket={'material_sha256':material,
+                'arguments_sha256':digest(encode(args).encode()),'packet_sha256':fingerprint,
+                'evidence_pages':len(pages),'submission_policy':request_dispatch_policy(value),
+                'published_at_utc':self.time(published),'reserved_at_utc':self.time(reserved)}
+            if value.get('dispatch_reservation_policy'):
+                ticket['reserved_monotonic']=1.0
+            (folder/(material+'.dispatch.json')).write_text(encode(ticket),encoding='utf-8')
+            return args,ticket
+        dargs,dticket=dispatch(discovery,-2.9,-2.85)
+        sargs,sticket=dispatch(shortlist,1.1,1.2)
+
+        def provider_call(turn,call_id,at,args,task_id):
+            envelope={'name':'openbot.start_task','arguments':args}
+            return [self.record(at,'response_item',{'type':'function_call','call_id':call_id,
+                    'name':'tool_call','namespace':'openbot','arguments':envelope}),
+                self.record(at+.1,'event_msg',{'type':'item_completed','turn_id':turn,'thread_id':'PARENT',
+                    'item':{'type':'DynamicToolCall','tool':'tool_call','namespace':'openbot','id':call_id,
+                        'status':'completed','success':True,'arguments':envelope,
+                        'content_items':[{'type':'inputText','text':encode({'title':args['title'],'taskId':task_id})}]}})]
+        self.parent=[self.record(-10,'session_meta',{'id':'PARENT','originator':'openbot','model_provider':'openai',
+                'cli_version':'0.169.0','cwd':str(self.workspace)}),
+            self.record(-10,'turn_context',{'turn_id':'PARENT_TURN','model':'gpt-6-luna'}),
+            *provider_call('PARENT_TURN','DISCOVERY_CALL',-2.8,dargs,'DISCOVERY_THREAD'),
+            self.record(0,'turn_context',{'turn_id':'CONTINUATION_TURN','model':'gpt-6-luna'}),
+            *provider_call('CONTINUATION_TURN','SHORTLIST_CALL',1.5,sargs,'SHORTLIST_THREAD')]
+        with sqlite3.connect(self.config['openbot_db']) as db:
+            db.execute("UPDATE projection_turns SET status='completed',completed_at=? WHERE turn_id='PARENT_TURN'",
+                (self.time(-1),))
+            db.execute('INSERT INTO projection_turns VALUES(?,?,?,?,?,?)',
+                ('CONTINUATION_TURN','MAIN','PARENT_SESSION','completed',self.time(0),self.time(5)))
+            db.execute('INSERT INTO projection_agent_threads VALUES(?,?,?,?,?)',
+                ('DISCOVERY_THREAD','AGENT','agent',dargs['title'],self.time(-2.7)))
+            db.execute('INSERT INTO projection_provider_sessions VALUES(?,?,?,?,?,?)',
+                ('DISCOVERY_SESSION','DISCOVERY_THREAD','codex','DISCOVERY','gpt-6-luna','active'))
+            db.execute('INSERT INTO projection_turns VALUES(?,?,?,?,?,?)',
+                ('DISCOVERY_CHILD_TURN','DISCOVERY_THREAD','DISCOVERY_SESSION','completed',self.time(-2.5),self.time(-2.2)))
+            db.execute('INSERT INTO projection_agent_threads VALUES(?,?,?,?,?)',
+                ('SHORTLIST_THREAD','AGENT','agent',sargs['title'],self.time(1.55)))
+            db.execute('INSERT INTO projection_provider_sessions VALUES(?,?,?,?,?,?)',
+                ('SHORTLIST_SESSION','SHORTLIST_THREAD','codex','SHORTLIST','gpt-6-luna','active'))
+            db.execute('INSERT INTO projection_turns VALUES(?,?,?,?,?,?)',
+                ('SHORTLIST_CHILD_TURN','SHORTLIST_THREAD','SHORTLIST_SESSION','completed',self.time(1.7),self.time(2)))
+            if linked:
+                db.execute('INSERT INTO projection_thread_messages VALUES(?,?,?,?,?,?,?,?)',
+                    ('MAIN','CONTINUATION_TURN','agent','agent-exchange','completed',self.time(-.5),0,
+                     encode({'exchange':{'senderTaskId':'DISCOVERY_THREAD','senderAgentId':'AGENT'}})))
+        db.close()
+        self.write()
+        return folder,discovery,shortlist,dargs,sargs,dticket,sticket
+
+    def test_verified_discovery_child_continuation_recognizes_shortlist_submission(self):
+        from researcher.native_identity import ref
+        from researcher.agent_review import _material
+        from researcher.contracts import digest
+        folder,discovery,shortlist,_,sargs,_,sticket=self._continuation_fixture()
+        other=copy.deepcopy(discovery);other['review_batch_index']=2
+        other['material_sha256']=digest(encode(_material(other)).encode())
+        (folder/(other['material_sha256']+'.request.json')).write_text(encode(other),encoding='utf-8')
+        observed=observe_submission(self.config,self.identity,shortlist['as_of_utc'],sargs,
+            as_of=self.time(5),reserved_at=sticket['reserved_at_utc'],
+            continuation_request=shortlist,directory=folder)
+        self.assertEqual(observed['submission_state'],'ACKNOWLEDGED')
+        self.assertEqual(observed['acknowledged_task_ref'],ref('SHORTLIST_THREAD'))
+        from researcher.native_app import observe_handoff
+        handoff=observe_handoff(self.config,identity=self.identity,directory=folder,
+            material=shortlist['material_sha256'],as_of=self.time(5))
+        self.assertEqual(handoff['handoff_observation'],'VERIFIED')
+        self.assertTrue(handoff['task_created'])
+
+    def test_unlinked_later_turn_cannot_authorize_shortlist_submission(self):
+        folder,_,shortlist,_,sargs,_,sticket=self._continuation_fixture(linked=False)
+        observed=observe_submission(self.config,self.identity,shortlist['as_of_utc'],sargs,
+            as_of=self.time(5),reserved_at=sticket['reserved_at_utc'],
+            continuation_request=shortlist,directory=folder)
+        self.assertEqual(observed['submission_state'],'NOT_OBSERVED')
 
     def test_codex_parent_argument_accepts_only_openbot_schema_trim(self):
         arguments={'title':'OPENBOT-RESEARCH-'+self.key,'brief':self.brief}
