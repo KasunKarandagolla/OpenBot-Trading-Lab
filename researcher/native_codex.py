@@ -107,8 +107,11 @@ def review_brief(request):
         guidance = GUIDANCE.read_bytes()
         if digest(guidance) != request['guidance_sha256']:
             raise ContractError('AGENT_SKILL_HASH')
+        binding_instruction = ('For this request, omit material_sha256 from the reply; the host binds your reply '
+            'to the exact immutable task, stage and evidence packet. Do not copy or calculate hashes.\n') \
+            if request.get('reply_binding_policy') == 'SERVER_BOUND_MATERIAL_V1' else ''
         brief = (f"OPENBOT-RESEARCH-{request['material_sha256']}\n"
-            + guidance.decode('utf-8') + '\n<canonical-request>\n'
+            + guidance.decode('utf-8') + '\n' + binding_instruction + '<canonical-request>\n'
             + encode(request, compact=True) + '\n</canonical-request>')
         if not 0 < request['max_input_bytes'] <= MAX_BRIEF_BYTES or len(brief.encode()) > request['max_input_bytes']:
             raise ContractError('AGENT_INPUT_SIZE')
@@ -323,7 +326,7 @@ def _code_mode_item(record,turn,item_ids,fields):
     if (record['_schema_variant']!='CODEX_0169_ORDINAL' or set(payload)!=_CODE_MODE_FIELDS|fields
             or not isinstance(item_id,str) or not item_id or item_id in item_ids
             or not isinstance(call_id,str) or not call_id
-            or not isinstance(metadata,dict) or set(metadata)!={'turn_id','create_time'}
+            or not isinstance(metadata,dict) or not {'turn_id','create_time'}<=set(metadata)
             or metadata['turn_id']!=turn or type(metadata['create_time']) not in {int,float}
             or not 0<metadata['create_time']<=utc(record['timestamp']).timestamp()+.001):
         raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
@@ -331,38 +334,69 @@ def _code_mode_item(record,turn,item_ids,fields):
     return call_id
 
 
-def _code_mode_command(payload):
+def _code_mode_command(payload, *, with_options=False):
     script=payload.get('input')
     if (payload.get('name')!='exec' or payload.get('status')!='completed'
             or not isinstance(script,str) or len(script)>8192):
         raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
-    # Allow formatting whitespace in the observed wrapper and decode only its literal command.
-    # Neither JavaScript nor the decoded command is executed by the reader.
-    prefix=_PAGE_SCRIPT_PREFIX.match(script)
-    if prefix is None or not script.startswith('"',prefix.end()):
-        raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+    # Parse only the one permitted Code Mode call. Property order and harmless
+    # whitespace are normalized; expressions, comments and additional code fail.
+    prefix=re.match(r'\s*(?:const|let)\s+r\s*=\s*await\s+tools\.exec_command\s*\(\s*\{\s*',script)
+    suffix=re.compile(r'\s*\)\s*;\s*text\s*\(\s*r\.output\s*\)\s*;?\s*')
+    if prefix is None:raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+    i=prefix.end();values={};decoder=json.JSONDecoder()
     try:
-        command,offset=json.JSONDecoder().raw_decode(script,prefix.end())
-    except (ValueError,RecursionError):
-        raise ContractError('NATIVE_UNAUTHORIZED_TOOL') from None
-    if _PAGE_SCRIPT_SUFFIX.fullmatch(script,offset) is None:
+        while i<len(script):
+            while i<len(script) and script[i].isspace():i+=1
+            if i<len(script) and script[i]=='}':break
+            keymatch=re.match(r'[A-Za-z_$][A-Za-z0-9_$]*',script[i:])
+            if keymatch is None:raise ValueError()
+            key=keymatch.group();i+=len(keymatch.group())
+            while i<len(script) and script[i].isspace():i+=1
+            if i>=len(script) or script[i]!=':':raise ValueError()
+            i+=1
+            while i<len(script) and script[i].isspace():i+=1
+            if key=='cmd':value,i=decoder.raw_decode(script,i)
+            else:
+                match=re.match(r'(?:false|true|[0-9]+)',script[i:])
+                if match is None:raise ValueError()
+                value=json.loads(match.group());i+=len(match.group())
+            if key in values:raise ValueError()
+            values[key]=value
+            while i<len(script) and script[i].isspace():i+=1
+            if i<len(script) and script[i]==',':i+=1;continue
+            if i<len(script) and script[i]=='}':break
+            raise ValueError()
+        if i>=len(script) or script[i]!='}' or suffix.fullmatch(script[i+1:]) is None:raise ValueError()
+    except (ValueError,RecursionError):raise ContractError('NATIVE_UNAUTHORIZED_TOOL') from None
+    if (set(values) not in ({'cmd','login','max_output_tokens'},
+            {'cmd','login','max_output_tokens','yield_time_ms'})
+            or not isinstance(values['cmd'],str) or values['login'] is not False
+            or type(values['max_output_tokens']) is not int or values['max_output_tokens']!=16000
+            or ('yield_time_ms' in values and (type(values['yield_time_ms']) is not int or values['yield_time_ms']!=30000))):
         raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
-    return command
+    return (values['cmd'],values) if with_options else values['cmd']
 
 
 def _code_mode_output_matches(payload,page):
     output=payload.get('output')
+    header=output[0]['text'].replace('\r\n','\n') if isinstance(output,list) and output and isinstance(output[0],dict) and isinstance(output[0].get('text'),str) else ''
+    header_pattern=re.compile(r'Script completed\nWall time [0-9]+(?:\.[0-9]+)? seconds\nOutput:\n')
     return (isinstance(output,list) and len(output)==2
         and all(isinstance(part,dict) and set(part)=={'type','text'} and part['type']=='input_text'
                 and isinstance(part['text'],str) for part in output)
-        and _CODE_MODE_HEADER.fullmatch(output[0]['text']) is not None and output[1]['text']==page)
+        and header_pattern.fullmatch(header) is not None and output[1]['text']==page)
 
 
 def attest(config,session,turn,*,model,workspace,start,end,expected_input,expected_reply,backend=None,
-           evidence=None,require_thread_model=True):
+           evidence=None,require_thread_model=True,execution_observation=None):
     """Attest the bound turn, exact task brief, permitted evidence reads and final."""
     from .native_handoff import command_page
     rows=list(turn_records(config,session,turn,workspace,start=utc(start)-timedelta(seconds=1),end=utc(end)+timedelta(seconds=1),backend=backend))
+    if execution_observation is not None:
+        execution_observation.append(any(row['type']=='response_item' and row['payload'].get('type') in {
+            'message','function_call','custom_tool_call','local_shell_call','web_search_call','computer_call'}
+            for row in rows))
     if require_thread_model:
         with provider_db(config,'codex') as db:
             actual=db.execute('SELECT model FROM threads WHERE id=?',(session,)).fetchone()
@@ -370,7 +404,11 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
     context=False;began=False;ended=False;inputs=[];finals=[];responses=set();usage=[]
     calls={};completed=set();delivered=set()
     code_items=set();command_ids=set();pending_code=None
-    if evidence is not None:directory,material,command_fingerprint,pages,bounded_wait=evidence
+    if evidence is not None:
+        directory,material,command_fingerprint,pages,bounded_wait=evidence[:5]
+        stage=evidence[5] if len(evidence)>5 else None
+        batch_index=evidence[6] if len(evidence)>6 else 1
+    else:stage=None;batch_index=1
     for x in rows:
         p=x['payload'];kind=x['type'];typ=p.get('type')
         variant=x['_schema_variant']
@@ -383,11 +421,15 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                 if not inputs or finals or pending_code is not None or (calls and not code_items):
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 call_id=_code_mode_item(x,turn,code_items,{'name','status','input'})
-                command=_code_mode_command(p)
-                if bounded_wait and not re.search(r',[ \t\r\n]*yield_time_ms:[ \t\r\n]*30000[ \t\r\n]*\}',p['input']):
+                command,options=_code_mode_command(p,with_options=True)
+                if bounded_wait and options.get('yield_time_ms')!=30000:
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
-                page=command_page({'command':['powershell.exe','-Command',command]},directory,material,command_fingerprint)
-                if call_id in calls or page is None or not 1<=page<=len(pages) or page in calls.values():
+                page=command_page({'command':['powershell.exe','-Command',command]},directory,material,command_fingerprint,
+                    stage=stage,batch_index=batch_index)
+                if stage is not None and page is not None and not 1<=page<=len(pages):
+                    raise ContractError('NATIVE_PAGE_BINDING_INVALID')
+                if call_id in calls or page is None or page in calls.values() or (
+                        stage is None and not 1<=page<=len(pages)):
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 if page!=len(delivered)+1:raise ContractError('NATIVE_READ_INCOMPLETE')
                 calls[call_id]=page
@@ -414,8 +456,11 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 # Validate the literal command before associating the result. The
                 # completed event must also attest what the shell actually ran.
-                page=command_page({'command':['powershell.exe','-Command',args['cmd']]},directory,material,command_fingerprint)
-                if page is None or not 1<=page<=len(pages) or page in calls.values():
+                page=command_page({'command':['powershell.exe','-Command',args['cmd']]},directory,material,command_fingerprint,
+                    stage=stage,batch_index=batch_index)
+                if stage is not None and page is not None and not 1<=page<=len(pages):
+                    raise ContractError('NATIVE_PAGE_BINDING_INVALID')
+                if page is None or page in calls.values() or (stage is None and not 1<=page<=len(pages)):
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 if command_fingerprint is None and page!=len(delivered)+1:
                     raise ContractError('NATIVE_READ_INCOMPLETE')
@@ -470,7 +515,8 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                     call_id=pending_code[0] if pending_code is not None else item_id
                     page=calls.get(call_id)
                     if (page is None or call_id in completed
-                            or command_page(item,directory,material,command_fingerprint)!=page):
+                            or command_page(item,directory,material,command_fingerprint,
+                                stage=stage,batch_index=batch_index)!=page):
                         raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                     output=item.get('aggregated_output')
                     if pending_code is not None:

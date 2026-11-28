@@ -17,7 +17,7 @@ from researcher.agent_review import AGENT, REPLY, _material
 from researcher.contracts import ContractError, digest, encode, utc
 from researcher.native_codex import review_brief
 from researcher.native_handoff import (
-    COMPACT_PAGES, COMPACT_SUBMISSION_POLICY, packet, wsl_root,
+    COMPACT_PAGES, COMPACT_SUBMISSION_POLICY, STAGE_BOUND_PAGE_COMMANDS, packet, wsl_root,
 )
 from researcher.native_identity import active_identity, parent_binding, ref
 from researcher.native_opencode import (
@@ -116,7 +116,6 @@ class OpenCodeFixture(unittest.TestCase):
         self.assertEqual(self.identity['effort'], VARIANT)
         self.request = self._ai_request()
         self.reply = {'schema_version': ai_core.REPLY,
-                      'material_sha256': self.request['material_sha256'],
                       'stage': ai_core.DISCOVERY, 'trade_authorization': False,
                       'rows': [{'row_id': 'SYN-ROW', 'family': 'F5', 'method': 'M05',
                                 'direction': 'BULLISH', 'stage': 'EARLY',
@@ -150,6 +149,8 @@ class OpenCodeFixture(unittest.TestCase):
             'skill_sha256': digest(skill), 'guidance_sha256': digest(guidance),
             'max_input_bytes': ai_core.MAX_BRIEF_BYTES, 'model': MODEL,
             'dispatch_reservation_policy': COMPACT_SUBMISSION_POLICY,
+            'page_command_policy':STAGE_BOUND_PAGE_COMMANDS,
+            'reply_binding_policy':'SERVER_BOUND_MATERIAL_V1','review_batch_index':1,
             'question_limit': 6, 'card_limit': 10, 'horizon_hours': 15,
             'closed_history_methods': sorted(ai_core.CLOSED_METHODS),
             'registry': [], 'families': [], 'trade_authorization': False,
@@ -369,7 +370,8 @@ class OpenCodeFixture(unittest.TestCase):
         return commands
 
     def page_command(self, number, output):
-        return (_page_command(self.directory, self.request['material_sha256'], number),
+        return (_page_command(self.directory, self.request['material_sha256'], number,
+                              stage=self.request['stage'],batch_index=self.request['review_batch_index']),
                 output)
 
     def _reset_child(self):
@@ -688,7 +690,8 @@ class ChildContract(OpenCodeFixture):
                       end=self.end, expected_input=self.args['brief'],
                       expected_reply=self.raw, backend='opencode',
                       evidence=(self.directory, self.request['material_sha256'],
-                                self.pages), effort=VARIANT)
+                                self.pages, None, False, self.request['stage'],
+                                self.request.get('review_batch_index',1)), effort=VARIANT)
 
     def test_exact_ordered_pages_and_final_text_are_attested(self):
         self.child()
@@ -791,11 +794,10 @@ class CollectContract(OpenCodeFixture):
         self._submission(self.time(1), args)
         return request, raw
 
-    def compact(self):
+    def compact(self, command_transform=None):
         self.request['input_transport'] = COMPACT_PAGES
         self.request['dispatch_reservation_policy'] = COMPACT_SUBMISSION_POLICY
         self.request['material_sha256'] = digest(encode(_material(self.request)).encode())
-        self.reply['material_sha256'] = self.request['material_sha256']
         self.raw = encode(self.reply)
         args, fingerprint, pages = packet(self.request, self.directory)
         ticket = {'material_sha256': self.request['material_sha256'],
@@ -803,6 +805,7 @@ class CollectContract(OpenCodeFixture):
                   'packet_sha256': fingerprint,
                   'evidence_pages': len(pages),
                   'submission_policy': COMPACT_SUBMISSION_POLICY,
+                  'review_stage':self.request['stage'],'review_batch_index':self.request['review_batch_index'],
                   'published_at_utc': self.time(5),
                   'reserved_at_utc': self.time(6)}
         (self.directory / (self.request['material_sha256'] + '.review-task.json')).write_text(
@@ -812,8 +815,10 @@ class CollectContract(OpenCodeFixture):
         start = self.time(8)
         end = self.time(8 + len(pages) + 1)
         self._child_session()
-        self._child_messages(args['brief'], self.raw, start, end,
-                             self.page_commands(pages))
+        commands=self.page_commands(pages)
+        if command_transform is not None:
+            commands=[(command_transform(command),output) for command,output in commands]
+        self._child_messages(args['brief'], self.raw, start, end, commands)
         self._child_projection(args['brief'], self.raw, self.time(7), start, end)
         self._submission(self.time(7), args)
         return args, fingerprint, pages, ticket
@@ -840,8 +845,10 @@ class CollectContract(OpenCodeFixture):
             db.execute('UPDATE session_part SET data=? WHERE session_id=? '
                        'AND message_id=? AND ordinal=?',
                        (encode(payload), CHILD_EXTERNAL, mid, ordinal))
-        self.assert_code('NATIVE_REPLY_PROVENANCE', collect, request,
-                         self.config, as_of=self.time(10))
+        with self.assertRaisesRegex(ContractError,'^NATIVE_REPLY_PROVENANCE$') as caught:
+            collect(request,self.config,as_of=self.time(10))
+        self.assertTrue(caught.exception.model_execution_observed)
+        self.assertEqual(getattr(caught.exception,'verified_model_requests',0),0)
 
     def test_configured_model_change_after_start_is_rejected(self):
         request, raw = self.inline()
@@ -866,13 +873,48 @@ class CollectContract(OpenCodeFixture):
                          self.config, as_of=self.time(10))
 
     def test_compact_ticket_pages_and_acknowledgment_are_bound(self):
-        _, _, pages, _ = self.compact()
+        args, _, pages, _ = self.compact()
+        command=next(line for line in args['brief'].splitlines() if line.startswith('wsl.exe '))
+        self.assertIn('--stage DISCOVERY --batch-index 1',command)
+        self.assertNotIn(self.request['material_sha256'],command)
+        self.assertNotIn('--packet-sha256',command)
+        self.assertIn('Python verifies page identity, packet integrity and complete byte delivery.',args['brief'])
         raw, audit = collect(self.request, self.config, as_of=self.time(30),
                              directory=self.directory)
         self.assertEqual(raw, self.raw)
         self.assertEqual(audit['verified_evidence_pages'], len(pages))
         self.assertEqual(audit['parent_delivery'],
                          'EXACT_TASK_ARGUMENTS_IN_PROVIDER_RECORD')
+        self.assertTrue(audit['model_execution_observed'])
+        self.assertEqual(audit['verified_model_requests'], audit['model_requests'])
+        self.assertNotIn('material_sha256', self.reply)
+
+    def test_compact_accepts_equivalent_shell_spacing_and_option_order(self):
+        import shlex
+        def normalize(command):
+            tokens=shlex.split(command)
+            prefix=tokens[:8]
+            options=tokens[8:]
+            pairs=list(zip(options[::2],options[1::2]))
+            pairs=[pairs[index] for index in (1,3,0,2)]
+            return '  '.join(shlex.quote(token) for token in prefix+[item for pair in pairs for item in pair])
+        self.compact(command_transform=normalize)
+        raw,audit=collect(self.request,self.config,as_of=self.time(30),directory=self.directory)
+        self.assertEqual(raw,self.raw)
+        self.assertEqual(audit['verified_evidence_pages'],len(packet(self.request,self.directory)[2]))
+
+    def test_compact_malformed_stage_binding_has_a_specific_diagnostic(self):
+        def wrong_stage(command):
+            return command.replace('--stage DISCOVERY','--stage SHORTLIST')
+        self.compact(command_transform=wrong_stage)
+        with self.assertRaisesRegex(ContractError,'^NATIVE_PAGE_BINDING_INVALID$') as caught:
+            collect(self.request,self.config,as_of=self.time(30),directory=self.directory)
+        self.assertTrue(caught.exception.model_execution_observed)
+
+    def test_compact_additional_shell_command_remains_unauthorized(self):
+        self.compact(command_transform=lambda command:command+'; echo forged')
+        with self.assertRaisesRegex(ContractError,'^NATIVE_UNAUTHORIZED_TOOL$'):
+            collect(self.request,self.config,as_of=self.time(30),directory=self.directory)
 
     def test_compact_ticket_with_wrong_packet_fails(self):
         args, _, pages, ticket = self.compact()
@@ -882,11 +924,19 @@ class CollectContract(OpenCodeFixture):
         self.assert_code('NATIVE_HANDOFF_UNATTESTED', collect, self.request,
                          self.config, as_of=self.time(30), directory=self.directory)
 
+    def test_compact_ticket_with_wrong_review_stage_fails(self):
+        self.compact()
+        path=self.directory/(self.request['material_sha256']+'.dispatch.json')
+        ticket=json.loads(path.read_text(encoding='utf-8'))
+        ticket['review_stage']='SHORTLIST'
+        path.write_text(encode(ticket),encoding='utf-8')
+        self.assert_code('NATIVE_HANDOFF_UNATTESTED',collect,self.request,
+            self.config,as_of=self.time(30),directory=self.directory)
+
     def test_compact_modified_page_fails(self):
         self.request['input_transport'] = COMPACT_PAGES
         self.request['dispatch_reservation_policy'] = COMPACT_SUBMISSION_POLICY
         self.request['material_sha256'] = digest(encode(_material(self.request)).encode())
-        self.reply['material_sha256'] = self.request['material_sha256']
         self.raw = encode(self.reply)
         args, fingerprint, pages = packet(self.request, self.directory)
         ticket = {'material_sha256': self.request['material_sha256'],
@@ -894,6 +944,7 @@ class CollectContract(OpenCodeFixture):
                   'packet_sha256': fingerprint,
                   'evidence_pages': len(pages),
                   'submission_policy': COMPACT_SUBMISSION_POLICY,
+                  'review_stage':self.request['stage'],'review_batch_index':self.request['review_batch_index'],
                   'published_at_utc': self.time(5),
                   'reserved_at_utc': self.time(6)}
         (self.directory / (self.request['material_sha256'] + '.review-task.json')).write_text(

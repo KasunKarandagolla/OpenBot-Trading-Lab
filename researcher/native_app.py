@@ -332,7 +332,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
     if type(wait_seconds) is not int or not 0<=wait_seconds<=600:raise ContractError('NATIVE_AGENT_AUDIT_REQUIRED')
     clock=clock or (lambda:datetime.now(timezone.utc).isoformat())
     began=time.monotonic();first_error=None;storage_retries=0;running_at=None
-    result={'observed_model_attempts':0,'submission_attempts':0,'storage_read_retries':0,
+    result={'observed_model_attempts':0,'verified_model_requests':0,'model_execution_observed':False,
+        'submission_attempts':0,'storage_read_retries':0,
         'configured_wait_seconds':wait_seconds,'trade_authorization':False}
     def finish(status,**fields):
         return {**result,'status':status,'storage_read_retries':storage_retries,
@@ -517,6 +518,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 found=collect(request,config,target,as_of=check_freshness(),**read_options)
             check_freshness()
         except (ContractError,OSError,sqlite3.Error,ValueError,TypeError,KeyError,RecursionError) as error:
+            if isinstance(getattr(error,'model_execution_observed',None),bool):
+                result['model_execution_observed']=error.model_execution_observed
             fault=failure(error,'RECEIPT_COLLECTION')
             if first_error is None:first_error=fault
             retry=fault['code'] in {'NATIVE_REVIEW_INCOMPLETE','NATIVE_HANDOFF_UNATTESTED','AGENT_EVIDENCE_FUTURE',
@@ -526,6 +529,8 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
             if count>1 or (reserved and fault['code']=='NATIVE_HANDOFF_UNATTESTED'):retry=False
             if not retry:
                 emit('REVIEW_FAILED',first_error=first_error,
+                    model_execution_observed=result['model_execution_observed'],
+                    verified_model_requests=result['verified_model_requests'],
                     **({'clock_diagnostic':result['clock_diagnostic']} if 'clock_diagnostic' in result else {}))
                 return finish(fault['code'],terminal_error=fault)
             storage_retries+=1;pending_status=fault['code'];found=None
@@ -540,11 +545,17 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 close_unverified()
             emit('REVIEW_RUNNING' if running_at else 'REVIEW_SUBMISSION_UNVERIFIED' if phase_closed
                 else 'TASK_SUBMISSION_ATTEMPTED' if submission and submission['submission_attempts'] else 'REVIEW_READY',
-                first_error=first_error,last_pending_status=pending_status,storage_read_retries=storage_retries)
+                first_error=first_error,last_pending_status=pending_status,storage_read_retries=storage_retries,
+                model_execution_observed=result['model_execution_observed'],
+                verified_model_requests=result['verified_model_requests'])
         if found:
             raw,audit=found
             result['observed_model_attempts']=audit['model_requests']
-            if reserved:emit('MODEL_EXECUTED',observed_model_attempts=audit['model_requests'])
+            result['verified_model_requests']=audit['model_requests']
+            result['model_execution_observed']=audit.get('model_execution_observed',True)
+            if reserved:emit('MODEL_EXECUTED',observed_model_attempts=audit['model_requests'],
+                model_execution_observed=result['model_execution_observed'],
+                verified_model_requests=result['verified_model_requests'])
             audit.setdefault('submission_transport','OWNER_OPENBOT_APPLICATION_UI')
             try:
                 for suffix,value in [('reply.json',raw),('audit.json',encode(audit)+'\n')]:
@@ -558,7 +569,9 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                 return finish('NATIVE_RECEIPT_PERSISTENCE_FAILED',terminal_error=failure(error,'RECEIPT_PERSISTENCE'))
             if return_verified is not None:return_verified.update(raw=raw, receipt=audit)
             emit('REVIEW_VERIFIED' if audit['reply_validation_status']=='VALIDATED' else 'REVIEW_REJECTED',
-                observed_model_attempts=audit['model_requests'])
+                observed_model_attempts=audit['model_requests'],
+                model_execution_observed=result['model_execution_observed'],
+                verified_model_requests=result['verified_model_requests'])
             return finish('NATIVE_RECEIPT_COLLECTED',observed_model_attempts=audit['model_requests'],
                 reply_validation_status=audit['reply_validation_status'],
                 reply_rejection_reason=audit.get('reply_rejection_reason'),

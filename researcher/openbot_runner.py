@@ -78,7 +78,8 @@ def _transition_locked(folder,state,**fields):
     if data['state']!=state or 'native_task_state' in fields and fields['native_task_state']!=data.get('native_task_state'):
         data.setdefault('lifecycle',[]).append({'state':state,'at_utc':at,
             **{k:fields[k] for k in ('material_sha256','batch_index','batch_count','first_error','native_task_state',
-                'submission_attempts','submission_state','submission_observation_status','observed_model_attempts') if k in fields}})
+                'submission_attempts','submission_state','submission_observation_status','observed_model_attempts',
+                'verified_model_requests','model_execution_observed') if k in fields}})
     data.update(fields,state=state,updated_at_utc=at)
     _write(folder/'state.json',data)
     return data
@@ -416,6 +417,8 @@ def run_job(key):
             first_error=native.get('first_error') or (transport or {}).get('first_error') or
                 (transport or {}).get('native_collector',{}).get('first_error'),
             observed_model_attempts=native.get('observed_model_attempts',0),
+            verified_model_requests=native.get('verified_model_requests',0),
+            model_execution_observed=native.get('model_execution_observed',False),
             transport_model_attempts=(transport or {}).get('observed_model_attempts',0),
             live_acceptance=('NATIVE_POLL_TEST_ONLY' if poll_complete else 'ARCHIVED_NATIVE_SMOKE_ONLY' if ai_smoke else
                 'PARTIAL; AWAITING_OPENBOT_RESULT_AND_ZIP_DELIVERY' if complete else 'PARTIAL; NATIVE_OR_SOURCE_GATE_NOT_PASSED'))
@@ -609,6 +612,8 @@ def _compact_status(folder, state, result):
     ticket = {'material_sha256':material, 'arguments_sha256':digest(encode(args).encode()),
         'packet_sha256':fingerprint, 'evidence_pages':len(pages), 'reserved_at_utc':stamp,
         'published_at_utc':published, 'submission_policy':COMPACT_SUBMISSION_POLICY}
+    if request.get('page_command_policy')=='IMMUTABLE_JOB_STAGE_BOUND_V4':
+        ticket.update(review_stage=request['stage'],review_batch_index=request.get('review_batch_index',1))
     frame = {'begin_frame':'OPENBOT_COMPACT_DISPATCH_V1', 'state':'REVIEW_READY',
         'review_transport':COMPACT_PAGES, 'material_sha256':material, 'ai_stage':request['stage'],
         'submission_permitted':True, 'start_task_arguments':args, 'end_frame':'END_OPENBOT_COMPACT_DISPATCH_V1',
@@ -671,6 +676,8 @@ def reserve_review(key, material, proof=None, end=None):
                   'reserved_at_utc': stamp, 'published_at_utc': state['request_prepared_at_utc'],
                   'reserved_monotonic': reserved_monotonic, 'submission_policy': request_dispatch_policy(request),
                   'parent_delivery': 'EXACT_ARGUMENT_BYTES_CONFIRMED', 'argument_integrity': integrity, **preview}
+        if request.get('page_command_policy')=='IMMUTABLE_JOB_STAGE_BOUND_V4':
+            ticket.update(review_stage=request['stage'],review_batch_index=request.get('review_batch_index',1))
         _write(lease, ticket)
         submit_before = min(submission_deadline(ticket), utc(request['as_of_utc'])+timedelta(seconds=FRESH_SECONDS))
         return {'state': 'REVIEW_DISPATCH_RESERVED', 'submission_permitted': True,
@@ -718,6 +725,8 @@ def _paged_status(folder,data,result,include_review):
         receipt={'material_sha256':material,'arguments_sha256':digest(encode(args).encode('utf-8')),
             'packet_sha256':fingerprint,'evidence_pages':len(pages),'reserved_at_utc':as_of,
             'published_at_utc':published,'submission_policy':policy}
+        if request.get('page_command_policy')=='IMMUTABLE_JOB_STAGE_BOUND_V4':
+            receipt.update(review_stage=request['stage'],review_batch_index=request.get('review_batch_index',1))
         if policy==RESERVED_SUBMISSION_POLICY:receipt['reserved_monotonic']=reserved_monotonic
         handoff={k:result[k] for k in ('job_id','state','review_transport','material_sha256',
             'batch_index','batch_count','ai_stage','trade_authorization') if k in result}
@@ -736,16 +745,24 @@ def _paged_status(folder,data,result,include_review):
         result.clear();result.update(handoff)
 
 
-def review_page(key,material,fingerprint,page):
+def review_page(key,material,fingerprint,page,*,stage=None,batch_index=1):
     """Read one complete page of the pinned, unexpired packet from WSL."""
     from .agent_review import _material
-    from .native_handoff import load_dispatch, page_command_fingerprint
+    from .native_handoff import load_dispatch, page_command_fingerprint, STAGE_BOUND_PAGE_COMMANDS
 
-    if not isinstance(material,str) or not re.fullmatch(SHA256,material):
+    if stage is None and (not isinstance(material,str) or not re.fullmatch(SHA256,material)):
         raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+    if stage is not None and (material is not None or fingerprint is not None):
+        raise ContractError('NATIVE_PAGE_BINDING_INVALID')
     folder=_job(key);directory=folder/'review'
     with _file_guard(folder/'state.lock'):
         state=_read(folder/'state.json')
+        if stage is not None:
+            if stage not in {'DISCOVERY','SHORTLIST'} or type(batch_index) is not int or batch_index<1:
+                raise ContractError('NATIVE_PAGE_BINDING_INVALID')
+            material=state.get('material_sha256')
+            if not isinstance(material,str) or not re.fullmatch(SHA256,material):
+                raise ContractError('NATIVE_DISPATCH_WINDOW_CLOSED')
         if (state['state'] not in {'REVIEW_READY','TASK_SUBMISSION_ATTEMPTED','TASK_CREATED','REVIEW_RUNNING',
                 'REVIEW_SUBMISSION_UNVERIFIED'} or state.get('material_sha256')!=material
                 or state.get('review_transport') not in {'PAGED_V2',CONFIRMED_PAGES,COMPACT_PAGES}):
@@ -754,9 +771,16 @@ def review_page(key,material,fingerprint,page):
         if (request.get('material_sha256')!=material or request.get('native_identity')!=state['native_identity']
                 or digest(encode(_material(request)).encode())!=material):
             raise ContractError('NATIVE_REVIEW_REQUEST_HASH')
+        if ((request.get('page_command_policy')==STAGE_BOUND_PAGE_COMMANDS and stage is None)
+                or (request.get('page_command_policy')!=STAGE_BOUND_PAGE_COMMANDS and stage is not None)):
+            raise ContractError('NATIVE_PAGE_BINDING_INVALID')
+        if stage is not None and (request.get('stage')!=stage
+                or request.get('review_batch_index',1)!=batch_index
+                or request.get('page_command_policy')!=STAGE_BOUND_PAGE_COMMANDS):
+            raise ContractError('NATIVE_PAGE_BINDING_INVALID')
         _,expected,pages,ticket=load_dispatch(directory,request,as_of=now_utc())
         if (ticket['published_at_utc']!=state.get('request_prepared_at_utc')
-                or fingerprint!=page_command_fingerprint(request,expected)
+                or (stage is None and fingerprint!=page_command_fingerprint(request,expected))
                 or type(page) is not int or not 1<=page<=len(pages)):
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         if (not 0<=(utc(now_utc())-utc(request['as_of_utc'])).total_seconds()<FRESH_SECONDS
@@ -802,6 +826,7 @@ def status(key,include_review=False,*,_allow_compact_dispatch=True):
     result={k:data[k] for k in ('schema_version','job_id','state','created_at_utc','updated_at_utc','commit',
         'stage','stage_seconds','reason','native_status','native_collector','artifact','live_acceptance','trade_authorization',
         'delivery_receipt','lifecycle','material_sha256','batch_index','batch_count','first_error','observed_model_attempts',
+        'verified_model_requests','model_execution_observed',
         'native_task_state','native_task_observation','transport_model_attempts','review_transport','ai_stage',
         'submission_state','submission_attempts','attempted_at_utc','responded_at_utc','submission_error',
         'clock_diagnostic','submission_observation_status','delivery_observation_status') if k in data}
@@ -886,6 +911,7 @@ def status(key,include_review=False,*,_allow_compact_dispatch=True):
             watches=watch_summary(report) if scanned else 'NOT_REFRESHED; PREVIOUS_LEDGER_UNCHANGED',
             costs=report.get('costs'),native_review={'status':native.get('status'),'accepted':native.get('accepted'),
                 'verified_model_requests':native.get('verified_model_requests',native.get('observed_model_attempts')),
+                'model_execution_observed':native.get('model_execution_observed',False),
                 'model_requests_total':native.get('model_requests_total'),
                 'unverified_dispatch_tickets':native.get('unverified_dispatch_tickets'),
                 'invalid_reply_batches':native.get('invalid_reply_batches'),
@@ -988,11 +1014,13 @@ def main():
     parser.add_argument('action',choices=['start','status','_worker','preflight','provider-status','review-page','replay-native','reserve-review'])
     parser.add_argument('--request-id');parser.add_argument('--job-id');parser.add_argument('--include-review',action='store_true')
     parser.add_argument('--material');parser.add_argument('--packet-sha256');parser.add_argument('--page',type=int)
+    parser.add_argument('--stage',choices=['DISCOVERY','SHORTLIST']);parser.add_argument('--batch-index',type=int,default=1)
     parser.add_argument('--confirm');parser.add_argument('--end-frame')
     args=parser.parse_args()
     try:
         if args.action=='review-page':
-            sys.stdout.buffer.write(review_page(args.job_id,args.material,args.packet_sha256,args.page).encode('utf-8'))
+            sys.stdout.buffer.write(review_page(args.job_id,args.material,args.packet_sha256,args.page,
+                stage=args.stage,batch_index=args.batch_index).encode('utf-8'))
             return 0
         if args.action=='provider-status':
             from .native_identity import configured_capability

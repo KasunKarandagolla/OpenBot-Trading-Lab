@@ -11,7 +11,9 @@ from researcher.contracts import ContractError, digest, encode, utc
 from researcher.native_app import wait_for_reply
 from researcher.native_codex import review_brief
 from researcher.native_handoff import (LEGACY_SUBMISSION_POLICY, RESERVED_SUBMISSION_POLICY,
-    BOUNDED_WAIT_PAGE_COMMANDS, TICKET_BOUND_PAGE_COMMANDS, VERBATIM_PAGE_COMMANDS, command_page, packet, verify_submission_window)
+    BOUNDED_WAIT_PAGE_COMMANDS, TICKET_BOUND_PAGE_COMMANDS, VERBATIM_PAGE_COMMANDS,
+    STAGE_BOUND_PAGE_COMMANDS, COMPACT_PAGES, command_page, confirmed_packet, packet,
+    verify_submission_window)
 from researcher.native_runtime import collect
 from researcher.settings import ROOT
 import test_openbot_runner as jobs
@@ -173,6 +175,8 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(observed[1]['verified_evidence_pages'], 10)
         self.assertEqual(observed[1]['submission_attempts'], 1)
         self.assertEqual(observed[1]['reply_validation_status'], 'VALIDATED')
+        self.assertTrue(observed[1]['model_execution_observed'])
+        self.assertEqual(observed[1]['verified_model_requests'], observed[1]['model_requests'])
 
     def test_code_mode_november_22_multiline_receipt_attests_all_ten_pages(self):
         self.app.write('REVIEW_1', self.code_mode_rollout(multiline=True))
@@ -180,6 +184,19 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(attestation['verified_evidence_pages'], 10)
         self.assertEqual(attestation['submission_attempts'], 1)
         self.assertEqual(attestation['reply_validation_status'], 'VALIDATED')
+
+    def test_code_mode_accepts_property_order_whitespace_and_header_line_ending_variants(self):
+        records=self.code_mode_rollout(multiline=True)
+        call=next(row['payload'] for row in records if row['payload'].get('type')=='custom_tool_call')
+        command=json.loads(call['input'].split('cmd: ',1)[1].split(',',1)[0])
+        call['input']=('const r=await tools.exec_command({ max_output_tokens:16000, '
+            'login:false, cmd:'+json.dumps(command)+' }); text ( r.output )')
+        output=next(row['payload'] for row in records if row['payload'].get('type')=='custom_tool_call_output')
+        output['output'][0]['text']=output['output'][0]['text'].replace('\n','\r\n').replace('0.5 seconds','0.50 seconds')
+        self.app.write('REVIEW_1',records)
+        _,proof=collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+        self.assertEqual(proof['verified_evidence_pages'],10)
+        self.assertEqual(proof['reply_validation_status'],'VALIDATED')
 
     def test_november_23_early_empty_output_is_incomplete_not_unauthorized(self):
         from researcher.native_codex import _code_mode_command
@@ -336,6 +353,107 @@ class NativeHandoff(unittest.TestCase):
         self.assertNotIn('next_command',json.loads(pages[-1]))
         self.assertEqual([command_page({'command':['powershell.exe','-Command',cmd]},
             self.directory,self.material,fingerprint) for cmd in commands],list(range(1,11)))
+
+    def test_stage_bound_page_command_omits_hashes_and_separates_stage_and_batch(self):
+        from researcher.native_handoff import _page_argv, wsl_root
+        root=wsl_root().replace("'","''")
+        stem=f"wsl.exe --cd '{root}' -- "
+        argv=_page_argv(self.directory,self.material,None,stage='DISCOVERY',batch_index=1)
+        command=stem+' '.join(argv)+' 2'
+        self.assertNotIn(self.material,command)
+        self.assertNotIn('--packet-sha256',command)
+        self.assertEqual(command_page({'command':['powershell.exe','-Command',command]},
+            self.directory,self.material,None,stage='DISCOVERY',batch_index=1),2)
+        other_stage=stem+' '.join(_page_argv(self.directory,self.material,None,stage='SHORTLIST',batch_index=1))+' 2'
+        with self.assertRaisesRegex(ContractError,'^NATIVE_PAGE_BINDING_INVALID$'):
+            command_page({'command':['powershell.exe','-Command',other_stage]},
+                self.directory,self.material,None,stage='DISCOVERY',batch_index=1)
+        other_batch=stem+' '.join(_page_argv(self.directory,self.material,None,stage='DISCOVERY',batch_index=2))+' 2'
+        with self.assertRaisesRegex(ContractError,'^NATIVE_PAGE_BINDING_INVALID$'):
+            command_page({'command':['powershell.exe','-Command',other_batch]},
+                self.directory,self.material,None,stage='DISCOVERY',batch_index=1)
+        reordered=stem+('python3 -m researcher.openbot_runner review-page --stage DISCOVERY '
+            f'--page 2 --batch-index 1 --job-id {self.job}')
+        self.assertEqual(command_page({'command':['powershell.exe','-Command',reordered]},
+            self.directory,self.material,None,stage='DISCOVERY',batch_index=1),2)
+        missing=stem+('python3 -m researcher.openbot_runner review-page --job-id '
+            f'{self.job} --stage DISCOVERY --page')
+        with self.assertRaisesRegex(ContractError,'^NATIVE_PAGE_BINDING_INVALID$'):
+            command_page({'command':['powershell.exe','-Command',missing]},
+                self.directory,self.material,None,stage='DISCOVERY',batch_index=1)
+        legacy=stem+('python3 -m researcher.openbot_runner review-page --job-id '
+            f'{self.job} --material {self.material} --packet-sha256 {"0"*64} --page 2')
+        with self.assertRaisesRegex(ContractError,'^NATIVE_PAGE_BINDING_INVALID$'):
+            command_page({'command':['powershell.exe','-Command',legacy]},
+                self.directory,self.material,None,stage='DISCOVERY',batch_index=1)
+
+    def test_historical_compact_packet_retains_its_original_hash_bound_command(self):
+        request={'input_transport':COMPACT_PAGES,'stage':'DISCOVERY'}
+        args, fingerprint, pages=confirmed_packet({'title':'historical'},'historical packet text',
+            self.directory,'a'*64,request=request)
+        first=args['brief'].split('First command:\n',1)[1].splitlines()[0]
+        self.assertIn('--material '+'a'*64,first)
+        self.assertNotIn('--stage',first)
+        self.assertIn(f'packet SHA-256 {fingerprint}',args['brief'])
+        self.assertEqual(json.loads(pages[0])['packet_sha256'],fingerprint)
+
+    def test_codex_code_mode_attests_stage_bound_pages_without_hash_echo(self):
+        self.request.update(stage='DISCOVERY',review_batch_index=1,
+            page_command_policy=STAGE_BOUND_PAGE_COMMANDS)
+        self.pin_request()
+        records=self.code_mode_rollout(multiline=True)
+        first=next(row['payload'] for row in records if row['payload'].get('type')=='custom_tool_call')
+        from researcher.native_codex import _code_mode_command
+        self.assertNotIn(self.material,_code_mode_command(first))
+        self.assertNotIn('--packet-sha256',_code_mode_command(first))
+        self.app.write('REVIEW_1',records)
+        _,proof=collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+        self.assertEqual(proof['verified_evidence_pages'],10)
+        self.assertEqual(proof['reply_validation_status'],'VALIDATED')
+
+    def test_codex_wrong_stage_command_is_binding_error(self):
+        self.request.update(stage='DISCOVERY',review_batch_index=1,
+            page_command_policy=STAGE_BOUND_PAGE_COMMANDS)
+        self.pin_request()
+        records=self.code_mode_rollout(multiline=True)
+        call=next(row['payload'] for row in records if row['payload'].get('type')=='custom_tool_call')
+        call['input']=call['input'].replace('--stage DISCOVERY','--stage SHORTLIST')
+        execution=next(row['payload'] for row in records if row['payload'].get('item',{}).get('type')=='CommandExecution')
+        execution['item']['command'][-1]=execution['item']['command'][-1].replace(
+            '--stage DISCOVERY','--stage SHORTLIST')
+        self.app.write('REVIEW_1',records)
+        with self.assertRaisesRegex(ContractError,'^NATIVE_PAGE_BINDING_INVALID$') as caught:
+            collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+        self.assertTrue(caught.exception.model_execution_observed)
+
+    def test_wrong_final_keeps_execution_observed_but_unverified(self):
+        records=self.code_mode_rollout(multiline=True)
+        records[-1]['payload']['last_agent_message']='altered final response'
+        self.app.write('REVIEW_1',records)
+        with self.assertRaisesRegex(ContractError,'^NATIVE_REPLY_PROVENANCE$') as caught:
+            collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+        self.assertTrue(caught.exception.model_execution_observed)
+        self.assertEqual(getattr(caught.exception,'verified_model_requests',0),0)
+
+    def test_active_review_page_rejects_old_discovery_binding_on_shortlist_packet(self):
+        from researcher.agent_review import _material
+        request=dict(self.request,stage='SHORTLIST',review_batch_index=1,
+            page_command_policy=STAGE_BOUND_PAGE_COMMANDS)
+        material=digest(encode(_material(request)).encode())
+        request['material_sha256']=material
+        (self.directory/(material+'.request.json')).write_text(encode(request),encoding='utf-8')
+        state=runner._read(self.folder/'state.json')
+        state.update(state='REVIEW_READY',material_sha256=material,review_transport='PAGED_V2',
+            native_identity=request['native_identity'],request_prepared_at_utc=self.clock(),request_expires_monotonic=1000)
+        runner._write(self.folder/'state.json',state)
+        saved=runner._read(self.directory/(material+'.request.json'))
+        self.assertEqual(encode(saved),encode(request))
+        self.assertEqual(digest(encode(_material(saved)).encode()),material)
+        self.assertEqual(saved['native_identity'],runner._read(self.folder/'state.json')['native_identity'])
+        with self.assertRaisesRegex(ContractError,'^NATIVE_PAGE_BINDING_INVALID$'):
+            runner.review_page(self.job,material,None,1)
+        with self.assertRaisesRegex(ContractError,'^NATIVE_PAGE_BINDING_INVALID$'):
+            runner.review_page(self.job,None,None,1,stage='DISCOVERY',batch_index=1)
 
     def test_followup_answer_cannot_obscure_or_replace_the_original_child_turn(self):
         self.app.write('REVIEW_1',self.code_mode_rollout(multiline=True))

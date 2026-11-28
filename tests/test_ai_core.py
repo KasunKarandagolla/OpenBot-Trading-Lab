@@ -53,6 +53,18 @@ class FixtureGateway:
 
 
 class AICore(unittest.TestCase):
+    def test_server_bound_native_reply_drops_hash_echo_but_legacy_reply_keeps_it(self):
+        request={'stage':DISCOVERY,'evidence':[],'question_limit':0,
+            'reply_binding_policy':'SERVER_BOUND_MATERIAL_V1','material_sha256':'a'*64}
+        reply={'schema_version':REPLY,'stage':DISCOVERY,'rows':[],'trade_authorization':False}
+        self.assertEqual(validate(reply,request),{'reply':reply,'accepted':0})
+        with self.assertRaisesRegex(ContractError,'AGENT_REPLY_CONTRACT'):
+            validate({**reply,'material_sha256':'a'*64},request)
+        legacy={k:v for k,v in request.items() if k!='reply_binding_policy'}
+        with self.assertRaisesRegex(ContractError,'AGENT_REPLY_CONTRACT'):
+            validate(reply,legacy)
+        self.assertEqual(validate({**reply,'material_sha256':'a'*64},legacy),{'reply':{**reply,'material_sha256':'a'*64},'accepted':0})
+
     def run_scan(self, gateway, *, limits=None):
         api, client, sources, at, _ = synthetic_6b()
         research = AIResearch(gateway=gateway, limits=limits)

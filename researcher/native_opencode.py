@@ -770,10 +770,11 @@ def attest_handoff(config, identity, request, *, as_of, require_configured_model
     raise ContractError('NATIVE_HANDOFF_UNATTESTED')
 
 
-def _page_command(directory, material, page):
+def _page_command(directory, material, page, *, stage=None, batch_index=1):
     from .native_handoff import _page_argv, wsl_root
     root = wsl_root().replace("'", "''")
-    return (f"wsl.exe --cd '{root}' -- " + ' '.join(_page_argv(directory, material, None))
+    return (f"wsl.exe --cd '{root}' -- " + ' '.join(_page_argv(directory, material, None,
+        stage=stage,batch_index=batch_index))
             + ' ' + str(page))
 
 
@@ -797,13 +798,15 @@ def _tool_state(part):
 
 
 def attest(config, session, turn, *, model, workspace, start, end, expected_input, expected_reply,
-           backend=None, evidence=None, require_thread_model=True, effort=None):
+           backend=None, evidence=None, require_thread_model=True, effort=None, execution_observation=None):
     """Attest one child turn: exact input, ordered pages, final text and model."""
     provider = backend if isinstance(backend, str) and backend and '/' not in backend \
         else _model_parts(model)[0]
     info = assert_session_identity(config, session, model=model, provider=provider,
                                    effort=effort if require_thread_model else None)
     messages, parts = turn_parts(config, session, start, end)
+    if execution_observation is not None:
+        execution_observation.append(any(message.get('type')=='assistant' for message in messages))
     assert_model(messages, model=model, provider=provider, effort=info['effort'])
     users = [message for message in messages if message['type'] == 'user']
     assistants = [message for message in messages if message['type'] == 'assistant']
@@ -821,22 +824,35 @@ def attest(config, session, turn, *, model, workspace, start, end, expected_inpu
         raise ContractError('NATIVE_REPLY_PROVENANCE')
     if texts[0]['data']['text'] != expected_reply:
         raise ContractError('NATIVE_REPLY_PROVENANCE')
-    directory, material, pages = evidence if evidence is not None else (None, None, ())
+    directory, material, pages = evidence[:3] if evidence is not None else (None, None, ())
+    stage=evidence[5] if evidence is not None and len(evidence)>5 else None
+    batch_index=evidence[6] if evidence is not None and len(evidence)>6 else 1
     delivered = []
     for part in parts:
         if part['type'] != 'tool':
             continue
         if part['data']['name'] != 'shell':
             raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
-        state = _tool_state(part)
         if evidence is None:
             raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
-        page = None
-        for number in range(1, len(pages) + 1):
-            if state['input']['command'] == _page_command(directory, material, number):
-                page = number
-                break
-        if page is None or page in delivered or page != len(delivered) + 1:
+        from .native_handoff import command_page
+        import shlex
+        raw_state = part['data'].get('state')
+        raw_input = raw_state.get('input') if isinstance(raw_state, dict) else None
+        if not isinstance(raw_input, dict) or set(raw_input) != {'command'} or not isinstance(raw_input['command'], str):
+            raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+        try:
+            command_argv = shlex.split(raw_input['command'], posix=True)
+        except ValueError:
+            raise ContractError('NATIVE_UNAUTHORIZED_TOOL') from None
+        page = command_page({'command': command_argv}, directory, material, None,
+            stage=stage, batch_index=batch_index)
+        state = _tool_state(part)
+        if stage is not None and page is not None and not 1<=page<=len(pages):
+            raise ContractError('NATIVE_PAGE_BINDING_INVALID')
+        if page is None or page in delivered or (stage is None and not 1<=page<=len(pages)):
+            raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
+        if page != len(delivered) + 1:
             raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
         if not _page_output(_text_content(state['content']), pages[page - 1]):
             raise ContractError('NATIVE_READ_INCOMPLETE')
@@ -884,7 +900,7 @@ def collect(request, config, *, as_of, directory=None, timeout_seconds=30,
     """Read an exact OpenCode child task and return its verified final reply."""
     from .agent_review import parse_reply, validate_reply, REJECTION_CODES
     from .native_handoff import (runner_review, load_dispatch, packet, verify_submission_window,
-        FRESH_SECONDS, CONFIRMED_PAGES, COMPACT_PAGES)
+        FRESH_SECONDS, CONFIRMED_PAGES, COMPACT_PAGES, STAGE_BOUND_PAGE_COMMANDS)
     from .native_identity import assert_parent, under_work
     identity = request.get('native_identity')
     if not isinstance(identity, dict):
@@ -976,31 +992,45 @@ def collect(request, config, *, as_of, directory=None, timeout_seconds=30,
                 or not utc(ticket['reserved_at_utc']) <= utc(created)
                     <= utc(submitted['responded_at_utc'])):
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-        evidence = (directory, request['material_sha256'], pages)
+        evidence = (directory, request['material_sha256'], pages, None, False,
+            request.get('stage') if request.get('page_command_policy') == STAGE_BOUND_PAGE_COMMANDS else None,
+            request.get('review_batch_index', 1))
     else:
         attest_handoff(config, identity, request, as_of=as_of,
                        require_configured_model=require_configured_model)
-    proof = attest(config, session, turn, model=model, workspace=config['agent_workspace'],
-        start=start, end=end, expected_input=brief, expected_reply=raw,
-        backend=identity['provider'], evidence=evidence,
-        require_thread_model=require_configured_model,
-        effort=identity.get('effort') if require_configured_model else None)
-    assert_parent(identity, config, require_configured_model=require_configured_model, as_of=as_of)
+    execution=[]
     try:
-        validated = validate_reply(parse_reply(raw), request)
-        validation = {'reply_validation_status': 'VALIDATED', 'validated_rows': validated['accepted']}
-    except ContractError as error:
-        if str(error) not in REJECTION_CODES:
-            raise
-        validation = {'reply_validation_status': 'REJECTED',
-                      'reply_rejection_reason': str(error), 'validated_rows': 0}
+        proof = attest(config, session, turn, model=model, workspace=config['agent_workspace'],
+            start=start, end=end, expected_input=brief, expected_reply=raw,
+            backend=identity['provider'], evidence=evidence,
+            require_thread_model=require_configured_model,
+            effort=identity.get('effort') if require_configured_model else None,
+            execution_observation=execution)
+    except (ContractError, OSError, ValueError, TypeError, KeyError, RecursionError) as error:
+        error.model_execution_observed=bool(execution and execution[0])
+        raise
+    try:
+        assert_parent(identity, config, require_configured_model=require_configured_model, as_of=as_of)
+        try:
+            validated = validate_reply(parse_reply(raw), request)
+            validation = {'reply_validation_status': 'VALIDATED', 'validated_rows': validated['accepted']}
+        except ContractError as error:
+            if str(error) not in REJECTION_CODES:
+                raise
+            validation = {'reply_validation_status': 'REJECTED',
+                          'reply_rejection_reason': str(error), 'validated_rows': 0}
+    except (ContractError, OSError, ValueError, TypeError, KeyError, RecursionError) as error:
+        error.model_execution_observed=True
+        raise
     audit = {'schema_version': 'openbot.native-review.audit.v1',
         'audit_source': 'OPENBOT_APP_SCOPED_READ_ONLY_AUDIT',
         'agent_name': identity['agent_name'], 'model': model, 'provider': provider,
         'agent_id': identity['agent_id'], 'native_identity': identity,
         'skill_sha256': request['skill_sha256'], 'material_sha256': request['material_sha256'],
         'reply_sha256': digest(raw.encode()), 'native_invocation_verified': True,
-        'native_app_turns': 1, 'native_started_at_utc': start, 'native_completed_at_utc': end,
+        'native_app_turns': 1, 'model_execution_observed': True,
+        'verified_model_requests': proof['model_requests'],
+        'native_started_at_utc': start, 'native_completed_at_utc': end,
         'audited_at_utc': as_of,
         'submission_transport':
             'EXISTING_AGENT_START_TASK; EXACT_PROVIDER_ATTESTED_PAGED_INPUT',

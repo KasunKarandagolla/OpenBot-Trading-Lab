@@ -6,7 +6,8 @@ from time import monotonic
 from .agent_review import AGENT, _material, parse_reply
 from .contracts import ContractError, digest, encode, utc
 from .handoff import ALLOWED_QUESTIONS
-from .native_handoff import COMPACT_PAGES, MAX_EVIDENCE_PAGES, COMPACT_SUBMISSION_POLICY
+from .native_handoff import (COMPACT_PAGES, MAX_EVIDENCE_PAGES, COMPACT_SUBMISSION_POLICY,
+    STAGE_BOUND_PAGE_COMMANDS)
 from .research import fact_id
 from .settings import ROOT
 
@@ -86,12 +87,15 @@ def _citations(support, contradiction, available):
 
 
 def validate(reply, request):
-    keys = {'schema_version', 'material_sha256', 'stage', 'rows', 'trade_authorization'}
+    keys = {'schema_version', 'stage', 'rows', 'trade_authorization'}
+    if request.get('reply_binding_policy') != 'SERVER_BOUND_MATERIAL_V1':
+        keys.add('material_sha256')
     if request['stage'] == FINAL:
         keys.add('assessment')
     _need(isinstance(reply, dict) and set(reply) == keys
         and reply['schema_version'] == REPLY and reply['stage'] == request['stage']
-        and reply['material_sha256'] == request['material_sha256']
+        and (request.get('reply_binding_policy') == 'SERVER_BOUND_MATERIAL_V1'
+             or reply['material_sha256'] == request['material_sha256'])
         and reply['trade_authorization'] is False and isinstance(reply['rows'], list))
     supplied = {row['id']: row for row in request['evidence']}
     previous = set()
@@ -219,6 +223,8 @@ class AIResearch:
             'max_input_bytes': self.limits.max_input_bytes,
             'model': self.identity['model'] if self.identity else None,
             'dispatch_reservation_policy': COMPACT_SUBMISSION_POLICY,
+            'page_command_policy': STAGE_BOUND_PAGE_COMMANDS,
+            'review_batch_index': 1,
             'question_limit': self.limits.max_questions, 'card_limit': self.limits.max_cards,
             'horizon_hours': 15, 'closed_history_methods': sorted(CLOSED_METHODS), 'registry': registry,
             'families': [{k:f[k] for k in ('id','name')} for f in config['families']],
@@ -226,6 +232,7 @@ class AIResearch:
             'context': context}
         if self.identity:
             body['native_identity'] = self.identity
+            body['reply_binding_policy'] = 'SERVER_BOUND_MATERIAL_V1'
         body['as_of_utc'] = self.clock() if self.clock else at
         body['material_sha256'] = digest(encode(_material(body)).encode())
         return body

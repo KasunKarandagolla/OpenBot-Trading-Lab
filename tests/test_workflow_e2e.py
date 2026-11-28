@@ -43,11 +43,17 @@ class SimulatedApp:
                 else:cmd=first_command if number==1 else json.loads(pages[-1])['next_command']
                 argv=shlex.split(cmd.split(' -- python3 -m researcher.openbot_runner ',1)[1])
                 cli=dict(zip(argv[1::2],argv[2::2],strict=True))
-                pages.append(runner.review_page(cli['--job-id'],cli['--material'],cli.get('--packet-sha256'),int(cli['--page'])))
+                if '--stage' in cli:
+                    pages.append(runner.review_page(cli['--job-id'],None,None,int(cli['--page']),
+                        stage=cli['--stage'],batch_index=int(cli.get('--batch-index','1'))))
+                else:
+                    pages.append(runner.review_page(cli['--job-id'],cli['--material'],
+                        cli.get('--packet-sha256'),int(cli['--page'])))
                 commands.append(cmd)
             full=''.join(json.loads(page)['text'] for page in pages)
             if digest(full.encode())!=fingerprint:raise AssertionError('packet hash')
-        request=json.loads(full.split('<canonical-request>\n',1)[1].split('\n</canonical-request>',1)[0])
+        request_path=runner._job(job)/'review'/(receipt['material_sha256']+'.request.json')
+        request=json.loads(request_path.read_text(encoding='utf-8'))
         if request.get('input_transport'):
             self.assert_exact_arguments(args,receipt)
             if digest(full.encode())!=receipt['packet_sha256']:raise AssertionError('AI packet hash')
@@ -107,8 +113,10 @@ class SimulatedApp:
             if time.monotonic()<due:continue
             self.pending.remove(item);at=self.clock()
             if request.get('input_transport'):
-                reply={'schema_version':'openbot.ai-research.reply.v1','material_sha256':request['material_sha256'],
+                reply={'schema_version':'openbot.ai-research.reply.v1',
                     'stage':request['stage'],'trade_authorization':False,'rows':[]}
+                if request.get('reply_binding_policy')!='SERVER_BOUND_MATERIAL_V1':
+                    reply['material_sha256']=request['material_sha256']
                 if request['stage']=='DISCOVERY':
                     evidence=sorted(request['evidence'],key=lambda c:c['native_symbol']!='BEARUSDT')
                     control=next((c for c in evidence if c['native_symbol'] not in {'BTCUSDT','ETHUSDT'}),None)

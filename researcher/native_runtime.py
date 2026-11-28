@@ -233,22 +233,34 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
             raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         if pages:
             evidence=(directory,request['material_sha256'],page_command_fingerprint(request,fingerprint),pages,
-                request.get('page_command_policy')==BOUNDED_WAIT_PAGE_COMMANDS or request.get('input_transport') in {CONFIRMED_PAGES,COMPACT_PAGES})
+                request.get('page_command_policy')==BOUNDED_WAIT_PAGE_COMMANDS or request.get('input_transport') in {CONFIRMED_PAGES,COMPACT_PAGES},
+                request.get('stage') if request.get('page_command_policy')=='IMMUTABLE_JOB_STAGE_BOUND_V4' else None,
+                request.get('review_batch_index',1))
     else:attest_handoff(config,identity,request,as_of=as_of,require_configured_model=require_configured_model)
-    proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
-        expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence,
-        require_thread_model=require_configured_model)
-    assert_parent(identity,config,require_configured_model=require_configured_model,as_of=as_of)
+    execution=[]
     try:
-        validated=validate_reply(parse_reply(raw),request)
-        validation={'reply_validation_status':'VALIDATED','validated_rows':validated['accepted']}
-    except ContractError as e:
-        if str(e) not in REJECTION_CODES:raise
-        validation={'reply_validation_status':'REJECTED','reply_rejection_reason':str(e),'validated_rows':0}
+        proof=attest(config,session,turn,model=model,workspace=config['agent_workspace'],start=start,end=end,
+            expected_input=brief,expected_reply=raw,backend=identity['provider_backend'],evidence=evidence,
+            require_thread_model=require_configured_model,execution_observation=execution)
+    except (ContractError,OSError,ValueError,TypeError,KeyError,RecursionError) as error:
+        error.model_execution_observed=bool(execution and execution[0])
+        raise
+    try:
+        assert_parent(identity,config,require_configured_model=require_configured_model,as_of=as_of)
+        try:
+            validated=validate_reply(parse_reply(raw),request)
+            validation={'reply_validation_status':'VALIDATED','validated_rows':validated['accepted']}
+        except ContractError as e:
+            if str(e) not in REJECTION_CODES:raise
+            validation={'reply_validation_status':'REJECTED','reply_rejection_reason':str(e),'validated_rows':0}
+    except (ContractError,OSError,ValueError,TypeError,KeyError,RecursionError) as error:
+        error.model_execution_observed=True
+        raise
     audit={'schema_version':'openbot.native-review.audit.v1','audit_source':'OPENBOT_APP_SCOPED_READ_ONLY_AUDIT',
         'agent_name':identity['agent_name'],'model':model,'provider':provider,'agent_id':identity['agent_id'],
         'native_identity':identity,'skill_sha256':request['skill_sha256'],'material_sha256':request['material_sha256'],
         'reply_sha256':digest(raw.encode()),'native_invocation_verified':True,'native_app_turns':1,
+        'model_execution_observed':True,'verified_model_requests':proof['model_requests'],
         'native_started_at_utc':start,'native_completed_at_utc':end,'audited_at_utc':as_of,
         'submission_transport':'EXISTING_AGENT_START_TASK; EXACT_PROVIDER_ATTESTED_'+('PAGED_INPUT' if evidence is not None else 'INLINE_INPUT'),
         'authority':'ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM',**proof,**validation}

@@ -50,8 +50,10 @@ def call(config,operation,values=None,*,timeout_seconds=_PROCESS_TIMEOUT_SECONDS
             if not isinstance(code,str) or code not in READER_ERRORS:
                 code='NATIVE_STORAGE_UNAVAILABLE'
             diagnostic=safe_diagnostic(response.get('diagnostic')) if isinstance(response,dict) else {}
-            if diagnostic:raise NativeEvidenceError(code,diagnostic=diagnostic)
-            raise ContractError(code)
+            error=NativeEvidenceError(code,diagnostic=diagnostic) if diagnostic else ContractError(code)
+            if isinstance(response,dict) and isinstance(response.get('model_execution_observed'),bool):
+                error.model_execution_observed=response['model_execution_observed']
+            raise error
         return response['result']
     except subprocess.TimeoutExpired:
         timeout_kind='CALLER_DEADLINE' if timeout_seconds<_PROCESS_TIMEOUT_SECONDS else 'PROCESS_TIMEOUT'
@@ -115,7 +117,9 @@ def main():
         diagnostic=safe_diagnostic(getattr(error,'diagnostic',None))
         if isinstance(error,(OSError,__import__('sqlite3').Error)):
             code,diagnostic=storage_fault(error,'READER')
-        print(encode({'reason':code,**({'diagnostic':diagnostic} if diagnostic else {})}));return 2
+        print(encode({'reason':code,**({'diagnostic':diagnostic} if diagnostic else {}),
+            **({'model_execution_observed':error.model_execution_observed}
+               if isinstance(getattr(error,'model_execution_observed',None),bool) else {})}));return 2
 
 
 if __name__=='__main__':raise SystemExit(main())
