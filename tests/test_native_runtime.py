@@ -187,6 +187,19 @@ class CodexRuntimeFixtures(unittest.TestCase):
             continuation_request=shortlist,directory=folder)
         self.assertEqual(observed['submission_state'],'NOT_OBSERVED')
 
+    def test_duplicate_shortlist_submission_in_verified_continuation_is_rejected(self):
+        folder,_,shortlist,_,sargs,_,sticket=self._continuation_fixture()
+        duplicate_call,duplicate_response=copy.deepcopy(self.parent[-2:])
+        duplicate_call['timestamp']=self.time(1.7)
+        duplicate_call['payload']['call_id']='SHORTLIST_CALL_DUPLICATE'
+        duplicate_response['timestamp']=self.time(1.8)
+        duplicate_response['payload']['item']['id']='SHORTLIST_CALL_DUPLICATE'
+        self.parent.extend((duplicate_call,duplicate_response));self.write()
+        with self.assertRaisesRegex(ContractError,'^NATIVE_HANDOFF_UNATTESTED$'):
+            observe_submission(self.config,self.identity,shortlist['as_of_utc'],sargs,
+                as_of=self.time(5),reserved_at=sticket['reserved_at_utc'],
+                continuation_request=shortlist,directory=folder)
+
     def test_codex_parent_argument_accepts_only_openbot_schema_trim(self):
         arguments={'title':'OPENBOT-RESEARCH-'+self.key,'brief':self.brief}
         self.parent[2]['payload']['item']['arguments']['arguments']['brief']=self.brief+'\n'

@@ -2725,3 +2725,29 @@ Starting commit: `a5fc19a0f927fefdc1d9a912a620b706ec1411e2`.
   eleven state/report/archive/request/ticket hashes are unchanged, and the
   original job remains `PARTIAL`. Replay made zero new model or market
   requests; `trade_authorization=false`.
+
+## 2026-11-28 - Codex serialized command-result receipt compatibility
+
+- The retained Shortlisting child used the same exact four read-only page
+  commands and command options as Discovery. Each `CommandExecution` completed
+  with exit code 0 and its output matched the canonical page. The only record
+  difference was `text(JSON.stringify(r))` around the host `exec_command`
+  result, rather than Discovery's `text(r.output)`.
+- `_code_mode_command()` rejected that output expression at its suffix check;
+  this was a representation mismatch, not an additional tool, command, or
+  changed page. The attester now recognizes only that exact alternate expression
+  and requires the serialized result to have the observed exact field set, a
+  successful exit code, valid bounded metadata, and output identical to the
+  expected page. Existing execution, page-order, identity, and reply checks
+  remain in force.
+- Regression coverage verifies all-page acceptance and rejects a modified
+  nested page. Continuation tests confirm the Discovery parent submission and
+  Shortlisting continuation remain distinct, and duplicate Shortlisting calls
+  in the verified continuation are rejected.
+- Retrospective read-only replay now verifies both stages: Discovery has four
+  pages and two validated rows; Shortlisting has four pages and one validated
+  row. Both final responses validate. The saved archive SHA-256 remains
+  `3ac9bb3af2ddf86814b6eae6b96d6f7ed3415ffed1b6022f016c125d4c284973`, tracked
+  historical state/report/archive/review files are unchanged, and the original
+  terminal state remains `PARTIAL`. Replay made zero model or market requests;
+  `trade_authorization=false`.

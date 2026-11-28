@@ -123,7 +123,7 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(imported['accepted'],1)
         self.assertFalse(imported['trade_authorization'])
 
-    def code_mode_rollout(self, *, multiline=False):
+    def code_mode_rollout(self, *, multiline=False, serialized_result=False):
         def ready():
             self.ticket()
             self.assertTrue(self.app.dispatch_once(self.args, self.job, self.receipt))
@@ -140,14 +140,15 @@ class NativeHandoff(unittest.TestCase):
                 arguments = json.loads(payload['arguments'])
                 literal = json.dumps(arguments['cmd'])
                 wait = ',yield_time_ms:30000' if arguments.get('yield_time_ms') == 30000 else ''
+                output_expr='text(JSON.stringify(r));' if serialized_result else 'text(r.output);'
                 script = ('const r = await tools.exec_command({cmd:'+literal
-                          +',login:false,max_output_tokens:16000'+wait+'}); text(r.output);\n')
+                          +',login:false,max_output_tokens:16000'+wait+'}); '+output_expr+'\n')
                 if multiline:
                     script = ('const r = await tools.exec_command({\n'
                               f'  cmd: {literal},\n'
                               '  login: false,\n  max_output_tokens: 16000'
                               + (',\n  yield_time_ms: 30000' if wait else '')
-                              + '\n});\ntext(r.output);')
+                              + '\n});\n'+output_expr)
                 row['payload'] = {
                     'type': 'custom_tool_call', 'id': 'ctc_'+payload['call_id'],
                     'status': 'completed', 'call_id': payload['call_id'], 'name': 'exec',
@@ -160,6 +161,9 @@ class NativeHandoff(unittest.TestCase):
                 payload.update(started_at_ms=int(at*1000), completed_at_ms=int(at*1000))
             elif payload.get('type') == 'function_call_output':
                 page = payload['output'].split('\nOutput:\n', 1)[1]
+                if serialized_result:
+                    page=json.dumps({'chunk_id':'a6eb6b','wall_time_seconds':0.5,
+                        'exit_code':0,'original_token_count':len(page)//4,'output':page},separators=(',',':'))
                 row['payload'] = {
                     'type': 'custom_tool_call_output', 'id': 'ctco_'+payload['call_id'],
                     'call_id': payload['call_id'],
@@ -184,6 +188,23 @@ class NativeHandoff(unittest.TestCase):
         self.assertEqual(attestation['verified_evidence_pages'], 10)
         self.assertEqual(attestation['submission_attempts'], 1)
         self.assertEqual(attestation['reply_validation_status'], 'VALIDATED')
+
+    def test_code_mode_serialized_exec_result_preserves_exact_page_receipt(self):
+        records=self.code_mode_rollout(serialized_result=True)
+        self.app.write('REVIEW_1',records)
+        _,proof=collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
+        self.assertEqual(proof['verified_evidence_pages'],10)
+        self.assertEqual(proof['reply_validation_status'],'VALIDATED')
+
+        changed=copy.deepcopy(records)
+        output=next(row['payload'] for row in changed
+            if row['payload'].get('type')=='custom_tool_call_output')
+        wrapped=json.loads(output['output'][1]['text'])
+        wrapped['output']=wrapped['output'][:-1]
+        output['output'][1]['text']=json.dumps(wrapped,separators=(',',':'))
+        self.app.write('REVIEW_1',changed)
+        with self.assertRaisesRegex(ContractError,'^NATIVE_READ_INCOMPLETE$'):
+            collect(self.request,self.f.config,as_of=self.clock(),directory=self.directory)
 
     def test_code_mode_accepts_property_order_whitespace_and_header_line_ending_variants(self):
         records=self.code_mode_rollout(multiline=True)

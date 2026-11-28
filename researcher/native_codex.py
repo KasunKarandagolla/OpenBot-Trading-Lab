@@ -342,7 +342,10 @@ def _code_mode_command(payload, *, with_options=False):
     # Parse only the one permitted Code Mode call. Property order and harmless
     # whitespace are normalized; expressions, comments and additional code fail.
     prefix=re.match(r'\s*(?:const|let)\s+r\s*=\s*await\s+tools\.exec_command\s*\(\s*\{\s*',script)
-    suffix=re.compile(r'\s*\)\s*;\s*text\s*\(\s*r\.output\s*\)\s*;?\s*')
+    suffixes=(
+        ('output',re.compile(r'\s*\)\s*;\s*text\s*\(\s*r\.output\s*\)\s*;?\s*')),
+        ('serialized_result',re.compile(r'\s*\)\s*;\s*text\s*\(\s*JSON\.stringify\s*'
+            r'\(\s*r\s*\)\s*\)\s*;?\s*')))
     if prefix is None:raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
     i=prefix.end();values={};decoder=json.JSONDecoder()
     try:
@@ -367,7 +370,9 @@ def _code_mode_command(payload, *, with_options=False):
             if i<len(script) and script[i]==',':i+=1;continue
             if i<len(script) and script[i]=='}':break
             raise ValueError()
-        if i>=len(script) or script[i]!='}' or suffix.fullmatch(script[i+1:]) is None:raise ValueError()
+        if i>=len(script) or script[i]!='}':raise ValueError()
+        output_mode=next((mode for mode,pattern in suffixes if pattern.fullmatch(script[i+1:])),None)
+        if output_mode is None:raise ValueError()
     except (ValueError,RecursionError):raise ContractError('NATIVE_UNAUTHORIZED_TOOL') from None
     if (set(values) not in ({'cmd','login','max_output_tokens'},
             {'cmd','login','max_output_tokens','yield_time_ms'})
@@ -375,17 +380,35 @@ def _code_mode_command(payload, *, with_options=False):
             or type(values['max_output_tokens']) is not int or values['max_output_tokens']!=16000
             or ('yield_time_ms' in values and (type(values['yield_time_ms']) is not int or values['yield_time_ms']!=30000))):
         raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
-    return (values['cmd'],values) if with_options else values['cmd']
+    return (values['cmd'],values,output_mode) if with_options else values['cmd']
 
 
-def _code_mode_output_matches(payload,page):
+def _code_mode_output_matches(payload,page,*,mode='output'):
     output=payload.get('output')
     header=output[0]['text'].replace('\r\n','\n') if isinstance(output,list) and output and isinstance(output[0],dict) and isinstance(output[0].get('text'),str) else ''
     header_pattern=re.compile(r'Script completed\nWall time [0-9]+(?:\.[0-9]+)? seconds\nOutput:\n')
-    return (isinstance(output,list) and len(output)==2
+    valid=(isinstance(output,list) and len(output)==2
         and all(isinstance(part,dict) and set(part)=={'type','text'} and part['type']=='input_text'
                 and isinstance(part['text'],str) for part in output)
-        and header_pattern.fullmatch(header) is not None and output[1]['text']==page)
+        and header_pattern.fullmatch(header) is not None)
+    if not valid:return False
+    if mode=='output':return output[1]['text']==page
+    if mode!='serialized_result':return False
+    try:result=json.loads(output[1]['text'],object_pairs_hook=_pairs)
+    except (ValueError,TypeError,RecursionError):return False
+    if not isinstance(result,dict) or set(result)!={'chunk_id','wall_time_seconds','exit_code',
+            'original_token_count','output'}:
+        return False
+    import math
+    wall_time=result['wall_time_seconds']
+    if (type(wall_time) not in {int,float} or wall_time<0 or wall_time>86400
+            or type(wall_time) is float and not math.isfinite(wall_time)):
+        return False
+    return (isinstance(result['chunk_id'],str)
+        and re.fullmatch(r'[A-Za-z0-9_-]{1,64}',result['chunk_id']) is not None
+        and type(result['exit_code']) is int and result['exit_code']==0
+        and type(result['original_token_count']) is int and result['original_token_count']>=0
+        and result['output']==page)
 
 
 def attest(config,session,turn,*,model,workspace,start,end,expected_input,expected_reply,backend=None,
@@ -402,7 +425,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
             actual=db.execute('SELECT model FROM threads WHERE id=?',(session,)).fetchone()
         if not actual or actual[0]!=model:_fail('NATIVE_MODEL_SWITCHED','IDENTITY','CODEX_CHILD_THREAD_MODEL')
     context=False;began=False;ended=False;inputs=[];finals=[];responses=set();usage=[]
-    calls={};completed=set();delivered=set()
+    calls={};code_output_modes={};completed=set();delivered=set()
     code_items=set();command_ids=set();pending_code=None
     if evidence is not None:
         directory,material,command_fingerprint,pages,bounded_wait=evidence[:5]
@@ -421,7 +444,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                 if not inputs or finals or pending_code is not None or (calls and not code_items):
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 call_id=_code_mode_item(x,turn,code_items,{'name','status','input'})
-                command,options=_code_mode_command(p,with_options=True)
+                command,options,output_mode=_code_mode_command(p,with_options=True)
                 if bounded_wait and options.get('yield_time_ms')!=30000:
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 page=command_page({'command':['powershell.exe','-Command',command]},directory,material,command_fingerprint,
@@ -433,6 +456,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 if page!=len(delivered)+1:raise ContractError('NATIVE_READ_INCOMPLETE')
                 calls[call_id]=page
+                code_output_modes[call_id]=output_mode
                 pending_code=(call_id,command,round(utc(x['timestamp']).timestamp()*1000))
                 continue
             if evidence is not None and typ=='custom_tool_call_output':
@@ -440,7 +464,7 @@ def attest(config,session,turn,*,model,workspace,start,end,expected_input,expect
                 if pending_code is None or pending_code[0]!=call_id:
                     raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
                 page=calls[call_id]
-                if not _code_mode_output_matches(p,pages[page-1]):
+                if not _code_mode_output_matches(p,pages[page-1],mode=code_output_modes.get(call_id)):
                     raise ContractError('NATIVE_READ_INCOMPLETE')
                 if call_id not in completed:
                     raise ContractError('NATIVE_READ_INCOMPLETE')
