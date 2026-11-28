@@ -11,7 +11,7 @@ from pathlib import Path,PureWindowsPath
 from datetime import datetime,timezone
 from .contracts import ContractError,digest,encode,utc
 from .agent_review import AGENT,parse_reply,validate_reply
-from .native_identity import checked_path,local_path,under_work
+from .native_identity import NativeEvidenceError,checked_path,local_path,under_work
 from .settings import ROOT
 
 
@@ -272,7 +272,7 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
     from .native_opencode import observe_submission as opencode_submission
     from .native_handoff import load_dispatch, packet, read_object, runner_review, verify_submission_window
     from .native_host import delegated, call
-    from .native_identity import assert_parent
+    from .native_identity import NativeEvidenceError, assert_parent
     from .agent_review import _material
 
     directory=under_work(directory)
@@ -290,9 +290,11 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
     lease=under_work(directory/(material+'.dispatch.json'))
     # The snapshot timestamp may precede a ticket published concurrently.
     missing={'submission_state':'NOT_OBSERVED','submission_attempts':0,'task_created':False,
+        'material_sha256':material,'review_stage':request.get('stage'),
         'task':{'count':0,'task_state':'MISSING'}}
     if lease.exists():
-        if utc(read_object(lease).get('reserved_at_utc'))>utc(as_of):return missing
+        if utc(read_object(lease).get('reserved_at_utc'))>utc(as_of):
+            return {**missing,'handoff_observation':'SUBMISSION_NOT_OBSERVED'}
         args,_,_,ticket=load_dispatch(directory,request,as_of=as_of)
         result=submission(config,identity,request['as_of_utc'],args,as_of=as_of,
             reserved_at=ticket['reserved_at_utc'],require_configured_model=require_configured_model)
@@ -302,24 +304,74 @@ def observe_handoff(config, *, identity, directory, material, as_of, timeout_sec
         args,_,_=packet(request,directory)
         result=submission(config,identity,request['as_of_utc'],args,as_of=as_of,
             require_configured_model=require_configured_model)
-        if result['submission_attempts']:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        if result['submission_attempts']:
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TIMESTAMP_ORDER')
         # The native reader and main chat run concurrently. If a ticket was
         # issued during this read, let the next observation bind the new data.
-        if lease.exists():return missing
+        if lease.exists():return {**missing,'handoff_observation':'SUBMISSION_NOT_OBSERVED'}
     observed=task_observation(config,agent_id=identity['agent_id'],title=args['title'],details=True)
-    if observed['count']>1:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    if observed['count']>1:
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','DUPLICATE_SUBMISSION')
     if observed['count']:
         if ('reserved_at_utc' not in result and lease.exists()):
-            return missing
+            return {**missing,'handoff_observation':'APP_TASK_PROJECTION_PENDING','task':observed}
         if (observed['task_ref']==identity['thread_ref'] or 'reserved_at_utc' not in result
                 or utc(observed['task_created_at_utc'])<utc(result['reserved_at_utc'])):
-            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TIMESTAMP_ORDER')
         if result['submission_state']=='ACKNOWLEDGED':
-            if (result['acknowledged_task_ref']!=observed['task_ref']
-                    or utc(observed['task_created_at_utc'])>utc(result['responded_at_utc'])):
-                raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            if result['acknowledged_task_ref']!=observed['task_ref']:
+                raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TASK_IDENTITY_MISMATCH')
+            if utc(observed['task_created_at_utc'])>utc(result['responded_at_utc']):
+                raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TIMESTAMP_ORDER')
             result['task_created']=True
-    return {**result,'task_created':result.get('task_created',False),'task':observed}
+    if result['submission_state']=='ACKNOWLEDGED':
+        state='VERIFIED' if result.get('task_created') else 'APP_TASK_PROJECTION_PENDING'
+    elif result['submission_state']=='ATTEMPTED':
+        state='ACKNOWLEDGMENT_PENDING'
+    elif observed['count']:
+        state='PARENT_ACKNOWLEDGMENT_PENDING'
+    else:
+        state='SUBMISSION_NOT_OBSERVED'
+    return {**result,'material_sha256':material,'review_stage':request.get('stage'),
+        'handoff_observation':state,'task_created':result.get('task_created',False),'task':observed}
+
+
+def _merge_handoff(previous,current):
+    """Keep a verified request/task binding across later incomplete snapshots."""
+    if previous is None:return current
+    if (previous.get('material_sha256')!=current.get('material_sha256')
+            or previous.get('review_stage')!=current.get('review_stage')):
+        raise ContractError('NATIVE_SESSION_MISMATCH')
+    previous_ack=previous.get('acknowledged_task_ref')
+    current_ack=current.get('acknowledged_task_ref')
+    if (previous_ack and current_ack and previous_ack!=current_ack):
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TASK_IDENTITY_MISMATCH')
+    previous_task=previous.get('task') or {}
+    current_task=current.get('task') or {}
+    previous_ref=previous_task.get('task_ref') if previous_task.get('count')==1 else None
+    current_ref=current_task.get('task_ref') if current_task.get('count')==1 else None
+    if previous_ref and current_ref and previous_ref!=current_ref:
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TASK_IDENTITY_MISMATCH')
+    if previous.get('submission_state')=='ACKNOWLEDGED' and current.get('submission_state')=='REJECTED':
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','ACKNOWLEDGMENT_CONTENT_INVALID')
+    result={**previous,**current}
+    weaker_parent=(previous.get('submission_state')=='ACKNOWLEDGED'
+        and current.get('submission_state') in {'NOT_OBSERVED','ATTEMPTED'})
+    if weaker_parent:
+        for key in ('submission_state','submission_attempts','attempted_at_utc','responded_at_utc',
+                    'acknowledged_task_ref','argument_binding','reserved_at_utc'):
+            if key in previous:result[key]=previous[key]
+        result['latest_handoff_observation']=current.get('handoff_observation')
+        result['handoff_observation']='VERIFIED_BINDING_RETAINED'
+    if current_task.get('count')==1:
+        result['task']=current_task
+    elif previous_task.get('count')==1:
+        result['task']=previous_task
+        if current.get('handoff_observation')=='APP_TASK_PROJECTION_PENDING':
+            result['latest_handoff_observation']=current.get('handoff_observation')
+            result['handoff_observation']='VERIFIED_BINDING_RETAINED'
+    result['task_created']=bool(previous.get('task_created') or current.get('task_created'))
+    return result
 
 
 def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,progress=None,verified_identity=None, return_verified=None):
@@ -339,7 +391,9 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
         return {**result,'status':status,'storage_read_retries':storage_retries,
             'elapsed_seconds':round(time.monotonic()-began,6),'first_error':first_error,**fields}
     def emit(state,**fields):
-        if progress:progress(state,material_sha256=material,**fields)
+        if progress:
+            fields.setdefault('material_sha256',material)
+            progress(state,**fields)
     try:
         request,config,target=prepare(directory,material,config_file,verified_identity=verified_identity,as_of=clock())
         if not 0<=(utc(clock())-utc(request['as_of_utc'])).total_seconds()<=600:
@@ -456,9 +510,10 @@ def wait_for_reply(directory,material,config_file,*,wait_seconds=0,clock=None,pr
                     handoff=last_handoff
                 else:
                     budget=max(.001,read_until-time.monotonic())
-                    handoff=observe_handoff(config,identity=request['native_identity'],directory=folder,
+                    fresh_handoff=observe_handoff(config,identity=request['native_identity'],directory=folder,
                         material=material,as_of=as_of,timeout_seconds=min(12,budget) if inline else budget,
                         require_configured_model=True)
+                    handoff=_merge_handoff(last_handoff,fresh_handoff)
                     last_handoff=handoff;last_handoff_at=time.monotonic()
                 stamp=check_freshness()
                 observe_ticket(stamp)

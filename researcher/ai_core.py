@@ -45,11 +45,11 @@ class Limits:
     max_broad_rows: int = 36
     max_questions: int = 6
     max_cards: int = 10
-    deadline_seconds: int = 600
+    deadline_seconds: int = 1200
     freshness_seconds: int = 600
 
     def __post_init__(self):
-        maximum = (2, 2 * (MAX_EVIDENCE_PAGES + 1), MAX_BRIEF_BYTES, 100, 12, 12, 600, 600)
+        maximum = (2, 2 * (MAX_EVIDENCE_PAGES + 1), MAX_BRIEF_BYTES, 100, 12, 12, 1200, 600)
         if any(type(v) is not int or not 0 < v <= cap
                for v,cap in zip(asdict(self).values(),maximum,strict=True)):
             raise ContractError('AGENT_INPUT_SIZE')
@@ -198,7 +198,9 @@ class AIResearch:
         self.identity = identity
         self.limits = limits or Limits()
         self.clock = clock
-        self.started = monotonic()
+        # Scanning and evidence preparation happen before AI work and must not
+        # consume the two-stage operational allowance.
+        self.started = None
         self.status = {'state': 'AI_DISCOVERY_NOT_STARTED', 'stages': {}, 'investigations': [],
             'limits': asdict(self.limits), 'current_market_interpretation': False,
             'trade_authorization': False, 'model_tasks': 0, 'provider_attempts': 0}
@@ -237,8 +239,17 @@ class AIResearch:
         body['material_sha256'] = digest(encode(_material(body)).encode())
         return body
 
+    def _start_clock(self):
+        if self.started is None:
+            self.started = monotonic()
+        return self.started
+
+    def _elapsed(self):
+        return max(0, monotonic() - self._start_clock())
+
     def _run(self, stage, evidence, *, at, mode, extra, config):
         from .native_codex import review_brief
+        self._start_clock()
         pending = 'AI_DISCOVERY_PENDING' if stage == DISCOVERY else 'AI_SHORTLIST_PENDING'
         detail = {'status': pending}
         self.status['state'] = pending
@@ -247,7 +258,7 @@ class AIResearch:
             detail.update(status='AI_PROVIDER_UNAVAILABLE', reason='NO_NATIVE_GATEWAY')
         elif (self.status['model_tasks'] >= self.limits.max_native_tasks
                 or self.status['provider_attempts'] >= self.limits.max_provider_attempts
-                or monotonic() - self.started >= self.limits.deadline_seconds):
+                or self._elapsed() >= self.limits.deadline_seconds):
             detail.update(status='AI_PROVIDER_UNAVAILABLE', reason='NATIVE_TASK_OR_TIME_BUDGET_EXHAUSTED')
         else:
             try:
@@ -275,7 +286,9 @@ class AIResearch:
                     detail['qualified_alternatives']={e['id']:e.get('qualified_alternatives',{})
                         for e in request['evidence'] if e.get('qualified_alternatives')}
                 self.status['model_tasks'] += 1
-                collected = self.gateway(request, max(0, int(self.limits.deadline_seconds - (monotonic() - self.started))))
+                remaining = max(0, int(self.limits.deadline_seconds - self._elapsed()))
+                per_request_wait = min(self.limits.freshness_seconds, remaining)
+                collected = self.gateway(request, per_request_wait)
                 collector = collected['collector']
                 detail['native_collector'] = collector
                 receipt = collected.get('receipt')
@@ -672,7 +685,7 @@ def investigate_opportunities(research, hypotheses, *, capacity, fetch_selected,
         origin = research.discovery_rows[hypothesis['row_id']]
         name, tf, cutoff = (origin[k] for k in ('native_symbol', 'timeframe', 'cutoff'))
         key = name, tf
-        within_time = monotonic() - research.started < research.limits.deadline_seconds
+        within_time = (research.started is not None and research._elapsed() < research.limits.deadline_seconds)
         closed = hypothesis['question'] == 'VERIFY_METHOD_SEQUENCE'
         new_history = closed and key not in selected and key not in history
         if not within_time or (new_history and len(history) >= capacity):

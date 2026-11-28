@@ -569,6 +569,7 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
                        require_configured_model=True):
     """Observe the scoped native call and response without performing either."""
     from .native_identity import parent_binding
+    from .native_handoff import start_task_argument_binding, start_task_belongs_to_request
     binding=parent_binding(identity,config,require_configured_model=require_configured_model,as_of=as_of)
     session,turn,start=binding['external'],binding['turn'],binding['started_at']
     end=min(utc(as_of),utc(binding['completed_at'])) if binding['completed_at'] else utc(as_of)
@@ -596,25 +597,27 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
             try:args=json.loads(args,object_pairs_hook=_pairs)
             except ValueError:continue
         if not isinstance(args,dict):continue
-        if args.get('title')!=arguments['title'] and not (isinstance(args.get('brief'),str) and
-                arguments['title'] in args['brief']):continue
+        if not start_task_belongs_to_request(args,arguments):continue
         at=utc(x['timestamp'])
         if at<utc(request_at) or reserved_at is not None and at<utc(reserved_at):
-            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TIMESTAMP_ORDER')
         if kind=='request':
             if not isinstance(call_id,str) or call_id in started:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
             started[call_id]=(x['timestamp'],args)
         else:completed.append((call_id,x['timestamp'],args,item))
     if not context:_fail('NATIVE_REVIEW_INCOMPLETE','EVIDENCE','CONTEXT')
     if len(started)>1 or len(completed)>1 or (started and completed and completed[0][0] not in started):
-        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','DUPLICATE_SUBMISSION')
     if not completed:
         if not started:return {'submission_state':'NOT_OBSERVED','submission_attempts':0}
         at,args=next(iter(started.values()))
-        if args!=arguments:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-        return {'submission_state':'ATTEMPTED','submission_attempts':1,'attempted_at_utc':at}
+        binding=start_task_argument_binding(args,arguments)
+        if binding is None:raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','PARENT_ARGUMENT_MISMATCH')
+        return {'submission_state':'ATTEMPTED','submission_attempts':1,'attempted_at_utc':at,
+            'argument_binding':binding}
     call_id,at,args,item=completed[0]
-    if call_id in started and started[call_id][1]!=args:raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+    if call_id in started and start_task_argument_binding(started[call_id][1],args) is None:
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','PARENT_ARGUMENT_MISMATCH')
     result={'submission_attempts':1,'attempted_at_utc':started.get(call_id,(at,None))[0], 'responded_at_utc':at}
     if item.get('success') is False:
         title=args.get('title');brief=args.get('brief')
@@ -622,9 +625,10 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
                   (isinstance(brief,str) and len(brief.strip().encode('utf-16-le',errors='surrogatepass'))//2>100000))
         return {**result,'submission_state':'REJECTED','submission_error':
                 'NATIVE_TOOL_INPUT_SIZE_REJECTED' if oversize else 'NATIVE_TOOL_REJECTED'}
-    if item.get('success') is not True or item.get('status')!='completed' or args!=arguments:
-        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-    if reserved_at is None:return {**result,'submission_state':'ACKNOWLEDGED'}
+    binding=start_task_argument_binding(args,arguments)
+    if item.get('success') is not True or item.get('status')!='completed' or binding is None:
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','PARENT_ARGUMENT_MISMATCH')
+    if reserved_at is None:return {**result,'submission_state':'ACKNOWLEDGED','argument_binding':binding}
     items=item.get('content_items')
     if not isinstance(items,list) or len(items)!=1 or not isinstance(items[0],dict) or items[0].get('type')!='inputText':
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
@@ -632,7 +636,8 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
     if (not isinstance(response,dict) or response.get('title')!=arguments['title'] or
             not isinstance(response.get('taskId'),str) or not response['taskId']):
         raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-    return {**result,'submission_state':'ACKNOWLEDGED','acknowledged_task_ref':ref(response['taskId'])}
+    return {**result,'submission_state':'ACKNOWLEDGED','acknowledged_task_ref':ref(response['taskId']),
+        'argument_binding':binding}
 
 
 def attest_handoff(config,identity,request,*,as_of,require_configured_model=True):

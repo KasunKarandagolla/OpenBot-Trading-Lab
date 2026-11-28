@@ -7,7 +7,7 @@ from unittest.mock import patch
 from researcher.settings import ROOT
 from researcher.contracts import encode,digest,utc,ContractError
 from researcher.agent_review import make_request,AGENT,MODEL,REPLY
-from researcher.native_app import prepare,collect,wait_for_reply,_windows
+from researcher.native_app import prepare,collect,wait_for_reply,_merge_handoff,_windows
 from test_session4 import case
 
 
@@ -48,6 +48,29 @@ class NativeReceiptCollector(unittest.TestCase):
         with sqlite3.connect(self.config['provider_db']) as db:
             db.execute('CREATE TABLE session_message(session_id,type,time_created,seq,data)')
         self.write_attempt()
+
+    def test_verified_handoff_binding_survives_weaker_provider_and_app_reads(self):
+        previous={'material_sha256':'a'*64,'review_stage':'DISCOVERY',
+            'submission_state':'ACKNOWLEDGED','submission_attempts':1,
+            'attempted_at_utc':'2026-01-01T00:00:01Z','responded_at_utc':'2026-01-01T00:00:02Z',
+            'acknowledged_task_ref':'task-ref','argument_binding':'OPENBOT_SCHEMA_TRIMMED',
+            'reserved_at_utc':'2026-01-01T00:00:00Z','task_created':True,
+            'handoff_observation':'VERIFIED',
+            'task':{'count':1,'task_state':'RUNNING','task_ref':'task-ref'}}
+        weaker={'material_sha256':'a'*64,'review_stage':'DISCOVERY',
+            'submission_state':'NOT_OBSERVED','submission_attempts':0,'task_created':False,
+            'handoff_observation':'PARENT_ACKNOWLEDGMENT_PENDING',
+            'task':{'count':0,'task_state':'MISSING'}}
+        merged=_merge_handoff(previous,weaker)
+        self.assertEqual(merged['submission_state'],'ACKNOWLEDGED')
+        self.assertEqual(merged['acknowledged_task_ref'],'task-ref')
+        self.assertEqual(merged['task']['task_state'],'RUNNING')
+        self.assertEqual(merged['latest_handoff_observation'],'PARENT_ACKNOWLEDGMENT_PENDING')
+
+        conflicting={**weaker,'submission_state':'ACKNOWLEDGED','submission_attempts':1,
+            'acknowledged_task_ref':'different-task'}
+        with self.assertRaisesRegex(ContractError,'NATIVE_HANDOFF_UNATTESTED'):
+            _merge_handoff(previous,conflicting)
 
     def write_attempt(self,model='deepseek-v4.1-flash-free'):
         data={'model':{'providerID':'opencode','id':model},'content':self.tools,'finish':'stop','tokens':{'input':1,'output':1},'cost':0}

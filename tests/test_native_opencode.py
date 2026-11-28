@@ -628,11 +628,43 @@ class SubmissionContract(OpenCodeFixture):
         self.assertEqual(observed['submission_attempts'], 1)
         self.assertEqual(observed['acknowledged_task_ref'], ref(CHILD_THREAD))
 
-    def test_pre_request_call_is_ignored(self):
+    def test_schema_trimmed_parent_brief_is_bound_without_weakening_content_check(self):
         args = self.args()
-        self._submission(self.time(-2), args)
+        self._submission(self.time(1), {**args, 'brief': args['brief'] + '\n'})
         observed = observe_submission(self.config, self.identity, self.at, args,
                                       as_of=self.time(5))
+        self.assertEqual(observed['submission_state'], 'ACKNOWLEDGED')
+        self.assertEqual(observed['argument_binding'], 'OPENBOT_SCHEMA_TRIMMED')
+        self.assertEqual(observed['acknowledged_task_ref'], ref(CHILD_THREAD))
+
+    def test_pre_request_call_is_ignored(self):
+        args = self.args()
+        unrelated = {'title': 'OPENBOT-RESEARCH-' + 'b' * 64, 'brief': 'earlier request'}
+        self._submission(self.time(-2), unrelated)
+        observed = observe_submission(self.config, self.identity, self.at, args,
+                                      as_of=self.time(5))
+        self.assertEqual(observed['submission_state'], 'NOT_OBSERVED')
+        self.assertEqual(observed['submission_attempts'], 0)
+
+    def test_current_request_submission_before_request_or_reservation_is_terminal(self):
+        args = self.args()
+        self._submission(self.time(-2), args)
+        self.assert_code('NATIVE_HANDOFF_UNATTESTED', observe_submission, self.config,
+                         self.identity, self.at, args, as_of=self.time(5))
+
+    def test_current_request_submission_before_reservation_is_terminal(self):
+        args = self.args()
+        self._submission(self.time(1), args)
+        self.assert_code('NATIVE_HANDOFF_UNATTESTED', observe_submission, self.config,
+                         self.identity, self.at, args, as_of=self.time(5),
+                         reserved_at=self.time(2))
+
+    def test_unrelated_start_task_before_current_reservation_is_ignored(self):
+        args = self.args()
+        unrelated = {'title': 'OPENBOT-RESEARCH-' + 'c' * 64, 'brief': 'another task'}
+        self._submission(self.time(1), unrelated)
+        observed = observe_submission(self.config, self.identity, self.at, args,
+                                      as_of=self.time(5), reserved_at=self.time(2))
         self.assertEqual(observed['submission_state'], 'NOT_OBSERVED')
         self.assertEqual(observed['submission_attempts'], 0)
 
@@ -808,10 +840,10 @@ class CollectContract(OpenCodeFixture):
                   'review_stage':self.request['stage'],'review_batch_index':self.request['review_batch_index'],
                   'published_at_utc': self.time(5),
                   'reserved_at_utc': self.time(6)}
-        (self.directory / (self.request['material_sha256'] + '.review-task.json')).write_text(
-            encode(args), encoding='utf-8')
-        (self.directory / (self.request['material_sha256'] + '.dispatch.json')).write_text(
-            encode(ticket), encoding='utf-8')
+        (self.directory / (self.request['material_sha256'] + '.review-task.json')).write_bytes(
+            encode(args).encode('utf-8'))
+        (self.directory / (self.request['material_sha256'] + '.dispatch.json')).write_bytes(
+            encode(ticket).encode('utf-8'))
         start = self.time(8)
         end = self.time(8 + len(pages) + 1)
         self._child_session()
@@ -919,8 +951,8 @@ class CollectContract(OpenCodeFixture):
     def test_compact_ticket_with_wrong_packet_fails(self):
         args, _, pages, ticket = self.compact()
         ticket['packet_sha256'] = '0' * 64
-        (self.directory / (self.request['material_sha256'] + '.dispatch.json')).write_text(
-            encode(ticket), encoding='utf-8')
+        (self.directory / (self.request['material_sha256'] + '.dispatch.json')).write_bytes(
+            encode(ticket).encode('utf-8'))
         self.assert_code('NATIVE_HANDOFF_UNATTESTED', collect, self.request,
                          self.config, as_of=self.time(30), directory=self.directory)
 
@@ -929,7 +961,7 @@ class CollectContract(OpenCodeFixture):
         path=self.directory/(self.request['material_sha256']+'.dispatch.json')
         ticket=json.loads(path.read_text(encoding='utf-8'))
         ticket['review_stage']='SHORTLIST'
-        path.write_text(encode(ticket),encoding='utf-8')
+        path.write_bytes(encode(ticket).encode('utf-8'))
         self.assert_code('NATIVE_HANDOFF_UNATTESTED',collect,self.request,
             self.config,as_of=self.time(30),directory=self.directory)
 
@@ -947,10 +979,10 @@ class CollectContract(OpenCodeFixture):
                   'review_stage':self.request['stage'],'review_batch_index':self.request['review_batch_index'],
                   'published_at_utc': self.time(5),
                   'reserved_at_utc': self.time(6)}
-        (self.directory / (self.request['material_sha256'] + '.review-task.json')).write_text(
-            encode(args), encoding='utf-8')
-        (self.directory / (self.request['material_sha256'] + '.dispatch.json')).write_text(
-            encode(ticket), encoding='utf-8')
+        (self.directory / (self.request['material_sha256'] + '.review-task.json')).write_bytes(
+            encode(args).encode('utf-8'))
+        (self.directory / (self.request['material_sha256'] + '.dispatch.json')).write_bytes(
+            encode(ticket).encode('utf-8'))
         outputs = list(pages)
         outputs[0] = outputs[0][:-5]
         start = self.time(8)

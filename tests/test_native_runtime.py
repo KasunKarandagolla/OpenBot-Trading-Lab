@@ -11,7 +11,7 @@ from researcher.settings import ROOT
 from researcher.contracts import ContractError,digest,encode,utc
 from researcher.agent_review import make_request,exchange,REPLY,AGENT
 from researcher.native_identity import active_identity,load_private,configured_identity,NativeEvidenceError,provider_db
-from researcher.native_codex import review_brief
+from researcher.native_codex import observe_submission, review_brief
 from researcher.native_runtime import collect
 from test_session4 import case
 
@@ -82,6 +82,19 @@ class CodexRuntimeFixtures(unittest.TestCase):
         for name,rows in [('PARENT',self.parent),('CHILD',self.child)]:
             (self.root/'sessions'/(name+'.jsonl')).write_text(''.join(json.dumps(r)+'\n' for r in rows),encoding='utf-8')
     def get(self):return collect(self.request,self.config,as_of=self.time(5))
+
+    def test_codex_parent_argument_accepts_only_openbot_schema_trim(self):
+        arguments={'title':'OPENBOT-RESEARCH-'+self.key,'brief':self.brief}
+        self.parent[2]['payload']['item']['arguments']['arguments']['brief']=self.brief+'\n'
+        self.write()
+        observed=observe_submission(self.config,self.identity,self.at,arguments,as_of=self.time(5))
+        self.assertEqual(observed['submission_state'],'ACKNOWLEDGED')
+        self.assertEqual(observed['argument_binding'],'OPENBOT_SCHEMA_TRIMMED')
+
+        self.parent[2]['payload']['item']['arguments']['arguments']['brief']='changed brief'
+        self.write()
+        with self.assertRaisesRegex(ContractError,'NATIVE_HANDOFF_UNATTESTED'):
+            observe_submission(self.config,self.identity,self.at,arguments,as_of=self.time(5))
 
     def test_current_codex_model_exact_input_and_reply_are_independently_attested(self):
         before={k:digest(Path(self.config[k]).read_bytes()) for k in ('openbot_db','provider_db')}

@@ -2,6 +2,7 @@
 from copy import deepcopy
 from datetime import timedelta
 import unittest
+from unittest.mock import patch
 
 from researcher.ai_core import AIResearch, DISCOVERY, FINAL, Limits, REPLY, reconcile, validate
 from researcher.contracts import ContractError, digest, encode, utc
@@ -53,6 +54,44 @@ class FixtureGateway:
 
 
 class AICore(unittest.TestCase):
+    def test_lazy_two_stage_clock_excludes_scan_and_caps_each_native_wait(self):
+        remaining = []
+        def gateway(request, budget):
+            remaining.append(budget)
+            return {'collector': {'status': 'NATIVE_PROVIDER_RESPONSE_NOT_OBSERVED',
+                                 'observed_model_attempts': 0}}
+
+        clock = patch('researcher.ai_core.monotonic', return_value=100)
+        monotonic = clock.start()
+        self.addCleanup(clock.stop)
+        research = AIResearch(gateway=gateway, limits=Limits(deadline_seconds=1200))
+        self.assertIsNone(research.started)
+
+        # A long market scan has happened before Discovery starts.
+        monotonic.return_value = 700
+        research._run(DISCOVERY, [], at='2026-01-20T12:00:00Z', mode='AUTHENTIC_REPLAY',
+                      extra={}, config=load_config())
+        self.assertEqual(research.started, 700)
+        self.assertEqual(remaining, [600])
+
+        # Discovery plus targeted investigation can use nearly the old 600s
+        # budget while Shortlisting still receives its own bounded window.
+        monotonic.return_value = 1290
+        research._run(FINAL, [], at='2026-01-20T12:00:00Z', mode='AUTHENTIC_REPLAY',
+                      extra={}, config=load_config())
+        self.assertEqual(remaining, [600, 600])
+
+        monotonic.return_value = 1885
+        self.assertEqual(research.limits.deadline_seconds - research._elapsed(), 15)
+        self.assertEqual(research.status['model_tasks'], 2)
+
+    def test_workflow_deadline_is_bounded_at_twenty_minutes_and_freshness_stays_ten(self):
+        self.assertEqual(Limits().deadline_seconds, 1200)
+        self.assertEqual(Limits().freshness_seconds, 600)
+        Limits(deadline_seconds=1200)
+        with self.assertRaisesRegex(ContractError, 'AGENT_INPUT_SIZE'):
+            Limits(deadline_seconds=1201)
+
     def test_server_bound_native_reply_drops_hash_echo_but_legacy_reply_keeps_it(self):
         request={'stage':DISCOVERY,'evidence':[],'question_limit':0,
             'reply_binding_policy':'SERVER_BOUND_MATERIAL_V1','material_sha256':'a'*64}

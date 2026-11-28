@@ -2666,3 +2666,31 @@ Starting commit: `a5fc19a0f927fefdc1d9a912a620b706ec1411e2`.
 - Verification: 124 focused Codex/OpenCode/runner/preflight tests passed;
   `python -m researcher config validate` returned `VALID`. No native acceptance
   or analytical-engine change is claimed.
+
+## 2026-11-28 — Native receipt observation and AI-stage timer correction
+
+- Native `start_task` matching now accepts only an exact argument object or
+  OpenBot's documented trim of the `title` and `brief` strings. Codex and
+  OpenCode locate the current request before applying reservation timing;
+  unrelated calls are ignored, while wrong, duplicate, mismatched, or
+  out-of-window current calls remain terminal. OpenCode incomplete records and
+  delayed app projections remain observable as pending. Cached handoff binding
+  survives weaker snapshots; final receipt collection still rechecks identity,
+  timing, pages, reply, and provenance.
+- AI-stage timing now starts at the first AI stage. The configured total limit
+  is 1,200 seconds; each native wait and evidence freshness remain capped at
+  600 seconds. Targeted investigation uses the same operational clock.
+  `IMMUTABLE_JOB_STAGE_BOUND_V4`, server-bound replies without model-hash echo,
+  and `trade_authorization=false` are preserved.
+- Focused verification passed: AI core (12), native runtime (15), native app
+  (7), OpenCode (60), and native handoff (32) tests (126 total). The full suite
+  passed on WSL: 705 tests in 3,061.960 seconds. Config validation passed.
+- Read-only historical replays: A is `VERIFIED_RECEIPT` with one validated row;
+  B remains rejected for `NATIVE_UNAUTHORIZED_TOOL`; C remains rejected at its
+  original cutoff for `NATIVE_PROJECTION_AFTER_SNAPSHOT`. C's recorded start
+  call preserves a trailing newline that the app schema trims; its child
+  projection contains the canonical brief, but the only page command failed
+  with `NATIVE_DISPATCH_WINDOW_CLOSED`, leaving no valid reply or verified
+  provider request count to recover. All three saved ZIP hashes remain
+  unchanged. Replays made zero market or model requests and did not resubmit a
+  task. No owner-host native acceptance is claimed.

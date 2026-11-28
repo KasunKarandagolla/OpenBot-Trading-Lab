@@ -686,6 +686,7 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
                        require_configured_model=True):
     """Observe exactly one scoped start_task call and its exact acknowledgment."""
     from .native_identity import parent_binding
+    from .native_handoff import start_task_argument_binding, start_task_belongs_to_request
     binding = parent_binding(identity, config, require_configured_model=require_configured_model,
                              as_of=as_of)
     start = _at(binding['started_at'])
@@ -704,40 +705,47 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
         input_name = call['input'].get('name')
         declared = call['tool'] == 'openbot.tool_call' and input_name == 'openbot.start_task'
         at = _moment(part['created'])
-        if at < request_moment:
-            # A pre-request call is outside this ticket's observation window.
-            continue
-        if reserved_moment is not None and at < reserved_moment:
-            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
         try:
             parsed = parse_execute(state['input'].get('code'))
         except ContractError:
-            if declared:
-                raise ContractError('NATIVE_HANDOFF_UNATTESTED') from None
+            if declared and start_task_belongs_to_request(call['input'].get('arguments'), arguments):
+                raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','PARENT_ARGUMENT_MISMATCH') from None
             continue
         argument = parsed['argument']
         candidate = declared or (isinstance(argument, dict)
                                  and argument.get('name') == 'openbot.start_task')
         if not candidate:
             continue
+        parsed_args = argument.get('arguments') if isinstance(argument, dict) else None
+        belongs = ((declared and start_task_belongs_to_request(call['input'].get('arguments'), arguments))
+                   or (isinstance(argument, dict) and argument.get('name') == 'openbot.start_task'
+                       and start_task_belongs_to_request(parsed_args, arguments)))
+        if not belongs:
+            # Other legitimate start_task operations can share a parent turn;
+            # bind to this immutable request before checking its ticket time.
+            continue
+        if at < request_moment or reserved_moment is not None and at < reserved_moment:
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TIMESTAMP_ORDER')
         if (parsed['method'] != 'tool_call' or not isinstance(argument, dict)
                 or set(argument) != {'name', 'arguments'}
                 or argument.get('name') != 'openbot.start_task'
                 or not isinstance(argument.get('arguments'), dict)):
-            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','PARENT_ARGUMENT_MISMATCH')
         if (call['tool'] != 'openbot.tool_call' or call['input'] != argument
                 or input_name != 'openbot.start_task'):
-            raise ContractError('NATIVE_UNAUTHORIZED_TOOL')
-        if argument['arguments'] != arguments:
-            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-        attempts.append((part, call, at))
+            raise NativeEvidenceError('NATIVE_UNAUTHORIZED_TOOL','EVIDENCE','UNAUTHORIZED_OPERATION')
+        binding = start_task_argument_binding(argument['arguments'], arguments)
+        if binding is None:
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','PARENT_ARGUMENT_MISMATCH')
+        attempts.append((part, call, at, binding))
     if not attempts:
         return {'submission_state': 'NOT_OBSERVED', 'submission_attempts': 0}
     if len(attempts) != 1:
-        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
-    part, call, at = attempts[0]
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','DUPLICATE_SUBMISSION')
+    part, call, at, binding = attempts[0]
     state = part['data']['state']
-    result = {'submission_attempts': 1, 'attempted_at_utc': at.isoformat()}
+    result = {'submission_attempts': 1, 'attempted_at_utc': at.isoformat(),
+              'argument_binding': binding}
     if state['status'] == 'error' or call['status'] == 'error':
         title, brief = arguments.get('title'), arguments.get('brief')
         oversize = ((isinstance(title, str) and len(title.strip()) > 120) or
@@ -750,10 +758,10 @@ def observe_submission(config, identity, request_at, arguments, *, as_of, reserv
     response = _submission_text(_obj(_text_content(state['content']), stage='EVIDENCE',
                                      check='CONTENT_MISMATCH'))
     if response['title'] != arguments['title']:
-        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','ACKNOWLEDGMENT_CONTENT_INVALID')
     responded = _moment(part['data']['time']['completed'])
     if responded < at:
-        raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+        raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TIMESTAMP_ORDER')
     return {**result, 'responded_at_utc': responded.isoformat(),
             'submission_state': 'ACKNOWLEDGED',
             'acknowledged_task_ref': ref(response['taskId'])}
@@ -985,13 +993,15 @@ def collect(request, config, *, as_of, directory=None, timeout_seconds=30,
             reserved_at=ticket['reserved_at_utc'],
             require_configured_model=require_configured_model)
         verify_submission_window(submitted, ticket)
-        if (submitted['submission_state'] != 'ACKNOWLEDGED'
-                or submitted['acknowledged_task_ref'] != ref(thread)
-                or not utc(ticket['reserved_at_utc']) <= utc(submitted['attempted_at_utc'])
-                    <= utc(submitted['responded_at_utc'])
+        if submitted['submission_state'] != 'ACKNOWLEDGED':
+            raise NativeEvidenceError('NATIVE_REVIEW_INCOMPLETE','EVIDENCE','ACKNOWLEDGMENT_PENDING')
+        if submitted['acknowledged_task_ref'] != ref(thread):
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TASK_IDENTITY_MISMATCH')
+        if (not utc(ticket['reserved_at_utc']) <= utc(submitted['attempted_at_utc'])
+                <= utc(submitted['responded_at_utc'])
                 or not utc(ticket['reserved_at_utc']) <= utc(created)
                     <= utc(submitted['responded_at_utc'])):
-            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TIMESTAMP_ORDER')
         evidence = (directory, request['material_sha256'], pages, None, False,
             request.get('stage') if request.get('page_command_policy') == STAGE_BOUND_PAGE_COMMANDS else None,
             request.get('review_batch_index', 1))

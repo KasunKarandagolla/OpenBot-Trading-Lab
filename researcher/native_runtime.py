@@ -226,11 +226,16 @@ def collect(request,config,*,as_of,directory=None,timeout_seconds=30,require_con
         submitted=observe_submission(config,identity,request['as_of_utc'],args,as_of=as_of,
             reserved_at=ticket['reserved_at_utc'],require_configured_model=require_configured_model)
         verify_submission_window(submitted,ticket)
+        if submitted['submission_state']!='ACKNOWLEDGED':
+            # A provider record or app projection can publish after this read.
+            # Keep final collection retryable without weakening task binding.
+            raise NativeEvidenceError('NATIVE_REVIEW_INCOMPLETE','EVIDENCE','ACKNOWLEDGMENT_PENDING')
         # In OpenBot 0.71.0 newly created task IDs are their thread IDs.
-        if (submitted['submission_state']!='ACKNOWLEDGED' or submitted['acknowledged_task_ref']!=ref(thread)
-                or not utc(ticket['reserved_at_utc'])<=utc(submitted['attempted_at_utc'])<=utc(submitted['responded_at_utc'])
+        if submitted['acknowledged_task_ref']!=ref(thread):
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TASK_IDENTITY_MISMATCH')
+        if (not utc(ticket['reserved_at_utc'])<=utc(submitted['attempted_at_utc'])<=utc(submitted['responded_at_utc'])
                 or not utc(ticket['reserved_at_utc'])<=utc(created)<=utc(submitted['responded_at_utc'])):
-            raise ContractError('NATIVE_HANDOFF_UNATTESTED')
+            raise NativeEvidenceError('NATIVE_HANDOFF_UNATTESTED','EVIDENCE','TIMESTAMP_ORDER')
         if pages:
             evidence=(directory,request['material_sha256'],page_command_fingerprint(request,fingerprint),pages,
                 request.get('page_command_policy')==BOUNDED_WAIT_PAGE_COMMANDS or request.get('input_transport') in {CONFIRMED_PAGES,COMPACT_PAGES},

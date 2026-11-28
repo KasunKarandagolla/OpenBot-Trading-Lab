@@ -32,6 +32,32 @@ EVIDENCE_PAGE_BYTES = 12288
 MAX_EVIDENCE_PAGES = 5
 
 
+def normalize_start_task_arguments(arguments):
+    """Apply OpenBot's documented schema trim to the two inline string fields."""
+    if (not isinstance(arguments, dict) or set(arguments) != {'title', 'brief'}
+            or not all(isinstance(arguments.get(key), str) for key in ('title', 'brief'))):
+        return None
+    return {key: arguments[key].strip() for key in ('title', 'brief')}
+
+
+def start_task_argument_binding(actual, expected):
+    """Return the exact or schema-trimmed binding for a native start_task call."""
+    normalized = normalize_start_task_arguments(actual)
+    canonical = normalize_start_task_arguments(expected)
+    if normalized is None or canonical is None or normalized != canonical:
+        return None
+    return 'EXACT' if actual == expected else 'OPENBOT_SCHEMA_TRIMMED'
+
+
+def start_task_belongs_to_request(actual, expected):
+    """Recognize this request before applying its reservation timing rules."""
+    observed = normalize_start_task_arguments(actual)
+    canonical = normalize_start_task_arguments(expected)
+    if observed is None or canonical is None:
+        return False
+    return observed['title'] == canonical['title'] or canonical['title'] in observed['brief']
+
+
 def runner_review(directory):
     return (directory is not None and directory.name == 'review'
             and directory.parent.parent.name == 'jobs'
