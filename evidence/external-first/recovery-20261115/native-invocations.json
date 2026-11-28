@@ -1,0 +1,398 @@
+[
+  {
+    "audit": {
+      "agent_name": "Trading Lab Market Researcher",
+      "audit_source": "OPENBOT_APP_SCOPED_READ_ONLY_AUDIT",
+      "audited_at_utc": "2026-11-15T06:55:40.120833+00:00",
+      "authority": "ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM",
+      "material_sha256": "6449da10d0c9530c3d2cc02573bf6a2f634b0dc1a9d879c1f6a4b5035cf5a69a",
+      "model": "opencode/deepseek-v4.1-flash-free",
+      "model_requests": 5,
+      "native_app_turns": 1,
+      "native_completed_at_utc": "2026-11-15T06:50:42.255Z",
+      "native_invocation_verified": true,
+      "native_started_at_utc": "2026-11-15T06:48:41.663Z",
+      "provider_schema": "OPENCODE_V2_SESSION_MESSAGE",
+      "provider_usage": [
+        {
+          "finish": "tool-calls",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 0,
+              "write": 0
+            },
+            "input": 11622,
+            "output": 51,
+            "reasoning": 0
+          }
+        },
+        {
+          "finish": "tool-calls",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 11520,
+              "write": 0
+            },
+            "input": 2079,
+            "output": 127,
+            "reasoning": 0
+          }
+        },
+        {
+          "finish": "tool-calls",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 13568,
+              "write": 0
+            },
+            "input": 21703,
+            "output": 144,
+            "reasoning": 0
+          }
+        },
+        {
+          "finish": "tool-calls",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 35200,
+              "write": 0
+            },
+            "input": 22932,
+            "output": 144,
+            "reasoning": 3
+          }
+        },
+        {
+          "finish": "stop",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 58112,
+              "write": 0
+            },
+            "input": 4249,
+            "output": 1639,
+            "reasoning": 10395
+          }
+        }
+      ],
+      "read_methods": [
+        "skill",
+        "read",
+        "read",
+        "read"
+      ],
+      "reply_rejection_reason": "AGENT_REPLY_ADVICE",
+      "reply_sha256": "d63d59ce7c36e480b1ffd972adf67b16b577f34c5f7545465c67c05d99dfba01",
+      "reply_validation_status": "REJECTED",
+      "schema_version": "openbot.native-review.audit.v1",
+      "search_scope": "EXACT_REQUEST_OR_SCOPED_SKILL_FILE_ONLY; NO_DIRECTORY_SEARCH",
+      "skill_and_request_read_completely": true,
+      "skill_sha256": "96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb",
+      "submission_transport": "OWNER_OPENBOT_APPLICATION_UI",
+      "tool_operations": [
+        "READ_SKILL",
+        "READ_REQUEST",
+        "READ_REQUEST",
+        "READ_REQUEST"
+      ],
+      "unauthorized_tool_operations": 0,
+      "validated_rows": 0
+    },
+    "request_as_of": "2026-11-15T06:43:57.019451+00:00",
+    "input_cards": [
+      {
+        "card_id": "0040684c585d232d782b8cd82a02ffc7331fab553a520d2db850d067bfb90298",
+        "native_symbol": "KITEUSDT",
+        "timeframe": "1h",
+        "deterministic_stage": "UNKNOWN",
+        "room": {},
+        "economics": {}
+      },
+      {
+        "card_id": "1a73821fd73b0cb5cc44d2a3ef09b639baee5dac7adca1540786043ae8bac666",
+        "native_symbol": "XVSUSDT",
+        "timeframe": "1h",
+        "deterministic_stage": "UNKNOWN",
+        "room": {},
+        "economics": {}
+      }
+    ],
+    "raw_reply": {
+      "schema_version": "openbot.research-review.reply.v1",
+      "material_sha256": "6449da10d0c9530c3d2cc02573bf6a2f634b0dc1a9d879c1f6a4b5035cf5a69a",
+      "interpretations": [
+        {
+          "card_id": "0040684c585d232d782b8cd82a02ffc7331fab553a520d2db850d067bfb90298",
+          "interpretation": "F4 bearish, failed upside break at a frozen swing high on KITEUSDT 1h. Reference created 2026-11-13T17:00Z, known 2026-11-13T20:00Z, valid to 2026-11-20T20:00Z. Ordered events: approach 2026-11-14 05:00-06:00Z, then a 2026-11-15 03:00-04:00Z reclaim that disconfirms a straight break at that same level. Excursion plus reclaim fits rejection better than acceptance, but the later opposite initiative F4 also requires is absent, and the sampled closes after the reclaim sit back under the reference, so this stays a hypothesis, not verified formation. Chronology caveat: the approach predates the reclaim by more than the supplied 15h horizon, so the pair is not one continuous episode unless the reclaim alone is operative. Card and causal-sequence fact are TRIAL; reference, approach and reclaim all resolve to one KITE 1h close series, so shared price evidence yields one path, not three confirmations. Rival graph is internally inconsistent: the same reclaim contradicts supplied F2 bullish and also carries the F5 bullish SUPPORTED verdict, so verdicts are not independent evidence. Structured economics and room objects are empty; funding bound, round-trip fee and horizon exist only as scalar facts, and current spread and research-price facts are flagged usable_as_of false, leaving friction and first obstacle unproven. BTC/ETH 4H and 1H trend-down, partial breadth and UNKNOWN sector heat are advisory only and cannot veto or promote. Strongest rival F5 bullish acceptance; NULL and F2 stay open. Invalidation: a closed 1h bar accepting above the frozen swing high and holding, or a fresh approach that never reclaims. Missing: first-opposite-obstacle room, executed-flow footprint, volume profile, open interest, liquidation and news inputs. Disposition WATCH, research only.",
+          "supporting_evidence_ids": [
+            "ec26b3d91f00ad4946cb1440a3e9e9c15f2d36d0d07e4be12376258f3de31b0d",
+            "555b1e0b0fa64f0a84707167ec7597052bb944140fd5d7336678fa9fba7a2b39",
+            "c0dd6b6ad2d15bbca49c07e31d04f438467e519389be16ffca7512a978ff98cb"
+          ],
+          "contradicting_ids": [
+            "c84af2b8d7995491477a222d4a68548029dbdddece474eb41ffe7ca574cfe9d3",
+            "7dcc4b3fda802b216c2259e8a833dfceddf7ed58c5d7e733e7630caf8947168d"
+          ],
+          "strongest_rival": "F5",
+          "null_hypothesis": false,
+          "missed_traps": [
+            "SHARED_PRICE_EVIDENCE",
+            "SPECIALIST_SOURCE_MISSING",
+            "SOURCE_STALE_OR_PARTIAL",
+            "LATE_OR_ROOM_EXHAUSTED",
+            "CONTEXT_NOT_VETO"
+          ],
+          "falsifying_question": "NEXT_CLOSED_RESPONSE",
+          "priority": "INVESTIGATE",
+          "claims": []
+        },
+        {
+          "card_id": "1a73821fd73b0cb5cc44d2a3ef09b639baee5dac7adca1540786043ae8bac666",
+          "interpretation": "F1 bearish continuation after a controlled counterleg on XVSUSDT 1h. Reference created 2026-11-14T10:00Z, known 2026-11-15T01:00Z, valid to 2026-11-22T01:00Z. Single ordered event: a controlled upward counterleg 2026-11-15 04:00-05:00Z into that frozen reference, following a decline in the sampled 1h closes and a partial bounce. A controlled counterleg inside a lower ladder keeps continuation as the narrower read, but one event plus a DECISION_PROXIMITY false flag means no decision point and no acceptance are established, and the pullback is not witnessed as halted. Card and causal-sequence fact are TRIAL; reference, counterleg and closes share one XVS 1h series, the decision price is a single quote, and current research price and spread are usable_as_of false, so this is one shared price path and not independent confirmation. Structured economics and room objects are empty; nearly every obstacle-lifecycle fact is consumed with a few left unconsumed, so the first opposing obstacle is unresolved rather than absent. BTC/ETH trend-down, partial breadth with large constituent gaps and UNKNOWN sector heat are advisory only, neither a long veto nor a short endorsement. Strongest rival F7 bullish failed-extension reversion toward value; F4 bullish and NULL remain open. Invalidation: a closed 1h bar accepting above the frozen swing high and holding, or a counterleg that clears the remaining unconsumed obstacle states. Missing: first-opposite-obstacle room, executed-flow footprint, volume profile, open interest, liquidation, settled funding and news inputs. Disposition WATCH, research only.",
+          "supporting_evidence_ids": [
+            "3d03faeee6c3b1e0a7dad3222a2b00b12ea93e7553c7c66d318df7f504935fde",
+            "d6a18db2506bfffef2b4c4f871aaa0b3ca6afa7fe3cf155845b51f6b6d113f7c",
+            "9a8c57d70e4f5063330a02e1218811982a4a992bdc8dffe7eebec35a57b4b0e3"
+          ],
+          "contradicting_ids": [
+            "c1461813ee456220cf723a6c878f77f407f0b6e2002439665da4abdda8593431"
+          ],
+          "strongest_rival": "F7",
+          "null_hypothesis": false,
+          "missed_traps": [
+            "SHARED_PRICE_EVIDENCE",
+            "SPECIALIST_SOURCE_MISSING",
+            "SOURCE_STALE_OR_PARTIAL",
+            "LATE_OR_ROOM_EXHAUSTED",
+            "CONTEXT_NOT_VETO"
+          ],
+          "falsifying_question": "SAME_REFERENCE_RIVAL",
+          "priority": "WATCH",
+          "claims": []
+        }
+      ],
+      "trade_authorization": false
+    },
+    "import_status": "REJECTED_ADVICE_ENUM; SUPPLEMENTAL_AUDIT_AFTER_SCAN; NOT_CURRENT_IMPORT",
+    "source_facts_changed_by_model": 0,
+    "candidate_eligibility_changed_by_model": 0,
+    "interpretation": "Actual skill/request/runtime proof; zero promotion of missing facts or production qualifications"
+  },
+  {
+    "audit": {
+      "agent_name": "Trading Lab Market Researcher",
+      "audit_source": "OPENBOT_APP_SCOPED_READ_ONLY_AUDIT",
+      "audited_at_utc": "2026-11-15T07:14:27.082660+00:00",
+      "authority": "ADVISORY_ONLY; NO_HOST_ISOLATION_CLAIM",
+      "material_sha256": "8baf49cd472d2c57d3113927706898fded04a3ea5acea22f407f175d1a06e33d",
+      "model": "opencode/deepseek-v4.1-flash-free",
+      "model_requests": 5,
+      "native_app_turns": 1,
+      "native_completed_at_utc": "2026-11-15T07:14:26.414Z",
+      "native_invocation_verified": true,
+      "native_started_at_utc": "2026-11-15T07:11:44.564Z",
+      "provider_schema": "OPENCODE_V2_SESSION_MESSAGE",
+      "provider_usage": [
+        {
+          "finish": "tool-calls",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 512,
+              "write": 0
+            },
+            "input": 11142,
+            "output": 40,
+            "reasoning": 0
+          }
+        },
+        {
+          "finish": "tool-calls",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 11648,
+              "write": 0
+            },
+            "input": 1971,
+            "output": 119,
+            "reasoning": 16
+          }
+        },
+        {
+          "finish": "tool-calls",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 13568,
+              "write": 0
+            },
+            "input": 22199,
+            "output": 153,
+            "reasoning": 13
+          }
+        },
+        {
+          "finish": "tool-calls",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 35712,
+              "write": 0
+            },
+            "input": 22093,
+            "output": 153,
+            "reasoning": 0
+          }
+        },
+        {
+          "finish": "stop",
+          "reported_cost_usd": 0,
+          "tokens": {
+            "cache": {
+              "read": 57728,
+              "write": 0
+            },
+            "input": 1508,
+            "output": 597,
+            "reasoning": 19784
+          }
+        }
+      ],
+      "read_methods": [
+        "skill",
+        "read",
+        "read",
+        "read"
+      ],
+      "reply_sha256": "6c49d4bc1d7a94955ed90d3ba02f8837a1fc8856f260b163eea3b73a5ae851aa",
+      "reply_validation_status": "VALIDATED",
+      "schema_version": "openbot.native-review.audit.v1",
+      "search_scope": "EXACT_REQUEST_OR_SCOPED_SKILL_FILE_ONLY; NO_DIRECTORY_SEARCH",
+      "skill_and_request_read_completely": true,
+      "skill_sha256": "96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb",
+      "submission_transport": "OWNER_OPENBOT_APPLICATION_UI",
+      "tool_operations": [
+        "READ_SKILL",
+        "READ_REQUEST",
+        "READ_REQUEST",
+        "READ_REQUEST"
+      ],
+      "unauthorized_tool_operations": 0,
+      "validated_rows": 2
+    },
+    "request_as_of": "2026-11-15T07:07:58.229742+00:00",
+    "input_cards": [
+      {
+        "card_id": "03134e8c92af6f572076da0ab34622d240a813b4fac137a0cda69a5bbfdc788e",
+        "native_symbol": "ICNTUSDT",
+        "timeframe": "1h",
+        "deterministic_stage": "APPROACHING_DECISION",
+        "room": {
+          "evidence_ids": [
+            "e4bf1930733005b8dffcde059a3193599a90111a3065b01297532c00b28e1a4c"
+          ],
+          "reason": "DECISION_PRICE_NOT_PREKNOWN",
+          "status": "ROOM_UNKNOWN"
+        },
+        "economics": {
+          "evidence_ids": [
+            "5e49541f5b4bd8a37ec7145861ae438787d2c0579b1972ff641db880f379b80c",
+            "ffa9b01f352ae680913b9d29087f1b2ba779ecc4324e7f8adfb6a295abc93d04",
+            "0cca04cc9718ecda30a3e2a81f982ccf5314af12640bdb4aa5bfec00c078abd6",
+            "d22c4b2b7cdeacdc1af88b3b63a3f53a149107da0bfd8dc5823d4e1c6d7fa85c",
+            "3d25fd6df18e693512b3e92ec5f15d9e2a14d64ecb3ff17ad99890c6ab090187"
+          ],
+          "missing": [
+            "DEPTH_USDT_WITHIN_ROOM",
+            "SLIPPAGE_BOUND_BPS"
+          ],
+          "status": "ECONOMICS_UNKNOWN"
+        }
+      },
+      {
+        "card_id": "80b46669d42a074e9bd4c32a987f38da8eee69df38d583bd4d708e2d2431255a",
+        "native_symbol": "APRUSDT",
+        "timeframe": "1h",
+        "deterministic_stage": "APPROACHING_DECISION",
+        "room": {
+          "evidence_ids": [
+            "8b1388f1c53646465293abc609524a4933ade0de9768858e01124e4b7175d775"
+          ],
+          "reason": "DECISION_PRICE_NOT_PREKNOWN",
+          "status": "ROOM_UNKNOWN"
+        },
+        "economics": {
+          "evidence_ids": [
+            "c3cef9c7f65973dc4dd55ae989f1c0b09e31fd2c0555e89e489857fbf4fb4417",
+            "488650f8d9243eb80d5f1ed501b097f2fcb505669b859e997d5bd8985bae0e66",
+            "df6ed69f5f58c92678f6a161253682b0167b49ae0ac9968afe633a0cc72f1f5c",
+            "2e0a739eb7ac2d630bb2c04e1d0508f1c447b6d6c600c6b3353560ec77a0a273",
+            "b5325b97962957ddb3a0ae8e58db49196f156185562f9fe0bdd91fe859909294"
+          ],
+          "missing": [
+            "DEPTH_USDT_WITHIN_ROOM",
+            "SLIPPAGE_BOUND_BPS"
+          ],
+          "status": "ECONOMICS_UNKNOWN"
+        }
+      }
+    ],
+    "raw_reply": {
+      "schema_version": "openbot.research-review.reply.v1",
+      "material_sha256": "8baf49cd472d2c57d3113927706898fded04a3ea5acea22f407f175d1a06e33d",
+      "interpretations": [
+        {
+          "card_id": "03134e8c92af6f572076da0ab34622d240a813b4fac137a0cda69a5bbfdc788e",
+          "interpretation": "F5",
+          "supporting_evidence_ids": [
+            "f70835b3ce4a25253932fac3142f4c2bde64dc9c57bb99bcb259cbe60c16dddb"
+          ],
+          "contradicting_ids": [],
+          "strongest_rival": "F4",
+          "null_hypothesis": false,
+          "missed_traps": [
+            "CHRONOLOGY_UNKNOWN",
+            "SHARED_PRICE_EVIDENCE",
+            "SPECIALIST_SOURCE_MISSING",
+            "CONTEXT_NOT_VETO"
+          ],
+          "falsifying_question": "NEXT_CLOSED_RESPONSE",
+          "priority": "WATCH",
+          "claims": []
+        },
+        {
+          "card_id": "80b46669d42a074e9bd4c32a987f38da8eee69df38d583bd4d708e2d2431255a",
+          "interpretation": "F5",
+          "supporting_evidence_ids": [
+            "dfba08f609d1987873a1e6eeead38d3d58367c4b3c2a59694ba98a548038cdf2",
+            "ef8b5f4b3292fe54f24dc30d874acbd55e06fc1734cb4983e04281c02397aa1d",
+            "b45209c623cc91fdbdd4ca8f4b812639e5e1d8143882ba5b0406766445422ac1"
+          ],
+          "contradicting_ids": [],
+          "strongest_rival": "NULL",
+          "null_hypothesis": false,
+          "missed_traps": [
+            "CHRONOLOGY_UNKNOWN",
+            "SHARED_PRICE_EVIDENCE",
+            "SPECIALIST_SOURCE_MISSING",
+            "CONTEXT_NOT_VETO"
+          ],
+          "falsifying_question": "FIRST_OBSTACLE",
+          "priority": "INVESTIGATE",
+          "claims": []
+        }
+      ],
+      "trade_authorization": false
+    },
+    "import_status": "VALIDATED_ADVISORY_ONLY_PRE_ADMISSION",
+    "source_facts_changed_by_model": 0,
+    "candidate_eligibility_changed_by_model": 0,
+    "interpretation": "Actual skill/request/runtime proof; zero promotion of missing facts or production qualifications"
+  }
+]

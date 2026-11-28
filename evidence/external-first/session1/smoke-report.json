@@ -1,0 +1,170 @@
+{
+  "context": {
+    "btc": "UNVERIFIED",
+    "eth": "UNVERIFIED",
+    "policy": "ADVISORY_NON_VETO"
+  },
+  "coverage": {
+    "all_market_structurally_covered": false,
+    "cheap_market_observed": 0,
+    "denominator_status": "UNKNOWN_EXCHANGE_INVENTORY_HTTP_451",
+    "eligible_contracts": null,
+    "inventory_seen": null,
+    "method_predicate_evaluated": {
+      "15m": 0,
+      "1h": 0
+    },
+    "qualified_specialist_evaluated": 0,
+    "targeted_verified": 0,
+    "valid_remote_core_evaluated": 0
+  },
+  "created_at_utc": "2026-11-13T05:40:37.553328+00:00",
+  "limitations": [
+    "No quiet-tail qualification",
+    "No independent source oracle",
+    "No detectors enabled",
+    "Earliest source availability UNKNOWN"
+  ],
+  "manifest_sha256": "1214114a522f6a8d266988f14830b18fd92389afefcf4eb5d88acbe88ccdfac4",
+  "mode": "TARGETED_RESEARCH",
+  "near_misses": [],
+  "new_orders_created": 0,
+  "observations": [
+    {
+      "available_at_utc": null,
+      "complete": true,
+      "fault_code": null,
+      "fidelity": "EXACT_REPORTED",
+      "formula_hash": null,
+      "id": "basis:4ba90462bdec46baea9653be74b3d66d0b0ce8d99c468d0e1a6621f0591fe40d",
+      "instrument": {
+        "contract_multiplier": null,
+        "contract_type": null,
+        "identity_status": "UNVERIFIED",
+        "metadata_hash": null,
+        "native_symbol": "BTCUSDT",
+        "onboard_at_utc": null,
+        "quantity_rules": {},
+        "quote": null,
+        "settlement": null,
+        "tick_size": null,
+        "venue": "BINANCE_USDM"
+      },
+      "known_at_utc": "2026-11-13T05:40:39.971000+00:00",
+      "measurement_id": "PROVIDER_REPORTED_CLOSED_CLOSE",
+      "provider": "basis",
+      "received_at_utc": "2026-11-13T05:40:40.123268+00:00",
+      "source_response_hash": "4ba90462bdec46baea9653be74b3d66d0b0ce8d99c468d0e1a6621f0591fe40d",
+      "source_schema_hash": "706559debc74179be7b94bc30a9eb1152fa8c7384d90956e308dee0b7a3185ac",
+      "source_scope": "PROVIDER_REPORTED_BINANCE_FUTURES_IDENTITY_UNVERIFIED",
+      "temporal_status": "CLOSED_CURRENT",
+      "timeframe": "1h",
+      "units": "USDT_PER_NATIVE_CONTRACT_PRICE_UNIT_PROVIDER_REPORTED",
+      "value": "68552.7",
+      "verdict": "SUPPORTED",
+      "window_end_utc": "2026-11-13T05:00:00+00:00",
+      "window_start_utc": "2026-11-13T04:00:00+00:00"
+    }
+  ],
+  "operation_status": "LIVE_TESTED_NARROW",
+  "provider_status": {
+    "optional_basis_key_present": false,
+    "optional_basis_key_used": false,
+    "providers": {
+      "basis": {
+        "authentication": "NONE",
+        "continuous_cadence_qualified": false,
+        "documented_free_key_daily_calls": 10000,
+        "documented_keyless_daily_calls": 1000,
+        "endpoint": "https://www.basischarts.com/api/mcp",
+        "evidence": "LIVE_TESTED_NARROW",
+        "free_automation_terms": "DOC_CONFIRMED_2026-11-13",
+        "key_setup": "DEFERRED_UNTIL_AUTH_CONTRACT_VERIFIED",
+        "minute_limit": null,
+        "observed_charged_units": null,
+        "operations": {
+          "formula_evaluate": {
+            "enabled": false,
+            "feasibility": "UNVERIFIED"
+          },
+          "market_candles": {
+            "enabled": true,
+            "feasibility": "TARGETED_ONLY",
+            "oracle_status": "INDEPENDENT_SOURCE_BLOCKED",
+            "scope": "provider-reported BINANCE futures; exchange identity UNVERIFIED",
+            "timeframes": [
+              "1h",
+              "15m"
+            ]
+          },
+          "orderflow_read": {
+            "enabled": false,
+            "feasibility": "UNVERIFIED",
+            "schema_inspected": true
+          },
+          "screener_run": {
+            "enabled": false,
+            "feasibility": "UNVERIFIED"
+          }
+        }
+      },
+      "binance": {
+        "authentication": "NONE",
+        "enabled": false,
+        "endpoint": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+        "evidence": "BLOCKED",
+        "http_status": 451,
+        "retry_policy": "STOP_ROUTE_NO_BYPASS"
+      }
+    },
+    "setup_keys": "DEFERRED: public runtime needs no keys; auth contract must be qualified first",
+    "status_kind": "RECORDED_CAPABILITIES_NOT_LIVE_HEALTH"
+  },
+  "schema_version": "openbot.research-smoke.v1",
+  "shortlist": [],
+  "source_faults": [],
+  "trade_authorization": false,
+  "transport_receipts": [
+    {
+      "elapsed_ms": 609,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:40:38.163558+00:00",
+      "response_bytes": 4022,
+      "response_sha256": "aada727f47b586edc974a4bd213791bc54bb638a0f1be6965bb39982470227f1",
+      "retry_after": null
+    },
+    {
+      "elapsed_ms": 565,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 202,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:40:38.729154+00:00",
+      "response_bytes": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retry_after": null
+    },
+    {
+      "elapsed_ms": 543,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:40:39.272356+00:00",
+      "response_bytes": 68090,
+      "response_sha256": "98b5f49997dbbb9e1a2733fc0ba75286cca94e9dbea5e38ee8802338efb8e674",
+      "retry_after": null
+    },
+    {
+      "elapsed_ms": 846,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T05:40:40.123268+00:00",
+      "response_bytes": 1125,
+      "response_sha256": "4ba90462bdec46baea9653be74b3d66d0b0ce8d99c468d0e1a6621f0591fe40d",
+      "retry_after": null
+    }
+  ],
+  "watches": []
+}

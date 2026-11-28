@@ -1,0 +1,109 @@
+{
+  "agent_name": "Trading Lab Market Researcher",
+  "changed_question": "ACE F8: source-gap discriminator; ACE F9 rival: first obstacle. F9 remains deferred despite INVESTIGATE advice.",
+  "control": {
+    "accepted_current_advice": true,
+    "as_of": "2026-11-15T09:16:53.749091+00:00",
+    "hard_gates_changed": false,
+    "identical_source_deterministic_control": [
+      "d6d49f8a75f60f7c8ffd306881f418c1c104381e60ced9d1fd713b9796265024"
+    ],
+    "linked_decisions": [
+      {
+        "card_id": "d6d49f8a75f60f7c8ffd306881f418c1c104381e60ced9d1fd713b9796265024",
+        "challenge": {
+          "confidence_limit": "ADVISORY_INTERPRETATION_OF_SUPPLIED_SOURCES; NO_PROBABILITY_OR_METHOD_CERTIFICATE",
+          "contradicting_ids": [],
+          "falsifying_question": "SOURCE_GAP",
+          "interpretation": "F8",
+          "material_sha256": "3589ff785010fc0df3c31bc6505cefe319a3ebc56c873dfce8036360f7ad52f8",
+          "missed_traps": [
+            "SHARED_PRICE_EVIDENCE",
+            "SPECIALIST_SOURCE_MISSING",
+            "SOURCE_STALE_OR_PARTIAL"
+          ],
+          "null_hypothesis": false,
+          "priority": "WATCH",
+          "strongest_rival": "COMMON_BETA",
+          "supporting_evidence_ids": [
+            "122374dd68bcc3028ccceaeaf9bbb61789e37bf7472e8a0c8ce3e1a39bb8d7a7"
+          ]
+        },
+        "disposition": "CONDITIONAL_RESEARCH_ONLY",
+        "native_symbol": "ACEUSDT"
+      }
+    ],
+    "native_assisted_card_ids": [
+      "d6d49f8a75f60f7c8ffd306881f418c1c104381e60ced9d1fd713b9796265024"
+    ],
+    "performance_improvement_established": false,
+    "ranking_or_membership_changed": false
+  },
+  "material_sha256": "3589ff785010fc0df3c31bc6505cefe319a3ebc56c873dfce8036360f7ad52f8",
+  "model": "opencode/deepseek-v4.1-flash-free",
+  "model_requests": 3,
+  "native_app_turns": 1,
+  "native_completed_at_utc": "2026-11-15T09:16:49.227Z",
+  "native_invocation_verified": true,
+  "native_started_at_utc": "2026-11-15T09:14:22.122Z",
+  "performance_improvement_established": false,
+  "reply_sha256": "6a6e337e34e1adee4c66da122721488c54e8db1666836c34281f5cc02611c5c9",
+  "reply_validation_status": "VALIDATED",
+  "request_bytes": 61300,
+  "request_created_at": "2026-11-15T09:10:47.005881+00:00",
+  "request_file_sha256": "c162ae86198b972a1b93b97a95038baf641542e841aca8e0012db357b0c46339",
+  "rival_dispositions": [
+    {
+      "card_id": "9dc4a980ca2f1ffc861bad4de808a9c80384ca6f7203202536136c2f6af60245",
+      "disposition": "NO_RECENT_STRUCTURAL_EVENT",
+      "native_symbol": "ACEUSDT"
+    }
+  ],
+  "skill_and_request_read_completely": true,
+  "skill_sha256": "96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb",
+  "tool_operations": [
+    "READ_SKILL",
+    "READ_REQUEST",
+    "READ_REQUEST"
+  ],
+  "trade_authorization": false,
+  "unauthorized_tool_operations": 0,
+  "validated_advice": [
+    {
+      "card_id": "d6d49f8a75f60f7c8ffd306881f418c1c104381e60ced9d1fd713b9796265024",
+      "claims": [],
+      "contradicting_ids": [],
+      "falsifying_question": "SOURCE_GAP",
+      "interpretation": "F8",
+      "missed_traps": [
+        "SHARED_PRICE_EVIDENCE",
+        "SPECIALIST_SOURCE_MISSING",
+        "SOURCE_STALE_OR_PARTIAL"
+      ],
+      "null_hypothesis": false,
+      "priority": "WATCH",
+      "strongest_rival": "COMMON_BETA",
+      "supporting_evidence_ids": [
+        "122374dd68bcc3028ccceaeaf9bbb61789e37bf7472e8a0c8ce3e1a39bb8d7a7"
+      ]
+    },
+    {
+      "card_id": "9dc4a980ca2f1ffc861bad4de808a9c80384ca6f7203202536136c2f6af60245",
+      "claims": [],
+      "contradicting_ids": [],
+      "falsifying_question": "FIRST_OBSTACLE",
+      "interpretation": "F9",
+      "missed_traps": [
+        "SHARED_PRICE_EVIDENCE",
+        "SPECIALIST_SOURCE_MISSING",
+        "SOURCE_STALE_OR_PARTIAL"
+      ],
+      "null_hypothesis": false,
+      "priority": "INVESTIGATE",
+      "strongest_rival": "RECOVERY",
+      "supporting_evidence_ids": [
+        "4135e155a7c6027291584ba97a4e6fdb05ad7608a75543e3fb1470a588f02131"
+      ]
+    }
+  ]
+}

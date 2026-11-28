@@ -1,0 +1,32 @@
+{
+  "basis": {
+    "advertised_free_key_daily_calls": 10000,
+    "advertised_no_key_daily_calls": 1000,
+    "authentication_used": "NONE",
+    "measured_charged_units": null,
+    "remaining_credits": null,
+    "scheduling_enabled": false,
+    "scope": "Publisher describes MCP use by AI agents. Advertised allowance is not measured remaining credits or contractual bulk-reuse rights.",
+    "url": "https://www.basischarts.com/mcp"
+  },
+  "binance": {
+    "auth": "PUBLIC_NO_KEY",
+    "entitlement": "DOCUMENTED_PUBLIC_MARKET_API; SUSTAINED_RIGHTS_AND_PER_CALL_CHARGES_NOT_ATTESTED",
+    "operations": [
+      "GET /fapi/v1/depth?symbol&limit=100",
+      "GET /futures/data/openInterestHist?symbol&period=5m&limit=12"
+    ],
+    "url": "https://developers.binance.com/en/docs/catalog/core-trading-derivatives-trading-usd-s-m-futures/api/rest-api/market-data"
+  },
+  "checked_utc": "2026-11-14",
+  "fees": {
+    "configured_assumed_round_trip_bps": 20,
+    "example_round_trip_taker_bps": 10,
+    "future_slippage_funding": "DECLARED_SCENARIO_NOT_GUARANTEE",
+    "personal_fee_tier": "UNKNOWN_NO_CREDENTIALS_REQUESTED",
+    "url": "https://www.binance.com/en/support/faq/detail/360033544231"
+  },
+  "llm": "LLM_DISABLED_NO_APPROVED_PROVIDER",
+  "sectors": "SECTOR_UNKNOWN; NO_DATED_EXACT_CONTRACT_TAXONOMY_QUALIFIED",
+  "specialist_policy": "Only public native displayed depth and aggregate OI added; no trial/premium/other venue substitute"
+}

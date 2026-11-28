@@ -1,0 +1,92 @@
+{
+  "provider_qualification": "PARTIAL",
+  "session2": "NO_GO",
+  "binance_inventory": {
+    "status": "BLOCKED",
+    "http_status": 451,
+    "eligible_denominator": null
+  },
+  "quiet_tail": {
+    "status": "BLOCKED_CURRENT_INVENTORY",
+    "target_partition_size": 50,
+    "partitions_sent": 0,
+    "requested_symbols": [],
+    "evaluated_symbols": [],
+    "eligible_denominator": null
+  },
+  "targeted_samples": {
+    "provider": "basis",
+    "exchange": "binance",
+    "market": "futures",
+    "symbols": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "SOLUSDT",
+      "FILUSDT",
+      "1000PEPEUSDT"
+    ],
+    "timeframes": [
+      "15m",
+      "1h"
+    ],
+    "requested_symbol_timeframes": 10,
+    "returned_valid_shapes": 10,
+    "remote_width_calls_succeeded": 10,
+    "failed": 0,
+    "independent_exchange_identity": "UNVERIFIED",
+    "independent_source_oracle": "BLOCKED"
+  },
+  "footer": {
+    "timeframe": "1h",
+    "method": "UNQUALIFIED_FINITE_SCALAR_PROBE",
+    "requested": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "evaluated": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "returned_requested": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "failed": {},
+    "filler_count": 18,
+    "vendor_evaluated_count": 20,
+    "qualified_core_evaluated": 0
+  },
+  "poison": {
+    "timeframe": "1h",
+    "requested": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "valid_evaluated": [],
+    "failed": {
+      "BTCUSDT": "MCP_TOOL_ERROR",
+      "ETHUSDT": "MCP_TOOL_ERROR"
+    },
+    "http_status": 200,
+    "vendor_error": "isError=true; 20 of 20 could not evaluate",
+    "recovery": "FINITE_PACK_SUCCEEDED"
+  },
+  "oracle": {
+    "arithmetic_comparisons_passed": 167,
+    "failed": 0,
+    "independent_source": "BLOCKED_HTTP_451"
+  },
+  "method_coverage": {
+    "1h": {
+      "qualified_core": 0,
+      "qualified_predicates": 0,
+      "eligible_denominator": null
+    },
+    "15m": {
+      "qualified_core": 0,
+      "qualified_predicates": 0,
+      "eligible_denominator": null
+    }
+  },
+  "read_only": true
+}

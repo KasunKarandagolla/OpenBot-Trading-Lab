@@ -1,0 +1,899 @@
+[
+  {
+    "label": "basis_btc_1h",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "basis_btc_1h",
+      "params": {
+        "name": "market_candles",
+        "arguments": {
+          "symbol": "BTCUSDT",
+          "exchange": "binance",
+          "market": "futures",
+          "timeframe": "1h",
+          "bars": 65,
+          "withDerivatives": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 1140,
+    "response_sha256": "e78eba78dac20cf427bbe71aee18569f88b95fe5269db8c73ef7ddde82785586",
+    "elapsed_ms": 662,
+    "received_at_utc": "2026-11-13T05:17:43.100220+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:17:43 GMT"
+    }
+  },
+  {
+    "label": "basis_formula_catalog",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "basis_formula_catalog",
+      "params": {
+        "name": "catalog_search",
+        "arguments": {
+          "kind": "formula",
+          "limit": 100
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 8966,
+    "response_sha256": "f7ca7dc0b9082c233d9186e4295dbf2ed30d5256b9371ceab37721ef245c7bfb",
+    "elapsed_ms": 456,
+    "received_at_utc": "2026-11-13T05:17:41.926108+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:17:41 GMT"
+    }
+  },
+  {
+    "name": "basis_mcp_docs",
+    "url": "https://www.basischarts.com/mcp",
+    "status": 200,
+    "bytes": 98929,
+    "sha256": "62027cb8f96b0d45ddec3a6c226bf26390124ad9526ccc42c319d54a19fdefa6",
+    "elapsed_ms": 552
+  },
+  {
+    "label": "basis_pivot_catalog",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "basis_pivot_catalog",
+      "params": {
+        "name": "catalog_search",
+        "arguments": {
+          "kind": "formula",
+          "query": "pivot",
+          "limit": 20
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 142,
+    "response_sha256": "dc8fb5eeb80a261d1668e52e2ba239e3fa1ef3e3bf8bcec0dae246fd4bcd2fb2",
+    "elapsed_ms": 460,
+    "received_at_utc": "2026-11-13T05:18:03.030205+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:02 GMT"
+    }
+  },
+  {
+    "name": "basis_screener_docs",
+    "url": "https://www.basischarts.com/docs/screener",
+    "status": 200,
+    "bytes": 87132,
+    "sha256": "1a9961f0e10e91d7ad3bd6e0d4066635555f7a94fc1362ad0b15437e8c526791",
+    "elapsed_ms": 436
+  },
+  {
+    "name": "basis_terms",
+    "url": "https://www.basischarts.com/terms",
+    "status": 200,
+    "bytes": 78916,
+    "sha256": "4210743cf35fe8ac5b3b75e96342c671bca524042945a902747df0ae7b7b4975",
+    "elapsed_ms": 461
+  },
+  {
+    "label": "basis_tools",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/list",
+      "id": "basis_tools",
+      "params": {}
+    },
+    "status": 200,
+    "bytes": 68102,
+    "response_sha256": "b75fda6b555703c09c1722172fc423413b4c9e3c35e7f900c2b658a2d5bfb81b",
+    "elapsed_ms": 610,
+    "received_at_utc": "2026-11-13T05:17:22.949684+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:17:22 GMT"
+    }
+  },
+  {
+    "label": "basis_variables",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "basis_variables",
+      "params": {
+        "name": "catalog_search",
+        "arguments": {
+          "kind": "variable",
+          "limit": 100
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 1583,
+    "response_sha256": "a4de997d420c484b499935e13d022ddab14572c6300fc6fb6d299f41e7365fcc",
+    "elapsed_ms": 511,
+    "received_at_utc": "2026-11-13T05:17:42.438343+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:17:42 GMT"
+    }
+  },
+  {
+    "name": "binance_docs",
+    "url": "https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Exchange-Information",
+    "status": 200,
+    "bytes": 1557964,
+    "sha256": "4c5d1fe5f86beb4f57dbd20001c158424cadfb100f14a47851c6cdcce10a875b",
+    "elapsed_ms": 1138
+  },
+  {
+    "name": "binance_exchange",
+    "url": "https://fapi.binance.com/fapi/v1/exchangeInfo",
+    "status": 451,
+    "bytes": 224,
+    "sha256": "79c1db471a4cdc1c8565b5dfc52e0ed2d29962738ee4d28597696fcd0920e348",
+    "elapsed_ms": 539
+  },
+  {
+    "label": "describe_atr",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "describe_atr",
+      "params": {
+        "name": "catalog_describe",
+        "arguments": {
+          "kind": "formula",
+          "id": "atr"
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 233,
+    "response_sha256": "88802cbc70b27ed7c84d6a5a68e985acc10a209e44d63df354cfd5e8cf1c25af",
+    "elapsed_ms": 471,
+    "received_at_utc": "2026-11-13T05:18:02.569693+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:02 GMT"
+    }
+  },
+  {
+    "label": "describe_bars_since",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "describe_bars_since",
+      "params": {
+        "name": "catalog_describe",
+        "arguments": {
+          "kind": "formula",
+          "id": "bars_since"
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 254,
+    "response_sha256": "659a6660bc5c9f4822412c82eed889327c8d1b9051b42e8bba98d147a66d9a8d",
+    "elapsed_ms": 465,
+    "received_at_utc": "2026-11-13T05:18:01.657515+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:01 GMT"
+    }
+  },
+  {
+    "label": "describe_highest",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "describe_highest",
+      "params": {
+        "name": "catalog_describe",
+        "arguments": {
+          "kind": "formula",
+          "id": "highest"
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 211,
+    "response_sha256": "e71ef7908e23a5377ad81a09ddc50dc41dfeaec781e89ffa478e82ec72006c60",
+    "elapsed_ms": 524,
+    "received_at_utc": "2026-11-13T05:17:59.216568+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:17:59 GMT"
+    }
+  },
+  {
+    "label": "describe_lag",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "describe_lag",
+      "params": {
+        "name": "catalog_describe",
+        "arguments": {
+          "kind": "formula",
+          "id": "lag"
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 215,
+    "response_sha256": "b59c5e54589d35de75eadf99667ce4d80b677e65f0508057634eb25f0ad188b8",
+    "elapsed_ms": 521,
+    "received_at_utc": "2026-11-13T05:18:00.254734+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:00 GMT"
+    }
+  },
+  {
+    "label": "describe_lowest",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "describe_lowest",
+      "params": {
+        "name": "catalog_describe",
+        "arguments": {
+          "kind": "formula",
+          "id": "lowest"
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 208,
+    "response_sha256": "9809763f879e6ce0a387baf7fa21706afddf61016c63598ef600ecfe5861fd95",
+    "elapsed_ms": 517,
+    "received_at_utc": "2026-11-13T05:17:59.733672+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:17:59 GMT"
+    }
+  },
+  {
+    "label": "describe_median",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "describe_median",
+      "params": {
+        "name": "catalog_describe",
+        "arguments": {
+          "kind": "formula",
+          "id": "median"
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 230,
+    "response_sha256": "fb3a270e2a8a1137328710217fc8b72209040ad23fa5a8c8be666a23cd63d78b",
+    "elapsed_ms": 515,
+    "received_at_utc": "2026-11-13T05:18:00.770409+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:00 GMT"
+    }
+  },
+  {
+    "label": "describe_quantile",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "describe_quantile",
+      "params": {
+        "name": "catalog_describe",
+        "arguments": {
+          "kind": "formula",
+          "id": "quantile"
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 237,
+    "response_sha256": "fd27e6c5102eb9a86bd8c418423531e22379ef6a7b8f0a227621062e111a32b8",
+    "elapsed_ms": 422,
+    "received_at_utc": "2026-11-13T05:18:01.192712+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:01 GMT"
+    }
+  },
+  {
+    "label": "describe_value_when",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "describe_value_when",
+      "params": {
+        "name": "catalog_describe",
+        "arguments": {
+          "kind": "formula",
+          "id": "value_when"
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 292,
+    "response_sha256": "423068b0f61bfec98577b2b9fe153a5ebd387154bda7d8567c319ef81465b3ce",
+    "elapsed_ms": 441,
+    "received_at_utc": "2026-11-13T05:18:02.098269+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:02 GMT"
+    }
+  },
+  {
+    "label": "formula_atr",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_atr",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "atr(14)",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 1008,
+    "response_sha256": "4b95db40ea1b0a4a6adc067de726d0565fab01741d2c5a826f2fe7f4ae07d804",
+    "elapsed_ms": 859,
+    "received_at_utc": "2026-11-13T05:18:55.981351+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:55 GMT"
+    }
+  },
+  {
+    "label": "formula_close",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_close",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "close",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 800,
+    "response_sha256": "639d1ab0f1cf8945958dc2f080a2b175092a0dd4644a61f362e315d895f71e6c",
+    "elapsed_ms": 747,
+    "received_at_utc": "2026-11-13T05:18:39.073085+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:38 GMT"
+    }
+  },
+  {
+    "label": "formula_flow_identity",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_flow_identity",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "delta-(2*buy_volume-volume)",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 779,
+    "response_sha256": "087ce5104d5a4179705189487deb9c34631af57af19d1a04176d4e321ba76030",
+    "elapsed_ms": 741,
+    "received_at_utc": "2026-11-13T05:19:02.827555+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:19:02 GMT"
+    }
+  },
+  {
+    "label": "formula_high",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_high",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "high",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 797,
+    "response_sha256": "6c3818f52b8c4cd71deeba99cecf2aef7468ccc5b15cafba49fff2cdb88e7d87",
+    "elapsed_ms": 727,
+    "received_at_utc": "2026-11-13T05:18:40.800381+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:40 GMT"
+    }
+  },
+  {
+    "label": "formula_lag",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_lag",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "lag(close,1)",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 798,
+    "response_sha256": "6d242fda05621743ec102970189290ef0b84217e74be41f692a4b5d2a5110b9f",
+    "elapsed_ms": 774,
+    "received_at_utc": "2026-11-13T05:18:50.962401+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:50 GMT"
+    }
+  },
+  {
+    "label": "formula_low",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_low",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "low",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 788,
+    "response_sha256": "79669a9c35b9a9e0daf69ad19ef363019ebcc4987a375026fd7bfddc2d2a3ed7",
+    "elapsed_ms": 714,
+    "received_at_utc": "2026-11-13T05:18:42.514344+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:42 GMT"
+    }
+  },
+  {
+    "label": "formula_median",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_median",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "median(close,3)",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 801,
+    "response_sha256": "5efb6929fca1801b10752ebfac24e8cf0e43b3347b43327d21a496dd88776378",
+    "elapsed_ms": 559,
+    "received_at_utc": "2026-11-13T05:18:52.523953+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:52 GMT"
+    }
+  },
+  {
+    "label": "formula_no_event_bars",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_no_event_bars",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "bars_since(close<0)",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 406,
+    "response_sha256": "55bc3a5530c32a73e204bd928d054009bf2703ddd18bf1f956eae3d65e5d0fab",
+    "elapsed_ms": 805,
+    "received_at_utc": "2026-11-13T05:18:59.372793+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:59 GMT"
+    }
+  },
+  {
+    "label": "formula_no_event_value",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_no_event_value",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "value_when(close<0,close,0)",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 407,
+    "response_sha256": "8c0198929bb9c47975646cfdee48763dfcd85d216568c28a698341811e5c0849",
+    "elapsed_ms": 712,
+    "received_at_utc": "2026-11-13T05:19:01.086009+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:19:00 GMT"
+    }
+  },
+  {
+    "label": "formula_prior_compare",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_prior_compare",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "close>close[1]",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 694,
+    "response_sha256": "c7ff4ba212bcf7cdf0c60974fbbd03515cb3ebd9039610004ccded4dcbaab717",
+    "elapsed_ms": 585,
+    "received_at_utc": "2026-11-13T05:18:57.566836+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:57 GMT"
+    }
+  },
+  {
+    "label": "formula_prior_high",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_prior_high",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "highest(high[1],3)",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 805,
+    "response_sha256": "64081c2095f4bf8f9c00150a59930e85eaeb6254bbba54107a771d5aef8123f4",
+    "elapsed_ms": 747,
+    "received_at_utc": "2026-11-13T05:18:47.540382+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:47 GMT"
+    }
+  },
+  {
+    "label": "formula_prior_low",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_prior_low",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "lowest(low[1],3)",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 796,
+    "response_sha256": "3f5e1895cdb58f68fa9366ca5edee6378048a078c48b82f3b30f750675189d54",
+    "elapsed_ms": 645,
+    "received_at_utc": "2026-11-13T05:18:49.185983+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:49 GMT"
+    }
+  },
+  {
+    "label": "formula_quantile",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_quantile",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "quantile(close,3,0.5)",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 803,
+    "response_sha256": "7bdab5ee4ff3d1aad7eec04de52b2dac01e9785515c890ae3339a9e5bc3f631e",
+    "elapsed_ms": 594,
+    "received_at_utc": "2026-11-13T05:18:54.120678+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:54 GMT"
+    }
+  },
+  {
+    "label": "formula_volume",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_volume",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "volume",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 831,
+    "response_sha256": "e440e8c59638bca3778167090c3f9c726271c5529d35e9c579d9fff287ef3c9a",
+    "elapsed_ms": 675,
+    "received_at_utc": "2026-11-13T05:18:44.189580+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:44 GMT"
+    }
+  },
+  {
+    "label": "formula_width",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "formula_width",
+      "params": {
+        "name": "formula_evaluate",
+        "arguments": {
+          "ref": "binance.futures.BTCUSDT.1h.65",
+          "expression": "(highest(high,3)-lowest(low,3))/close",
+          "reduce": "tail",
+          "includeForming": false
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 1061,
+    "response_sha256": "fe87bf018219e5ab58035e497b2cf74e1d95b627358d7c9879e969b09a51b8a7",
+    "elapsed_ms": 603,
+    "received_at_utc": "2026-11-13T05:18:45.792763+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:18:45 GMT"
+    }
+  },
+  {
+    "label": "initialized",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "notifications/initialized",
+      "params": {}
+    },
+    "status": 202,
+    "bytes": 0,
+    "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "elapsed_ms": 462,
+    "received_at_utc": "2026-11-13T05:17:22.339248+00:00",
+    "safe_headers": {
+      "date": "Fri, 13 Nov 2026 05:17:22 GMT"
+    }
+  },
+  {
+    "label": "screen_finite_footer",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "screen_finite_footer",
+      "params": {
+        "name": "screener_run",
+        "arguments": {
+          "exchange": "binance",
+          "market": "futures",
+          "quote": "USDT",
+          "manualSymbols": [
+            "BTCUSDT",
+            "ETHUSDT"
+          ],
+          "universeSize": 20,
+          "timeframe": "1h",
+          "lookback": 300,
+          "logic": "any",
+          "limit": 60,
+          "rules": [
+            {
+              "left": {
+                "kind": "formula",
+                "expression": "(highest(high,3)-lowest(low,3))/close"
+              },
+              "operator": "atOrAbove",
+              "right": 0
+            }
+          ]
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 9099,
+    "response_sha256": "7f4ed65a94827f95bfd2c6b7cc9228eb83755e478737575edd3100469d6f2be3",
+    "elapsed_ms": 2561,
+    "received_at_utc": "2026-11-13T05:21:16.072497+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:21:15 GMT"
+    }
+  },
+  {
+    "label": "screen_poison_footer",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "screen_poison_footer",
+      "params": {
+        "name": "screener_run",
+        "arguments": {
+          "exchange": "binance",
+          "market": "futures",
+          "quote": "USDT",
+          "manualSymbols": [
+            "BTCUSDT",
+            "ETHUSDT"
+          ],
+          "universeSize": 20,
+          "timeframe": "1h",
+          "lookback": 300,
+          "logic": "any",
+          "limit": 60,
+          "rules": [
+            {
+              "left": {
+                "kind": "formula",
+                "expression": "(highest(high,3)-lowest(low,3))/close"
+              },
+              "operator": "atOrAbove",
+              "right": 0
+            },
+            {
+              "left": {
+                "kind": "formula",
+                "expression": "quantile(close[1],1000,0.2)"
+              },
+              "operator": "above",
+              "right": 0
+            }
+          ]
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 377,
+    "response_sha256": "12d41c4235309c68250220316f07c2e1a17c97fd80d9f918ec759677d5582475",
+    "elapsed_ms": 2196,
+    "received_at_utc": "2026-11-13T05:21:18.268538+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:21:18 GMT"
+    }
+  },
+  {
+    "label": "screen_recovery_footer",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "tools/call",
+      "id": "screen_recovery_footer",
+      "params": {
+        "name": "screener_run",
+        "arguments": {
+          "exchange": "binance",
+          "market": "futures",
+          "quote": "USDT",
+          "manualSymbols": [
+            "BTCUSDT",
+            "ETHUSDT"
+          ],
+          "universeSize": 20,
+          "timeframe": "1h",
+          "lookback": 300,
+          "logic": "any",
+          "limit": 60,
+          "rules": [
+            {
+              "left": {
+                "kind": "formula",
+                "expression": "(highest(high,3)-lowest(low,3))/close"
+              },
+              "operator": "atOrAbove",
+              "right": 0
+            }
+          ]
+        }
+      }
+    },
+    "status": 200,
+    "bytes": 9101,
+    "response_sha256": "9f3383301c5a9dfd3606f5dcd7f1268ba8587c9eea4e43cbcd94f9595a8be8bb",
+    "elapsed_ms": 1858,
+    "received_at_utc": "2026-11-13T05:21:20.126828+00:00",
+    "safe_headers": {
+      "content-type": "application/json",
+      "date": "Fri, 13 Nov 2026 05:21:20 GMT"
+    }
+  }
+]

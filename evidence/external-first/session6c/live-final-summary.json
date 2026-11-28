@@ -1,0 +1,1068 @@
+{
+  "as_of_utc": "2026-11-14T14:43:32.032354+00:00",
+  "broad_budget": {
+    "charged_quota_units": null,
+    "concurrency": 1,
+    "min_request_interval_seconds": 1,
+    "recovery_requests": 0,
+    "scheduling_enabled": false,
+    "screen_request_limit": 26,
+    "screen_requests_attempted": 18,
+    "screen_response_bytes": 1705100,
+    "stopped_reason": "PROVIDER_BUSY_COOLDOWN",
+    "sustainable_cadence": "UNQUALIFIED"
+  },
+  "completed_at_utc": "2026-11-14T14:43:32.032354+00:00",
+  "context_claims": [
+    {
+      "eligible": null,
+      "evaluated": 0,
+      "evidence_ids": [
+        "5fa768446bfe8f4e3ee01b863b6acfd86b82c8b91b70ceb99b25de763b2743a1"
+      ],
+      "missing": [],
+      "name": "BTCUSDT_4h",
+      "reason": null,
+      "status": "SUPPORTED",
+      "value_labels": [
+        "TREND_DOWN",
+        "HTF_DECISION",
+        "IMPULSE"
+      ]
+    },
+    {
+      "eligible": null,
+      "evaluated": 0,
+      "evidence_ids": [
+        "228299789df6d36a8b52ed5f984ee5daf69817a8100f9a31429f40a28171ccad"
+      ],
+      "missing": [],
+      "name": "BTCUSDT_1h",
+      "reason": null,
+      "status": "SUPPORTED",
+      "value_labels": [
+        "TRANSITION",
+        "HTF_DECISION"
+      ]
+    },
+    {
+      "eligible": null,
+      "evaluated": 0,
+      "evidence_ids": [
+        "d421523a14372504b1f4fecb50b6e0dfb5c1b0a83e362c2fac98c53c0eab27c0"
+      ],
+      "missing": [],
+      "name": "ETHUSDT_4h",
+      "reason": null,
+      "status": "SUPPORTED",
+      "value_labels": [
+        "TREND_DOWN",
+        "HTF_DECISION"
+      ]
+    },
+    {
+      "eligible": null,
+      "evaluated": 0,
+      "evidence_ids": [
+        "c4e479112ad7592f45f3d48f09a42d25370dcc342b9571e950edb4a012b1fea6"
+      ],
+      "missing": [],
+      "name": "ETHUSDT_1h",
+      "reason": null,
+      "status": "SUPPORTED",
+      "value_labels": [
+        "TREND_UP",
+        "HTF_DECISION"
+      ]
+    },
+    {
+      "eligible": null,
+      "evaluated": 0,
+      "evidence_ids": [
+        "228299789df6d36a8b52ed5f984ee5daf69817a8100f9a31429f40a28171ccad",
+        "5fa768446bfe8f4e3ee01b863b6acfd86b82c8b91b70ceb99b25de763b2743a1",
+        "c4e479112ad7592f45f3d48f09a42d25370dcc342b9571e950edb4a012b1fea6",
+        "d421523a14372504b1f4fecb50b6e0dfb5c1b0a83e362c2fac98c53c0eab27c0"
+      ],
+      "missing": [],
+      "name": "BTC_ETH_DISAGREEMENT",
+      "reason": null,
+      "status": "SUPPORTED",
+      "value_labels": true
+    },
+    {
+      "eligible": 519,
+      "evaluated": 300,
+      "evidence_ids": {
+        "count": 300,
+        "first_three": [
+          "1b88ac2ee0d5118bdefbb5fabb4bb65d5942b77d89abe84891de11ed12c7e898",
+          "e49a64f0ace5b9ad62cc21d0bd0ffb20338ede754b77879af724c342473fc689",
+          "567356891a012d8ccfd55f146509df94fbb1c72164567d5ff2ff2cde80714acf"
+        ],
+        "sha256": "be471fafda4ad8405bbe4f076a8b475d5ecac9904149f57baa77022e4fc1db77"
+      },
+      "missing": {
+        "count": 219,
+        "first_three": [
+          "0GUSDT",
+          "2ZUSDT",
+          "4USDT"
+        ],
+        "sha256": "de7c8f78642fe57163377cb34e2ea23861f34f1f17effe3435874684773bf887"
+      },
+      "name": "BREADTH_1H_16",
+      "reason": "PARTIAL_CONSTITUENT_HISTORY",
+      "status": "SUPPORTED",
+      "value_labels": null
+    },
+    {
+      "eligible": null,
+      "evaluated": 0,
+      "evidence_ids": [
+        "1b88ac2ee0d5118bdefbb5fabb4bb65d5942b77d89abe84891de11ed12c7e898",
+        "e49a64f0ace5b9ad62cc21d0bd0ffb20338ede754b77879af724c342473fc689"
+      ],
+      "missing": [],
+      "name": "ETH_MINUS_BTC_1H_16_LOG_RETURN",
+      "reason": null,
+      "status": "SUPPORTED",
+      "value_labels": "0.00474631304595041406142240352"
+    },
+    {
+      "eligible": 519,
+      "evaluated": 0,
+      "evidence_ids": [],
+      "missing": [],
+      "name": "SECTOR_HEAT",
+      "reason": "DATED_EXACT_PERP_MAPPING_AND_ALIGNED_PEERS_UNAVAILABLE",
+      "status": "UNKNOWN",
+      "value_labels": null
+    }
+  ],
+  "costs": {
+    "basis_charged_units": null,
+    "by_provider": {
+      "basis": {
+        "http_requests": 21,
+        "p50_ms": 3507,
+        "p95_ms": 4042,
+        "request_body_bytes": 152220,
+        "request_url_bytes": 735,
+        "response_bytes": 1777212
+      },
+      "binance": {
+        "http_requests": 20,
+        "p50_ms": 717,
+        "p95_ms": 1311,
+        "request_body_bytes": 0,
+        "request_url_bytes": 1562,
+        "response_bytes": 2576655
+      }
+    },
+    "cached_snapshot_reused": false,
+    "http_requests": 41,
+    "llm_calls": 0,
+    "p50_ms": 1087,
+    "p95_ms": 4030,
+    "process_resources": {
+      "process_peak_rss_kib": 157776,
+      "scan_cpu_system_seconds": 0.23234500000000002,
+      "scan_cpu_user_seconds": 36.536975,
+      "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+    },
+    "quota": "UNKNOWN",
+    "request_body_bytes": 152220,
+    "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+    "request_url_bytes": 2297,
+    "response_bytes": 4353867,
+    "sum_latency_ms": 80602,
+    "sustainable_cadence": "UNQUALIFIED",
+    "targeted_kline_calls": 10,
+    "wall_ms": 117310
+  },
+  "created_at_utc": "2026-11-14T14:41:34.741016+00:00",
+  "eligible_contracts": 519,
+  "empty_shortlist_reason": "NO_QUALIFIED_HANDOFF_WITHIN_OBSERVED_COVERAGE; NOT_A_NO_OPPORTUNITIES_CLAIM",
+  "environment": "CODEX_LOCAL",
+  "evidence_mode": "LIVE_PARTIAL",
+  "frozen_cutoffs": {
+    "15m": "2026-11-14T14:30:00+00:00",
+    "1h": "2026-11-14T14:00:00+00:00",
+    "4h": "2026-11-14T12:00:00+00:00"
+  },
+  "invalidations": 731,
+  "llm_calls": 0,
+  "mode": "LIVE",
+  "near_misses": 96,
+  "new_orders_created": 0,
+  "not_reviewed_budget": 763,
+  "operating_mode": "REMOTE_WIDE_PARTIAL",
+  "operation_status": "PARTIAL",
+  "persistence": {
+    "database_bytes": 16867328,
+    "event": 2740,
+    "hypothesis": 240,
+    "interrupted_attempts": 0,
+    "lifecycle": 0,
+    "reference": 536,
+    "run_snapshots": 1,
+    "schema_version": 5,
+    "watch_revisions": 385
+  },
+  "prospective_audit": {
+    "cheap_baseline": {
+      "top_quote_turnover": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "SOLUSDT",
+        "ZECUSDT",
+        "AKEUSDT"
+      ],
+      "top_return": [
+        "AKEUSDT",
+        "EVAAUSDT",
+        "SHELLUSDT",
+        "DODOXUSDT",
+        "SOPHUSDT"
+      ]
+    },
+    "eligible_denominator": 519,
+    "eligible_set_hash": "d64ed73119bca52b81acc4b32211cf65fc5eda34755cc049e33f563317b38075",
+    "frozen_cutoffs": {
+      "15m": "2026-11-14T14:30:00+00:00",
+      "1h": "2026-11-14T14:00:00+00:00",
+      "4h": "2026-11-14T12:00:00+00:00"
+    },
+    "non_nominated_tail_denominator": 16,
+    "outcome": "PENDING_PROSPECTIVE_OBSERVATION; NO_EARLY_LEAD_TIME_OR_RECALL_CLAIM",
+    "registered_at": "2026-11-14T14:42:51.356648+00:00",
+    "sample": [
+      {
+        "first_price_observation": {
+          "fidelity": "EXACT_REPORTED",
+          "inventory_mode": "VERIFIED_INVENTORY",
+          "kind": "ticker",
+          "native_symbol": "BMTUSDT",
+          "received_at_utc": "2026-11-14T14:41:38.145359+00:00",
+          "source_response_sha256": "e95f75a6c9a7421cc90b0dad1df3d71f4770e1b9ae6618b32e9bf451c0d7d5ce",
+          "source_scope": "OFFICIAL_BINANCE_USDM",
+          "source_time_utc": "2026-11-14T14:41:33.309000+00:00",
+          "structural_coverage": false,
+          "values": {
+            "base_volume_unit": "NATIVE_BASE_ASSET",
+            "lastPrice": "0.0221400",
+            "priceChangePercent": "-4.856",
+            "quoteVolume": "36559191.1795900",
+            "quote_volume_unit": "USDT",
+            "volume": "1580484299",
+            "window_seconds": 86433.309,
+            "window_start_utc": "2026-11-13T14:41:00+00:00"
+          }
+        },
+        "identity_hash": "c147c055239c07518e8ba34d51d366823dd23bc705df99fe46a9d6a0a5201cf9",
+        "price_history_reviewed": true,
+        "selection_probability": 0.0625,
+        "symbol": "BMTUSDT"
+      }
+    ],
+    "sampling": "UNIFORM_HASH_STRATUM_LOTTERY; ONE_SELECTED_PUBLIC_OI_AUDIT"
+  },
+  "release_status": "PARTIAL",
+  "report_sha256": "13536a0988a6629c2863c955a8c6eff15c52b95e2121a551678d9d101c002915",
+  "research_shortlist_count": 0,
+  "resource_plan": {
+    "actual_fallback": "QUALIFIED_LEGACY_PRICE_SCALARS",
+    "approach_extra_calls": 22,
+    "configured_cap": 26,
+    "coverage_certified": false,
+    "effective_allowance": 26,
+    "effective_degraded_plan": [
+      {
+        "calls": 11,
+        "full_core_certified": false,
+        "not_evaluated_budget": [],
+        "pack": "LEGACY_PRICE_PRECURSORS",
+        "partitions": [
+          {
+            "count": 50,
+            "first_three": [
+              "BTCUSDT",
+              "ETHUSDT",
+              "BCHUSDT"
+            ],
+            "sha256": "b09bba7d2b41f9c67ce00eadcb680d6fc1700b8de3a026695f251fe45a6e41ed"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "BELUSDT",
+              "AXSUSDT",
+              "ZENUSDT"
+            ],
+            "sha256": "2dbfa3a41c78427b90d23af9c1dfd9713cb0683f9384972c6fcbaca78611dd53"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "LDOUSDT",
+              "ICPUSDT",
+              "APTUSDT"
+            ],
+            "sha256": "0c90bfb94c02b873f389a0e0b8a8acd57ac0738508cf7b682f01ad5acba8e442"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "CAKEUSDT",
+              "MEMEUSDT",
+              "TWTUSDT"
+            ],
+            "sha256": "3329b04ae44bbed2ba90a83872ec5db6d623dbdfebe8bfd8282160b2ce9256b8"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "MEWUSDT",
+              "LISTAUSDT",
+              "ZROUSDT"
+            ],
+            "sha256": "8d047365f94b640dc22b22ec2737f54acbf3a3551745bc15fbf9033752f01b0a"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "AVAUSDT",
+              "MOCAUSDT",
+              "VANAUSDT"
+            ],
+            "sha256": "411c9797d18660d1e369108fab052359734c4632d842dc58fc2304cfb404158b"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "PARTIUSDT",
+              "JELLYJELLYUSDT",
+              "MAVIAUSDT"
+            ],
+            "sha256": "48d3df7f582f375a9f1e8d1c9f08f3ba46cfa6a1afc0dece5f92a950c38e0aea"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "NEWTUSDT",
+              "HUSDT",
+              "SAHARAUSDT"
+            ],
+            "sha256": "5e73602ce92d06cdbd046e292a9213a764144245c673faa7f92b3ce98449f823"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "STBLUSDT",
+              "0GUSDT",
+              "BARDUSDT"
+            ],
+            "sha256": "fa759ca8ab1e864f65f32065050aebf4d61b4a285bea787ef2ec52d9c7b893fe"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "BEATUSDT",
+              "PIEVERSEUSDT",
+              "SENTUSDT"
+            ],
+            "sha256": "4a94fd472f6f977c4bdcb95f67e1e5a8f47ef67dd53c181144c09d5ae7a9e53e"
+          },
+          [
+            "PHAROSUSDT",
+            "STARUSDT",
+            "CTRUSDT",
+            "SLXUSDT",
+            "ZESTUSDT",
+            "BTWUSDT",
+            "REUSDT",
+            "ARXUSDT",
+            "OUSDT",
+            "CAPUSDT",
+            "GRAMUSDT",
+            "DATAIPUSDT",
+            "GRVTUSDT",
+            "DOSUSDT",
+            "\u725b\u6765USDT",
+            "MARSCOINUSDT",
+            "PONSUSDT",
+            "\u54c8\u57fa\u7c73USDT",
+            "CTUSDT"
+          ]
+        ],
+        "timeframe": "15m"
+      },
+      {
+        "calls": 11,
+        "full_core_certified": false,
+        "not_evaluated_budget": [],
+        "pack": "LEGACY_PRICE_PRECURSORS",
+        "partitions": [
+          {
+            "count": 50,
+            "first_three": [
+              "BTCUSDT",
+              "ETHUSDT",
+              "BCHUSDT"
+            ],
+            "sha256": "b09bba7d2b41f9c67ce00eadcb680d6fc1700b8de3a026695f251fe45a6e41ed"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "BELUSDT",
+              "AXSUSDT",
+              "ZENUSDT"
+            ],
+            "sha256": "2dbfa3a41c78427b90d23af9c1dfd9713cb0683f9384972c6fcbaca78611dd53"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "LDOUSDT",
+              "ICPUSDT",
+              "APTUSDT"
+            ],
+            "sha256": "0c90bfb94c02b873f389a0e0b8a8acd57ac0738508cf7b682f01ad5acba8e442"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "CAKEUSDT",
+              "MEMEUSDT",
+              "TWTUSDT"
+            ],
+            "sha256": "3329b04ae44bbed2ba90a83872ec5db6d623dbdfebe8bfd8282160b2ce9256b8"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "MEWUSDT",
+              "LISTAUSDT",
+              "ZROUSDT"
+            ],
+            "sha256": "8d047365f94b640dc22b22ec2737f54acbf3a3551745bc15fbf9033752f01b0a"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "AVAUSDT",
+              "MOCAUSDT",
+              "VANAUSDT"
+            ],
+            "sha256": "411c9797d18660d1e369108fab052359734c4632d842dc58fc2304cfb404158b"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "PARTIUSDT",
+              "JELLYJELLYUSDT",
+              "MAVIAUSDT"
+            ],
+            "sha256": "48d3df7f582f375a9f1e8d1c9f08f3ba46cfa6a1afc0dece5f92a950c38e0aea"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "NEWTUSDT",
+              "HUSDT",
+              "SAHARAUSDT"
+            ],
+            "sha256": "5e73602ce92d06cdbd046e292a9213a764144245c673faa7f92b3ce98449f823"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "STBLUSDT",
+              "0GUSDT",
+              "BARDUSDT"
+            ],
+            "sha256": "fa759ca8ab1e864f65f32065050aebf4d61b4a285bea787ef2ec52d9c7b893fe"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "BEATUSDT",
+              "PIEVERSEUSDT",
+              "SENTUSDT"
+            ],
+            "sha256": "4a94fd472f6f977c4bdcb95f67e1e5a8f47ef67dd53c181144c09d5ae7a9e53e"
+          },
+          [
+            "PHAROSUSDT",
+            "STARUSDT",
+            "CTRUSDT",
+            "SLXUSDT",
+            "ZESTUSDT",
+            "BTWUSDT",
+            "REUSDT",
+            "ARXUSDT",
+            "OUSDT",
+            "CAPUSDT",
+            "GRAMUSDT",
+            "DATAIPUSDT",
+            "GRVTUSDT",
+            "DOSUSDT",
+            "\u725b\u6765USDT",
+            "MARSCOINUSDT",
+            "PONSUSDT",
+            "\u54c8\u57fa\u7c73USDT",
+            "CTUSDT"
+          ]
+        ],
+        "timeframe": "1h"
+      },
+      {
+        "calls": 4,
+        "full_core_certified": false,
+        "not_evaluated_budget": {
+          "count": 319,
+          "first_three": [
+            "MEWUSDT",
+            "LISTAUSDT",
+            "ZROUSDT"
+          ],
+          "sha256": "ba879f9891a1a7d038736b504998a040f1ded7ab5a049916f2f96e90018f73c1"
+        },
+        "pack": "LEGACY_PARTICIPATION",
+        "partitions": [
+          {
+            "count": 50,
+            "first_three": [
+              "BTCUSDT",
+              "ETHUSDT",
+              "BCHUSDT"
+            ],
+            "sha256": "b09bba7d2b41f9c67ce00eadcb680d6fc1700b8de3a026695f251fe45a6e41ed"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "BELUSDT",
+              "AXSUSDT",
+              "ZENUSDT"
+            ],
+            "sha256": "2dbfa3a41c78427b90d23af9c1dfd9713cb0683f9384972c6fcbaca78611dd53"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "LDOUSDT",
+              "ICPUSDT",
+              "APTUSDT"
+            ],
+            "sha256": "0c90bfb94c02b873f389a0e0b8a8acd57ac0738508cf7b682f01ad5acba8e442"
+          },
+          {
+            "count": 50,
+            "first_three": [
+              "CAKEUSDT",
+              "MEMEUSDT",
+              "TWTUSDT"
+            ],
+            "sha256": "3329b04ae44bbed2ba90a83872ec5db6d623dbdfebe8bfd8282160b2ce9256b8"
+          }
+        ],
+        "timeframe": "15m"
+      },
+      {
+        "calls": 0,
+        "full_core_certified": false,
+        "not_evaluated_budget": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "pack": "LEGACY_PARTICIPATION",
+        "partitions": [],
+        "timeframe": "1h"
+      }
+    ],
+    "eligible": 519,
+    "eligible_set_hash": "d64ed73119bca52b81acc4b32211cf65fc5eda34755cc049e33f563317b38075",
+    "estimates": {
+      "classification": "EXTRAPOLATION_FROM_RETAINED_RECEIPTS; NOT_LIVE",
+      "cpu_disk": "MEASURE_CURRENT_RUN; NO_FULL_MARKET_HISTORY",
+      "logical_calls": 26,
+      "request_bytes": "UNKNOWN_UNTIL_COMPILED_PARTITION_REQUEST",
+      "response_bytes": null,
+      "sample_p50_ms": null,
+      "sample_p95_ms": null,
+      "sample_receipts": 0,
+      "serial_latency_ms": null
+    },
+    "family_method_consequences": {
+      "families": {
+        "F1": "SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION",
+        "F2": "SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION",
+        "F3": "SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION",
+        "F4": "SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION",
+        "F5": "SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION",
+        "F6": "SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION",
+        "F7": "SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION",
+        "F8": "SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION",
+        "F9": "SELECTED_CAUSAL_SOURCE_REQUIRED; CORE_ALONE_IS_NOT_FORMATION"
+      },
+      "methods": {
+        "M01": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M02": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M03": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M04": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M05": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M06": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M07": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M08": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M09": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M10": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M11": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M12": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M13": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M14": "DEFINITION_PENDING",
+        "M15": "DEFINITION_PENDING",
+        "M16": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M17": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M18": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M19": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M20": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M21": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M22": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M23": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M24": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M25": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M26": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M27": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M28": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M29": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M30": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED",
+        "M31": "INDEPENDENT_SOURCE_AND_FORMATION_CERTIFICATE_REQUIRED"
+      }
+    },
+    "full_core_planned": false,
+    "local_recommendation": {
+      "A": "QUALIFY_BOTH_CORE_PACKS_THEN_SERIAL_EXACT_PARTITIONS",
+      "B": "ONLY_QUALIFIED_PRICE_SCALARS_PLUS_WATCH_EXCEPTION_AUDIT; PARTIAL_COVERAGE",
+      "quota_action": "MEASURE_COLD_WARM_P50_P95_429_CHARGES_AND_RIGHTS_ON_LOCAL"
+    },
+    "mandatory_core_calls": 22,
+    "operation_envelope": {
+      "basis_transport_ceiling_including_handshake": 40,
+      "causal_actual_ceiling": "MIN_CONFIGURED_AND_REMAINING_TRANSPORT_AFTER_BROAD",
+      "final_quote_premium_calls": 2,
+      "historical_asof_api": "UNQUALIFIED; NEVER_ASSUMED",
+      "initial_aggregate_pulse_calls": 3,
+      "legacy_causal_configured_ceiling": 14,
+      "legacy_causal_required_calls_one_timeframe": 11,
+      "protected_review": "ONE_OF_TWO_ALT_SLOTS_ROTATES_WATCH_QUIET_CONTRARY_AUDIT_SPECIALIST",
+      "public_inventory_calls": 1,
+      "retained_observed_handshake_http": 3,
+      "selected_depth_max_calls": 2,
+      "selected_klines": {
+        "bars_per_call": 300,
+        "calls": 10,
+        "symbols": 5
+      },
+      "selected_oi_max_calls": 2,
+      "unallocated_questions": "NOT_REVIEWED_BUDGET; NEVER_NO_OPPORTUNITY"
+    },
+    "packs": [
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "CORE_15M",
+        "requested_symbols": [],
+        "required": true,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "15m",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      },
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "CORE_1H",
+        "requested_symbols": [],
+        "required": true,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "1h",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      },
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "PARTICIPATION_15M",
+        "requested_symbols": [],
+        "required": false,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "15m",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      },
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "PARTICIPATION_1H",
+        "requested_symbols": [],
+        "required": false,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "1h",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      },
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "METHOD_STRUCTURE_15M",
+        "requested_symbols": [],
+        "required": false,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "15m",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      },
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "METHOD_STRUCTURE_1H",
+        "requested_symbols": [],
+        "required": false,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "1h",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      },
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "METHOD_QUIET_LOCATION_15M",
+        "requested_symbols": [],
+        "required": false,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "15m",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      },
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "METHOD_QUIET_LOCATION_1H",
+        "requested_symbols": [],
+        "required": false,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "1h",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      },
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "METHOD_TREND_CORRECTION_15M",
+        "requested_symbols": [],
+        "required": false,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "15m",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      },
+      {
+        "consequence": "PRECURSOR_ONLY; FORMATION_REQUIRES_CAUSAL_SOURCE",
+        "eligible": 519,
+        "logical_calls_planned": 0,
+        "logical_calls_required": 11,
+        "not_evaluated_budget": [],
+        "pack_id": "METHOD_TREND_CORRECTION_1H",
+        "requested_symbols": [],
+        "required": false,
+        "selected_partitions": [],
+        "status": "UNQUALIFIED_SOURCE",
+        "timeframe": "1h",
+        "unsupported_symbols": {
+          "count": 519,
+          "first_three": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT"
+          ],
+          "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+        },
+        "warmup": "REGISTERED_PACK_300_CLOSED_BARS; EXACT_FROZEN_CUTOFF"
+      }
+    ],
+    "participation_extra_calls": 22,
+    "partition_size": 50,
+    "partitions": 11,
+    "plan_sha256": "0b4b91d105d51fbb2f78afd6f225f0a40512bc49beb57da94271110e79f33043",
+    "quota": null,
+    "quota_status": "UNKNOWN",
+    "remaining_unallocated": 26,
+    "retry_reserve": 0,
+    "scheduling_enabled": false,
+    "selected_reserves": {
+      "retries": "BOUNDED_NO_DENIAL_RETRY",
+      "specialist": "SEPARATE_DECLARED_READ_ONLY_OPERATIONS",
+      "watch_exception_audit": "PROTECTED_ROTATING_REVIEW_LANE"
+    },
+    "three_layers_calls": 66,
+    "version": "research-resources-6b.1"
+  },
+  "route_coverage": {
+    "A": {
+      "eligible": 519,
+      "evaluated": 3,
+      "failed": 0,
+      "not_evaluated_budget": 674,
+      "requested": 677,
+      "returned": 454,
+      "unsupported": 0
+    },
+    "B": {
+      "eligible": 519,
+      "evaluated": 0,
+      "failed": 0,
+      "not_evaluated_budget": 0,
+      "requested": 0,
+      "returned": 0,
+      "unsupported": 519
+    },
+    "C": {
+      "eligible": 519,
+      "evaluated": 8,
+      "failed": 0,
+      "not_evaluated_budget": 519,
+      "requested": 521,
+      "returned": 804,
+      "unsupported": 0
+    }
+  },
+  "run_id": "bc5da17b6e4156c72920c0a3590f8d5db68a0e3488d78daf8de46c26361371e3",
+  "shortlist_count": 0,
+  "source_faults": [],
+  "source_health": [
+    {
+      "accepted": 519,
+      "eligible": 519,
+      "failed_symbol_count": 0,
+      "filler_symbols": {
+        "count": 287,
+        "first_three": [
+          "IRENUSDT",
+          "COPPERUSDT",
+          "NETUSDT"
+        ],
+        "sha256": "e3d8695a928af69d4d85b6ca72d8ae74c6ade4dbe85f6571d5d29425a7f7c01d"
+      },
+      "kind": "ticker",
+      "missing_symbols": [],
+      "requested_symbols": {
+        "count": 519,
+        "first_three": [
+          "BTCUSDT",
+          "ETHUSDT",
+          "BCHUSDT"
+        ],
+        "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+      },
+      "returned_symbols": {
+        "count": 519,
+        "first_three": [
+          "0GUSDT",
+          "1000000MOGUSDT",
+          "1000BONKUSDT"
+        ],
+        "sha256": "d64ed73119bca52b81acc4b32211cf65fc5eda34755cc049e33f563317b38075"
+      },
+      "synchronized_closed_bar_cross_section": false
+    },
+    {
+      "accepted": 519,
+      "eligible": 519,
+      "failed_symbol_count": 0,
+      "filler_symbols": {
+        "count": 287,
+        "first_three": [
+          "BTCDOMUSDT",
+          "ETHBTC",
+          "BTCUSDC"
+        ],
+        "sha256": "1275c40c46ecd2919fb84332d8e06e0f2f005b7966cfa9b8d4a68d2b827c614b"
+      },
+      "kind": "book",
+      "missing_symbols": [],
+      "requested_symbols": {
+        "count": 519,
+        "first_three": [
+          "BTCUSDT",
+          "ETHUSDT",
+          "BCHUSDT"
+        ],
+        "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+      },
+      "returned_symbols": {
+        "count": 519,
+        "first_three": [
+          "0GUSDT",
+          "1000000MOGUSDT",
+          "1000BONKUSDT"
+        ],
+        "sha256": "d64ed73119bca52b81acc4b32211cf65fc5eda34755cc049e33f563317b38075"
+      },
+      "synchronized_closed_bar_cross_section": false
+    },
+    {
+      "accepted": 519,
+      "eligible": 519,
+      "failed_symbol_count": 0,
+      "filler_symbols": {
+        "count": 430,
+        "first_three": [
+          "LYTEUSDT",
+          "CYPHUSDT",
+          "RAMUSDT"
+        ],
+        "sha256": "9620fd2d4799a465dff6ca8eb243f2722512d5ccc1aad2fd8d1dcc96595a31a7"
+      },
+      "kind": "premium",
+      "missing_symbols": [],
+      "requested_symbols": {
+        "count": 519,
+        "first_three": [
+          "BTCUSDT",
+          "ETHUSDT",
+          "BCHUSDT"
+        ],
+        "sha256": "16ab38ed93b29a98d9b847a44040ce6c6520a61e16e9cc15bf42596c395e58cb"
+      },
+      "returned_symbols": {
+        "count": 519,
+        "first_three": [
+          "0GUSDT",
+          "1000000MOGUSDT",
+          "1000BONKUSDT"
+        ],
+        "sha256": "d64ed73119bca52b81acc4b32211cf65fc5eda34755cc049e33f563317b38075"
+      },
+      "synchronized_closed_bar_cross_section": false
+    }
+  ],
+  "time_gaps": [],
+  "time_integrity_status": "NORMAL",
+  "watches": 385
+}

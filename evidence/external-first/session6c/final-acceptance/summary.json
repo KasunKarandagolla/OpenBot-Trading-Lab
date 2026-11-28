@@ -1,0 +1,116 @@
+{
+  "accepted_rows": 1,
+  "additional_external_verification_requests_by_model": 0,
+  "agent_name": "Trading Lab Market Researcher",
+  "all_skill_and_request_bytes_verified": true,
+  "automatic_agent_submission": false,
+  "classification": "REAL_ORDINARY_CLI_AND_EXISTING_NATIVE_APP; LIVE_PARTIAL",
+  "clock_anomalies": [],
+  "costs": {
+    "basis_charged_units": null,
+    "by_provider": {
+      "basis": {
+        "http_requests": 18,
+        "p50_ms": 3592,
+        "p95_ms": 13302,
+        "request_body_bytes": 126794,
+        "request_url_bytes": 630,
+        "response_bytes": 1466149
+      },
+      "binance": {
+        "http_requests": 20,
+        "p50_ms": 479,
+        "p95_ms": 5998,
+        "request_body_bytes": 0,
+        "request_url_bytes": 1573,
+        "response_bytes": 2574911
+      }
+    },
+    "cached_snapshot_reused": false,
+    "http_requests": 38,
+    "llm_call_semantics": "COMPLETED_NATIVE_PROVIDER_ASSISTANT_ATTEMPTS_OBSERVED_DURING_OPT_IN_REVIEW; INCOMPLETE_NATIVE_TURNS_UNKNOWN",
+    "llm_calls": 3,
+    "p50_ms": 825,
+    "p95_ms": 13302,
+    "process_resources": {
+      "process_peak_rss_kib": 271084,
+      "scan_cpu_system_seconds": 3.802757,
+      "scan_cpu_user_seconds": 50.265063,
+      "scope": "LINUX_PROCESS_HIGH_WATER_RSS; CPU_DURING_SCAN_BEFORE_FINAL_SQLITE_AND_JSON_WRITE"
+    },
+    "quota": "UNKNOWN",
+    "request_body_bytes": 126794,
+    "request_header_bytes": "NOT_MEASURED; PRIVATE_HEADERS_NOT_RETAINED",
+    "request_url_bytes": 2203,
+    "response_bytes": 4041060,
+    "sum_latency_ms": 123304,
+    "sustainable_cadence": "UNQUALIFIED",
+    "targeted_kline_calls": 10,
+    "wall_ms": 657409
+  },
+  "current_handoffs": 0,
+  "current_import_age_seconds": 461.216645,
+  "current_native_import": "VALIDATED_ADVISORY_ONLY",
+  "deterministic_handoffs_same_input": 0,
+  "downstream": "NOT_INTEGRATED; SOURCE_GATED_ONE_WAY_EXPORT_PRESERVED",
+  "eligible": 519,
+  "empty_export_roundtrip": "PASS",
+  "full_CORE_qualification_scope": "SEPARATE_PHASE_A_PROBES_519_OF519_BOTH_TF; NO_NEW_PRODUCTION_CERTIFICATE",
+  "gaps_unobserved": 953,
+  "invalidations": 777,
+  "model": "opencode/deepseek-v4.1-flash-free",
+  "model_assisted_handoffs_same_input": 0,
+  "native_collector": {
+    "observed_model_attempts": 3,
+    "receipt_reader": "EXISTING_WINDOWS_PYTHON_SQLITE_MODE_RO",
+    "status": "NATIVE_RECEIPT_COLLECTED",
+    "storage_read_retries": 0
+  },
+  "native_model_wall_seconds": 111.169,
+  "near_misses": 79,
+  "new_orders_created": 0,
+  "next_question": "FIRST_OBSTACLE",
+  "numeric_hallucination_rate": "NOT_MEASURABLE_ZERO_CLAIMS",
+  "ordinary_price_precursors": [
+    {
+      "evaluated": 519,
+      "failed": 0,
+      "missing": 0,
+      "requested": 519,
+      "timeframe": "15m"
+    },
+    {
+      "evaluated": 150,
+      "failed": 369,
+      "missing": 50,
+      "requested": 200,
+      "timeframe": "1h"
+    }
+  ],
+  "owner_selected_interface": "OPENBOT_APPLICATION_UI; LOCAL_SCRIPTS_NOT_ENABLED",
+  "persistence": {
+    "database_bytes": 176541696,
+    "event": 11797,
+    "hypothesis": 1415,
+    "interrupted_attempts": 0,
+    "lifecycle": 21,
+    "reference": 1778,
+    "run_snapshots": 9,
+    "schema_version": 5,
+    "watch_revisions": 6118
+  },
+  "priority": "WATCH",
+  "report_sha256": "8dfcb1b977c60892cf638ad8bba5c7e03ae04fecb8bf51a6a497bc3817c0d596",
+  "request_material_sha256": "80f3b84088a992cb2d8df488ee35cc02c7b600406c1c5cc63e9de1aa95dd8880",
+  "skill_sha256": "96830b0189fc13b141513d44d4146637a83f5ad6c10d8c51c954e2c9052250fb",
+  "status": "PASS_WITH_APPROVED_SOURCE_GATES",
+  "tool_methods": [
+    "skill",
+    "read",
+    "read"
+  ],
+  "trade_authorization": false,
+  "unauthorized_operations": 0,
+  "validated_numeric_claims": 0,
+  "watches": 1164
+}

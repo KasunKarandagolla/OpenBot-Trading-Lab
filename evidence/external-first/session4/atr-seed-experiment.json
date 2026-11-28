@@ -1,0 +1,1153 @@
+{
+  "checks": [
+    {
+      "formulas": [
+        {
+          "comparisons": [
+            {
+              "actual": "704.47142857143",
+              "independent": "704.4714285714285714285714286",
+              "open_seconds": 1794549600,
+              "passed": true,
+              "seed_point": true,
+              "tolerance": "7.044714285714285714285714286E-8"
+            },
+            {
+              "actual": "710.9663265306132",
+              "independent": "710.9663265306122448979591837",
+              "open_seconds": 1794553200,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "7.109663265306122448979591837E-8"
+            },
+            {
+              "actual": "688.5758746355694",
+              "independent": "688.5758746355685131195335277",
+              "open_seconds": 1794556800,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "6.885758746355685131195335277E-8"
+            },
+            {
+              "actual": "671.9633121616001",
+              "independent": "671.9633121615993336109954186",
+              "open_seconds": 1794560400,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "6.719633121615993336109954186E-8"
+            },
+            {
+              "actual": "652.8945041500573",
+              "independent": "652.8945041500565240673528887",
+              "open_seconds": 1794564000,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "6.528945041500565240673528887E-8"
+            },
+            {
+              "actual": "635.5377538536252",
+              "independent": "635.5377538536239152053991109",
+              "open_seconds": 1794567600,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "6.355377538536239152053991109E-8"
+            }
+          ],
+          "data": {
+            "bars": 21,
+            "defined": 7,
+            "exchange": "binance",
+            "market": "futures",
+            "symbol": "BTCUSDT",
+            "tail": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              "704.47142857143",
+              "710.9663265306132",
+              "688.5758746355694",
+              "671.9633121616001",
+              "652.8945041500573",
+              "635.5377538536252",
+              "613.4636285783663"
+            ],
+            "tailTimes": [
+              1794502800,
+              1794506400,
+              1794510000,
+              1794513600,
+              1794517200,
+              1794520800,
+              1794524400,
+              1794528000,
+              1794531600,
+              1794535200,
+              1794538800,
+              1794542400,
+              1794546000,
+              1794549600,
+              1794553200,
+              1794556800,
+              1794560400,
+              1794564000,
+              1794567600,
+              1794571200
+            ],
+            "timeframe": "1h"
+          },
+          "expression": "rma(max(high-low,max(abs(high-close[1]),abs(low-close[1]))),14)",
+          "label": "explicit_tr_rma",
+          "passed": true,
+          "receipt": {
+            "binance_used_weight_1m": null,
+            "elapsed_ms": 845,
+            "endpoint": "https://www.basischarts.com/api/mcp",
+            "http_status": 200,
+            "quota_charged_units": null,
+            "received_at_utc": "2026-11-13T13:39:07.503806+00:00",
+            "response_bytes": 820,
+            "response_sha256": "9379e169c42cfdce1bacaf0558c9accf897f270e214778de9435eb2df6db1bef",
+            "retry_after": null
+          }
+        },
+        {
+          "comparisons": [
+            {
+              "actual": "708.4551020408178",
+              "independent": "704.4714285714285714285714286",
+              "open_seconds": 1794549600,
+              "passed": false,
+              "seed_point": true,
+              "tolerance": "7.044714285714285714285714286E-8"
+            },
+            {
+              "actual": "714.6654518950446",
+              "independent": "710.9663265306122448979591837",
+              "open_seconds": 1794553200,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "7.109663265306122448979591837E-8"
+            },
+            {
+              "actual": "692.0107767596843",
+              "independent": "688.5758746355685131195335277",
+              "open_seconds": 1794556800,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "6.885758746355685131195335277E-8"
+            },
+            {
+              "actual": "675.1528641339926",
+              "independent": "671.9633121615993336109954186",
+              "open_seconds": 1794560400,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "6.719633121615993336109954186E-8"
+            },
+            {
+              "actual": "655.8562309815645",
+              "independent": "652.8945041500565240673528887",
+              "open_seconds": 1794564000,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "6.528945041500565240673528887E-8"
+            },
+            {
+              "actual": "638.2879287685963",
+              "independent": "635.5377538536239152053991109",
+              "open_seconds": 1794567600,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "6.355377538536239152053991109E-8"
+            }
+          ],
+          "data": {
+            "bars": 21,
+            "defined": 8,
+            "exchange": "binance",
+            "market": "futures",
+            "symbol": "BTCUSDT",
+            "tail": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              "668.2285714285723",
+              "708.4551020408178",
+              "714.6654518950446",
+              "692.0107767596843",
+              "675.1528641339926",
+              "655.8562309815645",
+              "638.2879287685963",
+              "616.0173624279823"
+            ],
+            "tailTimes": [
+              1794502800,
+              1794506400,
+              1794510000,
+              1794513600,
+              1794517200,
+              1794520800,
+              1794524400,
+              1794528000,
+              1794531600,
+              1794535200,
+              1794538800,
+              1794542400,
+              1794546000,
+              1794549600,
+              1794553200,
+              1794556800,
+              1794560400,
+              1794564000,
+              1794567600,
+              1794571200
+            ],
+            "timeframe": "1h"
+          },
+          "expression": "atr(14)",
+          "label": "native_atr",
+          "passed": false,
+          "receipt": {
+            "binance_used_weight_1m": null,
+            "elapsed_ms": 864,
+            "endpoint": "https://www.basischarts.com/api/mcp",
+            "http_status": 200,
+            "quota_charged_units": null,
+            "received_at_utc": "2026-11-13T13:39:08.370445+00:00",
+            "response_bytes": 835,
+            "response_sha256": "34ff6b924a7a427c3640798a1800e802548692e4494511bdcfbe1f536dd6f10c",
+            "retry_after": null
+          }
+        }
+      ],
+      "independent_hlc": [
+        {
+          "close": "71726.90",
+          "high": "72194.00",
+          "low": "71470.00",
+          "open_seconds": 1794499200
+        },
+        {
+          "close": "71878.40",
+          "high": "72025.30",
+          "low": "71631.60",
+          "open_seconds": 1794502800
+        },
+        {
+          "close": "71729.60",
+          "high": "72048.10",
+          "low": "71555.00",
+          "open_seconds": 1794506400
+        },
+        {
+          "close": "71663.40",
+          "high": "71745.80",
+          "low": "71407.50",
+          "open_seconds": 1794510000
+        },
+        {
+          "close": "71422.30",
+          "high": "71674.10",
+          "low": "71388.80",
+          "open_seconds": 1794513600
+        },
+        {
+          "close": "71535.60",
+          "high": "71613.40",
+          "low": "71361.20",
+          "open_seconds": 1794517200
+        },
+        {
+          "close": "71392.00",
+          "high": "71535.50",
+          "low": "71288.00",
+          "open_seconds": 1794520800
+        },
+        {
+          "close": "71423.30",
+          "high": "71517.60",
+          "low": "71082.00",
+          "open_seconds": 1794524400
+        },
+        {
+          "close": "71096.30",
+          "high": "71490.70",
+          "low": "70635.20",
+          "open_seconds": 1794528000
+        },
+        {
+          "close": "70915.00",
+          "high": "71200.00",
+          "low": "70725.50",
+          "open_seconds": 1794531600
+        },
+        {
+          "close": "70209.80",
+          "high": "70940.00",
+          "low": "69850.00",
+          "open_seconds": 1794535200
+        },
+        {
+          "close": "68930.40",
+          "high": "70290.00",
+          "low": "68489.30",
+          "open_seconds": 1794538800
+        },
+        {
+          "close": "68552.70",
+          "high": "69117.90",
+          "low": "68550.00",
+          "open_seconds": 1794542400
+        },
+        {
+          "close": "68113.10",
+          "high": "68845.80",
+          "low": "67449.00",
+          "open_seconds": 1794546000
+        },
+        {
+          "close": "69040.80",
+          "high": "69103.60",
+          "low": "67872.20",
+          "open_seconds": 1794549600
+        },
+        {
+          "close": "68555.00",
+          "high": "69342.90",
+          "low": "68547.50",
+          "open_seconds": 1794553200
+        },
+        {
+          "close": "68680.30",
+          "high": "68866.30",
+          "low": "68468.80",
+          "open_seconds": 1794556800
+        },
+        {
+          "close": "69074.70",
+          "high": "69088.00",
+          "low": "68632.00",
+          "open_seconds": 1794560400
+        },
+        {
+          "close": "69298.60",
+          "high": "69466.20",
+          "low": "69061.20",
+          "open_seconds": 1794564000
+        },
+        {
+          "close": "69290.20",
+          "high": "69551.60",
+          "low": "69141.70",
+          "open_seconds": 1794567600
+        }
+      ],
+      "independent_source_receipt": {
+        "binance_used_weight_1m": 2,
+        "elapsed_ms": 1041,
+        "endpoint": "https://fapi.binance.com/fapi/v1/klines",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:27:06.534109+00:00",
+        "requested_query": {
+          "endTime": 1794571199999,
+          "interval": "1h",
+          "limit": 300,
+          "symbol": "BTCUSDT"
+        },
+        "response_bytes": 42632,
+        "response_sha256": "e87f5ae1ca66e9ff17e17a90d83bfbe48b6fc7425abaae72922f2e413dd92fd4",
+        "retry_after": null
+      },
+      "native_symbol": "BTCUSDT",
+      "source_window": {
+        "closedBars": 21,
+        "evidence": {
+          "ageSeconds": "2346.528",
+          "asOfUtc": "2026-11-13T13:00:00.000Z",
+          "barSeconds": 3600,
+          "lastClose": "69173.8",
+          "loadedAtUtc": "2026-11-13T13:39:06.528Z",
+          "mode": "latest",
+          "priceMeaning": "Closed-candle close, not execution quote.",
+          "status": "fresh"
+        },
+        "from": 1794499200,
+        "to": 1794571200
+      },
+      "status": "EXACT_START_MATCH",
+      "timeframe": "1h",
+      "verification": [
+        {
+          "comparisons": [
+            {
+              "actual": "704.47142857143",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "704.4714285714285714285714286",
+              "open_seconds": 1794549600,
+              "passed": true,
+              "seed_point": true,
+              "tolerance": "7.044714285714285714285714286E-8"
+            },
+            {
+              "actual": "710.9663265306132",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "710.9663265306122448979591837",
+              "open_seconds": 1794553200,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "7.109663265306122448979591837E-8"
+            },
+            {
+              "actual": "688.5758746355694",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "688.5758746355685131195335277",
+              "open_seconds": 1794556800,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "6.885758746355685131195335277E-8"
+            },
+            {
+              "actual": "671.9633121616001",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "671.9633121615993336109954186",
+              "open_seconds": 1794560400,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "6.719633121615993336109954186E-8"
+            },
+            {
+              "actual": "652.8945041500573",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "652.8945041500565240673528887",
+              "open_seconds": 1794564000,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "6.528945041500565240673528887E-8"
+            },
+            {
+              "actual": "635.5377538536252",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "635.5377538536239152053991109",
+              "open_seconds": 1794567600,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "6.355377538536239152053991109E-8"
+            }
+          ],
+          "label": "explicit_tr_rma",
+          "passed": true,
+          "production_enabled": false,
+          "scope": "EXACT_START_BTC_RETAINED_HLC_20_ONLY"
+        },
+        {
+          "comparisons": [
+            {
+              "actual": "708.4551020408178",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "704.4714285714285714285714286",
+              "open_seconds": 1794549600,
+              "passed": false,
+              "seed_point": true,
+              "tolerance": "7.044714285714285714285714286E-8"
+            },
+            {
+              "actual": "714.6654518950446",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "710.9663265306122448979591837",
+              "open_seconds": 1794553200,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "7.109663265306122448979591837E-8"
+            },
+            {
+              "actual": "692.0107767596843",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "688.5758746355685131195335277",
+              "open_seconds": 1794556800,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "6.885758746355685131195335277E-8"
+            },
+            {
+              "actual": "675.1528641339926",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "671.9633121615993336109954186",
+              "open_seconds": 1794560400,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "6.719633121615993336109954186E-8"
+            },
+            {
+              "actual": "655.8562309815645",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "652.8945041500565240673528887",
+              "open_seconds": 1794564000,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "6.528945041500565240673528887E-8"
+            },
+            {
+              "actual": "638.2879287685963",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "635.5377538536239152053991109",
+              "open_seconds": 1794567600,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "6.355377538536239152053991109E-8"
+            }
+          ],
+          "label": "native_atr",
+          "passed": false,
+          "production_enabled": false,
+          "scope": "EXACT_START_BTC_RETAINED_HLC_20_ONLY"
+        }
+      ]
+    },
+    {
+      "formulas": [
+        {
+          "comparisons": [
+            {
+              "actual": "221.3357142857151",
+              "independent": "221.3357142857142857142857143",
+              "open_seconds": 1794566700,
+              "passed": true,
+              "seed_point": true,
+              "tolerance": "2.213357142857142857142857143E-8"
+            },
+            {
+              "actual": "215.20459183673546",
+              "independent": "215.2045918367346938775510204",
+              "open_seconds": 1794567600,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.152045918367346938775510204E-8"
+            },
+            {
+              "actual": "222.73283527696907",
+              "independent": "222.7328352769679300291545189",
+              "open_seconds": 1794568500,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.227328352769679300291545189E-8"
+            },
+            {
+              "actual": "218.6304899000429",
+              "independent": "218.630489900041649312786339",
+              "open_seconds": 1794569400,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.18630489900041649312786339E-8"
+            },
+            {
+              "actual": "216.5497406214684",
+              "independent": "216.5497406214672457904444576",
+              "open_seconds": 1794570300,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.165497406214672457904444576E-8"
+            },
+            {
+              "actual": "211.71047343422086",
+              "independent": "211.7104734342195853768412821",
+              "open_seconds": 1794571200,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.117104734342195853768412821E-8"
+            }
+          ],
+          "data": {
+            "bars": 25,
+            "defined": 11,
+            "exchange": "binance",
+            "market": "futures",
+            "symbol": "BTCUSDT",
+            "tail": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              "221.3357142857151",
+              "215.20459183673546",
+              "222.73283527696907",
+              "218.6304899000429",
+              "216.5497406214684",
+              "211.71047343422086",
+              "216.7882967603471",
+              "214.767704134608",
+              "211.37001098213685",
+              "208.35072448341217",
+              "205.50424416316847"
+            ],
+            "tailTimes": [
+              1794558600,
+              1794559500,
+              1794560400,
+              1794561300,
+              1794562200,
+              1794563100,
+              1794564000,
+              1794564900,
+              1794565800,
+              1794566700,
+              1794567600,
+              1794568500,
+              1794569400,
+              1794570300,
+              1794571200,
+              1794572100,
+              1794573000,
+              1794573900,
+              1794574800,
+              1794575700
+            ],
+            "timeframe": "15m"
+          },
+          "expression": "rma(max(high-low,max(abs(high-close[1]),abs(low-close[1]))),14)",
+          "label": "explicit_tr_rma",
+          "passed": true,
+          "receipt": {
+            "binance_used_weight_1m": null,
+            "elapsed_ms": 641,
+            "endpoint": "https://www.basischarts.com/api/mcp",
+            "http_status": 200,
+            "quota_charged_units": null,
+            "received_at_utc": "2026-11-13T13:39:09.845657+00:00",
+            "response_bytes": 881,
+            "response_sha256": "242960d033658e393fec8adac8eb7f2e4da149478d06255f05f76b12af484ca2",
+            "retry_after": null
+          }
+        },
+        {
+          "comparisons": [
+            {
+              "actual": "222.55255102040817",
+              "independent": "221.3357142857142857142857143",
+              "open_seconds": 1794566700,
+              "passed": false,
+              "seed_point": true,
+              "tolerance": "2.213357142857142857142857143E-8"
+            },
+            {
+              "actual": "216.33451166180757",
+              "independent": "215.2045918367346938775510204",
+              "open_seconds": 1794567600,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.152045918367346938775510204E-8"
+            },
+            {
+              "actual": "223.78204654310744",
+              "independent": "222.7328352769679300291545189",
+              "open_seconds": 1794568500,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.227328352769679300291545189E-8"
+            },
+            {
+              "actual": "219.60475750431425",
+              "independent": "218.630489900041649312786339",
+              "open_seconds": 1794569400,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.18630489900041649312786339E-8"
+            },
+            {
+              "actual": "217.4544176825775",
+              "independent": "216.5497406214672457904444576",
+              "open_seconds": 1794570300,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.165497406214672457904444576E-8"
+            },
+            {
+              "actual": "212.55053070525076",
+              "independent": "211.7104734342195853768412821",
+              "open_seconds": 1794571200,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.117104734342195853768412821E-8"
+            }
+          ],
+          "data": {
+            "bars": 25,
+            "defined": 12,
+            "exchange": "binance",
+            "market": "futures",
+            "symbol": "BTCUSDT",
+            "tail": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              "228.7642857142855",
+              "222.55255102040817",
+              "216.33451166180757",
+              "223.78204654310744",
+              "219.60475750431425",
+              "217.4544176825775",
+              "212.55053070525076",
+              "217.56834994058914",
+              "215.49203923054708",
+              "212.0426078569374",
+              "208.97527872429836",
+              "206.08418738684847"
+            ],
+            "tailTimes": [
+              1794558600,
+              1794559500,
+              1794560400,
+              1794561300,
+              1794562200,
+              1794563100,
+              1794564000,
+              1794564900,
+              1794565800,
+              1794566700,
+              1794567600,
+              1794568500,
+              1794569400,
+              1794570300,
+              1794571200,
+              1794572100,
+              1794573000,
+              1794573900,
+              1794574800,
+              1794575700
+            ],
+            "timeframe": "15m"
+          },
+          "expression": "atr(14)",
+          "label": "native_atr",
+          "passed": false,
+          "receipt": {
+            "binance_used_weight_1m": null,
+            "elapsed_ms": 649,
+            "endpoint": "https://www.basischarts.com/api/mcp",
+            "http_status": 200,
+            "quota_charged_units": null,
+            "received_at_utc": "2026-11-13T13:39:10.496604+00:00",
+            "response_bytes": 898,
+            "response_sha256": "932bacf13264968eb96ccadbb6cb9f198fdb7e8ba4377f6e1c23ffab3ae9b727",
+            "retry_after": null
+          }
+        }
+      ],
+      "independent_hlc": [
+        {
+          "close": "68958.00",
+          "high": "69199.90",
+          "low": "68954.10",
+          "open_seconds": 1794554100
+        },
+        {
+          "close": "68788.20",
+          "high": "68984.80",
+          "low": "68691.50",
+          "open_seconds": 1794555000
+        },
+        {
+          "close": "68555.00",
+          "high": "68819.30",
+          "low": "68547.50",
+          "open_seconds": 1794555900
+        },
+        {
+          "close": "68733.50",
+          "high": "68767.60",
+          "low": "68541.80",
+          "open_seconds": 1794556800
+        },
+        {
+          "close": "68699.00",
+          "high": "68733.40",
+          "low": "68468.80",
+          "open_seconds": 1794557700
+        },
+        {
+          "close": "68738.20",
+          "high": "68866.30",
+          "low": "68654.00",
+          "open_seconds": 1794558600
+        },
+        {
+          "close": "68680.30",
+          "high": "68850.40",
+          "low": "68680.20",
+          "open_seconds": 1794559500
+        },
+        {
+          "close": "68774.10",
+          "high": "68913.20",
+          "low": "68632.00",
+          "open_seconds": 1794560400
+        },
+        {
+          "close": "68931.80",
+          "high": "68931.80",
+          "low": "68774.10",
+          "open_seconds": 1794561300
+        },
+        {
+          "close": "69008.10",
+          "high": "69088.00",
+          "low": "68900.50",
+          "open_seconds": 1794562200
+        },
+        {
+          "close": "69074.70",
+          "high": "69078.10",
+          "low": "68916.80",
+          "open_seconds": 1794563100
+        },
+        {
+          "close": "69383.40",
+          "high": "69466.20",
+          "low": "69061.20",
+          "open_seconds": 1794564000
+        },
+        {
+          "close": "69248.40",
+          "high": "69447.70",
+          "low": "69222.40",
+          "open_seconds": 1794564900
+        },
+        {
+          "close": "69284.20",
+          "high": "69318.80",
+          "low": "69218.00",
+          "open_seconds": 1794565800
+        },
+        {
+          "close": "69298.60",
+          "high": "69382.00",
+          "low": "69240.20",
+          "open_seconds": 1794566700
+        },
+        {
+          "close": "69279.10",
+          "high": "69376.20",
+          "low": "69240.70",
+          "open_seconds": 1794567600
+        },
+        {
+          "close": "69248.80",
+          "high": "69551.60",
+          "low": "69231.00",
+          "open_seconds": 1794568500
+        },
+        {
+          "close": "69304.10",
+          "high": "69307.00",
+          "low": "69141.70",
+          "open_seconds": 1794569400
+        },
+        {
+          "close": "69290.20",
+          "high": "69448.00",
+          "low": "69258.50",
+          "open_seconds": 1794570300
+        },
+        {
+          "close": "69427.80",
+          "high": "69439.00",
+          "low": "69290.20",
+          "open_seconds": 1794571200
+        }
+      ],
+      "independent_source_receipt": {
+        "binance_used_weight_1m": 4,
+        "elapsed_ms": 1839,
+        "endpoint": "https://fapi.binance.com/fapi/v1/klines",
+        "http_status": 200,
+        "quota_charged_units": null,
+        "received_at_utc": "2026-11-13T12:27:24.564081+00:00",
+        "requested_query": {
+          "endTime": 1794572099999,
+          "interval": "15m",
+          "limit": 300,
+          "symbol": "BTCUSDT"
+        },
+        "response_bytes": 41854,
+        "response_sha256": "71d3fa582428ad6ddc310be65817be04f665b71c348b07c6843c58415eed6eb8",
+        "retry_after": null
+      },
+      "native_symbol": "BTCUSDT",
+      "source_window": {
+        "closedBars": 25,
+        "evidence": {
+          "ageSeconds": "549.08",
+          "asOfUtc": "2026-11-13T13:30:00.000Z",
+          "barSeconds": 900,
+          "lastClose": "69221.8",
+          "loadedAtUtc": "2026-11-13T13:39:09.080Z",
+          "mode": "latest",
+          "priceMeaning": "Closed-candle close, not execution quote.",
+          "status": "fresh"
+        },
+        "from": 1794554100,
+        "to": 1794575700
+      },
+      "status": "EXACT_START_MATCH",
+      "timeframe": "15m",
+      "verification": [
+        {
+          "comparisons": [
+            {
+              "actual": "221.3357142857151",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "221.3357142857142857142857143",
+              "open_seconds": 1794566700,
+              "passed": true,
+              "seed_point": true,
+              "tolerance": "2.213357142857142857142857143E-8"
+            },
+            {
+              "actual": "215.20459183673546",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "215.2045918367346938775510204",
+              "open_seconds": 1794567600,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.152045918367346938775510204E-8"
+            },
+            {
+              "actual": "222.73283527696907",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "222.7328352769679300291545189",
+              "open_seconds": 1794568500,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.227328352769679300291545189E-8"
+            },
+            {
+              "actual": "218.6304899000429",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "218.630489900041649312786339",
+              "open_seconds": 1794569400,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.18630489900041649312786339E-8"
+            },
+            {
+              "actual": "216.5497406214684",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "216.5497406214672457904444576",
+              "open_seconds": 1794570300,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.165497406214672457904444576E-8"
+            },
+            {
+              "actual": "211.71047343422086",
+              "alternative_first_hl_seed_passed": false,
+              "independent": "211.7104734342195853768412821",
+              "open_seconds": 1794571200,
+              "passed": true,
+              "seed_point": false,
+              "tolerance": "2.117104734342195853768412821E-8"
+            }
+          ],
+          "label": "explicit_tr_rma",
+          "passed": true,
+          "production_enabled": false,
+          "scope": "EXACT_START_BTC_RETAINED_HLC_20_ONLY"
+        },
+        {
+          "comparisons": [
+            {
+              "actual": "222.55255102040817",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "221.3357142857142857142857143",
+              "open_seconds": 1794566700,
+              "passed": false,
+              "seed_point": true,
+              "tolerance": "2.213357142857142857142857143E-8"
+            },
+            {
+              "actual": "216.33451166180757",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "215.2045918367346938775510204",
+              "open_seconds": 1794567600,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.152045918367346938775510204E-8"
+            },
+            {
+              "actual": "223.78204654310744",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "222.7328352769679300291545189",
+              "open_seconds": 1794568500,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.227328352769679300291545189E-8"
+            },
+            {
+              "actual": "219.60475750431425",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "218.630489900041649312786339",
+              "open_seconds": 1794569400,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.18630489900041649312786339E-8"
+            },
+            {
+              "actual": "217.4544176825775",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "216.5497406214672457904444576",
+              "open_seconds": 1794570300,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.165497406214672457904444576E-8"
+            },
+            {
+              "actual": "212.55053070525076",
+              "alternative_first_hl_seed_passed": true,
+              "independent": "211.7104734342195853768412821",
+              "open_seconds": 1794571200,
+              "passed": false,
+              "seed_point": false,
+              "tolerance": "2.117104734342195853768412821E-8"
+            }
+          ],
+          "label": "native_atr",
+          "passed": false,
+          "production_enabled": false,
+          "scope": "EXACT_START_BTC_RETAINED_HLC_20_ONLY"
+        }
+      ]
+    }
+  ],
+  "mode": "LIVE_BASIS_VS_RETAINED_INDEPENDENT_HLC",
+  "receipts": [
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 658,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T13:39:04.659376+00:00",
+      "response_bytes": 4022,
+      "response_sha256": "aada727f47b586edc974a4bd213791bc54bb638a0f1be6965bb39982470227f1",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 621,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 202,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T13:39:05.280755+00:00",
+      "response_bytes": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 560,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T13:39:05.840741+00:00",
+      "response_bytes": 68090,
+      "response_sha256": "98b5f49997dbbb9e1a2733fc0ba75286cca94e9dbea5e38ee8802338efb8e674",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 810,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T13:39:06.655887+00:00",
+      "response_bytes": 1128,
+      "response_sha256": "b2223e42169aa8ca69fa2a3b8985fb6fcfdacb50d64de315bab1f7a81366d301",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 845,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T13:39:07.503806+00:00",
+      "response_bytes": 820,
+      "response_sha256": "9379e169c42cfdce1bacaf0558c9accf897f270e214778de9435eb2df6db1bef",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 864,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T13:39:08.370445+00:00",
+      "response_bytes": 835,
+      "response_sha256": "34ff6b924a7a427c3640798a1800e802548692e4494511bdcfbe1f536dd6f10c",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 832,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T13:39:09.203069+00:00",
+      "response_bytes": 1129,
+      "response_sha256": "d50d6fb9cb0db41e549f6f358289d2e917579a7fc2a7cee2468681c74d3de87d",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 641,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T13:39:09.845657+00:00",
+      "response_bytes": 881,
+      "response_sha256": "242960d033658e393fec8adac8eb7f2e4da149478d06255f05f76b12af484ca2",
+      "retry_after": null
+    },
+    {
+      "binance_used_weight_1m": null,
+      "elapsed_ms": 649,
+      "endpoint": "https://www.basischarts.com/api/mcp",
+      "http_status": 200,
+      "quota_charged_units": null,
+      "received_at_utc": "2026-11-13T13:39:10.496604+00:00",
+      "response_bytes": 898,
+      "response_sha256": "932bacf13264968eb96ccadbb6cb9f198fdb7e8ba4377f6e1c23ffab3ae9b727",
+      "retry_after": null
+    }
+  ],
+  "trade_authorization": false
+}
