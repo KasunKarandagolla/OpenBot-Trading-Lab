@@ -52,8 +52,11 @@ class SimulatedApp:
                 commands.append(cmd)
             full=''.join(json.loads(page)['text'] for page in pages)
             if digest(full.encode())!=fingerprint:raise AssertionError('packet hash')
-        request_path=runner._job(job)/'review'/(receipt['material_sha256']+'.request.json')
-        request=json.loads(request_path.read_text(encoding='utf-8'))
+        if job is not None:
+            request_path=runner._job(job)/'review'/(receipt['material_sha256']+'.request.json')
+            request=json.loads(request_path.read_text(encoding='utf-8'))
+        else:
+            request=json.loads(full.split('<canonical-request>\n',1)[1].split('\n</canonical-request>',1)[0])
         if request.get('input_transport'):
             self.assert_exact_arguments(args,receipt)
             if digest(full.encode())!=receipt['packet_sha256']:raise AssertionError('AI packet hash')

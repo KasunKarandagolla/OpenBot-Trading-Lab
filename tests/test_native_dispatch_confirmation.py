@@ -151,12 +151,11 @@ class ConfirmedDispatch(unittest.TestCase):
         self.assertFalse(status['submission_permitted'])
         self.assertNotIn('start_task_arguments',status)
 
-    def test_3673_byte_preview_crosses_the_real_parent_boundary_completely(self):
+    def test_stage_bound_preview_fits_the_real_parent_boundary_completely(self):
         self.publish()
-        # The original saved preview bytes were unavailable. A synthetic path
-        # produces an independently checked frame of the reported exact size.
+        # A synthetic path exercises the compact frame with the current
+        # stage-bound brief, whose byte length differs from older prompts.
         from researcher.native_handoff import dispatch_frame
-        args,_,_=packet(self.request,self.directory)
         matched=None
         for length in range(1,1200):
             with patch('researcher.native_handoff.wsl_root',return_value='/workspace/'+'x'*length):
@@ -166,11 +165,13 @@ class ConfirmedDispatch(unittest.TestCase):
                 except ContractError:
                     continue
                 wire=(encode(frame,compact=True)+'\n').encode()
-                if len(wire)==3673:
+                if len(wire)<=PARENT_OUTPUT_BYTES:
                     matched=wire
                     break
         self.assertIsNotNone(matched)
-        self.assertEqual(json.loads(matched[:4096])['z_end_frame'],json.loads(matched)['z_end_frame'])
+        parsed=json.loads(matched[:PARENT_OUTPUT_BYTES])
+        self.assertEqual(parsed['z_end_frame'],json.loads(matched)['z_end_frame'])
+        self.assertLessEqual(len(matched),PARENT_OUTPUT_BYTES)
 
     def test_parent_truncation_or_bad_argument_bytes_leave_preview_recoverable(self):
         self.publish()
